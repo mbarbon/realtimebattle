@@ -4,6 +4,12 @@
 #include <math.h>
 #include <string.h>
 #include "gui.h"
+#include "Arena.h"
+#include "MovingObject.h"
+#include "Extras.h"
+#include "Shape.h"
+#include "Various.h"
+#include "Options.h"
 #include "Vector2D.h"
 
 #define GDK_VARV 23040     // 64 * 360 degrees
@@ -484,9 +490,8 @@ Gui::setup_score_window()
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
-      char * rname = robotp->get_robot_name().copy_chars();
-      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, rname);
-      delete[] rname;
+      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robot_name().non_const_chars());
+
       robotp->display_energy();
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
       robotp->display_last();

@@ -23,7 +23,7 @@ export libdirs = -L/usr/lib -L/usr/X11R6/lib
 export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
-stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h
+stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
 
 all: RealTimeBattle robots
 
@@ -37,16 +37,16 @@ RealTimeBattle: $(objects)
 String.o: String.cc String.h
 Vector2D.o: Vector2D.cc Vector2D.h
 Various.o: Various.cc Various.h Error.h String.h
+Error.o: Error.cc Error.h String.h
 gui.o: gui.cc $(stdincludes)
-RealTimeBattle.o: RealTimeBattle.cc $(stdincludes)
+RealTimeBattle.o: RealTimeBattle.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h
 Arena.o: Arena.cc $(stdincludes)
-Error.o: Error.cc Error.h
 MovingObject.o: MovingObject.cc $(stdincludes)
-Shape.o: Shape.cc $(stdincludes)
-Extras.o: Extras.cc $(stdincludes)
-Options.o: Options.cc $(stdincludes)
-Statistics.o: Statistics.cc $(stdincludes)
-StartTournament.o: StartTournament.cc $(stdincludes)
+Shape.o: Shape.cc Shape.h Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h
+Extras.o: Extras.cc Extras.h Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h Shape.h
+Options.o: Options.cc Options.h Vector2D.h gui.h Various.h Arena.h messagetypes.h String.h
+Statistics.o: Statistics.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h Shape.h MovingObject.h
+StartTournament.o: StartTournament.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h
 
 robots:
 	cd $(ROBOTDIR) && $(MAKE)

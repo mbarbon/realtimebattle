@@ -5,7 +5,8 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include "Vector2D.h"
-#include "Arena.h"
+//#include "Arena.h"
+#include "String.h"
 
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
 enum stat_button_t
@@ -41,7 +42,7 @@ enum start_tournament_button_t
 
 struct start_tournament_glist_info_t
 {
-  start_tournament_glist_info_t(const int r, const bool s, const String& fn) :
+  start_tournament_glist_info_t(const int r, const bool s, const class String& fn) :
     row(r), selected(s), filename(fn) {}
   int row;
   bool selected;

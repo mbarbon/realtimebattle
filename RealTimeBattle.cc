@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "Arena.h"
+#include "Options.h"
 #include "Error.h"
 #include "Vector2D.h"
 #include "gui.h"
