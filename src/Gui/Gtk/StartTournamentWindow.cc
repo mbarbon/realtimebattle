@@ -52,6 +52,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "Gui.h"
 #include "String.h"
+#include "Various.h"
 
 const string tmp_tournament_file( "/tmp.tour" );
 
