@@ -299,7 +299,7 @@ hex2str(long n)
         if( k%16 < 10 ) 
           str.array[pos--] = '0' + k%16;
         else
-          str.array[pos--] = 'a' - 10 + k%16;
+          str.array[pos--] = 'A' - 10 + k%16;
       }
 
   if( n < 0 ) 
