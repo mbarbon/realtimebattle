@@ -113,6 +113,14 @@ Robot::update_radar_and_cannon(const double timestep)
 }
 
 void
+Robot::set_initial_position_and_direction(const Vector2D& pos, double angle, double size)
+{
+  center = pos;
+  robot_angle = angle;
+  radius = size;
+}
+
+void
 Robot::move(const double timestep)
 {
   Shape* closest_shape;
