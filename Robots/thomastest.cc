@@ -119,7 +119,7 @@ check_messages(int sig)
                 {
                   if (enemy)
                     {
-                      cout << "Sweep 6 " << M_PI/2.0 << -M_PI/6.0 << M_PI/66.0 << endl;
+                      cout << "Sweep 6 " << M_PI/2.0 << -M_PI/6.0 << M_PI/6.0 << endl;
                       enemy = false;
                       slumprotate = -slumprotate;
                     }
@@ -283,7 +283,10 @@ main(int argc, char * argv[])
   timer = g_timer_new();
   g_timer_reset(timer);
   srand(time(0));
-  check_messages(SIGUSR1);
+  //check_messages(SIGUSR1);
+  signal(SIGUSR1, check_messages);
+
+  cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
 
   for(;;sleep(1))
     {

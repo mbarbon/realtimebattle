@@ -136,7 +136,8 @@ main(int argc, char * argv[])
 {
   robot_rotate = 0.53;
 
-  check_messages(SIGUSR1);
+  signal(SIGUSR1, check_messages);
+  cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
 
   for(;;sleep(1))
     {
