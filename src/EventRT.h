@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class CheckGUIEvent : public Event
 {
+public:
   CheckGUIEvent(const double time, const double refresh_time, GuiServerInterface* gp )
     : Event(time), refresh(refresh_time), gui_p(gp) {}
 
@@ -43,6 +44,7 @@ protected:
 
 class StartTournamentEvent : public Event
 {
+public:
   StartTournamentEvent(const double time, const double refresh_time, const string& filen )
     : Event(time), filename(filen) {}
 

@@ -21,6 +21,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
+#include <pthread.h>
+#include <list>
+#include <algorithm>
+
+#include "ArenaController.h"
 #include "EventRT.h"
 #include "EventHandler.h"
 
@@ -32,12 +37,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  //                                               //
 ///////////////////////////////////////////////////
 
+extern list<unsigned int> GI_exit_list;
+extern pthread_mutex_t the_mutex;
+extern ArenaController the_arena_controller;
 
 void
 CheckGUIEvent::eval() const 
 {
   // Note: might have to supply process_all_options() with eventhandler in the future.
-  //  gui_p->process_all_options();
+  gui_p->process_all_requests();
+
+  pthread_mutex_lock( &the_mutex );
+  list<unsigned int>::iterator li;
+  if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
+      != GI_exit_list.end() )
+    {
+      the_arena_controller.exit_gui( *li );
+      GI_exit_list.erase( li );
+      pthread_mutex_unlock( &the_mutex );
+      return;
+    }
+  pthread_mutex_unlock( &the_mutex );
 
   Event* next_event = new CheckGUIEvent(eval_time + refresh, refresh, gui_p);
   the_eventhandler.insert_RT_event(next_event);
