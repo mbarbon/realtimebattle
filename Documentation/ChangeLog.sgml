@@ -12,6 +12,8 @@ Fixed the bug occuring sometimes when using a different language than english.
 
 Fixed bug that caused RTB to crash sometimes when using messagefiles.
 
+Bugfix: command line option '--debug-mode' should work now.
+
 <item> <bf>1.0.2</bf>
 <p>
 
