@@ -176,6 +176,12 @@ sig_handler (int signum)
   signal(signum, sig_handler);
 }
 
+RETSIGTYPE
+sigfpe_handler(int signum)
+{
+  signal(signum, sigfpe_handler);
+}
+
 void
 parse_command_line(int argc, char **argv)
 {
@@ -389,6 +395,7 @@ main ( int argc, char* argv[] )
 
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
+  signal(SIGFPE, sigfpe_handler);
 
 #ifndef NO_GRAPHICS
   if( !no_graphics )
