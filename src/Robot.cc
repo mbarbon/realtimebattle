@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <unistd.h>
 #include <signal.h>
 #include <iostream.h>
+#include <math.h>
 
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
@@ -372,7 +373,7 @@ Robot::die()
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
-          the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+          the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_bg_gdk_colour_p()),true);
           last_drawn_robot_center = Vector2D(infinity,infinity);
         }
 #endif
@@ -1382,7 +1383,7 @@ Robot::draw_radar_and_cannon()
                      angle2vec(cannon_angle.pos+robot_angle.pos),
                      radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0/the_gui.get_zoom(),
                      the_opts.get_d(OPTION_SHOT_RADIUS),
-                     *(the_arena.get_foreground_colour_p()) );
+                     *(the_arena.get_fg_gdk_colour_p()) );
 
   // Draw radar lines
   Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
@@ -1390,12 +1391,12 @@ Robot::draw_radar_and_cannon()
                      rotate( radar_dir, M_PI / 4.0 ),
                      radius / 1.5,
                      radius / 20.0,
-                     *(the_arena.get_foreground_colour_p()) );
+                     *(the_arena.get_fg_gdk_colour_p()) );
   the_gui.draw_line( center - radius * 0.25 * radar_dir,
                      rotate( radar_dir, - (M_PI / 4.0) ),
                      radius / 1.5,
                      radius / 20.0,
-                     *(the_arena.get_foreground_colour_p()) );
+                     *(the_arena.get_fg_gdk_colour_p()) );
   
 }
 

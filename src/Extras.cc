@@ -30,7 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 
 Extras::Extras(const Vector2D& c, const double r, const double e, const long int col)
-  : energy(e), Circle(c, r, col)
+  : Circle(c, r, col), energy(e)
 {
   alive = true;
 #ifndef NO_GRAPHICS
@@ -60,7 +60,7 @@ Extras::die()
    alive = false;
 #ifndef NO_GRAPHICS
    if (!no_graphics )
-     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_bg_gdk_colour_p()),true);
 #endif
 
    if( the_arena_controller.is_realtime() )

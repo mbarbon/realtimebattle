@@ -301,7 +301,7 @@ Gui::clear_area()
   GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, the_arena.get_background_colour_p() );
+  gdk_gc_set_foreground( colour_gc, the_arena.get_bg_gdk_colour_p() );
 
   gdk_draw_rectangle (drawing_area->window,
                       colour_gc,
@@ -430,7 +430,7 @@ Gui::setup_arena_window()
 
   // Background Colour 
 
-  gdk_window_set_background (drawing_area->window, the_arena.get_background_colour_p());
+  gdk_window_set_background (drawing_area->window, the_arena.get_bg_gdk_colour_p());
   gdk_window_clear (drawing_area->window);
 }
 

@@ -167,9 +167,9 @@ MessageWindow::add_message( Robot* robot_p, String output_text )
   int row = 0;
   gtk_clist_insert( GTK_CLIST( clist ), row, lst );
   gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                            the_arena.get_foreground_colour_p() );
+                            the_arena.get_fg_gdk_colour_p() );
   gtk_clist_set_background( GTK_CLIST( clist ), row,
-                            the_arena.get_background_colour_p() );
+                            the_arena.get_bg_gdk_colour_p() );
 
   gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
                       robot_p->get_robot_name().non_const_chars() );

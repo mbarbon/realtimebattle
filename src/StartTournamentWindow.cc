@@ -182,9 +182,9 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
                       int row = gtk_clist_append( GTK_CLIST( dir_clist ), lst );
                       gtk_clist_set_foreground( GTK_CLIST( dir_clist ), row, 
-                                                the_arena.get_foreground_colour_p());
+                                                the_arena.get_fg_gdk_colour_p());
                       gtk_clist_set_background( GTK_CLIST( dir_clist ), row, 
-                                                the_arena.get_background_colour_p());
+                                                the_arena.get_bg_gdk_colour_p());
 
                       gtk_clist_set_text( GTK_CLIST( dir_clist ),
                                           row, 0, entry->d_name);
@@ -621,9 +621,9 @@ StartTournamentWindow::add_all_selected( const bool robots )
           
           int row = gtk_clist_append( GTK_CLIST( clist_tourn ), list );
           gtk_clist_set_foreground( GTK_CLIST( clist_tourn ), row,
-                                    the_arena.get_foreground_colour_p() );
+                                    the_arena.get_fg_gdk_colour_p() );
           gtk_clist_set_background( GTK_CLIST( clist_tourn ), row,
-                                    the_arena.get_background_colour_p() );
+                                    the_arena.get_bg_gdk_colour_p() );
 
           gtk_clist_set_text( GTK_CLIST( clist_tourn ), row, 0,
                               info_dir_p->filename.non_const_chars() );
