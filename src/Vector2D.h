@@ -27,7 +27,7 @@ class Vector2D
 public:
   Vector2D();
   Vector2D(const Vector2D&);
-  Vector2D(double,double);
+  Vector2D(const double, const double);
   ~Vector2D() {}
   
   friend Vector2D operator+(const  Vector2D&, const Vector2D&);
@@ -64,8 +64,6 @@ private:
   double vector[2];
 
   Vector2D& copy_vector(const Vector2D&);
-
-  class Range {};
 };
 
 #endif __VECTOR2D__
