@@ -802,7 +802,8 @@ StartTournamentWindow::start( GtkWidget* widget,
 
       // create the tmp rtb dir if it exists and save the current tournament there
       create_tmp_rtb_dir();
-      stw_p->save_tournament_file( tmp_tournament_file );
+      stw_p->save_tournament_file( the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+                                   tmp_tournament_file );
 
       // close down StartTournamentWindow
       the_gui.close_starttournamentwindow();
