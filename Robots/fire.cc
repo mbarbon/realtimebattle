@@ -54,12 +54,12 @@ main(int argc, char * argv[])
                 switch(object)
                   {
                   case ROBOT:
-                    //                    cout << "Shoot 2" << endl;
+                    cout << "Shoot 2" << endl;
                     cout << "Print kill" << endl;
                     break;
                   case WALL:
                     if( dist < 0.5 )
-                      acceleration = -acceleration;
+                      acceleration = -0.45;
                     cout << "Acceleration " << acceleration << endl;
                     break;
                   case SHOT:
