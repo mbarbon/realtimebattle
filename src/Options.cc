@@ -66,6 +66,8 @@ Options::initialize_options()
   //              max letters in entry,
   //              broadcast option?, log option?, description
 
+  // ---------- Environment ----------
+
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,
                           false, true, "Gravitational Constant",
@@ -83,6 +85,8 @@ Options::initialize_options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,
                           false, true, "Slide/brake friction",
                           _("Slide/brake friction") );
+
+  // ---------- Robot ----------
 
   all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,
@@ -165,14 +169,11 @@ Options::initialize_options()
                           true, true, "Robot radar max rotate speed [rad/s]",
                           _("Robot radar max rotate speed [rad/s]") );
 
-  all_double_options[OPTION_CHECK_INTERVAL] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 1000000, 12,
-                          false, false, "Process check interval",
-                          _("Process check interval") );
-    
   all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
     option_info_t<long>(ENTRY_INT, PAGE_ROBOT, 10, 1, 100, 4,
                         true, true, "Robot energy levels", _("Robot energy levels") );
+
+  // ---------- Shot ----------
 
   all_double_options[OPTION_SHOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.1, 0.01, 1.0, 12,
@@ -200,18 +201,7 @@ Options::initialize_options()
                           true, true, "Shot energy increase speed [energy/s]",
                           _("Shot energy increase speed [energy/s]") );
 
-  all_long_options[OPTION_BACKGROUND_COLOUR] = 
-    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0xfaf0e6, 0x000000, 0xffffff, 6,
-                        false, false, "Background colour", _("Background colour") );
-
-  all_long_options[OPTION_FOREGROUND_COLOUR] = 
-    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x000000, 0x000000, 0xffffff, 6,
-                        false, false, "Foreground colour", _("Foreground colour") );
-
-  all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
-    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x1111ee, 0x000000, 0xffffff, 6,
-                        false, false, "Colour for RTB messages",
-                        _("Colour for RTB messages") );
+  // ---------- Extras ----------
 
   all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
@@ -255,15 +245,13 @@ Options::initialize_options()
     option_info_t<long>(ENTRY_HEX, PAGE_EXTRAS, 0xff0000, 0x000000, 0xffffff, 6,
                         false, false, "Mine colour", _("Mine colour") );
 
-  all_double_options[OPTION_ARENA_SCALE] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12,
-                          false, true, "Arena scale", _("Arena scale") );
+  // ---------- Time ----------
 
-  all_double_options[OPTION_FAST_FORWARD_FACTOR] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 5.0, 0.001, 1000, 12,
-                          false, false, "Fast forward factor",
-                          _("Fast forward factor") );
-
+  all_double_options[OPTION_CHECK_INTERVAL] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 1000000, 12,
+                          false, false, "Process check interval",
+                          _("Process check interval") );
+    
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12,
                           false, true, "Timeout [s]", _("Timeout [s]") );
@@ -309,6 +297,30 @@ Options::initialize_options()
                         false, false, "Logging frequency [Each nth update interval]",
                         _("Logging frequency [Each n:th update interval]") );
 
+  // ---------- Misc ----------
+
+  all_long_options[OPTION_BACKGROUND_COLOUR] = 
+    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0xfaf0e6, 0x000000, 0xffffff, 6,
+                        false, false, "Background colour", _("Background colour") );
+
+  all_long_options[OPTION_FOREGROUND_COLOUR] = 
+    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x000000, 0x000000, 0xffffff, 6,
+                        false, false, "Foreground colour", _("Foreground colour") );
+
+  all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
+    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x1111ee, 0x000000, 0xffffff, 6,
+                        false, false, "Colour for RTB messages",
+                        _("Colour for RTB messages") );
+
+  all_double_options[OPTION_ARENA_SCALE] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12,
+                          false, true, "Arena scale", _("Arena scale") );
+
+  all_double_options[OPTION_FAST_FORWARD_FACTOR] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 5.0, 0.001, 1000, 12,
+                          false, false, "Fast forward factor",
+                          _("Fast forward factor") );
+
   all_long_options[OPTION_MAX_ROBOTS_ALLOWED] =
     option_info_t<long>(ENTRY_INT, PAGE_MISC, 120, 1, 10000, 6, false, false,
                         "Max robots allowed simultaneously",
@@ -326,6 +338,8 @@ Options::initialize_options()
     option_info_t<string>(ENTRY_CHAR, PAGE_MISC, "/tmp/rtb", "", "", 1000,
                           false, false, "Directory for temporary files",
                           _("Directory for temporary files") );
+
+  // ---------- Size of Windows ----------
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 185, 10000, 6,
