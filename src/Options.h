@@ -144,13 +144,17 @@ struct option_info_t
 {
   option_info_t() {}
   option_info_t(const entry_datatype_t d, const pages_in_options_t p,const T v,
-                const T mn, const T mx, const int l, const String& s, GtkWidget * e ) :
-    datatype(d), page(p), value(v), default_value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), label(s), entry(e) {}
+                const T mn, const T mx, const int l, const bool bo, const bool lo,
+                const String& s, GtkWidget* e ) :
+    datatype(d), page(p), value(v), default_value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), broadcast_option(bo), log_option(lo), label(s), entry(e) {}
 
   option_info_t& operator=(const option_info_t& old) { 
     datatype=old.datatype; page=old.page; value=old.value; 
-    default_value=old.default_value; min_value=old.min_value; max_value=old.max_value; 
-    max_letters_in_entry=old.max_letters_in_entry; label=old.label;entry=old.entry; return *this;}
+    default_value=old.default_value; min_value=old.min_value;
+    max_value=old.max_value; max_letters_in_entry=old.max_letters_in_entry;
+    broadcast_option=old.broadcast_option; log_option=old.log_option;
+    
+    label=old.label;entry=old.entry; return *this; }
 
 
   entry_datatype_t datatype;
@@ -160,6 +164,8 @@ struct option_info_t
   T min_value;
   T max_value;
   int max_letters_in_entry;
+  bool broadcast_option;
+  bool log_option;
   String label;
   GtkWidget * entry;
 };
@@ -199,6 +205,7 @@ public:
   //  inline bool get_b( option_bool_t option ) { return all_bool_options[option].value; }
 
   void broadcast_opts();
+  void log_all_options();
 
 #ifndef NO_GRAPHICS
   void set_all_options_from_gui();
