@@ -1,26 +1,30 @@
-CC = gcc
-CXX = g++
+#CC = gcc
+#CXX = g++
 
 ifndef DEBUG_MODE
 DEBUG_MODE=no
 endif
+
+# Add '-fhandle-exception' to CXXFLAGS if your compiler requires it.
+CXXFLAGS =
+
 
 ifndef RPM_OPT_FLAGS
 ifeq ($(DEBUG_MODE), yes)
 #debug-options
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = -g -Wall
-CXXFLAGS = -g -Wall
+CXXFLAGS += -g -Wall
 else
 #final-options
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = -O
-CXXFLAGS = -O
+CXXFLAGS += -O
 endif
 else
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = $(RPM_OPT_FLAGS)
-CXXFLAGS = $(RPM_OPT_FLAGS)
+CXXFLAGS += $(RPM_OPT_FLAGS)
 endif
 
 gtkincludedirs = `gtk-config --cflags`
@@ -32,7 +36,7 @@ stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.
 target: RealTimeBattle
 
 RealTimeBattle: $(objects)
-	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libs)
+	$(CXX) $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libs)
 
 
 #implicit rule for c-file:   N.o: $(CC) -c N.c $(CPPFLAGS) $(CFLAGS) 
