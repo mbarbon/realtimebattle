@@ -78,7 +78,7 @@ extern int global_game_mode;
 
 ArenaRealTime::ArenaRealTime()
 {
-  game_mode = (ArenaBase::game_mode_t)global_game_mode;
+  set_game_mode( (ArenaBase::game_mode_t)global_game_mode );
   set_filenames( global_log_fname, global_statistics_fname,
                  global_tournament_fname, global_message_fname,
                  global_option_fname );

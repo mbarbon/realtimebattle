@@ -42,7 +42,7 @@ ArenaReplay::ArenaReplay()
   state = NOT_STARTED;
   next_check_time = 0.0;
 
-  game_mode = (ArenaBase::game_mode_t)global_game_mode;
+  set_game_mode( (ArenaBase::game_mode_t)global_game_mode );
   set_filenames( global_replay_fname, global_message_fname );
 }
 
@@ -304,8 +304,9 @@ ArenaReplay::parse_log_line()
         delete_lists(false, false, false, false, false);
         reset_timer();
         next_check_time = 0.0;
-        int seq, game;
+
         log_file >> sequence_nr >> game_nr;
+
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
