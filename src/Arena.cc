@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <unistd.h>
 #include <stdlib.h>
 #include <iostream.h>
+#include <iomanip.h>
 
 #ifdef USE_STDARG_H
 #include <stdarg.h>
@@ -75,6 +76,8 @@ Arena::~Arena()
 
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
     delete [] robots_in_sequence[i];
+
+  if( use_log_file && LOG_FILE ) LOG_FILE.close();
 }
 
 void
@@ -96,9 +99,14 @@ Arena::interrupt_tournament()
 {
   if( state == GAME_IN_PROGRESS )
     {
-      the_gui.close_score_window();
-      the_gui.close_arena_window();
-      the_gui.close_message_window();
+#ifndef NO_GRAPHICS
+      if( !no_graphics )
+        {
+          the_gui.close_score_window();
+          the_gui.close_arena_window();
+          the_gui.close_message_window();
+        }
+#endif
 
       delete_lists(true, true, false, true);
       
@@ -106,12 +114,137 @@ Arena::interrupt_tournament()
     }
 }
 
+#ifndef NO_GRAPHICS
+
 void
 Arena::set_colours()
 {  
   background_colour = make_gdk_colour(the_opts.get_l(OPTION_BACKGROUND_COLOUR));
   foreground_colour = make_gdk_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
 }
+
+#endif
+
+void
+Arena::set_filenames(String& log_fname, const String& statistics_fname, 
+                     const String& tournament_fname, const String& option_fname)
+{
+  if( log_fname == "")
+    {
+      use_log_file = false;
+    }
+  else if( log_fname == "-" )  // use stdout as log_file
+    {
+      LOG_FILE.attach(STDOUT_FILENO);
+      use_log_file = true;
+    }
+  else
+    {
+      LOG_FILE.open(log_fname.chars(), ios::out, 0600);
+      use_log_file = true;
+      if( !LOG_FILE )
+        {
+          cerr << "RealTimeBattle: Error: Couldn't open log_file" << endl;
+          use_log_file = false;
+        }
+    }
+  
+  statistics_file_name = statistics_fname;
+
+  tournament_file_name = tournament_fname;
+  auto_start_and_end = ( tournament_file_name != "" );
+
+  option_file_name = option_fname;
+}
+
+void
+Arena::print_to_logfile(const char first_letter ... )
+{
+  if( !use_log_file ) return;
+
+  va_list args;
+  va_start(args, first_letter);
+  LOG_FILE << first_letter;
+
+  LOG_FILE << setiosflags(ios::fixed) << setprecision(2);
+
+  switch(first_letter)
+    {
+    case 'R': // Robot position info
+      LOG_FILE << va_arg(args, int   ) << " ";     // robot id;
+      LOG_FILE << va_arg(args, double) << " ";  // x
+      LOG_FILE << va_arg(args, double) << " ";  // y
+      LOG_FILE << va_arg(args, double) << " ";  // cannon angle
+      LOG_FILE << va_arg(args, double) << " ";  // radar angle
+      LOG_FILE << va_arg(args, double);         // energy
+      break;
+
+    case 'T': // Time
+      LOG_FILE << va_arg(args, double);  // time value
+      break;
+
+    case 'P': // Print a robot message
+      LOG_FILE << va_arg(args, int   ) << " ";  // robot id
+      LOG_FILE << va_arg(args, char* );         // message to print
+      break;
+
+    case 'C': // Cookie
+      LOG_FILE << va_arg(args, int   ) << " ";  // cookie id
+      LOG_FILE << va_arg(args, double) << " ";  // x
+      LOG_FILE << va_arg(args, double);         // y
+      break;
+
+    case 'M': // Mine
+      LOG_FILE << va_arg(args, int   ) << " ";  // mine id
+      LOG_FILE << va_arg(args, double) << " ";  // x
+      LOG_FILE << va_arg(args, double);         // y
+      break;
+
+    case 'S': // Shot
+      LOG_FILE << va_arg(args, int   ) << " ";  // shot id
+      LOG_FILE << va_arg(args, double) << " ";  // x
+      LOG_FILE << va_arg(args, double) << " ";  // y
+      LOG_FILE << va_arg(args, double) << " ";  // dx/dt
+      LOG_FILE << va_arg(args, double);         // dy/dt
+      break;
+      
+    case 'D': // Die
+      {
+        char obj_type = va_arg(args, char  );
+        LOG_FILE << obj_type          << " ";  // object type to kill
+        LOG_FILE << va_arg(args, int) << " ";  // object id
+        if( obj_type == 'R' )
+          LOG_FILE << va_arg(args, double);    // robot points received
+      }
+      break;
+
+    case 'G': // Game begins
+      LOG_FILE << va_arg(args, int  ) << " ";  // sequence number
+      LOG_FILE << va_arg(args, int  ) << " ";  // game number
+      LOG_FILE << va_arg(args, char*);         // arena filename
+      break;
+
+    case 'H': // Header
+      LOG_FILE << va_arg(args, int  ) << " ";  // number of games per sequence
+      LOG_FILE << va_arg(args, int  ) << " ";  // number of robots per sequence
+      LOG_FILE << va_arg(args, int  ) << " ";  // number of sequences
+      LOG_FILE << va_arg(args, int  ) << " ";  // number of robots
+      LOG_FILE << va_arg(args, char*);         // name of optionfile
+      break;
+
+    case 'L': // List of robot properties
+      LOG_FILE << va_arg(args, int  ) << " ";  // robot id
+      LOG_FILE << hex2str(va_arg(args, long )) << " ";  // robot colour
+      LOG_FILE << va_arg(args, char*);  // robot name
+      break;
+
+    default:
+      throw Error("Unrecognized first letter in logfile", "Arena::print_to_logfile");
+    }
+
+  LOG_FILE << endl;
+}
+
 
 void
 Arena::parse_file(istream& file)
@@ -436,7 +569,10 @@ gint
 Arena::timeout_function()
 {
   if( halted ) return true;
+#ifndef NO_GRAPHICS
   int old_total = (int)total_time;
+#endif
+
   update_timer ();
 
   switch(state)
@@ -467,7 +603,9 @@ Arena::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
-        if((int)total_time > old_total) the_gui.set_score_window_title();
+#ifndef NO_GRAPHICS
+        if((int)total_time > old_total && !no_graphics) the_gui.set_score_window_title();
+#endif
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
             end_game();
@@ -507,11 +645,16 @@ Arena::timeout_function()
 void
 Arena::update()
 {
+  print_to_logfile('T', total_time);
+
   read_robot_messages();
   move_shots();
   update_robots();
-  if( state == GAME_IN_PROGRESS )
+
+#ifndef NO_GRAPHICS
+  if( state == GAME_IN_PROGRESS && !no_graphics)
     the_gui.draw_objects(true);
+#endif
 }
 
 void
@@ -554,6 +697,8 @@ Arena::add_cookie()
   if( !found_space ) throw Error("Couldn't find space for cookie", "Arena::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
   g_list_append(object_lists[COOKIE], cookiep);
+
+  print_to_logfile('C', cookiep->get_id(), pos[0], pos[1]);
 }
 
 void
@@ -575,6 +720,8 @@ Arena::add_mine()
   if( !found_space ) throw Error("Couldn't find space for mine", "Arena::timeout_function");
   Mine* minep = new Mine(pos, r, en);
   g_list_append(object_lists[MINE], minep);
+
+  print_to_logfile('M', minep->get_id(), pos[0], pos[1]);
 }
 
 void
@@ -646,7 +793,8 @@ Arena::update_robots()
           robotp->change_velocity(timestep);
           robotp->move(timestep);        
         }
-      if( robotp->is_alive() ) robotp->get_messages();
+      if( robotp->is_alive() ) 
+        robotp->get_messages();
     }
 
   // Check if robots have died and send energy level
@@ -672,7 +820,9 @@ Arena::update_robots()
       for( gl=g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
         {
           ((Robot*)gl->data)->add_points(killed_robots);
-          if( robots_left < 15 ) ((Robot*)gl->data)->display_score();
+#ifndef NO_GRAPHICS
+          if( robots_left < 15 && !no_graphics ) ((Robot*)gl->data)->display_score();
+#endif
         }
 
       for( gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
@@ -896,6 +1046,19 @@ Arena::start_game()
 
   parse_file(file);
 
+  int charpos;
+  if( (charpos = filename->find('/',0,true)) != -1 )
+    current_arena_filename = get_segment(*filename, charpos+1, -1);
+  else
+    throw Error("Incomplete arena file path", *filename, "Arena::start_game");
+
+  // reset some variables
+
+  shot_count = 0;
+  cookie_count = 0;
+  mine_count = 0;
+
+
   // Place robots on the arena
 
   GList* gl = g_list_next(all_robots_in_sequence);
@@ -924,6 +1087,9 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
+  print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1, 
+                   current_arena_filename.chars());
+
   broadcast(GAME_STARTS);
   broadcast(ROBOTS_LEFT, robots_left);
   the_opts.broadcast_opts();
@@ -934,13 +1100,19 @@ Arena::start_game()
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
-  the_gui.clear_area();
-  the_gui.change_zoom();
-  the_gui.add_robots_to_score_list();
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      the_gui.clear_area();
+      the_gui.change_zoom();
+      the_gui.add_robots_to_score_list();
 
-  reset_timer();  // Time should be zero in score window
-  the_gui.set_score_window_title();
-  the_gui.set_arena_window_title();
+      reset_timer();  // Time should be zero in score window
+      the_gui.set_score_window_title();
+      the_gui.set_arena_window_title();
+    }
+#endif
+
   reset_timer();  // Game starts !
   next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
@@ -1023,6 +1195,8 @@ Arena::start_sequence_follow_up()
           g_list_remove(all_robots_in_sequence, robotp);
           robots_left--;
         }
+      if( !robotp->set_and_get_have_competed() )
+        print_to_logfile('L', robotp->get_id(), gdk2hex_colour(robotp->get_colour()), robotp->get_robot_name().chars());
     }
   start_game();
 }
@@ -1076,11 +1250,17 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   // Create robot classes and to into the list all_robots_in_tournament
 
-  the_gui.setup_message_window();
-  the_gui.setup_arena_window();
-  the_gui.setup_score_window();
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      the_gui.setup_message_window();
+      the_gui.setup_arena_window();
+      the_gui.setup_score_window();
+    }
+#endif
 
   number_of_robots = 0;
+  robot_count = 0;
   Robot* robotp;
   start_tournament_glist_info_t* infop;
   String* stringp;
@@ -1193,6 +1373,9 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   // start first sequence
 
+  print_to_logfile('H', games_per_sequence, robots_per_game, sequences_remaining, 
+                   number_of_robots, option_file_name.chars());
+
   sequence_nr = 0;
   start_sequence();
 }
@@ -1202,8 +1385,13 @@ Arena::end_tournament()
 {
   state = FINISHED;
 
-  the_gui.close_message_window();
-  the_gui.close_score_window();
-  the_gui.close_arena_window();
-  //  the_gui.close_control_window();
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      the_gui.close_message_window();
+      the_gui.close_score_window();
+      the_gui.close_arena_window();
+      //  the_gui.close_control_window();
+    }
+#endif
 }

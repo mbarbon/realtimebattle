@@ -75,6 +75,8 @@ struct rotation_t
   rotation_mode_t mode;
 };
 
+#ifndef NO_GRAPHICS
+
 struct pixmap_t
 {
   pixmap_t() : pixmap(NULL), window(NULL) {}
@@ -88,6 +90,7 @@ struct pixmap_t
   GdkBitmap* bitmap;
 };
     
+#endif
 
 class Robot : public virtual MovingObject, public virtual Circle
 {
@@ -130,6 +133,11 @@ public:
   void add_points(double pts) { points_this_game += pts; total_points += pts; }
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
+
+  bool set_and_get_have_competed() { if( have_competed) return true; else { have_competed = true; return false; } }
+
+#ifndef NO_GRAPHICS
+
   int get_row_in_score_clist() { return row_in_score_clist; }
   void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
   void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
@@ -138,6 +146,8 @@ public:
   void reset_last_displayed();
   void display_score();
   void draw_radar_and_cannon();
+
+#endif
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -155,6 +165,8 @@ private:
   bool send_usr_signal;
   int signal_to_send;
   int  send_rotation_reached;
+
+  bool have_competed;
 
   double energy; 
   double extra_air_resistance;
@@ -200,8 +212,10 @@ private:
   int last_displayed_last_place;
   long last_displayed_score;
 
+#ifndef NO_GRAPHICS
   pixmap_t score_pixmap;
   pixmap_t stat_pixmap;
+#endif
 };
 
 // ---------------------  Shot : MovingObject  ---------------------

@@ -59,6 +59,10 @@ Robot::Robot(const String& filename)
   send_rotation_reached = 0;
   alive = false;
   total_points = 0.0;
+  
+  have_competed = false;
+
+  id = the_arena.increase_robot_count();
 
   instreamp = NULL;
   outstreamp = NULL;
@@ -351,8 +355,13 @@ Robot::die()
     {
       alive = false;
       position_this_game = -1;
-      the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
-      last_drawn_robot_center = Vector2D(infinity,infinity);
+#ifndef NO_GRAPHICS
+      if( !no_graphics )
+        {
+          the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+          last_drawn_robot_center = Vector2D(infinity,infinity);
+        }
+#endif
     }
 }
 
@@ -365,10 +374,14 @@ Robot::set_stats(int robots_killed_same_time)
 
   time_survived_in_sequence += the_arena.get_total_time();
 
-  display_score();
+#ifndef NO_GRAPHICS
+  if( !no_graphics ) display_score();
+#endif
 
   send_message(DEAD);
   send_signal();
+
+  the_arena.print_to_logfile('D', 'R', id, points_this_game);
 
   stat_t* statp = new stat_t
     (
@@ -632,6 +645,11 @@ void
 Robot::move(const double timestep)
 {
   move(timestep, 1, timestep / 50.0);
+
+  if( is_alive() )
+    the_arena.print_to_logfile('R', id, center[0], center[1],
+                               cannon_angle.pos, radar_angle.pos, energy);
+
 }
 
 void
@@ -761,6 +779,8 @@ Robot::get_messages()
       *instreamp >> msg_name;
       msg_t = name2msg_from_robot_type(msg_name);
       //      cerr << "Got message: " << msg_name << endl;
+
+      *instreamp >> ws;
 
       switch(msg_t)
         {
@@ -979,14 +999,21 @@ Robot::get_messages()
         case PRINT:
           {
             instreamp->get(text, 80, '\n');
-            the_gui.print_to_message_output(robot_name, text);
+            the_arena.print_to_logfile('P', id, text);
+#ifndef NO_GRAPHICS
+            if( !no_graphics )
+                the_gui.print_to_message_output(robot_name, text);
+#endif
           }
           break;
         case DEBUG:
           {
             instreamp->get(text, 80, '\n');
-            if( the_arena.get_game_mode() == Arena::DEBUG_MODE )
+            the_arena.print_to_logfile('P', id, text);
+#ifndef NO_GRAPHICS
+            if( the_arena.get_game_mode() == Arena::DEBUG_MODE && !no_graphics)
               the_gui.print_to_message_output(robot_name, text);
+#endif
           }
           break;
         case SHOOT:
@@ -1007,6 +1034,9 @@ Robot::get_messages()
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
                   g_list_append((the_arena.get_object_lists())[SHOT], shotp);
+
+                  the_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
+                                   shot_vel[0], shot_vel[1]);
                 }
               else  // No space for shot, direct hit!!
                 { 
@@ -1249,9 +1279,13 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy = min(energy+energy_diff, the_opts.get_d(OPTION_ROBOT_MAX_ENERGY));
-  display_score();
+#ifndef NO_GRAPHICS  
+  if( !no_graphics )  display_score();
+#endif
   if( energy <= 0.0 ) die();
 }
+
+#ifndef NO_GRAPHICS
 
 void
 Robot::reset_last_displayed()
@@ -1338,6 +1372,8 @@ Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
   stat_pixmap.get_pixmap( colour, win, pixm, bitm ); 
 }
 
+#endif NO_GRAPHICS
+
 
 Shot::Shot(const Vector2D& c, const double r, 
            const Vector2D& vel, const double en ) 
@@ -1345,6 +1381,8 @@ Shot::Shot(const Vector2D& c, const double r,
 {
   alive = true;
   energy = en;
+
+  id = the_arena.increase_shot_count();
 }
 
 void
@@ -1409,7 +1447,12 @@ void
 Shot::die()
 {
    alive = false;
-   the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#ifndef NO_GRAPHICS
+   if (!no_graphics )
+     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#endif
+
+   the_arena.print_to_logfile('D', 'S', id);
 }
 
 void
@@ -1437,6 +1480,8 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
       shot1p->energy = en;
     }
 }
+
+#ifndef NO_GRAPHICS
 
 pixmap_t::~pixmap_t()
 {
@@ -1483,3 +1528,5 @@ pixmap_t::get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*
   pixm = pixmap;
   bitm = bitmap;
 }
+
+#endif

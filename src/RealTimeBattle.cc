@@ -46,7 +46,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Options the_opts;
 class Arena the_arena;
+#ifndef NO_GRAPHICS
 class Gui the_gui;
+#endif
+
+bool no_graphics;
 
 void 
 print_help_message()
@@ -56,8 +60,10 @@ print_help_message()
   cout << " Options: --debug_mode,         -d   debug mode" << endl;
   cout << "          --normal_mode,        -n   normal mode (default)" << endl;
   cout << "          --competition_mode,   -c   competition mode" << endl ;
+  //  cout << "          --no_graphics,        -g   no graphics will be displayed" << endl ;
   cout << "          --option_file [file], -o   selects option-file " << endl;
   cout << "                                     (default: $HOME/.rtbrc)"  << endl;
+  cout << "          --log_file [file],    -l   make log file, file=- logs to STDOUT" << endl;
   cout << endl;
   cout << "          --help,               -h   prints this message" << endl;
   cout << "          --version,            -v   prints the version number" << endl;
@@ -75,7 +81,7 @@ update_function(gpointer data)
   catch ( Error the_error )
 	 {
 		the_error.print_message();
-      the_gui.quit_event();
+      gtk_main_quit();
 	 }
 
   return res;
@@ -105,10 +111,13 @@ sig_handler (int signum)
 void
 parse_command_line(int argc, char **argv)
 {
-  int version_flag=false, help_flag=false;
+  int version_flag=false, help_flag=false, graphics_flag=true;
   int game_mode=Arena::NORMAL_MODE;
   int c;
   String option_file("");
+  String statistics_file("");
+  String log_file("");
+  String tournament_file("");
 
   static struct option long_options[] =
   {
@@ -121,6 +130,11 @@ parse_command_line(int argc, char **argv)
     {"competition_mode", 0, &game_mode, Arena::COMPETITION_MODE},
 
     {"option_file", 1, 0, 0},
+    {"log_file", 1, 0, 0},
+    {"statistics_file", 1, 0, 0},
+    {"tournament_file", 1, 0, 0},
+
+    {"no_graphics", 0, &graphics_flag, false},
 
     {0, 0, 0, 0}
   };
@@ -129,7 +143,7 @@ parse_command_line(int argc, char **argv)
     {
       int option_index = 0;
      
-      c = getopt_long (argc, argv, "dncvho:", long_options, &option_index);
+      c = getopt_long (argc, argv, "dncvho:l:s:t:g", long_options, &option_index);
 
       /* Detect the end of the options. */
       if (c == -1)
@@ -147,6 +161,15 @@ parse_command_line(int argc, char **argv)
             {
             case 5: 
               option_file = (String)optarg;
+              break;
+            case 6:
+              log_file = (String)optarg;
+              break;
+            case 7:
+              statistics_file = (String)optarg;
+              break;
+            case 8:
+              tournament_file = (String)optarg;
               break;
             default:
               cerr << "Bad error in parse_command_line, this shouldn't happen" << endl;
@@ -179,6 +202,22 @@ parse_command_line(int argc, char **argv)
           option_file = (String)optarg;
           break;
 
+        case 'l':
+          log_file = (String)optarg;
+          break;
+
+        case 's':
+          statistics_file = (String)optarg;
+          break;
+
+        case 't':
+          tournament_file = (String)optarg;
+          break;
+
+        case 'g':
+          graphics_flag = false;
+          break;
+
         default:
           print_help_message();
           exit( EXIT_FAILURE );
@@ -200,11 +239,16 @@ parse_command_line(int argc, char **argv)
   if( help_flag || version_flag ) exit( EXIT_SUCCESS );
 
   if( option_file == "" )
-    the_opts.get_options_from_rtbrc();
+    {
+      the_opts.get_options_from_rtbrc();
+      option_file = ".rtbrc";
+    }
   else
     the_opts.read_options_file(option_file,true);
 
   the_arena.set_game_mode((Arena::game_mode_t)game_mode);
+  no_graphics = !graphics_flag;
+  the_arena.set_filenames(log_file, statistics_file, tournament_file, option_file);
 }
 
 
@@ -223,14 +267,18 @@ main ( int argc, char* argv[] )
 
   gint timeout_tag;
 
-  the_arena.set_colours();
-
   srand(time(0));
 
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
-    
-  the_gui.setup_control_window();
+
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      the_arena.set_colours();
+      the_gui.setup_control_window();
+    }
+#endif
   
   timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
 

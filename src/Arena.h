@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <glib.h>
 #include <gdk/gdk.h>
+#include <iostream.h>
+
 #include "Vector2D.h"
 #include "Messagetypes.h"
 #include "Gui.h"
@@ -41,7 +43,11 @@ static const double infinity = 1.0e10;  //approximatly (-;
 
 extern class Options the_opts;
 extern class Arena the_arena;
+#ifndef NO_GRAPHICS
 extern class Gui the_gui;
+#endif
+
+extern bool no_graphics;
 
 enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
@@ -80,12 +86,18 @@ public:
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
 
+  void set_filenames(String& log_fname, const String& statistics_fname, 
+                     const String& tournament_fname, const String& option_fname);
+
+  void print_to_logfile(const char first_letter ... );
+
   Vector2D get_random_position();
 
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
   GList* get_arena_filenames() { return arena_filenames; }
+  String get_current_arena_filename() { return current_arena_filename; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
@@ -96,6 +108,12 @@ public:
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
   double get_shooting_penalty();
+
+  int increase_robot_count()  { return robot_count++; }
+  int increase_shot_count()   { return shot_count++; }
+  int increase_cookie_count() { return cookie_count++; }
+  int increase_mine_count()   { return mine_count++; }
+
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
@@ -138,15 +156,31 @@ private:
 
   void end_tournament();
 
+
   GList* object_lists[number_of_object_types];
   
   GList* all_robots_in_tournament;
   GList* all_robots_in_sequence;
   GList* exclusion_points;
   GList* arena_filenames;               // list of Strings
+  String current_arena_filename;
 
   int** robots_in_sequence;
+
+  String option_file_name;
+  String statistics_file_name;
+  String tournament_file_name;
+
+  ofstream LOG_FILE;
   
+  bool use_log_file;
+  bool auto_start_and_end;
+
+  int robot_count;
+  int shot_count;
+  int cookie_count;
+  int mine_count;
+
   gdouble timestep;
   gdouble total_time;
   gdouble current_timer;
@@ -191,8 +225,11 @@ public:
   ArenaObject() {}
   virtual ~ArenaObject() {}
   virtual object_type get_object_type() = 0;
+  int get_id() { return id; }
   //  class Error;
 protected:
+
+  int id;
 };
 
 #endif __ARENA__
