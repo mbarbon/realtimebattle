@@ -554,7 +554,7 @@ ControlWindow::show_about()
     (string)"sep",
     (string)_("RealTimeBattle is a programming game, in which robots controlled by programs are fighting each other. The goal is to destroy the enemies, using the radar to examine the environment and the cannon to shoot."),
     (string)"sep",
-    (string)_("Authors of RealTimeBattle is:\n\n"),
+    (string)_("Authors of RealTimeBattle are:\n\n"),
     (string)"   Ragnar Ouchterlony\n" + "   Erik Ouchterlony\n",
     (string)"   " + _("Contact: ") + " rtb@users.sourceforge.net",
     (string)"sep",
@@ -698,36 +698,36 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
       break;
     case MENU_SHOW_MESSAGES:
       {
-        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+//          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-        if( the_gui.is_messagewindow_up() )
-          {
-            if( active )
-              the_gui.get_messagewindow_p()->
-                show_window( the_gui.get_messagewindow_p()->get_window_p(),
-                             the_gui.get_messagewindow_p() );
-            else
-              the_gui.get_messagewindow_p()->
-                hide_window( the_gui.get_messagewindow_p()->get_window_p(),
-                             NULL, the_gui.get_messagewindow_p() );
-          }
+//          if( the_gui.is_messagewindow_up() )
+//            {
+//              if( active )
+//                the_gui.get_messagewindow_p()->
+//                  show_window( the_gui.get_messagewindow_p()->get_window_p(),
+//                               the_gui.get_messagewindow_p() );
+//              else
+//                the_gui.get_messagewindow_p()->
+//                  hide_window( the_gui.get_messagewindow_p()->get_window_p(),
+//                               NULL, the_gui.get_messagewindow_p() );
+//            }
       }
       break;
     case MENU_SHOW_SCORE:
       {
-        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+//          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-        if( the_gui.is_scorewindow_up() )
-          {
-            if( active )
-              the_gui.get_scorewindow_p()->
-                show_window( the_gui.get_scorewindow_p()->get_window_p(),
-                             the_gui.get_scorewindow_p() );
-            else
-              the_gui.get_scorewindow_p()->
-                hide_window( the_gui.get_scorewindow_p()->get_window_p(),
-                             NULL, the_gui.get_scorewindow_p() );
-          }
+//          if( the_gui.is_scorewindow_up() )
+//            {
+//              if( active )
+//                the_gui.get_scorewindow_p()->
+//                  show_window( the_gui.get_scorewindow_p()->get_window_p(),
+//                               the_gui.get_scorewindow_p() );
+//              else
+//                the_gui.get_scorewindow_p()->
+//                  hide_window( the_gui.get_scorewindow_p()->get_window_p(),
+//                               NULL, the_gui.get_scorewindow_p() );
+//            }
       }
       break;
     case MENU_END_MATCH:

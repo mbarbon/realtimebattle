@@ -90,8 +90,6 @@ GIMain( GuiClientInterface* _gi_p )
 
 Gui::Gui()
 {
-  messagewindow_p = NULL;
-  scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
 
@@ -203,6 +201,10 @@ Gui::initialize_gtk_options()
     LongOption( GROUP_MISC, 500, -1, 1000000, false, false,
                 _("History length for robot messages") );
 
+  all_options["RTB message colour"] = (Option*) new
+    LongOption( GROUP_MISC, 0x1111ee, 0x000000, 0xffffff, false, false,
+                _("Colour for RTB messages"), true );
+
   gtk_opts = new OptionHandler( "Gui Gtk", all_options, group_names );
 }
 
@@ -222,6 +224,9 @@ Gui::main_loop( GuiClientInterface* _gi_p )
   double interval = 1000.0*0.05 - 10.0; 
   timeout_tag = gtk_timeout_add( (unsigned int) interval,
                                  GtkFunction(Gui::update_function), (gpointer) NULL );
+
+  // Temporary!
+  open_messagewindow();
 
   gtk_main();
 
@@ -293,16 +298,11 @@ Gui::get_information()
           break;
           }
         case INFO_MESSAGE:
-          if( is_messagewindow_up() )
-            {
-              messagewindow_p->freeze_clist();
-              const list<MessageInfo::message_t> message_list
-                = ((MessageInfo*)info_p)->get_message_list();
-              list<MessageInfo::message_t>::const_iterator mci;
-              for( mci = message_list.begin(); mci != message_list.end(); mci++ )
-                messagewindow_p->add_message( (*mci).sender, (*mci).message );
-              messagewindow_p->thaw_clist();
-            }
+          {
+            const list<message_t>& message_list
+              = ((MessageInfo*)info_p)->get_message_list();
+            messagewindow.add_messages( message_list );
+          }
           break;
         }
     }
@@ -319,15 +319,12 @@ Gui::set_colours()
 {  
 //    bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
 //    fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
-//    rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
 
   bg_rgb_colour = 16445670;
   fg_rgb_colour = 0;
-  rtb_message_rgb_colour = 1118702;
 
   bg_gdk_colour = make_gdk_colour( bg_rgb_colour );
   fg_gdk_colour = make_gdk_colour( fg_rgb_colour );
-  rtb_message_gdk_colour = make_gdk_colour( rtb_message_rgb_colour );
 }
 
 // TODO: Cleanly destruct everything in the gui
@@ -357,10 +354,10 @@ Gui::error( const bool fatal, const string& error_msg, const string& function_na
 void
 Gui::open_arenawindow()
 {
-  arenawindow.create( the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_X ),
-                      the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_Y ),
-                      the_opts.get_l( OPTION_ARENA_WINDOW_POS_X  ),
-                      the_opts.get_l( OPTION_ARENA_WINDOW_POS_Y  ) );
+  arenawindow.create( gtk_opts->get_l( "Arena window xsize" ),
+                      gtk_opts->get_l( "Arena window ysize" ),
+                      gtk_opts->get_l( "Arena window xpos" ),
+                      gtk_opts->get_l( "Arena window ypos" ) );
 }
 
 void
@@ -372,22 +369,16 @@ Gui::close_arenawindow()
 void
 Gui::open_messagewindow()
 {
-  if( NULL == messagewindow_p )
-    messagewindow_p = 
-      new MessageWindow( the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_X ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_Y ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_X ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_Y ) );
+  messagewindow.create( gtk_opts->get_l( "Message window xsize" ),
+                        gtk_opts->get_l( "Message window ysize" ),
+                        gtk_opts->get_l( "Message window xpos" ),
+                        gtk_opts->get_l( "Message window ypos" ) );
 }
 
 void
 Gui::close_messagewindow()
 {
-  if( NULL != messagewindow_p )
-    {
-      delete messagewindow_p;
-      messagewindow_p = NULL;
-    }
+  messagewindow.destroy();;
 }
 
 void
@@ -405,22 +396,16 @@ Gui::close_optionswindow()
 void
 Gui::open_scorewindow()
 {
-  if( NULL == scorewindow_p )
-    scorewindow_p = 
-      new ScoreWindow( the_opts.get_l( OPTION_SCORE_WINDOW_SIZE_X ),
-                       the_opts.get_l( OPTION_SCORE_WINDOW_SIZE_Y ),
-                       the_opts.get_l( OPTION_SCORE_WINDOW_POS_X ),
-                       the_opts.get_l( OPTION_SCORE_WINDOW_POS_Y ) );
+  scorewindow.create( gtk_opts->get_l( "Score window xsize" ),
+                      gtk_opts->get_l( "Score window ysize" ),
+                      gtk_opts->get_l( "Score window xpos" ),
+                      gtk_opts->get_l( "Score window ypos" ) );
 }
 
 void
 Gui::close_scorewindow()
 {
-  if( NULL != scorewindow_p )
-    {
-      delete scorewindow_p;
-      scorewindow_p = NULL;
-    }
+  scorewindow.destroy();
 }
 
 void

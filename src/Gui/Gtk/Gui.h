@@ -28,14 +28,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaWindow.h"
 #include "GuiRequest.h"
 #include "Messagetypes.h"
+#include "MessageWindow.h"
 #include "OptionHandler.h"
 #include "OptionsWindow.h"
+#include "ScoreWindow.h"
 #include "Structs.h"
 
 class ControlWindow;
 class GuiClientInterface;
-class MessageWindow;
-class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
 class Vector2D;
@@ -91,41 +91,38 @@ public:
 
   GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
-  GdkColor* get_rtb_message_gdk_colour_p       () { return &rtb_message_gdk_colour; }
 
   long int get_bg_rgb_colour                   () const { return bg_rgb_colour; }
   long int get_fg_rgb_colour                   () const { return fg_rgb_colour; }
-  long int get_rtb_message_rgb_colour          () const 
-  { return rtb_message_rgb_colour; }
 
   ControlWindow* get_controlwindow_p           () const { return controlwindow_p; }
 
   // TODO: Remake all this window stuff.
   bool is_arenawindow_up                       () const
     { return arenawindow.is_window_shown(); }
-  ArenaWindow* get_arenawindow_p               () const
-    { return const_cast<ArenaWindow*>(&arenawindow); }
+  ArenaWindow* get_arenawindow_p               ()
+    { return &arenawindow; }
   void open_arenawindow                        ();
   void close_arenawindow                       ();
 
   bool is_messagewindow_up                     () const
-    { return ( messagewindow_p != NULL ); }
-  MessageWindow* get_messagewindow_p           () const
-    { return messagewindow_p; }
+    { return messagewindow.is_window_shown(); }
+  MessageWindow* get_messagewindow_p           ()
+    { return &messagewindow; }
   void open_messagewindow                      ();
   void close_messagewindow                     ();
 
   bool is_optionswindow_up                     () const
     { return optionswindow.is_window_shown(); }
-  OptionsWindow* get_optionswindow_p           () const
-    { return const_cast<OptionsWindow*>(&optionswindow); }
+  OptionsWindow* get_optionswindow_p           ()
+    { return &optionswindow; }
   void open_optionswindow                      ();
   void close_optionswindow                     ();
 
   bool is_scorewindow_up                       () const
-    { return ( scorewindow_p != NULL ); }
-  ScoreWindow* get_scorewindow_p               () const
-    { return scorewindow_p; }
+    { return scorewindow.is_window_shown(); }
+  ScoreWindow* get_scorewindow_p               ()
+    { return &scorewindow; }
   void open_scorewindow                        ();
   void close_scorewindow                       ();
 
@@ -175,17 +172,15 @@ private:
 
   long int bg_rgb_colour;
   long int fg_rgb_colour;
-  long int rtb_message_rgb_colour;
 
   GdkColor bg_gdk_colour;
   GdkColor fg_gdk_colour;
-  GdkColor rtb_message_gdk_colour;
 
   ArenaWindow    arenawindow;
   ControlWindow* controlwindow_p;
-  MessageWindow* messagewindow_p;
+  MessageWindow  messagewindow;
   OptionsWindow  optionswindow;
-  ScoreWindow* scorewindow_p;
+  ScoreWindow    scorewindow;
   StatisticsWindow* statisticswindow_p;
   StartTournamentWindow* starttournamentwindow_p;
 };

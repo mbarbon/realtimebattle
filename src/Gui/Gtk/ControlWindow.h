@@ -59,7 +59,7 @@ public:
   void set_matchinfo               ( const int& time, const int& match_nr,
                                      const int& matches_per_round );
   void set_debug_sensitivity       ( const bool );
-  void set_replay_sensitivity       ( const bool );
+  void set_replay_sensitivity      ( const bool );
   void replay                      ( const string& );
 
 
