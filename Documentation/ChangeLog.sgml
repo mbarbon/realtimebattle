@@ -34,7 +34,8 @@ A thin line, marking the angle the robot is facing, is now drawn.
 
 Some extra bits of information are now displayed in the window titles.
 
-'Rotate and Fire' is more or less remade.
+'Rotate and Fire' is more or less remade to be a slightly better robot and
+a much better example robot.
 
 The arena is now draw using a normal right handed coordinate system instead of the one
 used be gtk+ by default. The result is that everything is turned upside down. Angles
