@@ -1,6 +1,15 @@
 #include "Arena.h"
 #include "math.h"
 
+void
+Shape::set_colour( int red, int green, int blue )
+{
+  colour.red = red;
+  colour.green = green;
+  colour.blue = blue;
+  //  gdk_color_alloc (colormap, &colour);
+}
+
 Line::Line()
 {
   start_point = Vector2D(0.0, 0.0);
