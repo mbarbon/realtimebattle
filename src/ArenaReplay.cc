@@ -739,20 +739,24 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
 void
 ArenaReplay::change_speed( const bool forward, const bool fast )
 {
+  if( fast_forward_factor < 0 )
+    {  // Parse current time_index in forward direction
+      fast_forward_factor = 1.0;  
+      step_forward( 0, true );
+    }
+
   if( !fast || log_from_stdin )
     {
-      //      speed = PLAY;
       fast_forward_factor = 1.0;
     }
   else if( forward )
     {
-      //      speed = FAST_FORWARD;
       fast_forward_factor = 5.0;   // should be an option? // RO: Why Not? Could also be accelerating. How fast the forwarding should be depends on how long the button has been pressed.
     }
   else
     {
-      //      speed = REWIND;
-      fast_forward_factor = -5.0;   // should be an option?
+      fast_forward_factor = -5.0;
+      step_forward( 0, true );
     }
 }
 
