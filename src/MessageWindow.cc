@@ -126,7 +126,7 @@ MessageWindow::MessageWindow( const int default_width,
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
 
-  GtkStyle* clist_style = gtk_style_new();
+  GtkStyle* clist_style = gtk_style_copy(gtk_rc_get_style(window_p));
   clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
   clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
   clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
@@ -141,7 +141,7 @@ MessageWindow::MessageWindow( const int default_width,
   gtk_widget_show( clist );
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  rtb_message_row_style = gtk_style_new();
+  rtb_message_row_style = gtk_style_copy(gtk_rc_get_style(window_p));
   rtb_message_row_style->base[GTK_STATE_NORMAL] =
     make_gdk_colour( the_gui.get_bg_rgb_colour() );
   rtb_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
@@ -151,7 +151,7 @@ MessageWindow::MessageWindow( const int default_width,
   rtb_message_row_style->fg[GTK_STATE_SELECTED] =
     *( the_gui.get_rtb_message_gdk_colour_p() );
 
-  robot_message_row_style = gtk_style_new();
+  robot_message_row_style = gtk_style_copy(gtk_rc_get_style(window_p));
   robot_message_row_style->base[GTK_STATE_NORMAL] =
     make_gdk_colour( the_gui.get_bg_rgb_colour() );
   robot_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );

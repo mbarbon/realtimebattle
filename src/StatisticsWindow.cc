@@ -271,7 +271,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
                       (gpointer) this );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
 
-  GtkStyle* clist_style = gtk_style_new();
+  GtkStyle* clist_style = gtk_style_copy(gtk_rc_get_style(window_p));
   clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
   clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
   clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
