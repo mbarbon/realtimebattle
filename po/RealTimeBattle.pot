@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-30 14:55+0200\n"
+"POT-Creation-Date: 1999-08-08 12:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,18 +58,14 @@ msgstr ""
 msgid "Arena"
 msgstr ""
 
-#: src/ArenaRealTime.cc:743 src/ArenaReplay.cc:120 src/ScoreWindow.cc:150
-#: src/StatisticsWindow.cc:91 src/StatisticsWindow.cc:408
-#: src/StatisticsWindow.cc:519
-msgid "Game"
-msgstr ""
-
-#: src/ArenaRealTime.cc:744 src/ArenaReplay.cc:121
-msgid " of sequence "
-msgstr ""
-
 #: src/ArenaRealTime.cc:744
-msgid " begins on arena "
+#, c-format
+msgid "Game %d of sequence %d begins on arena"
+msgstr ""
+
+#: src/ArenaReplay.cc:121
+#, c-format
+msgid "Game %d of sequence %d"
 msgstr ""
 
 #: src/ControlWindow.cc:78
@@ -161,11 +157,9 @@ msgid "No"
 msgstr ""
 
 #: src/ControlWindow.cc:517 src/ControlWindow.cc:666 src/Gui.cc:155
-msgid "This action will kill the current tournament.\n"
-msgstr ""
-
-#: src/ControlWindow.cc:518 src/ControlWindow.cc:667 src/Gui.cc:156
-msgid "Do you want do that?"
+msgid ""
+"This action will kill the current tournament.\n"
+"Do you want do that?"
 msgstr ""
 
 #: src/ControlWindow.cc:531
@@ -408,79 +402,83 @@ msgstr ""
 msgid "CPU time warning percentage"
 msgstr ""
 
-#: src/Options.cc:293
+#: src/Options.cc:294
+msgid "Logging frequency [Each n:th update interval]"
+msgstr ""
+
+#: src/Options.cc:298
 msgid "Robot search path"
 msgstr ""
 
-#: src/Options.cc:297
+#: src/Options.cc:302
 msgid "Arena search path"
 msgstr ""
 
-#: src/Options.cc:302
+#: src/Options.cc:307
 msgid "Directory for temporary files"
 msgstr ""
 
-#: src/Options.cc:307
+#: src/Options.cc:312
 msgid "Initial Arena window width"
 msgstr ""
 
-#: src/Options.cc:312
+#: src/Options.cc:317
 msgid "Initial Arena window height"
 msgstr ""
 
-#: src/Options.cc:317
+#: src/Options.cc:322
 msgid "Initial Arena window x position"
 msgstr ""
 
-#: src/Options.cc:322
+#: src/Options.cc:327
 msgid "Initial Arena window y position"
 msgstr ""
 
-#: src/Options.cc:327
+#: src/Options.cc:332
 msgid "Initial Control window x position"
 msgstr ""
 
-#: src/Options.cc:332
+#: src/Options.cc:337
 msgid "Initial Control window y position"
 msgstr ""
 
-#: src/Options.cc:337
+#: src/Options.cc:342
 msgid "Initial Message window width"
 msgstr ""
 
-#: src/Options.cc:342
+#: src/Options.cc:347
 msgid "Initial Message window height"
 msgstr ""
 
-#: src/Options.cc:347
+#: src/Options.cc:352
 msgid "Initial Message window x position"
 msgstr ""
 
-#: src/Options.cc:352
+#: src/Options.cc:357
 msgid "Initial Message window y position"
 msgstr ""
 
-#: src/Options.cc:357
+#: src/Options.cc:362
 msgid "Initial Score window width"
 msgstr ""
 
-#: src/Options.cc:362
+#: src/Options.cc:367
 msgid "Initial Score window height"
 msgstr ""
 
-#: src/Options.cc:367
+#: src/Options.cc:372
 msgid "Initial Score window x position"
 msgstr ""
 
-#: src/Options.cc:372
+#: src/Options.cc:377
 msgid "Initial Score window y position"
 msgstr ""
 
-#: src/Options.cc:377
+#: src/Options.cc:382
 msgid "Initial Statistics window width"
 msgstr ""
 
-#: src/Options.cc:382
+#: src/Options.cc:387
 msgid "Initial Statistics window height"
 msgstr ""
 
@@ -555,7 +553,7 @@ msgid " Apply "
 msgstr ""
 
 #: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
-#: src/StartTournamentWindow.cc:712 src/StartTournamentWindow.cc:847
+#: src/StartTournamentWindow.cc:714 src/StartTournamentWindow.cc:849
 msgid " Ok "
 msgstr ""
 
@@ -585,7 +583,7 @@ msgstr ""
 
 #: src/RealTimeBattle.cc:94
 msgid ""
-"    --debug_level [0-5],         -D   sets the initial debug level. implies "
+"    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
 msgstr ""
 
@@ -608,56 +606,36 @@ msgid ""
 msgstr ""
 
 #: src/RealTimeBattle.cc:101
-msgid "    --log_file [file],           -l   make log file, if 'file' is '-'"
-msgstr ""
-
-#: src/RealTimeBattle.cc:102
-msgid "                                      the log is sent to STDOUT"
+msgid ""
+"    --log_file [file],           -l   make log file, if 'file' is '-'\n"
+"                                      the log is sent to STDOUT"
 msgstr ""
 
 #: src/RealTimeBattle.cc:104
-msgid "    --tournament_file [file],    -t   specify a tournament file to"
-msgstr ""
-
-#: src/RealTimeBattle.cc:105
-msgid "                                      autostart a tournament"
+msgid ""
+"    --tournament_file [file],    -t   specify a tournament file to\n"
+"                                      autostart a tournament"
 msgstr ""
 
 #: src/RealTimeBattle.cc:107
-msgid "    --statistics_file [file],    -s   file to print the statistics to"
-msgstr ""
-
-#: src/RealTimeBattle.cc:108
-msgid "                                       when autostarting"
+msgid ""
+"    --statistics_file [file],    -s   file to print the statistics to\n"
+"                                       when autostarting"
 msgstr ""
 
 #: src/RealTimeBattle.cc:110
-msgid "    --message_file [file],       -m   redirect messages to 'file'."
-msgstr ""
-
-#: src/RealTimeBattle.cc:111
 msgid ""
-"                                      '-' as 'file' is equivalent to STDOUT."
-msgstr ""
-
-#: src/RealTimeBattle.cc:112
-msgid "                                      If both log and messages are send"
-msgstr ""
-
-#: src/RealTimeBattle.cc:113
-msgid "                                      to STDOUT, '-m' will be ignored"
+"    --message_file [file],       -m   redirect messages to 'file'.\n"
+"                                      With '-' as 'file', STDOUT is used.\n"
+"                                      If both log and messages are sent\n"
+"                                      to STDOUT, '-m' will be ignored"
 msgstr ""
 
 #: src/RealTimeBattle.cc:115
-msgid "    --replay [file]              -r   a log file to replay."
-msgstr ""
-
-#: src/RealTimeBattle.cc:116
-msgid "                                      if '-' is specified as file,"
-msgstr ""
-
-#: src/RealTimeBattle.cc:117
-msgid "                                      input is taken from STDIN"
+msgid ""
+"    --replay [file]              -r   a log file to replay.\n"
+"                                      if '-' is specified as file,\n"
+"                                      input is taken from STDIN"
 msgstr ""
 
 #: src/RealTimeBattle.cc:119
@@ -691,6 +669,11 @@ msgstr ""
 
 #: src/ScoreWindow.cc:147
 msgid " Seq: "
+msgstr ""
+
+#: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
+#: src/StatisticsWindow.cc:408 src/StatisticsWindow.cc:519
+msgid "Game"
 msgstr ""
 
 #: src/StatisticsWindow.cc:46
@@ -832,44 +815,34 @@ msgid "Choose file to save tournament into"
 msgstr ""
 
 #: src/StartTournamentWindow.cc:563
-msgid ""
-"\n"
-"Couldn't parse specified tournament file."
+msgid "Couldn't parse specified tournament file."
 msgstr ""
 
 #: src/StartTournamentWindow.cc:566
 msgid "Tournament could not be loaded."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:702
-msgid ""
-"\n"
-"There are too few robots in the tournament."
+#: src/StartTournamentWindow.cc:704
+msgid "There are too few robots in the tournament."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:704 src/StartTournamentWindow.cc:842
-msgid ""
-"\n"
-"There are no arenas in the tournament."
+#: src/StartTournamentWindow.cc:706 src/StartTournamentWindow.cc:844
+msgid "There are no arenas in the tournament."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:707
-msgid ""
-"\n"
-"Could not open file."
+#: src/StartTournamentWindow.cc:709
+msgid "Could not open file."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:713
+#: src/StartTournamentWindow.cc:715
 msgid "Tournament could not be saved."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:840
-msgid ""
-"\n"
-"There must be at least two robots in the tournament."
+#: src/StartTournamentWindow.cc:842
+msgid "There must be at least two robots in the tournament."
 msgstr ""
 
-#: src/StartTournamentWindow.cc:848
+#: src/StartTournamentWindow.cc:850
 msgid "Tournament could not be started."
 msgstr ""
 

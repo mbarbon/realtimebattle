@@ -6,6 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 1999-08-08 12:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,7 +58,7 @@ msgstr " Zooma ut "
 msgid "Arena"
 msgstr "Arena"
 
-#: src/ArenaRealTime.cc:743
+#: src/ArenaRealTime.cc:744
 #, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "Spel %d i sekvens %d börjar på arena"
@@ -403,79 +404,83 @@ msgstr "Extra processtid-intervall [s]"
 msgid "CPU time warning percentage"
 msgstr "Låg processtidsvarning [procent]"
 
-#: src/Options.cc:293
+#: src/Options.cc:294
+msgid "Logging frequency [Each n:th update interval]"
+msgstr "Loggningsfrekvens [Var n:te uppdateringsintervall]"
+
+#: src/Options.cc:298
 msgid "Robot search path"
 msgstr "Robot sökväg"
 
-#: src/Options.cc:297
+#: src/Options.cc:302
 msgid "Arena search path"
 msgstr "Arena sökväg"
 
-#: src/Options.cc:302
+#: src/Options.cc:307
 msgid "Directory for temporary files"
 msgstr "Bibliotek för tillfälliga filer"
 
-#: src/Options.cc:307
+#: src/Options.cc:312
 msgid "Initial Arena window width"
 msgstr "Arenafönster bredd"
 
-#: src/Options.cc:312
+#: src/Options.cc:317
 msgid "Initial Arena window height"
 msgstr "Arenafönster höjd"
 
-#: src/Options.cc:317
+#: src/Options.cc:322
 msgid "Initial Arena window x position"
 msgstr "Arenafönster x-position"
 
-#: src/Options.cc:322
+#: src/Options.cc:327
 msgid "Initial Arena window y position"
 msgstr "Arenafönster y-position"
 
-#: src/Options.cc:327
+#: src/Options.cc:332
 msgid "Initial Control window x position"
 msgstr "kontrollfönster x-position"
 
-#: src/Options.cc:332
+#: src/Options.cc:337
 msgid "Initial Control window y position"
 msgstr "kontrollfönster y-position"
 
-#: src/Options.cc:337
+#: src/Options.cc:342
 msgid "Initial Message window width"
 msgstr "Meddelandefönster bredd"
 
-#: src/Options.cc:342
+#: src/Options.cc:347
 msgid "Initial Message window height"
 msgstr "Meddelandefönster höjd"
 
-#: src/Options.cc:347
+#: src/Options.cc:352
 msgid "Initial Message window x position"
 msgstr "Meddelandefönster x-position"
 
-#: src/Options.cc:352
+#: src/Options.cc:357
 msgid "Initial Message window y position"
 msgstr "Meddelandefönster y-position"
 
-#: src/Options.cc:357
+#: src/Options.cc:362
 msgid "Initial Score window width"
 msgstr "Resultatfönster bredd"
 
-#: src/Options.cc:362
+#: src/Options.cc:367
 msgid "Initial Score window height"
 msgstr "Resultatfönster höjd"
 
-#: src/Options.cc:367
+#: src/Options.cc:372
 msgid "Initial Score window x position"
 msgstr "Resultatfönster x-position"
 
-#: src/Options.cc:372
+#: src/Options.cc:377
 msgid "Initial Score window y position"
 msgstr "Resultatfönster y-position"
 
-#: src/Options.cc:377
+#: src/Options.cc:382
 msgid "Initial Statistics window width"
 msgstr "Statistikfönster bredd"
 
-#: src/Options.cc:382
+#: src/Options.cc:387
 msgid "Initial Statistics window height"
 msgstr "Statistikfönster höjd"
 
@@ -549,9 +554,8 @@ msgstr " Spara som default "
 msgid " Apply "
 msgstr " Verkställ "
 
-
 #: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
-#: src/StartTournamentWindow.cc:712 src/StartTournamentWindow.cc:847
+#: src/StartTournamentWindow.cc:714 src/StartTournamentWindow.cc:849
 msgid " Ok "
 msgstr " Ok "
 
@@ -609,7 +613,8 @@ msgstr ""
 msgid ""
 "    --log_file [file],           -l   make log file, if 'file' is '-'\n"
 "                                      the log is sent to STDOUT"
-msgstr "    --log_file [fil],            -l   skapa log-file, om 'fil' är '-'"
+msgstr ""
+"    --log_file [fil],            -l   skapa log-file, om 'fil' är '-'\n"
 "                                      så skickas loggen till STDOUT"
 
 #: src/RealTimeBattle.cc:104
@@ -637,7 +642,8 @@ msgid ""
 msgstr ""
 "    --message_file [fil],        -m   skicka meddelanden till 'fil'.\n"
 "                                      Om 'fil' är '-' används STDOUT.\n"
-"                                      Om både loggen och meddelanden skickas\n"
+"                                      Om både loggen och meddelanden "
+"skickas\n"
 "                                      till STDOUT kommer '-m' att ignoreras"
 
 #: src/RealTimeBattle.cc:115
@@ -683,8 +689,8 @@ msgstr "Poäng"
 msgid " Seq: "
 msgstr " Sekv: "
 
-#: src/ScoreWindow.cc:145 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:497
+#: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
+#: src/StatisticsWindow.cc:408 src/StatisticsWindow.cc:519
 msgid "Game"
 msgstr "Spel"
 
@@ -834,27 +840,27 @@ msgstr "Kunde inte tolka innehållet i turneringsfilen."
 msgid "Tournament could not be loaded."
 msgstr "Turneringen kunde inte hämtas."
 
-#: src/StartTournamentWindow.cc:691
+#: src/StartTournamentWindow.cc:704
 msgid "There are too few robots in the tournament."
 msgstr "För få robotar i turneringen."
 
-#: src/StartTournamentWindow.cc:693 src/StartTournamentWindow.cc:831
+#: src/StartTournamentWindow.cc:706 src/StartTournamentWindow.cc:844
 msgid "There are no arenas in the tournament."
 msgstr "Ingen arena har valts."
 
-#: src/StartTournamentWindow.cc:696
+#: src/StartTournamentWindow.cc:709
 msgid "Could not open file."
 msgstr "Kunde inte öppna fil."
 
-#: src/StartTournamentWindow.cc:702
+#: src/StartTournamentWindow.cc:715
 msgid "Tournament could not be saved."
 msgstr "Turneringen kunde inte sparas."
 
-#: src/StartTournamentWindow.cc:829
+#: src/StartTournamentWindow.cc:842
 msgid "There must be at least two robots in the tournament."
 msgstr "Det måste vara minst två robtar i en turnering."
 
-#: src/StartTournamentWindow.cc:848
+#: src/StartTournamentWindow.cc:850
 msgid "Tournament could not be started."
 msgstr "Turneringen kunde inte startas."
 
