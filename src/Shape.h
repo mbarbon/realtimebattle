@@ -76,8 +76,9 @@ public:
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
 
-  virtual bool is_inside_subsquare( const SubSquare& ss ) const = 0;
   virtual void find_subsquares() const = 0 ;
+  virtual bool is_inside_subsquare( const SubSquare& ss ) const = 0;
+  bool is_still_inside_subsquare( const SubSquare& ss ) const { return !killed; }
 
   // Returns true if object if killed by the collision
   //  virtual bool collided( const Shape* colliding_object ) = 0;
