@@ -320,7 +320,7 @@ Robot::check_process()
 void
 Robot::end_process()
 {
-  send_message(SAVE_DATA);
+  send_message(EXIT_ROBOT);
   send_signal();
 }
 
@@ -801,6 +801,10 @@ Robot::send_message(const message_to_robot_type msg_type ...)
   *outstreamp << endl;
 }
 
+
+// This is the function which gets messages from the robot,
+// parses them and take appropriate action. It is certainly 
+// too long, but who cares :-)
 void
 Robot::get_messages()
 {
@@ -834,7 +838,7 @@ Robot::get_messages()
               *instreamp >> opt_nr;
               switch(opt_nr)
                 {
-                case SEND_SIGNAL:   // Replaced with 'SIGNAL', used only for combatibility reasons.
+                case SEND_SIGNAL:
                   *instreamp >> val;
                   send_usr_signal = (val == true);
                   signal_to_send = SIGUSR1;
@@ -1048,6 +1052,7 @@ Robot::get_messages()
             realtime_arena.print_to_messagefile( this, text );
           }
           break;
+
         case DEBUG:
           {
             instreamp->get(text, 80, '\n');
@@ -1060,6 +1065,60 @@ Robot::get_messages()
             realtime_arena.print_to_messagefile( this, text );
           }
           break;
+
+        case DEBUG_LINE:
+          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+            {
+              if( !the_arena.is_max_debug_level() )
+                {
+                  send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
+                               message_from_robot[msg_t].msg);
+                }
+#ifndef NO_GRAPHICS
+              else if( !no_graphics )
+                {
+                  double a1, d1, a2, d2;
+                  *instreamp >> a1 >> d1 >> a2 >> d2;
+                  
+                  a1 += robot_angle.pos;
+                  a2 += robot_angle.pos;
+                  
+                  Vector2D start = d1 * angle2vec(a1);                  
+                  Vector2D direction = d2 * angle2vec(a2) - start;
+                  
+                  the_gui.get_arenawindow_p()->
+                    draw_line(start + center, direction, 
+                              1.0, 0.1, gdk_colour);
+                }
+#endif NO_GRAPHICS              
+            }
+          break;
+
+        case DEBUG_CIRCLE:
+         if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+            {
+              if( !the_arena.is_max_debug_level() )
+                {
+                  send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
+                               message_from_robot[msg_t].msg);
+                }
+#ifndef NO_GRAPHICS
+              else if( !no_graphics )
+                {
+                  double a, d, r;
+                  *instreamp >> a >> d >> r;
+
+                  a += robot_angle.pos;
+                
+                  Vector2D c = d * angle2vec(a) + center;
+
+                  the_gui.get_arenawindow_p()->
+                    draw_circle(c, r, gdk_colour, false);
+                }
+#endif NO_GRAPHICS
+            }         
+         break;          
+
         case SHOOT:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
             {
@@ -1156,35 +1215,35 @@ Robot::get_messages()
             brake_percent = brk;
           } 
           break;
-        case LOAD_DATA:
-          if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-            {
-              bool bin;
-              *instreamp >> bin;
-              load_data(bin);
-            }
-          break;
-        case SAVE_DATA_FINISHED:
-          if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-            {
-              send_message(EXIT_ROBOT);
-              send_signal();
-            }
-          break;
-        case BIN_DATA_FROM:
-          if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-            {
-              save_data(true, has_saved);
-              has_saved = true;
-            }
-          break;
-        case ASCII_DATA_FROM:
-          if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-            {
-              save_data(false, has_saved);
-              has_saved = true;
-            }
-          break;
+//          case LOAD_DATA:
+//            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+//              {
+//                bool bin;
+//                *instreamp >> bin;
+//                load_data(bin);
+//              }
+//            break;
+//          case SAVE_DATA_FINISHED:
+//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//              {
+//                send_message(EXIT_ROBOT);
+//                send_signal();
+//              }
+//            break;
+//          case BIN_DATA_FROM:
+//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//              {
+//                save_data(true, has_saved);
+//                has_saved = true;
+//              }
+//            break;
+//          case ASCII_DATA_FROM:
+//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//              {
+//                save_data(false, has_saved);
+//                has_saved = true;
+//              }
+//            break;
         default:
           Error(true, "Message_type not implemented, " + (String)msg_name, "Robot::get_messages");
         }
@@ -1224,105 +1283,105 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
   return true;
 }
 
-void
-Robot::save_data(const bool binary, const bool append)
-{
-  cerr << "Sorry, save_data is broken at the moment!" << endl;
-  return;
+//  void
+//  Robot::save_data(const bool binary, const bool append)
+//  {
+//    cerr << "Sorry, save_data is broken at the moment!" << endl;
+//    return;
 
-  String filename;
+//    String filename;
 
-//    if( robot_name_uniqueness_number == 0 )
-//      filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
+//  //    if( robot_name_uniqueness_number == 0 )
+//  //      filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
+//  //    else
+//  //      filename = the_gui.get_robotdir() + robot_name + ".robotdata";
+
+//    int mode = _IO_OUTPUT;  
+//    if( append ) mode = _IO_APPEND;
+
+//    ofstream file(filename.chars(), mode);
+
+//    if( !file ) Error(true, "Couldn't open file " + filename, "Robot::save_bin_data");
+
+//    if( binary )
+//      {
+//        int bytes;
+//        char c;
+//        *instreamp >> bytes;
+
+//        // TODO: check if data is avalable (peek), wait otherwise (select)
+      
+//        for(int i=0; i < bytes; i++)
+//          {
+//            instreamp->get(c);
+//            file.put(c);
+//          }
+//      }
 //    else
-//      filename = the_gui.get_robotdir() + robot_name + ".robotdata";
-
-  int mode = _IO_OUTPUT;  
-  if( append ) mode = _IO_APPEND;
-
-  ofstream file(filename.chars(), mode);
-
-  if( !file ) Error(true, "Couldn't open file " + filename, "Robot::save_bin_data");
-
-  if( binary )
-    {
-      int bytes;
-      char c;
-      *instreamp >> bytes;
-
-      // TODO: check if data is avalable (peek), wait otherwise (select)
-      
-      for(int i=0; i < bytes; i++)
-        {
-          instreamp->get(c);
-          file.put(c);
-        }
-    }
-  else
-    {
-      char buf[256];
-      
-      instreamp->get(buf, 256 ,'\n');
-      file << buf << endl;
-
-      // TODO: continue saving if next message is SAVE_DATA
-    }
-}
-
-void
-Robot::load_data(const bool binary)
-{
-  cerr << "Sorry, load_data is broken at the moment!" << endl;
-  return;
-
-  String filename;
-
-  ifstream file;
-
-
-//    if( robot_name_uniqueness_number == 0 )
 //      {
-//        filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
-//        file.open(filename.chars());
+//        char buf[256];
+      
+//        instreamp->get(buf, 256 ,'\n');
+//        file << buf << endl;
+
+//        // TODO: continue saving if next message is SAVE_DATA
 //      }
-//    if( !file )
+//  }
+
+//  void
+//  Robot::load_data(const bool binary)
+//  {
+//    cerr << "Sorry, load_data is broken at the moment!" << endl;
+//    return;
+
+//    String filename;
+
+//    ifstream file;
+
+
+//  //    if( robot_name_uniqueness_number == 0 )
+//  //      {
+//  //        filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
+//  //        file.open(filename.chars());
+//  //      }
+//  //    if( !file )
+//  //      {
+//  //        filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
+//  //        file.open(filename.chars());
+//  //      }
+
+//    if (!file) 
 //      {
-//        filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
-//        file.open(filename.chars());
+//        send_message(LOAD_DATA_FINISHED);
+//        return;
 //      }
 
-  if (!file) 
-    {
-      send_message(LOAD_DATA_FINISHED);
-      return;
-    }
+//    char buf[256];
+//    if( binary )
+//      {
+//        char c;
+//        int i;
+//        while( !file.eof() )
+//          {
+//            for(i=0; i < 255 && file.get(c) ; i++)
+//              buf[i] = c;
 
-  char buf[256];
-  if( binary )
-    {
-      char c;
-      int i;
-      while( !file.eof() )
-        {
-          for(i=0; i < 255 && file.get(c) ; i++)
-            buf[i] = c;
-
-          buf[i] = '\0';
-          send_message(BIN_DATA_TO, i, buf);
-        }
-    }
-  else
-    {
-      while( !file.eof() )
-        {
+//            buf[i] = '\0';
+//            send_message(BIN_DATA_TO, i, buf);
+//          }
+//      }
+//    else
+//      {
+//        while( !file.eof() )
+//          {
           
-          file.get(buf, 256 ,'\n');
-          send_message(ASCII_DATA_TO, buf);
-        }
-    }
+//            file.get(buf, 256 ,'\n');
+//            send_message(ASCII_DATA_TO, buf);
+//          }
+//      }
 
-  send_message(LOAD_DATA_FINISHED);
-}
+//    send_message(LOAD_DATA_FINISHED);
+//  }
 
 void
 Robot::change_energy(const double energy_diff)
@@ -1411,7 +1470,14 @@ Robot::draw_radar_and_cannon()
                radius / 1.5,
                radius / 20.0,
                *(the_arena.get_fg_gdk_colour_p()) );
-  
+
+  // Draw robot angle line
+  the_gui.get_arenawindow_p()->
+    draw_line( center,
+               angle2vec(robot_angle.pos),
+               radius * 0.9,
+               radius / 40.0,
+               *(the_arena.get_fg_gdk_colour_p()) );
 }
 
 void
