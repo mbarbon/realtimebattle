@@ -40,7 +40,7 @@ website: html_docs
 tar-website: 
 	cd HTML && $(MAKE) -fMakefile.rtb tar-website
 
-website_download: docs bz2_dist
+website_download: docs
 	cd HTML && $(MAKE) -fMakefile.rtb website_download VERSION=$(VERSION)
 
 website_all: html_clean website website_download
