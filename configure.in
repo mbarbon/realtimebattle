@@ -1,6 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(src/RealTimeBattle.cc)
 
+AC_ARG_PROGRAM
 
 # Use header file 'config.h'
 AM_CONFIG_HEADER(config.h)
@@ -219,5 +220,5 @@ AC_CHECK_LIB(xpg4, setlocale)
 
 # Finished !
 
-AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile po/Makefile.in Packages/Makefile Packages/rpm/Makefile Packages/debian/Makefile Packages/freebsd/Makefile Makefile],
+AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile src/Gui/Makefile src/Gui/Gtk/Makefile po/Makefile.in Packages/Makefile Packages/rpm/Makefile Packages/debian/Makefile Packages/freebsd/Makefile Makefile],
 			[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
