@@ -29,12 +29,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiRequest.h"
 #include "Messagetypes.h"
 #include "OptionHandler.h"
+#include "OptionsWindow.h"
 #include "Structs.h"
 
 class ControlWindow;
 class GuiClientInterface;
 class MessageWindow;
-class OptionsWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
@@ -116,9 +116,9 @@ public:
   void close_messagewindow                     ();
 
   bool is_optionswindow_up                     () const
-    { return ( optionswindow_p != NULL ); }
+    { return optionswindow.is_window_shown(); }
   OptionsWindow* get_optionswindow_p           () const
-    { return optionswindow_p; }
+    { return const_cast<OptionsWindow*>(&optionswindow); }
   void open_optionswindow                      ();
   void close_optionswindow                     ();
 
@@ -184,7 +184,7 @@ private:
   ArenaWindow    arenawindow;
   ControlWindow* controlwindow_p;
   MessageWindow* messagewindow_p;
-  OptionsWindow* optionswindow_p;
+  OptionsWindow  optionswindow;
   ScoreWindow* scorewindow_p;
   StatisticsWindow* statisticswindow_p;
   StartTournamentWindow* starttournamentwindow_p;

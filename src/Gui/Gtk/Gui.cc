@@ -91,7 +91,6 @@ GIMain( GuiClientInterface* _gi_p )
 Gui::Gui()
 {
   messagewindow_p = NULL;
-  optionswindow_p = NULL;
   scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
@@ -120,12 +119,17 @@ Gui::~Gui()
 void
 Gui::initialize_gtk_options()
 {
-  map<string,Option*> all_options;
-  vector<string> group_names;
-
-  group_names.push_back( _("Window sizes") );
-
+  // Note: Must begin at 0 and be consecutive.
   const int GROUP_SIZE_OF_WINDOWS = 0;
+  const int GROUP_MISC            = 1;
+  const int GROUP_LAST_GROUP      = 2;
+
+  map<string,Option*> all_options;
+  vector<string> group_names( GROUP_LAST_GROUP, "" );
+
+  group_names[GROUP_SIZE_OF_WINDOWS] =  _("Window sizes");
+  group_names[GROUP_MISC]            =  _("Miscellaneous");
+
 
   // ---------- Size of Windows ----------
 
@@ -192,6 +196,12 @@ Gui::initialize_gtk_options()
   all_options["Statistics window ysize"] = (Option*) new 
     LongOption( GROUP_SIZE_OF_WINDOWS, 428, 130, 10000, false, false,
                 _("Initial Statistics window height") );
+
+  // ---------- Misc ----------
+
+  all_options["Message history length"] = (Option*) new
+    LongOption( GROUP_MISC, 500, -1, 1000000, false, false,
+                _("History length for robot messages") );
 
   gtk_opts = new OptionHandler( "Gui Gtk", all_options, group_names );
 }
@@ -347,11 +357,10 @@ Gui::error( const bool fatal, const string& error_msg, const string& function_na
 void
 Gui::open_arenawindow()
 {
-  if( !is_arenawindow_up() )
-    arenawindow.create( the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_X ),
-                        the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_Y ),
-                        the_opts.get_l( OPTION_ARENA_WINDOW_POS_X  ),
-                        the_opts.get_l( OPTION_ARENA_WINDOW_POS_Y  ) );
+  arenawindow.create( the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_X ),
+                      the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_Y ),
+                      the_opts.get_l( OPTION_ARENA_WINDOW_POS_X  ),
+                      the_opts.get_l( OPTION_ARENA_WINDOW_POS_Y  ) );
 }
 
 void
@@ -384,18 +393,13 @@ Gui::close_messagewindow()
 void
 Gui::open_optionswindow()
 {
-  if( NULL == optionswindow_p )
-    optionswindow_p = new OptionsWindow( -1, -1, -1, -1 );
+  optionswindow.create( -1, -1, -1, -1 );
 }
 
 void
 Gui::close_optionswindow()
 {
-  if( NULL != optionswindow_p )
-    {
-      delete optionswindow_p;
-      optionswindow_p = NULL;
-    }
+  optionswindow.destroy();
 }
 
 void
