@@ -61,7 +61,7 @@ save_statistics_callback(GtkWidget *widget, gpointer data)
 void
 save_stats_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
 {
-  the_gui.save_statistics_to_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));
+  the_arena.save_statistics_to_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));
   destroy_stats_filesel();
 }
 
@@ -526,30 +526,6 @@ Gui::add_the_statistics_to_clist()
   gtk_clist_sort(GTK_CLIST(stat_clist));
 #endif
   gtk_clist_thaw(GTK_CLIST(stat_clist));
-}
-
-// This function takes the statistics and saves into a selected file
-void
-Gui::save_statistics_to_file(String filename)
-{
-  int mode = _IO_OUTPUT;
-  ofstream file(filename.chars(), mode);
-
-  GList * gl, * stat_gl;
-  Robot * robotp;
-
-  for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot *)gl->data;
-      file << robotp->get_robot_name() << ": " << endl;
-      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
-        {
-          stat_t * statp = (stat_t*)(stat_gl->data);
-          file << "Seq: " << statp->sequence_nr << "  Game: " << statp->game_nr << "  Pos: " << statp->position
-               << "  Points: " << statp->points << "  Time Survived: " << statp->time_survived
-               << "  Total Points: " << statp->total_points << endl;
-        }
-    }
 }
 
 void

@@ -95,6 +95,7 @@ public:
   void quit_ordered();
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
+  void save_statistics_to_file(String filename);
   void parse_tournament_file( String& fname );
   void set_filenames(String& log_fname, const String& statistics_fname, 
                      const String& tournament_fname, const String& option_fname);

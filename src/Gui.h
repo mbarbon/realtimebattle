@@ -157,7 +157,6 @@ public:
   void add_new_row( void* rp, void* sp, int games_played );
   void add_the_statistics_to_clist();
   void stat_make_title_button();
-  void save_statistics_to_file(String filename);
 
   void set_control_window_title( const bool halted );
   void set_score_window_title();
