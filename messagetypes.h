@@ -109,10 +109,10 @@ struct Message
 {
   char* msg;
   int number_of_args;
-  argument_type arg_type[4];
+  enum argument_type arg_type[4];
 };
 
-static const Message message_to_robot[20] = 
+static const struct Message message_to_robot[20] = 
 {
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
@@ -126,7 +126,7 @@ static const Message message_to_robot[20] =
                                                        // third arg: radar_angle
                                                        // TODO: fourth arg: if robot, its energylevel ??
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
-  {"Energy",     1, {INT,    NONE,   NONE,   NONE}},   // arg: energylevel
+  {"Energy",     1, {DOUBLE, NONE,   NONE,   NONE}},   // arg: energylevel
   {"RobotsLeft", 1, {INT,    NONE,   NONE,   NONE}},   // arg: robots left
   {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: collision angle
   {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
@@ -139,7 +139,7 @@ static const Message message_to_robot[20] =
   {"",           0, {}}
 };
 
-static const Message message_from_robot[20] = 
+static const struct Message message_from_robot[20] = 
 {
   {"RobotOption",  2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
   {"Name",         1, {STRING}},             // arg: name
