@@ -40,14 +40,14 @@ website: html_docs
 tar-website: 
 	cd HTML && $(MAKE) -fMakefile.rtb tar-website
 
-website_download: docs tar.bz2 tar.gz
+website_download: docs bz2_dist
 	cd HTML && $(MAKE) -fMakefile.rtb website_download
 
 website_all: html_clean website website_download
 
 
 rpm: dist
-	cp $(distdir).tar.gz $(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//") && \
+	cp $(PACKAGE)-$(VERSION).tar.gz $(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//") && \
 	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RTB_RPM_RELEASE)/" RealTimeBattle.spec > $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
 	rpm -ba $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
 	cp $(shell rpm --showrc | grep "^rpmdir" | sed "s/rpmdir[  ]*: *//")/$(shell rpm --showrc | grep "^build arch" | sed "s/build arch[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).$(shell rpm --showrc | grep "^build arch" | sed "s/build arch[  ]*: *//").rpm . && \
