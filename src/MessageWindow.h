@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 
 class String;
 class Robot;
@@ -42,7 +44,7 @@ public:
   void set_window_title          ();
   void add_message               ( Robot* robot_p, String output_text );
 
-  static void hide_window        ( GtkWidget* widget,
+  static void hide_window        ( GtkWidget* widget, GdkEvent* event,
                                    class MessageWindow* messagewindow_p );
   static void show_window        ( GtkWidget* widget,
                                    class MessageWindow* messagewindow_p );

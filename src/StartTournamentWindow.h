@@ -30,6 +30,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 struct _GdkEventButton;
 typedef struct _GdkEventButton GdkEventButton;
 typedef int gint;
@@ -78,6 +80,8 @@ public:
 
   GtkWidget* get_window_p              () { return window_p; }
 
+  static void delete_event_occured     ( GtkWidget* widget, GdkEvent* event,
+                                         class StartTournamentWindow* stw_p );
   static void cancel_new_tournament    ( GtkWidget* widget,
                                          class StartTournamentWindow* stw_p );
   static void set_entry                ( GtkWidget* widget,

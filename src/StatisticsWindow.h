@@ -28,6 +28,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
 class Robot;
@@ -73,6 +75,8 @@ public:
   void add_new_row                   ( Robot* robot_p, stat_t average_stat,
                                        int games_played );
 
+  static void delete_event_occured   ( GtkWidget* widget, GdkEvent* event,
+                                       class StatisticsWindow* sw_p );
   static void exit                   ( GtkWidget* widget,
                                        class StatisticsWindow* sw_p );
   static void save                   ( GtkWidget* widget,

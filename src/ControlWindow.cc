@@ -51,8 +51,8 @@ ControlWindow::ControlWindow( const int default_width,
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
 
   gtk_signal_connect( GTK_OBJECT( window_p ), "delete_event",
-                      (GtkSignalFunc) ControlWindow::quit_rtb,
-                      (gpointer) NULL );
+                      (GtkSignalFunc) ControlWindow::delete_event_occured,
+                      (gpointer) this );
 
   // Main boxes
 
@@ -242,7 +242,15 @@ ControlWindow::set_window_title( const String& text)
 }
 
 void
-ControlWindow::quit_rtb( GtkWidget* widget, gpointer data )
+ControlWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
+                                     class ControlWindow* controlwindow_p )
+{
+  Quit();
+}
+
+void
+ControlWindow::quit_rtb( GtkWidget* widget,
+                         class ControlWindow* controlwindow_p )
 {
   Quit();
 }

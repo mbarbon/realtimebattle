@@ -30,6 +30,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 template<class T> struct option_info_t;
 
@@ -76,6 +78,8 @@ public:
   static void ok                  ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
   static void cancel              ( GtkWidget* widget,
+                                    class OptionsWindow* optionswindow_p );
+  static void delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                     class OptionsWindow* optionswindow_p );
 
   static void load_options        ( GtkWidget* widget,

@@ -147,7 +147,7 @@ ScoreWindow::set_window_title()
 //
 
 void
-ScoreWindow::hide_window( GtkWidget* widget,
+ScoreWindow::hide_window( GtkWidget* widget, GdkEvent* event,
                           class ScoreWindow* scorewindow_p )
 {
   if( scorewindow_p->is_window_shown() )
@@ -158,7 +158,7 @@ ScoreWindow::hide_window( GtkWidget* widget,
 }
 
 //
-// This window shows the window again
+// This function shows the window again
 //
 
 void

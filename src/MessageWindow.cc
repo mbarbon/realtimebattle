@@ -153,30 +153,33 @@ MessageWindow::set_window_title()
 void
 MessageWindow::add_message( Robot* robot_p, String output_text )
 {
-  if( viewed_robot != NULL && viewed_robot != robot_p)
-    return;
-
-  char* lst[2];
-  
-  for(int j=0;j<2;j++)
+  if( window_shown )
     {
-      lst[j] = new char[30];
-      strcpy(lst[j],"");
+      if( viewed_robot != NULL && viewed_robot != robot_p)
+        return;
+
+      char* lst[2];
+  
+      for(int j=0;j<2;j++)
+        {
+          lst[j] = new char[30];
+          strcpy(lst[j],"");
+        }
+
+      int row = 0;
+      gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+      gtk_clist_set_foreground( GTK_CLIST( clist ), row,
+                                the_arena.get_fg_gdk_colour_p() );
+      gtk_clist_set_background( GTK_CLIST( clist ), row,
+                                the_arena.get_bg_gdk_colour_p() );
+
+      gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
+                          robot_p->get_robot_name().non_const_chars() );
+      gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
+                          output_text.non_const_chars() );
+
+      for(int i=0; i<2; i++) delete [] lst[i];
     }
-
-  int row = 0;
-  gtk_clist_insert( GTK_CLIST( clist ), row, lst );
-  gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                            the_arena.get_fg_gdk_colour_p() );
-  gtk_clist_set_background( GTK_CLIST( clist ), row,
-                            the_arena.get_bg_gdk_colour_p() );
-
-  gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
-                      robot_p->get_robot_name().non_const_chars() );
-  gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
-                      output_text.non_const_chars() );
-
-  for(int i=0; i<2; i++) delete [] lst[i];
 }
 
 void
@@ -192,7 +195,7 @@ MessageWindow::set_window_shown( bool win_shown )
 }
 
 void
-MessageWindow::hide_window( GtkWidget* widget,
+MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
                             class MessageWindow* messagewindow_p )
 {
   if( messagewindow_p->is_window_shown() )

@@ -28,6 +28,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 struct _GdkEventButton;
 typedef struct _GdkEventButton GdkEventButton;
 typedef int gint;
@@ -47,7 +49,7 @@ public:
   void set_window_title            ();
   void add_robots                  ();
   
-  static void hide_window          ( GtkWidget* widget,
+  static void hide_window          ( GtkWidget* widget, GdkEvent* event,
                                      class ScoreWindow* scorewindow_p );
   static void show_window          ( GtkWidget* widget,
                                      class ScoreWindow* scorewindow_p );
@@ -60,12 +62,10 @@ public:
   GtkWidget* get_clist             () { return clist; }
   Robot* get_selected_robot        () { return selected_robot; }
   bool is_window_shown             () { return window_shown; }
+  void set_selected_robot          ( Robot* rp ) { selected_robot = rp; }
+  void set_window_shown            ( bool r ) { window_shown = r; }
 
 private:
-
-  void set_selected_robot          ( Robot* robot_p )
-    { selected_robot = robot_p; }
-  void set_window_shown            ( bool r ) { window_shown = r; }
 
   bool window_shown;
 

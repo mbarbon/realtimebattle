@@ -55,7 +55,7 @@ OptionsWindow::OptionsWindow( const int default_width,
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
 
   gtk_signal_connect( GTK_OBJECT( window_p ), "delete_event",
-                      (GtkSignalFunc) OptionsWindow::cancel,
+                      (GtkSignalFunc) OptionsWindow::delete_event_occured,
                       (gpointer) this );
 
   // Main box
@@ -504,6 +504,13 @@ OptionsWindow::ok( GtkWidget* widget,
 void
 OptionsWindow::cancel( GtkWidget* widget,
                        class OptionsWindow* optionswindow_p )
+{
+  the_opts.close_optionswindow();
+}
+
+void
+OptionsWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
+                                     class OptionsWindow* optionswindow_p )
 {
   the_opts.close_optionswindow();
 }

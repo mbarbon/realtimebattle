@@ -54,7 +54,7 @@ ArenaWindow::ArenaWindow( const int default_width,
       gtk_widget_set_usize( window_p , 185, 120 );
     }
 #else
-    gtk_widget_set_usize( window_p, default_width, default_height );
+  gtk_widget_set_usize( window_p, default_width, default_height );
 #endif
   if( default_x_pos != -1 && default_y_pos != -1 )
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
@@ -144,6 +144,35 @@ ArenaWindow::set_window_title()
 }
 
 void
+ArenaWindow::set_window_shown( bool win_shown )
+{
+  window_shown = win_shown;
+}
+
+void
+ArenaWindow::hide_window( GtkWidget* widget, GdkEvent* event,
+                          class ArenaWindow* arenawindow_p )
+{
+  if( arenawindow_p->is_window_shown() )
+    {
+      gtk_widget_hide( arenawindow_p->get_window_p() );
+      arenawindow_p->set_window_shown( false );
+    }
+}
+
+void
+ArenaWindow::show_window( GtkWidget* widget,
+                          class ArenaWindow* arenawindow_p )
+{
+  if( !arenawindow_p->is_window_shown() )
+    {
+      gtk_widget_show( arenawindow_p->get_window_p() );
+      arenawindow_p->set_window_shown( true );
+      arenawindow_p->draw_everything();
+    }
+}
+
+void
 ArenaWindow::clear_area()
 {
   GdkGC * colour_gc;
@@ -163,51 +192,57 @@ ArenaWindow::clear_area()
 void
 ArenaWindow::draw_everything()
 {
-  List<Shape>* object_lists;
-
-  object_lists = the_arena.get_object_lists();
-  ListIterator<Shape> li;
-
-  // Must begin with innercircles (they are destructive)
-  for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
+  if( window_shown )
     {
-      for( object_lists[obj_type].first(li); li.ok(); li++ )
+      List<Shape>* object_lists;
+
+      object_lists = the_arena.get_object_lists();
+      ListIterator<Shape> li;
+
+      // Must begin with innercircles (they are destructive)
+      for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
         {
-          if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
-                 !( (Extras*)li() )->is_alive() ) )
+          for( object_lists[obj_type].first(li); li.ok(); li++ )
             {
-              li()->draw_shape( false );
+              if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
+                     !( (Extras*)li() )->is_alive() ) )
+                {
+                  li()->draw_shape( false );
+                }
             }
         }
-    }
 
-  draw_moving_objects( false );
+      draw_moving_objects( false );
+    }
 }
 
 void
 ArenaWindow::draw_moving_objects( const bool clear_objects_first )
 {
-  List<Shape>* object_lists = the_arena.get_object_lists();
-  Robot* robotp;
-
-  if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
-      ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
-    drawing_area_scale_changed();
-
-  ListIterator<Shape> li;
-  for( object_lists[SHOT].first(li); li.ok(); li++ )
-    if( ((Shot*)li())->is_alive() )
-      ((Shot*)li())->draw_shape( clear_objects_first );
-
-  ListIterator<Shape> li2;
-  for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
+  if( window_shown )
     {
-      robotp = (Robot*)li2();
+      List<Shape>* object_lists = the_arena.get_object_lists();
+      Robot* robotp;
 
-      if( robotp->is_alive() )
+      if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
+          ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
+        drawing_area_scale_changed();
+
+      ListIterator<Shape> li;
+      for( object_lists[SHOT].first(li); li.ok(); li++ )
+        if( ((Shot*)li())->is_alive() )
+          ((Shot*)li())->draw_shape( clear_objects_first );
+
+      ListIterator<Shape> li2;
+      for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
         {
-          robotp->draw_shape( clear_objects_first );
-          robotp->draw_radar_and_cannon();
+          robotp = (Robot*)li2();
+
+          if( robotp->is_alive() )
+            {
+              robotp->draw_shape( clear_objects_first );
+              robotp->draw_radar_and_cannon();
+            }
         }
     }
 }
@@ -216,30 +251,33 @@ void
 ArenaWindow::draw_circle( const Vector2D& center, const double radius,
                           GdkColor& colour, const bool filled )
 {
-  GdkGC * colour_gc;
-
-  colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, &colour );
-
-  double r;
-  if( ( r = radius * drawing_area_scale ) > 1.0 )
+  if( window_shown )
     {
-      gdk_draw_arc( drawing_area->window,
-                    colour_gc,
-                    filled,
-                    boundary2pixel_x( center[0]-radius ),
-                    boundary2pixel_y( center[1]+radius ),
-                    (int)(r*2.0), (int)(r*2.0),
-                    0, GDK_360_DEGREES );
+      GdkGC * colour_gc;
+
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, &colour );
+
+      double r;
+      if( ( r = radius * drawing_area_scale ) > 1.0 )
+        {
+          gdk_draw_arc( drawing_area->window,
+                        colour_gc,
+                        filled,
+                        boundary2pixel_x( center[0]-radius ),
+                        boundary2pixel_y( center[1]+radius ),
+                        (int)(r*2.0), (int)(r*2.0),
+                        0, GDK_360_DEGREES );
+        }
+      else
+        {
+          gdk_draw_point( drawing_area->window,
+                          colour_gc,
+                          boundary2pixel_x( center[0] ), 
+                          boundary2pixel_y( center[1] ) );
+        }
+      gdk_gc_destroy( colour_gc );
     }
-  else
-    {
-      gdk_draw_point( drawing_area->window,
-                      colour_gc,
-                      boundary2pixel_x( center[0] ), 
-                      boundary2pixel_y( center[1] ) );
-    }
-  gdk_gc_destroy( colour_gc );
 }
 
 void
@@ -248,20 +286,23 @@ ArenaWindow::draw_rectangle( const Vector2D& start,
                              GdkColor& colour,
                              const bool filled )
 {
-  GdkGC * colour_gc;
+  if( window_shown )
+    {
+      GdkGC * colour_gc;
 
-  colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, &colour );
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, &colour );
 
-  gdk_draw_rectangle( drawing_area->window,
-                      colour_gc,
-                      filled,
-                      boundary2pixel_x( start[0] ),
-                      boundary2pixel_y( end[1] ),
-                      boundary2pixel_x( end[0] - start[0] ),
-                      boundary2pixel_y( end[1] - start[1] ) );
+      gdk_draw_rectangle( drawing_area->window,
+                          colour_gc,
+                          filled,
+                          boundary2pixel_x( start[0] ),
+                          boundary2pixel_y( end[1] ),
+                          boundary2pixel_x( end[0] - start[0] ),
+                          boundary2pixel_y( end[1] - start[1] ) );
 
-  gdk_gc_destroy( colour_gc );
+      gdk_gc_destroy( colour_gc );
+    }
 }
 
 void
@@ -269,103 +310,84 @@ ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
                         const double length, const double thickness,
                         GdkColor& colour )
 {
-  GdkGC * colour_gc;
-  GdkPoint g_points[4];
-  Vector2D vector_points[4];
-
-  colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, &colour );
-
-  Vector2D line_thick = unit( direction );
-  line_thick = rotate90( line_thick );
-  line_thick *= thickness;
-  vector_points[0] = start + line_thick;
-  vector_points[1] = start - line_thick;
-  vector_points[2] = start - line_thick + direction * length;
-  vector_points[3] = start + line_thick + direction * length;
-
-  for(int i=0;i<4;i++)
+  if( window_shown )
     {
-      g_points[i].x = boundary2pixel_x( vector_points[i][0] );
-      g_points[i].y = boundary2pixel_y( vector_points[i][1] );
-    }
-  gdk_draw_polygon( drawing_area->window, colour_gc, true, g_points, 4 );
+      GdkGC * colour_gc;
+      GdkPoint g_points[4];
+      Vector2D vector_points[4];
 
-  gdk_gc_destroy( colour_gc );
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, &colour );
+
+      Vector2D line_thick = unit( direction );
+      line_thick = rotate90( line_thick );
+      line_thick *= thickness;
+      vector_points[0] = start + line_thick;
+      vector_points[1] = start - line_thick;
+      vector_points[2] = start - line_thick + direction * length;
+      vector_points[3] = start + line_thick + direction * length;
+
+      for(int i=0;i<4;i++)
+        {
+          g_points[i].x = boundary2pixel_x( vector_points[i][0] );
+          g_points[i].y = boundary2pixel_y( vector_points[i][1] );
+        }
+      gdk_draw_polygon( drawing_area->window, colour_gc, true, g_points, 4 );
+
+      gdk_gc_destroy( colour_gc );
+    }
 }
 
 void
 ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
                         const double length, GdkColor& colour )
 {
-  GdkGC * colour_gc;  
-  colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, &colour );
+  if( window_shown )
+    {
+      GdkGC * colour_gc;  
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, &colour );
 
-  Vector2D end_point = start + length * direction;
+      Vector2D end_point = start + length * direction;
 
-  gdk_draw_line( drawing_area->window, colour_gc,
-                 boundary2pixel_x( start[0] ), 
-                 boundary2pixel_y( start[1] ), 
-                 boundary2pixel_x( end_point[0] ), 
-                 boundary2pixel_y( end_point[1] ) );
+      gdk_draw_line( drawing_area->window, colour_gc,
+                     boundary2pixel_x( start[0] ), 
+                     boundary2pixel_y( start[1] ), 
+                     boundary2pixel_x( end_point[0] ), 
+                     boundary2pixel_y( end_point[1] ) );
 
-  gdk_gc_destroy( colour_gc );
+      gdk_gc_destroy( colour_gc );
+    }
 }
 void
 ArenaWindow::drawing_area_scale_changed()
 {
-  int width = scrolled_window->allocation.width - 24;
-  int height = scrolled_window->allocation.height - 24;
-  scrolled_window_size = Vector2D( (double)width,
-                                   (double)height );
-  double w = (double)( width * zoom );
-  double h = (double)( height * zoom );
-  double bw = the_arena.get_boundary()[1][0] -
-    the_arena.get_boundary()[0][0];
-  double bh = the_arena.get_boundary()[1][1] -
-    the_arena.get_boundary()[0][1];
-  if( w / bw >= h / bh )
+  if( window_shown )
     {
-      drawing_area_scale = h / bh;
-      w = drawing_area_scale * bw;
-    }
-  else
-    {
-      drawing_area_scale = w / bw;
-      h = drawing_area_scale * bh;
-    }
+      int width = scrolled_window->allocation.width - 24;
+      int height = scrolled_window->allocation.height - 24;
+      scrolled_window_size = Vector2D( (double)width,
+                                       (double)height );
+      double w = (double)( width * zoom );
+      double h = (double)( height * zoom );
+      double bw = the_arena.get_boundary()[1][0] -
+        the_arena.get_boundary()[0][0];
+      double bh = the_arena.get_boundary()[1][1] -
+        the_arena.get_boundary()[0][1];
+      if( w / bw >= h / bh )
+        {
+          drawing_area_scale = h / bh;
+          w = drawing_area_scale * bw;
+        }
+      else
+        {
+          drawing_area_scale = w / bw;
+          h = drawing_area_scale * bh;
+        }
 
-  gtk_widget_set_usize( drawing_area, (int)w, int(h) );
-  clear_area();
-  draw_everything();
-}
-
-void
-ArenaWindow::set_window_shown( bool win_shown )
-{
-  window_shown = win_shown;
-}
-
-void
-ArenaWindow::hide_window( GtkWidget* widget,
-                          class ArenaWindow* arenawindow_p )
-{
-  if( arenawindow_p->is_window_shown() )
-    {
-      gtk_widget_hide( arenawindow_p->get_window_p() );
-      arenawindow_p->set_window_shown( false );
-    }
-}
-
-void
-ArenaWindow::show_window( GtkWidget* widget,
-                          class ArenaWindow* arenawindow_p )
-{
-  if( !arenawindow_p->is_window_shown() )
-    {
-      gtk_widget_show( arenawindow_p->get_window_p() );
-      arenawindow_p->set_window_shown( true );
+      gtk_widget_set_usize( drawing_area, (int)w, int(h) );
+      clear_area();
+      draw_everything();
     }
 }
 

@@ -60,7 +60,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
 
   gtk_signal_connect( GTK_OBJECT( window_p ), "delete_event",
-                      (GtkSignalFunc) StatisticsWindow::exit,
+                      (GtkSignalFunc) StatisticsWindow::delete_event_occured,
                       (gpointer) this );
 
   // Main box
@@ -276,13 +276,20 @@ StatisticsWindow::~StatisticsWindow()
 }
 
 void
-StatisticsWindow::exit( GtkWidget* widgwt, class StatisticsWindow* sw_p )
+StatisticsWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
+                                        class StatisticsWindow* sw_p )
 {
   the_gui.close_statisticswindow();
 }
 
 void
-StatisticsWindow::save( GtkWidget* widgwt, class StatisticsWindow* sw_p )
+StatisticsWindow::exit( GtkWidget* widget, class StatisticsWindow* sw_p )
+{
+  the_gui.close_statisticswindow();
+}
+
+void
+StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
 {
   if( sw_p->get_filesel() == NULL )
     {

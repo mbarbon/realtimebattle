@@ -73,7 +73,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
 
   gtk_signal_connect( GTK_OBJECT( window_p ), "delete_event",
-                      (GtkSignalFunc) StartTournamentWindow::cancel_new_tournament,
+                      (GtkSignalFunc) StartTournamentWindow::delete_event_occured,
                       (gpointer) this );
 
   // Lists for clists
@@ -398,6 +398,14 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
                       TRUE, TRUE, 0 );
 #endif
   gtk_widget_show( clist );
+}
+
+void
+StartTournamentWindow::delete_event_occured( GtkWidget* widget,
+                                             GdkEvent* event,
+                                             class StartTournamentWindow* stw_p )
+{
+  the_gui.close_starttournamentwindow();
 }
 
 void

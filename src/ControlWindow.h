@@ -30,6 +30,8 @@ class String;
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+union _GdkEvent;
+typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
 struct dialog_result_t;
@@ -47,7 +49,10 @@ public:
   GtkWidget* get_window_p          () { return window_p; }
   GtkWidget* get_debug_level_label () { return debug_level_label; }
 
-  static void quit_rtb             ( GtkWidget* widget, gpointer data );
+  static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
+                                     class ControlWindow* controlwindow_p );
+  static void quit_rtb             ( GtkWidget* widget,
+                                     class ControlWindow* controlwindow_p );
   static void pause                ( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p );
   static void step                 ( GtkWidget* widget, gpointer data );
