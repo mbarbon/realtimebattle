@@ -118,7 +118,7 @@ Gui::initialize_gtk_options()
 
   // ---------- Size of Windows ----------
 
-  // TODO: There's something very strange with the Optin (occurs only in Gui)
+  // TODO: There's something very strange with the Options (occurs only in Gui)
   //       Newly created Option-objects does not contain the values they should.
 
   all_options["Arena window xsize"] = (Option*) new
@@ -199,7 +199,6 @@ Gui::main_loop( GuiClientInterface* _gi_p )
                        gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_X ),
                        gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
 
-
   gint timeout_tag;      
 //    double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
   double interval = 1000.0*0.05 - 10.0; 
@@ -238,7 +237,7 @@ Gui::get_information()
         case INFO_STATE:
           {
             state = ((StateInfo*)info_p)->get_state();
-            the_controlwindow.set_window_title( state );
+            the_controlwindow.set_status( state );
             break;
           }
         case INFO_TOURNAMENT_STARTED:
@@ -282,9 +281,9 @@ Gui::get_information()
           if( is_messagewindow_up() )
             {
               messagewindow_p->freeze_clist();
-              const list<MessageInfo::message> message_list
+              const list<MessageInfo::message_t> message_list
                 = ((MessageInfo*)info_p)->get_message_list();
-              list<MessageInfo::message>::const_iterator mci;
+              list<MessageInfo::message_t>::const_iterator mci;
               for( mci = message_list.begin(); mci != message_list.end(); mci++ )
                 messagewindow_p->add_message( (*mci).sender, (*mci).message );
               messagewindow_p->thaw_clist();
