@@ -62,6 +62,7 @@ public:
   friend String make_lower_case(const String& str);
 
   int get_length() const { return length; }
+  bool empty() const { return length == 0; }
   const char* chars() const { return array; }
 
    //  Warning! This allows for changing the private member array.
