@@ -43,12 +43,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 Packet*
-ServerPacketFactory::MakePacket( string& netstr )
+ServerPacketFactory::MakePacket( string& netstr, NetConnection* nc )
 {
   string type = netstr.substr(0,2);
+  string data = netstr.substr( 2, netstr.length()-2 );
 
-  if     (type == "@C")    return new CommandPacket( );
-  else if(type == "SL")    return new SubmitListPacket( );
+  if     (type == "@C")    return new CommandPacket( data, nc );
+  else if(type == "SL")    return new SubmitListPacket( data, nc );
 
   //else if(type == "@M")    return new ChatMessagePacket( );
   //else if(type == "@R")    return new RobotMessagePacket( );
@@ -57,13 +58,13 @@ ServerPacketFactory::MakePacket( string& netstr )
 }
 
 Packet*
-InitPacketFactory::MakePacket( string& netstr )
+InitPacketFactory::MakePacket( string& netstr, NetConnection* nc )
 {
-
   string type = netstr.substr(0,2);
-  if (type == "@I")  return new InitializationPacket( );
-  return NULL;
+  string data = netstr.substr( 2, netstr.length()-2 );
 
+  if (type == "@I")  return new InitializationPacket( data, nc );
+  return NULL;
 }
 
 string 
@@ -92,9 +93,8 @@ InitializationPacket::make_netstring() const
 }
 
 int 
-InitializationPacket::handle_packet(void* p_void)
+InitializationPacket::handle_packet( )
 {
-  NetConnection* nc = (NetConnection*) p_void;
   istrstream is(data.c_str());
   string type_init;
 
@@ -110,16 +110,18 @@ InitializationPacket::handle_packet(void* p_void)
 	  string more_arg;
 	  is >> more_arg;
 
-	  nc->set_type(channel);
+	  if(factory->add_connection( my_connection, more_arg ))
+	    {
+	      my_connection->set_type(channel);
 
-	  factory->add_connection( nc, more_arg );
-	  my_socketserver.packet_factory( 0 )->remove_connection( nc );
+	      my_socketserver.packet_factory( 0 )->remove_connection( my_connection );
 
-	  my_socketserver. connection_factory[ nc ] = factory;
+	      my_socketserver. connection_factory[ my_connection ] = factory;
 
-	  cout<<"New connection to "<<factory->Protocol()<<" on channel "<<channel<<endl;
+	      cout<<"New connection to "<<factory->Protocol()<<" on channel "<<channel<<endl;
 
-	  return 1;
+	      return 1;
+	    }
 	}
     }
   else
@@ -179,11 +181,9 @@ CommandPacket::make_netstring() const
 }
 
 int 
-CommandPacket::handle_packet(void* p_void)
+CommandPacket::handle_packet( )
 { /* Should be used by the server */
   
-  NetConnection* cc = (NetConnection*) p_void;
-
   cout<<data<<endl;
 
   istrstream is(data.c_str());
@@ -198,12 +198,12 @@ CommandPacket::handle_packet(void* p_void)
     os << "SomeFriends " << protocol << ends;
     /*
     vector<string> vs;
-    vs = my_socketserver.give_other_addresses(cc, protocol);
+    vs = my_socketserver.give_other_addresses(my_connection, protocol);
 
     if(vs.size() > 0)
       {
 	SubmitListPacket P( os.str(), vs );
-	cc->send_data( P.make_netstring() );
+	my_connection->send_data( P.make_netstring() );
       }
     */
   }
@@ -214,7 +214,7 @@ CommandPacket::handle_packet(void* p_void)
       {
 	my_socketserver.my_id = next_id;
 	cout<<"I'm number "<<my_socketserver.my_id<<endl;
-	my_socketserver.leader = cc;
+	my_socketserver.leader = my_connection;
       }
     my_socketserver.next_id = next_id;
   }
@@ -222,13 +222,13 @@ CommandPacket::handle_packet(void* p_void)
     /*
     int nb_friends, nb_conn_of_friends;
     is >> nb_friends >> nb_conn_of_friends;
-    my_socketserver.nb_conn_friends += nb_friends - my_socketserver.server_states[cc].nb_conn;
-    my_socketserver.server_states[cc].set_nb_conn (nb_friends, nb_conn_of_friends);
+    my_socketserver.nb_conn_friends += nb_friends - my_socketserver.server_states[my_connection].nb_conn;
+    my_socketserver.server_states[my_connection].set_nb_conn (nb_friends, nb_conn_of_friends);
     */
   }
   else if( command == "Quit" )
     {
-      cc->close_socket();
+      my_connection->close_socket();
       return 0;
     }
   else
@@ -255,10 +255,8 @@ FactoryInfoPacket::make_netstring() const
 }
 
 int 
-FactoryInfoPacket::handle_packet(void* p_void)
+FactoryInfoPacket::handle_packet( )
 {  
-  NetConnection* cc = (NetConnection*) p_void;
-
   cout<<data<<endl;
 
   istrstream is(data.c_str());
@@ -343,10 +341,8 @@ SubmitListPacket::make_netstring() const
 }
 
 int 
-SubmitListPacket::handle_packet( void* p_void)
+SubmitListPacket::handle_packet( )
 {
-  //  NetConnection* cc = (NetConnection*) p_void;
-
   //TODO : see if this is very usefull
   if( data == "" ) //Prevent from empty list
     return 1;

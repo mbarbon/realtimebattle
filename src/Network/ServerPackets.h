@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,13 +28,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class ServerPacketFactory: public PacketFactory {
  public:
   string Protocol() {return RTB_PROTOCOL_VERSION_STR ;};
-  Packet* MakePacket(string &); 
+  Packet* MakePacket(string &, NetConnection*); 
 };
 
 class InitPacketFactory: public PacketFactory {
  public:
   string Protocol() {return "not a protocol" ;};
-  Packet* MakePacket(string &); 
+  Packet* MakePacket(string &, NetConnection*); 
 };
 
 extern ServerPacketFactory my_serverpacketfactory;
@@ -44,14 +44,16 @@ class InitializationPacket : /* virtual */ public Packet
 public:
   InitializationPacket( )  {};
 
-  InitializationPacket( const string& t )
-    : type_init(t), protocol(RTB_PROTOCOL_VERSION_STR), channel(1) {}
+  InitializationPacket( const string& data, NetConnection* nc )
+    : Packet(data, nc) {}
+
   InitializationPacket( const string& t,
 			const string& p,
 			const int& c)
     : type_init(t), protocol(p), channel(c) {}
+
   string make_netstring() const;
-  int handle_packet( void* ) ; 
+  int handle_packet( ) ; 
 
   packet_t packet_type() { return PACKET_INIT; };
 
@@ -66,10 +68,19 @@ class CommandPacket : /* virtual */ public Packet
 public:
   CommandPacket()
     : comm("") {}
-  CommandPacket( const string& c /* , unsigned n, ... */);
+  CommandPacket( const string& data, NetConnection* nc ) 
+     : Packet(data, nc) {} ;
+
+  CommandPacket( const string& c );
+
+  CommandPacket( const string& c, vector<string>& arg) :
+    comm(c), arg(arg) {}
+
   string make_netstring() const;
-  int handle_packet( void* );
+  int handle_packet( );
+
   packet_t packet_type() { return PACKET_COMMAND; };
+
 protected:
   string comm;
   vector<string> arg;
@@ -78,12 +89,16 @@ protected:
 class FactoryInfoPacket : /* virtual */ public Packet
 {
 public:
+  FactoryInfoPacket( const string& data, NetConnection* nc ) 
+     : Packet(data, nc) {} ;
+
+
   FactoryInfoPacket()
     : protocol("No_Protocol"), channel( 0 ) {}
   FactoryInfoPacket( const string& p, int c)
     : protocol( p ), channel( c ) {}
   string make_netstring() const;
-  int handle_packet( void* );
+  int handle_packet( );
   packet_t packet_type() { return PACKET_FACTORY_INFO; };
 protected:
   string protocol;
@@ -94,6 +109,9 @@ protected:
 class SubmitListPacket : public Packet
 {
 public:
+  SubmitListPacket( const string& data, NetConnection* nc ) 
+    : Packet(data, nc) {} ;
+
   SubmitListPacket( ) {};  
 
   SubmitListPacket( string /* type */, const vector<string>& );
@@ -106,7 +124,7 @@ public:
                 string&, string&, string&, string&, string& ); // five strings
 
   string make_netstring() const;
-  int handle_packet( void* );
+  int handle_packet( );
   packet_t packet_type() { return PACKET_SUBMIT; }
   friend class SocketServer;
 protected:

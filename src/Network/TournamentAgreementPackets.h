@@ -33,13 +33,13 @@ class TournamentAgreementPacketFactory: public PacketFactory {
  public:
   TournamentAgreementPacketFactory();
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_AGREEMENT ;};
-  void add_connection( NetConnection*, string = string("") );
+  bool add_connection( NetConnection*, string = string("") );
   void set_start(NetConnection*, bool);
   void reset_start();
   void remove_connection( NetConnection* );
   void start_tournament( bool = false );
 
-  Packet* MakePacket(string &); 
+  Packet* MakePacket( string &, NetConnection* ); 
  protected:
   tourn_info_t my_tournament;
   bool accept_new_connection;
@@ -48,14 +48,16 @@ class TournamentAgreementPacketFactory: public PacketFactory {
 
 class TournamentCommitChangePacket : /* virtual */ public Packet {
 public:
-  TournamentCommitChangePacket(tourn_info_t* tourn, TournamentAgreementPacketFactory* f)
-    : tourn_p(tourn), change(""), my_factory( f ) {};
+  TournamentCommitChangePacket(string& data, NetConnection* nc, 
+			       tourn_info_t* tourn, TournamentAgreementPacketFactory* f)
+    : Packet(data, nc), tourn_p(tourn), my_factory( f ) {};
+
   TournamentCommitChangePacket( const string& c ) 
     : change(c)  {};
   TournamentCommitChangePacket( const string& t, const string& c)
     : type_init( t ), change( c ) {};
   string make_netstring() const;
-  int handle_packet( void* );
+  int handle_packet( );
   packet_t packet_type() { return PACKET_TOURNAMENT_COMMIT_CHANGE; };
 
   string& type()  {return type_init;}
@@ -69,13 +71,14 @@ protected:
 
 class StartTournamentPacket : /* virtual */ public Packet {
 public:
-  StartTournamentPacket(TournamentAgreementPacketFactory* f)
-    : start(false), my_factory( f ) {};
+  StartTournamentPacket(string& data, NetConnection* nc,
+			TournamentAgreementPacketFactory* f)
+    : Packet(data, nc), start(false), my_factory( f ) {};
   StartTournamentPacket( bool start ) 
     : start(start)  {};
 
   string make_netstring() const;
-  int handle_packet( void* );
+  int handle_packet( );
   packet_t packet_type() { return PACKET_START_TOURNAMENT; };
 
 protected:

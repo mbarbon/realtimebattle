@@ -63,12 +63,13 @@ TournamentAgreementPacketFactory::TournamentAgreementPacketFactory()
 }
 
 Packet*
-TournamentAgreementPacketFactory::MakePacket( string& netstr )
+TournamentAgreementPacketFactory::MakePacket( string& netstr, NetConnection * nc )
 {
   string type = netstr.substr(0,2);
+  string data = netstr.substr(2, netstr.length() - 2 );
 
-  if     (type == "TC")    return new TournamentCommitChangePacket( &my_tournament, this );
-  else if(type == "ST")    return new StartTournamentPacket( this );
+  if     (type == "TC")    return new TournamentCommitChangePacket( data, nc, &my_tournament, this );
+  else if(type == "ST")    return new StartTournamentPacket( data, nc, this );
 
   //else if(type == "SL")    return new SubmitListPacket( );
   //else if(type == "@M")    return new ChatMessagePacket( );
@@ -77,7 +78,7 @@ TournamentAgreementPacketFactory::MakePacket( string& netstr )
   return NULL;
 }
 
-void 
+bool 
 TournamentAgreementPacketFactory::add_connection( NetConnection* nc, string more_arg )
 {
   //Send all the arenas I have to the players...
@@ -102,6 +103,7 @@ TournamentAgreementPacketFactory::add_connection( NetConnection* nc, string more
 
   my_connections.push_back( nc );
   ready_to_start[ nc ] = false;
+  return true;
 }
 
 void
@@ -231,9 +233,8 @@ TournamentCommitChangePacket::make_netstring() const
 }
 
 int 
-TournamentCommitChangePacket::handle_packet(void* p_void)
+TournamentCommitChangePacket::handle_packet()
 {
-  NetConnection* nc = (NetConnection*) p_void;
   istrstream is(data.c_str());
   string type_init;
 
@@ -251,7 +252,7 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
       is >> dir >> name >> team >> id;
       cout<<"Add robot : "<<dir<<name<<", "<<team<<"  id : "<<id<<endl;
       
-      robot_info_t the_robot(dir, name, team, nc);
+      robot_info_t the_robot(name, dir, team, my_connection);
       tourn_p->robots.push_back(the_robot);
       ostrstream os;
       os << type_init << " " << dir <<" "<< name << " " << team << " " <<the_robot.id;
@@ -328,13 +329,12 @@ StartTournamentPacket::make_netstring() const
 }
 
 int 
-StartTournamentPacket::handle_packet(void* p_void)
+StartTournamentPacket::handle_packet()
 {
-  NetConnection* nc = (NetConnection*) p_void;
   istrstream is(data.c_str());
 
   is>>start;
 
-  my_factory->set_start(nc, start);
+  my_factory->set_start(my_connection, start);
   return 0;
 }

@@ -53,6 +53,8 @@ enum packet_t
   PACKET_TOURNAMENT_COMMIT_CHANGE,
   PACKET_START_TOURNAMENT,
 
+  PACKET_OLD_RTB_MESSAGE,
+
   PACKET_WARNING,       //Send a warning message... (should be used by everybody...)
 };
 
@@ -64,33 +66,23 @@ enum packet_t
 class Packet
 {
 public:
-  Packet( ) : data( "" ), size(0) {};
-  Packet( string& d ) : data( d ) {};          //NOTE : USELESS
+  Packet( ) 
+    : data( "" ), my_connection(NULL) {};
+  Packet( const string& d, NetConnection* nc) 
+    : data( d ), my_connection(nc) {};
+ 
   virtual ~Packet() {};
-  virtual string make_netstring() const {return "";};  //Get what is to send in the socket
-  //string operator()() const { return make_netstring(); } //Do I need it ?
-  string get_string_from_netstring( string& );         //Is it still in use???
-  void remove_from_netstring( string& );
 
-  virtual int handle_packet(void*) {return 0;};        //What is to do when we receive the packet
+  virtual string make_netstring() const {return "";};  //Get what is to send in the socket
+  string operator()() const { return make_netstring(); } //Do I need it ?
+
+  virtual int handle_packet() {return 0;};
   virtual packet_t packet_type() = 0;                  //Return the type of the packet (See list below)
 
-  friend ostream & operator<<(ostream&, const Packet&);
-
 protected:
-  //All this functions are not used anymore because there is problems with the '\0' char
-  string& add_string_to_netstring( const string&, string& ) const;      
-  string& add_uint8_to_netstring( const unsigned int&, string& ) const;
-  string& add_uint16_to_netstring( const unsigned int&, string& ) const;
-  unsigned int get_uint8_from_netstring( const string& ) const;
-  unsigned int get_uint16_from_netstring( const string& ) const;
-  
   string data;       //The data in the packet when reveived
-  unsigned int size; //The size of the packet... is it very useful???
+  NetConnection* my_connection;
 };
-
-ostream & operator<<(ostream&, const Packet&);
-
 
 //This class have to be virtual (we can build a plug-in loader around it) 
 class PacketFactory {
@@ -98,9 +90,9 @@ class PacketFactory {
   PacketFactory() : close_me( false ) {};
   virtual ~PacketFactory() {};
   virtual string Protocol() {return "NoProtocol";};
-  virtual Packet* MakePacket(string & s) {return NULL;};
+  virtual Packet* MakePacket(string & s, NetConnection*) {return NULL;};
 
-  virtual void add_connection( NetConnection*, string = string("") );
+  virtual bool add_connection( NetConnection*, string = string(""));
   virtual void remove_connection( NetConnection* );
 
   void broadcast( Packet* );

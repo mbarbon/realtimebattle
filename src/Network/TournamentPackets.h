@@ -32,17 +32,17 @@ class TournamentRobotPacketFactory: public PacketFactory {
   TournamentRobotPacketFactory( Tournament* T ) 
     : my_tournament( T ) {};
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_ROBOT ;};
-  //void add_connection( NetConnection* );
+  bool add_connection( NetConnection*, string = string("") );
   //void set_start(NetConnection*, bool);
   //void reset_start();
   //void remove_connection( NetConnection* );
   //void start_tournament( bool = false );
 
-  Packet* MakePacket(string &); 
+  Packet* MakePacket(string &, NetConnection*); 
  protected:
   Tournament* my_tournament;
   //tourn_info_t my_tournament;
-  //map<NetConnection*, bool> ready_to_start;
+  map<NetConnection*, Robot*> robot_connection;
 };
 
 class TournamentViewPacketFactory: public PacketFactory {
@@ -56,12 +56,28 @@ class TournamentViewPacketFactory: public PacketFactory {
   //void remove_connection( NetConnection* );
   //void start_tournament( bool = false );
 
-  Packet* MakePacket(string &); 
+  Packet* MakePacket(string &, NetConnection*); 
  protected:
   Tournament* my_tournament;
   //tourn_info_t my_tournament;
   //map<NetConnection*, bool> ready_to_start;
 };
 
+class OldRTBMessagePacket : /* virtual */ public Packet {
+public:
+  OldRTBMessagePacket( ) {};
+  OldRTBMessagePacket( string & message ) 
+    : message( message ) {};
+
+  OldRTBMessagePacket( const string& data, NetConnection* nc ) 
+     : Packet(data, nc) {} ;
+
+  string make_netstring() const;
+  int handle_packet( );
+  packet_t packet_type() { return PACKET_OLD_RTB_MESSAGE; };
+
+protected:
+  string message;
+};
 
 #endif

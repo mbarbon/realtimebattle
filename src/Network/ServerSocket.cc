@@ -235,20 +235,6 @@ SocketServer::check_socket()
 	  cout<<"Ciao\n";
 	  exit( 0 );
 	}
-      else if(command == "mount") //mount a packetfactory on a channel
-	{
-	  string packetfact; int channel;
-	  is >> packetfact;
-	  PacketFactory* to_mount = NULL;
-	  if(packetfact == "server") {
-	    to_mount = new ServerPacketFactory();
-	  } else if(packetfact == "negociation") {
-	    to_mount = new TournamentAgreementPacketFactory ();
-	  }
-	  if( to_mount ) {
-	    channel = open_channel( to_mount );
-	  }
-	}
     }
 
   if( FD_ISSET( server_socket, &readfs ) )
@@ -277,17 +263,14 @@ SocketServer::check_socket()
 	      //Extract the string for the queue and make a packet with it
 	      string data = (**li).read_buffers.front();
 
-	      P = connection_factory[*li]->MakePacket( data );
+	      //Note : some factories don't return packet and they will be handled later
+	      P = connection_factory[*li]->MakePacket( data, *li );
 
 	      (**li).read_buffers.pop_front();
 
 	      if( !P ) continue; //Jump to the next Packet
 
-	      P->get_string_from_netstring( data );
-
-	      P->handle_packet( *li );
-
-	      //Delete this old packet...
+	      P->handle_packet( );
 	      delete P;
 	    }
 
