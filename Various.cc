@@ -58,9 +58,9 @@ make_gdk_colour(const long col)
 long 
 gdk2hex_colour(const GdkColor& col)
 {
-  return ( (col.blue << 8) | 
-           (col.green << 8) >> 8 |
-           (col.red << 8) >> 16 );
+  return  ( (col.blue & 0xff) | 
+            ((col.green & 0xff) << 8) |
+            ((col.red & 0xff) << 16) );
 }
 void 
 reorder_pointer_array(void** array, int size)
