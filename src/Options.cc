@@ -437,6 +437,7 @@ Options::setup_options_window()
 {
   options_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (options_window), "RealTimeBattle Options");
+  gtk_widget_set_name (options_window, "RTB Options");
   gtk_signal_connect (GTK_OBJECT (options_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(options_window));
   gtk_container_border_width (GTK_CONTAINER (options_window), 12);

@@ -438,6 +438,7 @@ Gui::setup_start_tournament_window()
 
   start_tournament_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (start_tournament_window), "RealTimeBattle Start New Tournament");
+  gtk_widget_set_name (start_tournament_window, "RTB Start New Tournament");
   gtk_signal_connect (GTK_OBJECT (start_tournament_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(start_tournament_window));
   gtk_container_border_width (GTK_CONTAINER (start_tournament_window), 12);
