@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.10\n"
-"POT-Creation-Date: 2000-01-06 09:50+0100\n"
+"POT-Creation-Date: 2000-01-15 18:12+0100\n"
 "PO-Revision-Date: 1999-08-24 22:22+0200\n"
 "Last-Translator: GNOME PL Team\n"
 "Language-Team: Polish <gnomepl@pandora.info.bielsko.pl>\n"
@@ -408,79 +408,83 @@ msgstr "Próg czasu CPU przy ostrze¿eniu [%]"
 msgid "Logging frequency [Each n:th update interval]"
 msgstr "Czêstotliwo¶æ zapisu dziennika [co które od¶wie¿enie]"
 
-#: src/Options.cc:304
+#: src/Options.cc:305
+msgid "Max robots allowed simultaneously"
+msgstr ""
+
+#: src/Options.cc:309
 msgid "Robot search path"
 msgstr "¦cie¿ka poszukiwania robota"
 
-#: src/Options.cc:308
+#: src/Options.cc:313
 msgid "Arena search path"
 msgstr "¦cie¿ka poszukiwania areny"
 
-#: src/Options.cc:313
+#: src/Options.cc:318
 msgid "Directory for temporary files"
 msgstr "Katalog na pliki tymczasowe"
 
-#: src/Options.cc:318
+#: src/Options.cc:323
 msgid "Initial Arena window width"
 msgstr "Pocz±tkowa szeroko¶æ okna areny"
 
-#: src/Options.cc:323
+#: src/Options.cc:328
 msgid "Initial Arena window height"
 msgstr "Pocz±tkowa wysoko¶æ okna areny"
 
-#: src/Options.cc:328
+#: src/Options.cc:333
 msgid "Initial Arena window x position"
 msgstr "Pocz±tkowa pozycja pozioma okna areny"
 
-#: src/Options.cc:333
+#: src/Options.cc:338
 msgid "Initial Arena window y position"
 msgstr "Pocz±tkowa pozycja pionowa okna areny"
 
-#: src/Options.cc:338
+#: src/Options.cc:343
 msgid "Initial Control window x position"
 msgstr "Pocz±tkowa pozycja pozioma okna kontrolnego"
 
-#: src/Options.cc:343
+#: src/Options.cc:348
 msgid "Initial Control window y position"
 msgstr "Pocz±tkowa pozycja pionowa okna kontrolnego"
 
-#: src/Options.cc:348
+#: src/Options.cc:353
 msgid "Initial Message window width"
 msgstr "Pocz±tkowa szeroko¶æ okna komunikatów"
 
-#: src/Options.cc:353
+#: src/Options.cc:358
 msgid "Initial Message window height"
 msgstr "Pocz±tkowa wysoko¶æ okna komunikatów"
 
-#: src/Options.cc:358
+#: src/Options.cc:363
 msgid "Initial Message window x position"
 msgstr "Pocz±tkowa pozioma pozycja okna komunikatów"
 
-#: src/Options.cc:363
+#: src/Options.cc:368
 msgid "Initial Message window y position"
 msgstr "Pocz±tkowa pionowa pozycja okna komunikatów"
 
-#: src/Options.cc:368
+#: src/Options.cc:373
 msgid "Initial Score window width"
 msgstr "Pocz±tkowa szeroko¶æ okna punktacji"
 
-#: src/Options.cc:373
+#: src/Options.cc:378
 msgid "Initial Score window height"
 msgstr "Pocz±tkowa wysoko¶æ okna punktacji"
 
-#: src/Options.cc:378
+#: src/Options.cc:383
 msgid "Initial Score window x position"
 msgstr "Pocz±tkowa pozioma pozycja okna punktacji"
 
-#: src/Options.cc:383
+#: src/Options.cc:388
 msgid "Initial Score window y position"
 msgstr "Pocz±tkowa pionowa pozycja okna punktacji"
 
-#: src/Options.cc:388
+#: src/Options.cc:393
 msgid "Initial Statistics window width"
 msgstr "Pocz±tkowa szeroko¶æ okna statystyk"
 
-#: src/Options.cc:393
+#: src/Options.cc:398
 msgid "Initial Statistics window height"
 msgstr "Pocz±tkowa wysoko¶æ okna statystyk"
 
@@ -693,7 +697,7 @@ msgid " Seq: "
 msgstr " Sekw: "
 
 #: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:408 src/StatisticsWindow.cc:519
+#: src/StatisticsWindow.cc:409 src/StatisticsWindow.cc:521
 msgid "Game"
 msgstr "Gra"
 
@@ -741,19 +745,19 @@ msgstr "Ogó³em punktów"
 msgid "Choose a statistics file to save"
 msgstr "Wybierz plik do zapisu statystyk"
 
-#: src/StatisticsWindow.cc:407
+#: src/StatisticsWindow.cc:408
 msgid "Seq"
 msgstr "Sekw"
 
-#: src/StatisticsWindow.cc:503
+#: src/StatisticsWindow.cc:505
 msgid " Grand Total "
 msgstr " Ogó³em "
 
-#: src/StatisticsWindow.cc:506
+#: src/StatisticsWindow.cc:508
 msgid " Sequence "
 msgstr " Sekwencja "
 
-#: src/StatisticsWindow.cc:518
+#: src/StatisticsWindow.cc:520
 msgid " Sequence: "
 msgstr " Sekwencja: "
 

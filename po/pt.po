@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-06 09:50+0100\n"
+"POT-Creation-Date: 2000-01-15 18:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Rui Sousa <rsousa@grad.physics.sunysb.edu>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -413,79 +413,83 @@ msgstr "Percentagem de tempo de CPU para aviso"
 msgid "Logging frequency [Each n:th update interval]"
 msgstr "Frequência de relatório [A cada n intervalos de actualização]"
 
-#: src/Options.cc:304
+#: src/Options.cc:305
+msgid "Max robots allowed simultaneously"
+msgstr ""
+
+#: src/Options.cc:309
 msgid "Robot search path"
 msgstr "Caminho para procurar robots"
 
-#: src/Options.cc:308
+#: src/Options.cc:313
 msgid "Arena search path"
 msgstr "Caminho para procurar arenas"
 
-#: src/Options.cc:313
+#: src/Options.cc:318
 msgid "Directory for temporary files"
 msgstr "Directoria para ficheiros temporários"
 
-#: src/Options.cc:318
+#: src/Options.cc:323
 msgid "Initial Arena window width"
 msgstr "Largura inicial da janela da Arena"
 
-#: src/Options.cc:323
+#: src/Options.cc:328
 msgid "Initial Arena window height"
 msgstr "Altura inicial da janela da Arena"
 
-#: src/Options.cc:328
+#: src/Options.cc:333
 msgid "Initial Arena window x position"
 msgstr "Coordenada inicial da janela da Arena"
 
-#: src/Options.cc:333
+#: src/Options.cc:338
 msgid "Initial Arena window y position"
 msgstr "Ordenada inicial da janela da Arena"
 
-#: src/Options.cc:338
+#: src/Options.cc:343
 msgid "Initial Control window x position"
 msgstr "Coordenada inicial da janela de Controle"
 
-#: src/Options.cc:343
+#: src/Options.cc:348
 msgid "Initial Control window y position"
 msgstr "Ordenada inicial da janela de Controle"
 
-#: src/Options.cc:348
+#: src/Options.cc:353
 msgid "Initial Message window width"
 msgstr "Largura inicial da janela das Mensagens"
 
-#: src/Options.cc:353
+#: src/Options.cc:358
 msgid "Initial Message window height"
 msgstr "Altura inicial da janela das Mensagens"
 
-#: src/Options.cc:358
+#: src/Options.cc:363
 msgid "Initial Message window x position"
 msgstr "Coordenada inicial da janela das Mensagens"
 
-#: src/Options.cc:363
+#: src/Options.cc:368
 msgid "Initial Message window y position"
 msgstr "Ordenada inicial da janela das Mensagens"
 
-#: src/Options.cc:368
+#: src/Options.cc:373
 msgid "Initial Score window width"
 msgstr "Largura inicial da janela da Pontuação"
 
-#: src/Options.cc:373
+#: src/Options.cc:378
 msgid "Initial Score window height"
 msgstr "Altura inicial da janela da Pontuação"
 
-#: src/Options.cc:378
+#: src/Options.cc:383
 msgid "Initial Score window x position"
 msgstr "Coordenada inicial da janela da Pontuação"
 
-#: src/Options.cc:383
+#: src/Options.cc:388
 msgid "Initial Score window y position"
 msgstr "Ordenada inicial da janela da Pontuação"
 
-#: src/Options.cc:388
+#: src/Options.cc:393
 msgid "Initial Statistics window width"
 msgstr "Largura inicial da janela das Estatisticas"
 
-#: src/Options.cc:393
+#: src/Options.cc:398
 msgid "Initial Statistics window height"
 msgstr "Altura inicial da janela das Estatisticas"
 
@@ -705,7 +709,7 @@ msgid " Seq: "
 msgstr " Seq: "
 
 #: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:408 src/StatisticsWindow.cc:519
+#: src/StatisticsWindow.cc:409 src/StatisticsWindow.cc:521
 msgid "Game"
 msgstr "Jogo"
 
@@ -753,19 +757,19 @@ msgstr "Pontos Totais"
 msgid "Choose a statistics file to save"
 msgstr "Escolha um ficheiro de estatisticas para gravar"
 
-#: src/StatisticsWindow.cc:407
+#: src/StatisticsWindow.cc:408
 msgid "Seq"
 msgstr "Seq"
 
-#: src/StatisticsWindow.cc:503
+#: src/StatisticsWindow.cc:505
 msgid " Grand Total "
 msgstr " Grande Total "
 
-#: src/StatisticsWindow.cc:506
+#: src/StatisticsWindow.cc:508
 msgid " Sequence "
 msgstr " Sequência "
 
-#: src/StatisticsWindow.cc:518
+#: src/StatisticsWindow.cc:520
 msgid " Sequence: "
 msgstr " Sequência: "
 
