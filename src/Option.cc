@@ -28,12 +28,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 const string
-LongOption::get_string_val() const
+LongOption::make_string_val( const long int temp_value ) const
 {
   if( !hexadecimal )
-    return lint2string( value );
+    return lint2string( temp_value );
   else
-    return hex2string( value );
+    return hex2string( temp_value );
   return string("");
 }
 
@@ -75,10 +75,75 @@ LongOption::change_value( const string& newval_string, const bool def )
   return false;
 }
 
+string&
+LongOption::make_correct_string_val( string& str ) const
+{
+  if( str.empty() )
+    return str;
+
+  string (* val2string) ( const long int ) = lint2string;
+  long int (* string2val) ( const string& ) = string2lint;
+  string allowed_vals = "0123456789";
+  if( hexadecimal )
+    {
+      allowed_vals += "abcdefABCDEF";
+      val2string = hex2string;
+      string2val = string2hex;
+    }
+
+  string::size_type first_pos = 0;
+  bool negative = false;
+  if( min_value < 0 && (negative = (str[0] == '-')) )
+    first_pos++;
+
+  string::size_type pos = str.find_first_not_of(allowed_vals, first_pos);
+
+  while( pos != string::npos )
+    {
+      str.erase( pos, 1 );
+      pos = str.find_first_not_of(allowed_vals, pos);
+    }
+
+  long int nval = string2val( str );
+
+  if( nval > max_value )
+    return( str = val2string( max_value ) );
+  if( nval < min_value )
+    return( str = val2string( min_value ) );
+  if( nval == 0 )
+    if( negative )
+      return( str = "-0" );
+    else
+      return( str = "0" );
+
+  if( first_pos != string::npos && str[first_pos] == '0' )
+    str.erase( first_pos, 1 );
+
+  return str;
+}
+
 const string
 DoubleOption::get_string_val() const
 {
   return double2string( value );
+}
+
+const string
+DoubleOption::get_string_min() const
+{
+  return double2string( min_value );
+}
+
+const string
+DoubleOption::get_string_max() const
+{
+  return double2string( max_value );
+}
+
+const string
+DoubleOption::get_string_def() const
+{
+  return double2string( default_value );
 }
 
 void
@@ -112,6 +177,46 @@ DoubleOption::change_value( const string& newval_string, const bool def )
   if( !newval_string.empty() )
     return change_value( string2double( newval_string ), def );
   return false;
+}
+
+string&
+DoubleOption::make_correct_string_val( string& str ) const
+{
+  if( str.empty() )
+    return str;
+
+  string allowed_vals = "0123456789";
+
+  string::size_type first_pos = 0;
+  bool negative;
+  if( min_value < 0 && (negative = (str[0] == '-')) )
+    first_pos++;
+
+  string::size_type pos = str.find_first_not_of(allowed_vals, first_pos);
+  bool found_point = false;
+  while( pos != string::npos )
+    {
+      if( str[pos] == '.' && found_point == false )
+        {
+          pos++;
+          found_point = true;
+        }
+      else
+        str.erase( pos, 1 );
+      pos = str.find_first_not_of(allowed_vals, pos);
+    }
+
+  double nval = string2double( str );
+
+  if( nval > max_value )
+    return( str = double2string( max_value ) );
+  if( nval < min_value )
+    return( str = double2string( min_value ) );
+
+  if( first_pos != string::npos && str[first_pos] == '0' )
+    str.erase( first_pos, 1 );
+
+  return str;
 }
 
 void
