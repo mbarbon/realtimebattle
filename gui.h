@@ -15,12 +15,12 @@ public:
   Gui();
   ~Gui() {}
 
-  void setup_control_window( char * robot_name_list[] );
+  void setup_control_window( void * the_arenap );
   void setup_arena_window( Vector2D bound[] );
   void quit_event( GtkWidget * widget, GdkEvent * event );
 
   void print_to_message_output( char * from_robot, char * text, GdkColor colour);
-  void draw_objects( gpointer the_arenap );
+  void draw_objects( void * the_arenap );
 
   int change_to_pixels_x(double input);
   int change_to_pixels_y(double input);
