@@ -24,11 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 
 #include "GeometricalObjects.h"
-#include "Various.h"
-#include "ArenaController.h"
-#include "Arena.h"
 
-
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 Line::Line()
 {
@@ -38,12 +35,9 @@ Line::Line()
   thickness = 0.0;
 }
 
-Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th)
+Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th) :
+  start_point( sp ),  direction( d ), length( len ), thickness( th )
 {
-  start_point = sp;
-  direction = d;
-  length = len;
-  thickness = th;
 }
 
 // Line::Line(const Vector2D& sp, const Vector2D& d, const double len, 
