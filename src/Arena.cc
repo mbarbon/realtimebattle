@@ -43,12 +43,24 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 
 void
-Arena::add_shot(Shot* s)
+Arena::add_shot(Shot* s, bool from_robot)
 {
   if(  shots.insert(s).second == false )
     Error(true, "Couldn't add element", "Arena::add_shot");
 }
 
+
+void
+Arena::update_robots()
+{
+  set<Robot*>::iterator li;
+
+  for( li = robots.begin(); li != robots.end(); li++ )
+    if( !(*li)->is_killed() )  
+      {
+        (*li)->update();
+      }
+}
 
 void
 Arena::find_subsquares_for_shape( Shape* s )
@@ -289,7 +301,7 @@ vector<string>&
 Arena::special_split_string( const string& input_str, vector<string>& strlist ) const
 {
   string str( input_str );
-  if( (count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0 )
+  if( (count( str.begin(), str.end(), '"' ) % 2) != 0 )
     {
       str += "\"";
       cerr << "Arena::special_split_string: input_str contains unterminated strings."

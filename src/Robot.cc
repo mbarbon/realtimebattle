@@ -52,6 +52,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "Extras.h"
 #include "String.h"
+#include "EventHandler.h"
+#include "Rotation.h"
 
 //  #include "MovingObject.h"
 //  #include "Arena.h"
@@ -81,8 +83,7 @@ Robot::Robot(const string& filename)
 //    send_usr_signal = false;
 //    signal_to_send = 0;
   send_rotation_reached = 0;
-  alive = false;
-  dead_but_stats_not_set = false;
+  killed = true;
   //  total_points = 0.0;
   
   has_competed = false;
@@ -112,7 +113,7 @@ Robot::Robot(const int r_id, const long int col, const string& name)
 
   //  process_running = false;
   process = NULL;
-  alive = false;
+  killed = true;
   //  total_points = 0.0;
   
   has_competed = false;
@@ -129,102 +130,6 @@ Robot::~Robot()
       delete process;
     }
 } 
-
-void
-Robot::live()
-{
-  alive = true;
-  dead_but_stats_not_set = false;
-}
-
-void
-Robot::die()
-{
-  if( alive )
-    {
-      alive = false;
-      dead_but_stats_not_set = true;
-//  #ifndef NO_GRAPHICS
-//        if( !no_graphics )
-//          {
-//            the_gui.get_arenawindow_p()->
-//              draw_circle( last_drawn_center, last_drawn_radius,
-//                           *(the_gui.get_bg_gdk_colour_p()), true );
-//            last_drawn_robot_center = Vector2D( infinity, infinity );
-//          }
-//  #endif
-    }
-}
-
-void
-
-Robot::set_stats(const int robots_killed_same_time, const bool timeout)
-{
-//    dead_but_stats_not_set = false;
-
-//    int adjust = robots_killed_same_time - 1;
-//    if( timeout ) adjust *= 2;
-
-//    position_this_game = the_arena.get_robots_left() + 1;
-
-//    double points = the_arena.get_robots_per_game() - the_arena.get_robots_left() -
-//      ((double)adjust) * 0.5;
-
-//    time_survived_in_sequence += the_arena.get_total_time();
-
-//    send_message(DEAD);
-//    process->send_signal();
-
-//    the_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
-
-//    statistics.push_back( stat_t
-//                          ( the_arena.get_sequence_nr(),
-//                            the_arena.get_game_nr(),
-//                            position_this_game,
-//                            points,   
-//                            the_arena.get_total_time(),
-//                            get_total_points() + points ) );
-
-//  //  #ifndef NO_GRAPHICS
-//  //    if( !no_graphics ) display_score();
-//  //  #endif
-//  }
-
-//  // Version of set_stats used by ArenaReplay
-//  //
-//  void
-//  Robot::set_stats(const double pnts, const int pos, const double time_survived, 
-//                   const bool make_stats)
-//  {
-//    position_this_game = pos;
-//    time_survived_in_sequence += time_survived;
-
-//    if( make_stats )
-//      {
-//        list<stat_t>::reverse_iterator li;
-//        li = statistics.rbegin();
-//        double total_points = ( statistics.empty() ?  0.0 : (*li).total_points );
-
-//        statistics.push_back( stat_t
-//                              ( the_arena.get_sequence_nr(),
-//                                the_arena.get_game_nr(),
-//                                pos,
-//                                pnts,
-//                                time_survived,
-//                                total_points + pnts ) );
-//      }
-//  //  #ifndef NO_GRAPHICS
-//  //    if( !no_graphics && !make_stats ) display_score();
-//  //  #endif
-}
-
-void
-Robot::set_angles( double robot_a, const double cannon_a, const double radar_a)
-{
-  robot_angle.pos  = robot_a;
-  cannon_angle.pos = cannon_a;
-  radar_angle.pos  = radar_a;
-}
 
 void
 Robot::check_name_uniqueness()
@@ -257,159 +162,6 @@ Robot::check_name_uniqueness()
 //      robot_name += ('(' + int2string(robot_name_uniqueness_number) + ')');
 }
 
-double
-Robot::get_total_points()
-{
-//    list<stat_t>::reverse_iterator li;
-//    double total_pnts;
-
-//    if( the_arena_controller.is_realtime() || the_arena.is_log_from_stdin() ) 
-//      {
-//        li = statistics.rbegin();
-
-//        total_pnts = ( statistics.empty() ?  0.0 : (*li).total_points );
-
-//        if( is_alive() )
-//          total_pnts += the_arena.get_robots_per_game() - the_arena.get_robots_left();
-        
-
-//      }
-//    else     // Replaying
-//      {
-//        list<stat_t>::const_iterator li = get_current_game_stats();
-
-//        if( is_alive() )
-//          {          
-//            total_pnts = (*li).total_points - (*li).points + 
-//              the_arena.get_robots_per_game() - the_arena.get_robots_left();
-//          }
-//        else // if robot dead
-//          total_pnts = (*li).total_points;
-//      }
-
-//    return total_pnts;
-  return 0.0;
-} 
-
-
-
-int
-Robot::get_last_position()
-{
-//    list<stat_t>::const_iterator li;
-
-//    if( the_arena_controller.is_realtime() || the_arena.is_log_from_stdin() ) 
-//      {
-      
-//        li = statistics.end(); //points to one after the last element
-
-//        if( li == statistics.begin() ) return 0;
-//        li--;
-
-//        if( (*li).game_nr < the_arena.get_game_nr() )
-//          return (*li).position;
-//      }      
-//    else
-//      {
-//        li = get_current_game_stats();
-//      }
-     
-//    if( li == statistics.begin() ) return 0;
-//    li--;
-  
-//    if( (*li).sequence_nr == the_arena.get_sequence_nr() )
-//      return (*li).position;
-
-  return 0;
-}
-
-list<stat_t>::const_iterator
-Robot::get_current_game_stats()
-{
-//    if( !(current_game_stats == statistics.end()) ||
-//        (*current_game_stats).sequence_nr != the_arena.get_sequence_nr() ||
-//        (*current_game_stats).game_nr != the_arena.get_game_nr() )
-//      {
-//        list<stat_t>::const_iterator li;
-//        for( li = statistics.begin(); li != statistics.end(); li++ )
-//          {
-//            if( (*li).sequence_nr == the_arena.get_sequence_nr() &&
-//                (*li).game_nr == the_arena.get_game_nr() )
-//              {
-//                current_game_stats = li;
-//                return current_game_stats;
-//              }          
-//          }
-//        Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
-//      }
-
-//    return current_game_stats;
-  list<stat_t>::const_iterator li;
-  return li;
-}
-
-
-bool
-Robot::update_rotation(rotation_t& angle, const double timestep)
-{
-  angle.pos += timestep * angle.vel;
-  bool rot_reached = false;
-
-  if( angle.pos >= angle.right && angle.mode == ROTATE_TO_RIGHT )
-    {
-      angle.set_rot( angle.right, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
-      if( send_rotation_reached >= 1 ) rot_reached = true;
-    }
-
-  if( angle.pos >= angle.right && angle.mode == SWEEP_RIGHT )
-    {
-      angle.set_rot( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
-      if( send_rotation_reached >= 2 ) rot_reached = true;
-    }
-  
-  if( angle.pos <= angle.left && angle.mode == ROTATE_TO_LEFT )
-    {      
-      angle.set_rot( angle.left, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
-      if( send_rotation_reached >= 1 ) rot_reached = true;
-    }
-
-  if( angle.pos <= angle.left && angle.mode == SWEEP_LEFT )
-    {
-      angle.set_rot( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
-      if( send_rotation_reached >= 2 ) rot_reached = true;
-    }
-
-  return rot_reached;
-}
-
-void
-Robot::update_radar_and_cannon(const double timestep)
-{
-  int rot_reached = 0;
-  if( update_rotation(robot_angle, timestep) )  rot_reached += 1;
-  if( update_rotation(cannon_angle, timestep) ) rot_reached += 2;
-  if( update_rotation(radar_angle, timestep) )  rot_reached += 4;
-
-  if( rot_reached > 0 ) send_message(ROTATION_REACHED, rot_reached);
-
-  shot_energy = min( the_opts.get_d(OPTION_SHOT_MAX_ENERGY), 
-                     shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
-
-  object_type closest_arenaobject;
-  Shape* col_obj;
-  double dist = the_arena.
-    get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
-                          0.0, closest_arenaobject, col_obj, this);
-
-  send_message(RADAR, dist, closest_arenaobject, radar_angle.pos);
-  if( closest_arenaobject == ROBOT )
-    {
-      double lvls = (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS);
-      double en = ((Robot*)col_obj)->get_energy();
-      send_message(ROBOT_INFO, rint( en / lvls ) * lvls, 0);
-    }
-  send_message(INFO, /*the_arena.get_total_time()*/0.0, length(velocity), cannon_angle.pos); 
-}
 
 
 //
@@ -418,7 +170,7 @@ Robot::update_radar_and_cannon(const double timestep)
 double
 Robot::get_bounce_coeff( const double angle )
 {
-  if( cos(angle - robot_angle.pos ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
+  if( cos(angle - robot_angle.angle ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
     return the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
   else
     return the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
@@ -427,7 +179,7 @@ Robot::get_bounce_coeff( const double angle )
 double
 Robot::get_hardness_coeff( const double angle )
 {
-  if( cos(angle - robot_angle.pos ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
+  if( cos(angle - robot_angle.angle ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
     return the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
   else
     return the_opts.get_d(OPTION_ROBOT_HARDNESS);
@@ -452,9 +204,6 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
   center = pos;
   robot_angle.set_rot (angle, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
-  cannon_angle.set_rot(0.0,   0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
-  radar_angle.set_rot (0.0,   0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
-  shot_energy = 0.0;
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
   velocity = Vector2D(0.0, 0.0);
@@ -487,23 +236,38 @@ Robot::set_values_at_process_start_up()
 //      } 
 }
 
-void
-Robot::update_velocity(const double timestep)
+void Robot::update( )
 {
-  Vector2D dir = angle2vec(robot_angle.pos);
-  double gt = the_opts.get_d(OPTION_GRAV_CONST);
-  double slide_fric = the_opts.get_d(OPTION_SLIDE_FRICTION);
-  double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - brake_percent) + 
-    slide_fric * brake_percent;
+  double current_time = the_eventhandler.get_game_time();
+  double timestep = current_time - last_update_time;
+  last_update_time = current_time;
 
-  double air_res = the_opts.get_d(OPTION_AIR_RESISTANCE);
 
-  velocity = 
-    dot(velocity, dir) * max(0.0, 1.0-gt*fric*timestep) * dir +
-    -velocity* min(air_res * timestep, 0.5) +
-    timestep*acceleration + 
-    vedge(dir, velocity) * max(0.0, 1.0-gt*slide_fric*timestep) * rotate90(dir);
+  update_velocity(timestep);
+  robot_angle.update(timestep, send_rotation_reached);
+
+  move(timestep);
+
+  get_messages();  
 }
+
+//  void
+//  Robot::update_velocity(const double timestep)
+//  {
+//    Vector2D dir = angle2vec(robot_angle.angle);
+//    double gt = the_opts.get_d(OPTION_GRAV_CONST);
+//    double slide_fric = the_opts.get_d(OPTION_SLIDE_FRICTION);
+//    double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - brake_percent) + 
+//      slide_fric * brake_percent;
+
+//    double air_res = the_opts.get_d(OPTION_AIR_RESISTANCE);
+
+//    velocity = 
+//      dot(velocity, dir) * max(0.0, 1.0-gt*fric*timestep) * dir +
+//      -velocity* min(air_res * timestep, 0.5) +
+//      timestep*acceleration + 
+//      vedge(dir, velocity) * max(0.0, 1.0-gt*slide_fric*timestep) * rotate90(dir);
+//  }
 
 /*
 void
@@ -1274,7 +1038,7 @@ Robot::change_energy(const double energy_diff)
 //  #ifndef NO_GRAPHICS  
 //    if( !no_graphics )  display_score();
 //  #endif
-  if( energy <= 0.0 ) die();
+  if( energy <= 0.0 ) killed = true;
 }
 
 void

@@ -30,7 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Messagetypes.h"
 
-#include "Structs.h"
+#include "Rotation.h"
 #include "RollingObject.h"
 #include "Process.h"
 
@@ -45,9 +45,10 @@ public:
   ~Robot();
 
   //  void move(const double timestep);  
-  void update_velocity(const double timestep);  
-  void update_radar_and_cannon(const double timestep);  
-  bool update_rotation(rotation_t& angle, const double timestep);
+  void update();
+  
+  bool update_position(const double timestep);
+
   void bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal);
   double get_bounce_coeff( const double angle );
   double get_hardness_coeff( const double angle );
@@ -60,45 +61,28 @@ public:
   void injury_from_collision(const double en, const double angle);
 
   void set_energy( const double en ) { energy = en; }
-  void set_angles( const double robot_a, const double cannon_a, const double radar_a );
+  void set_angle( const double a ) { robot_angle.angle = a; }
 
   void check_name_uniqueness();
   void get_messages();
   void send_message(enum message_to_robot_type ...);
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
-  void set_stats(const int robots_killed_same_time, const bool timeout=false);
-  void set_stats(const double pnts, const int pos, const double time_survived,
-                 const bool make_stats);
-  bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
 
   Process* get_process() { return process; }
 
-  void live();
-  void die();
 
   string get_robot_name() { return robot_name; }
 
-  bool is_alive() { return alive; }
   double get_energy() { return energy; }
-
-  list<stat_t>* get_statistics() { return &statistics; }
-
-  int get_position_this_game() { return position_this_game; }
-  double get_total_points();
-  int get_last_position();
 
   bool is_colour_given() { return colour_given; }
   void set_colour_given( const bool c ) { colour_given = c; }
   bool is_name_given() { return name_given; }
   
 
-  list<stat_t>::const_iterator get_current_game_stats();
-  
 
-  rotation_t get_robot_angle() { return robot_angle; }
-  rotation_t get_cannon_angle() { return cannon_angle; }
-  rotation_t get_radar_angle() { return radar_angle; }
+  Rotation get_robot_angle() { return robot_angle; }
 
   bool set_and_get_has_competed() 
     { if( has_competed ) return true; else { has_competed = true; return false; } }
@@ -113,8 +97,6 @@ private:
 
   class Process* process;
 
-  bool alive;
-
   int  send_rotation_reached;
 
   bool has_competed;
@@ -123,13 +105,9 @@ private:
   double extra_air_resistance;
   double brake_percent;
 
-  rotation_t robot_angle;
-  rotation_t cannon_angle;
-  rotation_t radar_angle;
-
-  double shot_energy;
-
-  list<stat_t> statistics;
+  Rotation robot_angle;
+  
+  double last_update_time;
 
   int robot_name_uniqueness_number;
 
@@ -141,10 +119,6 @@ private:
   
   int position_this_game;
   double time_survived_in_sequence;
-  bool dead_but_stats_not_set;
-
-  list<stat_t>::const_iterator current_game_stats;
-
 };
 
 #endif __ROBOT__

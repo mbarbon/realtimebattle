@@ -58,9 +58,9 @@ public:
   void load_arena_file( const string& filename, Gadget& hierarchy );
 
 
-  void add_shot(Shot* s);
+  void add_shot(Shot* s, bool from_robot=true);
   void update_shots() {}
-  void update_robots() {}
+  void update_robots();
 
   void collision( Shape* obj1, Shape* obj2, const double time_to_collsion ) {}
 
@@ -112,7 +112,6 @@ protected:
   set<MovingObject*> moving_objects; // Balls
   set<Shape*> updatable_objects;  // Explosion, etc.
   set<Shape*> static_objects; // Walls, mines, etc.
-
 
 
   Gadget gagdet_hierarchy;
