@@ -92,7 +92,7 @@ OptionHandler::get_l( const string& option ) const
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
   assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() == OPTION_VALUE_LONG) );
+          ((mci->second)->get_value_type() != OPTION_VALUE_LONG) );
   return (((LongOption*)mci->second)->get_value());
 }
 
@@ -102,7 +102,7 @@ OptionHandler::get_d( const string& option ) const
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
   assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() == OPTION_VALUE_DOUBLE) );
+          ((mci->second)->get_value_type() != OPTION_VALUE_DOUBLE) );
   return (((DoubleOption*)mci->second)->get_value());
 }
 
@@ -112,7 +112,7 @@ OptionHandler::get_s( const string& option ) const
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
   assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() == OPTION_VALUE_STRING) );
+          ((mci->second)->get_value_type() != OPTION_VALUE_STRING) );
   return (((StringOption*)mci->second)->get_value());
 }
 
