@@ -19,6 +19,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <math.h>
 #include "Vector2D.h"
+#include "String.h"
+
+class String;
+
+void Error(const bool fatal, const String& function_name, const String& error_msg);
 
 Vector2D::Vector2D()
 {
