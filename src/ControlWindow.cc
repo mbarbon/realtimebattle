@@ -30,7 +30,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "String.h"
 
+extern class ControlWindow* controlwindow_p;
+extern class String global_replay_fname;
 extern int global_game_mode;
+extern int global_debug_level;
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -157,7 +160,8 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_widget_show( label );
 
       GtkAdjustment* adj =
-        (GtkAdjustment*) gtk_adjustment_new( 1, 0, max_debug_level ,1 ,1 , 0 );
+        (GtkAdjustment*) gtk_adjustment_new( global_debug_level, 0,
+                                             max_debug_level, 1, 1, 0 );
 
       debug_level = gtk_spin_button_new( adj, 0, 0 );
       gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
@@ -166,6 +170,8 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
       gtk_widget_show( debug_level );
     }
+
+  filesel = NULL;
 }
 
 ControlWindow::~ControlWindow()
@@ -182,20 +188,20 @@ ControlWindow::set_window_title( const String& text)
 
 void
 ControlWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
-                                     class ControlWindow* controlwindow_p )
+                                     class ControlWindow* cw_p )
 {
   Quit();
 }
 
 void
 ControlWindow::quit_rtb( GtkWidget* widget,
-                         class ControlWindow* controlwindow_p )
+                         class ControlWindow* cw_p )
 {
   Quit();
 }
 
 void
-ControlWindow::pause( GtkWidget* widget, class ControlWindow* controlwindow_p )
+ControlWindow::pause( GtkWidget* widget, class ControlWindow* cw_p )
 {
   if( the_arena_controller.is_started() )
     the_arena.pause_game_toggle();
@@ -232,25 +238,94 @@ ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 
 void
 ControlWindow::change_debug_level( GtkAdjustment *adj,
-                                   class ControlWindow* controlwindow_p )
+                                   class ControlWindow* cw_p )
 {
   if( the_arena_controller.is_started() )
     the_arena.set_debug_level
       ( gtk_spin_button_get_value_as_int
-        ( GTK_SPIN_BUTTON( controlwindow_p->debug_level ) ) );
+        ( GTK_SPIN_BUTTON( cw_p->debug_level ) ) );
 }
 
 void
 ControlWindow::new_tournament( GtkWidget* widget,
-                               class ControlWindow* controlwindow_p )
+                               class ControlWindow* cw_p )
 {
   the_gui.open_starttournamentwindow();
 }
 
 void
 ControlWindow::replay_tournament( GtkWidget* widget,
-                                  class ControlWindow* controlwindow_p )
+                                  class ControlWindow* cw_p )
 {
+  bool open = false;
+
+  if( the_arena_controller.is_started() )
+    if( the_arena.get_state() != NOT_STARTED &&
+        the_arena.get_state() != FINISHED )
+      {
+        List<String> string_list;
+        string_list.insert_last( new String( "Yes" ) );
+        string_list.insert_last( new String( "No"  ) );
+        Dialog( (String)"This action will kill the current tournament.\n" +
+                "Do you want do that?",
+                string_list,
+                (DialogFunction) ControlWindow::kill_and_open_filesel );
+      }
+    else
+      open = true;
+  else
+    open = true;
+
+  if( open )
+    cw_p->open_replay_filesel();
+}
+
+void
+ControlWindow::open_replay_filesel()
+{
+  if( filesel == NULL )
+    {
+      filesel = gtk_file_selection_new( "Choose a log file to replay" );
+      gtk_signal_connect( GTK_OBJECT( filesel ), "destroy",
+                          (GtkSignalFunc) ControlWindow::destroy_filesel,
+                          (gpointer) this );
+      gtk_signal_connect
+        ( GTK_OBJECT( GTK_FILE_SELECTION( filesel )->cancel_button ), "clicked",
+          (GtkSignalFunc) ControlWindow::destroy_filesel, (gpointer) this );
+      gtk_signal_connect
+        ( GTK_OBJECT( GTK_FILE_SELECTION( filesel )->ok_button ), "clicked",
+          (GtkSignalFunc) ControlWindow::replay, (gpointer) this );
+      gtk_widget_show( filesel );
+    }
+}
+
+void
+ControlWindow::kill_and_open_filesel( int result )
+{
+  if( the_arena_controller.is_started() && result == 1 )
+    {
+      the_arena.interrupt_tournament();
+      controlwindow_p->open_replay_filesel();
+    }
+}
+
+void
+ControlWindow::replay( GtkWidget* widget,
+                       class ControlWindow* cw_p )
+{
+  global_replay_fname =
+    gtk_file_selection_get_filename
+    ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
+  the_arena_controller.start_replay_arena();
+  destroy_filesel( cw_p->get_filesel(), cw_p );
+}
+
+void
+ControlWindow::destroy_filesel( GtkWidget* widget,
+                                   class ControlWindow* cw_p )
+{
+  gtk_widget_destroy( cw_p->get_filesel() );
+  cw_p->set_filesel( NULL );
 }
 
 void
@@ -277,14 +352,14 @@ ControlWindow::end_tournament( int result )
 
 void
 ControlWindow::options_clicked( GtkWidget* widget,
-                                class ControlWindow* controlwindow_p )
+                                class ControlWindow* cw_p )
 {
   the_opts.open_optionswindow();
 }
 
 void
 ControlWindow::statistics_clicked( GtkWidget* widget,
-                                   class ControlWindow* controlwindow_p )
+                                   class ControlWindow* cw_p )
 {
   the_gui.open_statisticswindow();
 }

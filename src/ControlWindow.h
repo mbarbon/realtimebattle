@@ -52,31 +52,41 @@ public:
   //  GtkWidget* get_debug_level_label () { return debug_level_label; }
 
   static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void quit_rtb             ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void pause                ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void step                 ( GtkWidget* widget, gpointer data );
   static void end_game             ( GtkWidget* widget, gpointer data );
   static void kill_robot           ( GtkWidget* widget, gpointer data );
   static void change_debug_level   ( GtkAdjustment *adj,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void end_clicked          ( GtkWidget* widget, gpointer data ); 
   static void end_tournament       ( int result );
   static void options_clicked      ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void statistics_clicked   ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void new_tournament       ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
   static void replay_tournament    ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
+                                     class ControlWindow* cw_p );
+  static void replay               ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void destroy_filesel      ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void kill_and_open_filesel( int result );
+  void open_replay_filesel         ();
+
+  GtkWidget* get_filesel           () { return filesel; }
+  void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
 
 private:
 
   GtkWidget* window_p;
   GtkWidget* debug_level;
+  GtkWidget* filesel;
 };
 
 #endif NO_GRAPHICS
