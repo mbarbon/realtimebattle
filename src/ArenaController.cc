@@ -78,6 +78,8 @@ ArenaController::rtb_main( int argc, char** argv )
   GIInit( argc, argv );
 
   gi = new GuiInterface;
+
+  return EXIT_SUCCESS; // TODO: what should be returned here?
 }
 
 void
