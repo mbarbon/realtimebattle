@@ -220,8 +220,35 @@ Gui::add_the_statistics_to_clist()
     {
     case STAT_TABLE_TOTAL:
       {
+        int number_of_robots = 0;
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          number_of_robots++;
+
+        double points[number_of_robots];
+        int position[number_of_robots];
+
+        int robot_nr = -1;
         for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
+            robot_nr++;
+            robotp = (Robot *)gl->data;
+
+            points[robot_nr] = robotp->get_total_points();
+          }
+
+        for(int i = 0;i<number_of_robots;i++)
+          {
+            int temp_pos = 1;
+            for(int j = 0;j<number_of_robots;j++)
+              if(points[j] > points[i])
+                temp_pos++;
+            position[i] = temp_pos;
+          }
+
+        robot_nr = -1;
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          {
+            robot_nr++;
             robotp = (Robot *)gl->data;
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             stat_t * statp = NULL;
@@ -231,25 +258,59 @@ Gui::add_the_statistics_to_clist()
               {
                 statp = (stat_t*)(stat_gl->data);
                 number_of_stat_found++;
-                average_stat.position += statp->position;
                 average_stat.points += statp->points;
                 average_stat.time_survived += statp->time_survived;
                 average_stat.total_points += statp->points;
               }
             if( number_of_stat_found > 0 )
               {
-                average_stat.position /= number_of_stat_found;
+                average_stat.position = position[robot_nr];
                 average_stat.points /= number_of_stat_found;
                 average_stat.time_survived /= number_of_stat_found;
                 add_new_row( robotp, &average_stat );
               }
+
+            
           }
         break;
       }
     case STAT_TABLE_SEQUENCE:
       {
+        int number_of_robots = 0;
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          number_of_robots++;
+
+        double points[number_of_robots];
+        int position[number_of_robots];
+
+        int robot_nr = -1;
         for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
+            robot_nr++;
+            robotp = (Robot *)gl->data;
+
+            points[robot_nr] = 0;
+            for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+              {
+                stat_t * statp = (stat_t*)(stat_gl->data);
+                if(statp->sequence_nr == stat_looking_at_nr)
+                  points[robot_nr] += statp->points;
+              }
+          }
+
+        for(int i = 0;i<number_of_robots;i++)
+          {
+            int temp_pos = 1;
+            for(int j = 0;j<number_of_robots;j++)
+              if(points[j] > points[i])
+                temp_pos++;
+            position[i] = temp_pos;
+          }
+
+        robot_nr = -1;
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          {
+            robot_nr++;
             robotp = (Robot *)gl->data;
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             stat_t * statp = NULL;
@@ -261,7 +322,6 @@ Gui::add_the_statistics_to_clist()
                 if(statp->sequence_nr == stat_looking_at_nr)
                   {
                     number_of_stat_found++;
-                    average_stat.position += statp->position;
                     average_stat.points += statp->points;
                     average_stat.time_survived += statp->time_survived;
                     average_stat.total_points += statp->points;
@@ -269,7 +329,7 @@ Gui::add_the_statistics_to_clist()
               }
             if( number_of_stat_found > 0 )
               {
-                average_stat.position /= number_of_stat_found;
+                average_stat.position = position[robot_nr];
                 average_stat.points /= number_of_stat_found;
                 average_stat.time_survived /= number_of_stat_found;
                 add_new_row( robotp, &average_stat );
