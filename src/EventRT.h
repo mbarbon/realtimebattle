@@ -26,22 +26,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class CheckGUIEvent : public Event
 {
-  CheckGUIEvent(const double time, EventHandler* ev, GuiServerInterface* gp )
-    : Event(time, ev), NoMoreThan(0), gui_p(gp) {}
-  CheckGUIEvent(const double time, const double StopAt,
-                EventHandler* ev, GuiServerInterface* gp )
-    : Event(time, ev), refresh(time), NoMoreThan(StopAt), gui_p(gp) {}
-  CheckGUIEvent(const double time, const double StopAt,
-                const double UpDateDelay, EventHandler* ev, GuiServerInterface* gp )
-    : Event(time, ev), refresh(UpDateDelay), NoMoreThan(StopAt), gui_p(gp) {}
+  CheckGUIEvent(const double time, const double refresh_time, GuiServerInterface* gp )
+    : Event(time), refresh(refresh_time), gui_p(gp) {}
 
   void eval() const;
 
 protected:
-  void NextEvent() const;
 
-  double refresh;           //Time between 2 Update of robot
-  double NoMoreThan;
+  double refresh;           //Time between 2 checks
 
   GuiServerInterface* gui_p;
 

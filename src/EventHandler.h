@@ -80,6 +80,9 @@ class QuitEvent : public GTEvent;
 #include "Event.h"
 #include "Timer.h"
 
+class EventHandler;
+extern EventHandler the_eventhandler;
+
 class EventHandler
 {
 
@@ -90,46 +93,35 @@ class EventHandler
   
   void main_loop();
   
-  void insert_event( Event* ev );    //same as GT, but still here for compatibility
   void insert_RT_event (Event* ev);
   void insert_GT_event (Event* ev);
   
   double get_time();
-  void pauseGame() ;  //Pause/unPause the game
-  void quit();
-  
-  //private:
-  
-  //friend class QuitEvent;
-  
-  void finish() { finished = true; };
+  void pause_game() ;  //Pause/unPause the game
+  void set_game_speed( const double speed );
+
+  void quit();  
+  void finish_game();
   
  private:
-  priority_queue<const Event*> RT_event_queue;
-  priority_queue<const Event*> GT_event_queue;
+  
+  typedef const Event* ep;
+  typedef priority_queue<ep, vector<ep>, lt_event>  EventQueue;
+
+  EventQueue RT_event_queue;
+  EventQueue GT_event_queue;
 
   
   Timer timer;
   double current_time;
 
-  Timer pauseStarted;   //When did the pause will start
-  double pausedTime;    //Time of pause since the begining of the game...
-  bool paused;    //For the moment, this is the only way to alter the gametime in a normal game... so...
+  double game_speed_before_pause;
 
   bool finished;
 
-  int NbGTEvent;
-  int NbRTEvent;
+  int nb_RT_event;
+  int nb_GT_event;
 };
 
-
-#include "EventRT.h"
-#include "EventGT.h"
-
 #endif __EVENT_HANDLER__
-
-
-
-
-
 

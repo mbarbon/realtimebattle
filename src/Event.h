@@ -20,13 +20,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __EVENT__
 #define __EVENT__
 
-class EventHandler;
 
 class Event
 {
 
 public:
-  Event( const double time, EventHandler * ev ) : eval_time(time), my_event_handler(ev) {}
+  Event( const double time ) : eval_time(time) {}
 
   virtual ~Event() {}
 
@@ -34,12 +33,22 @@ public:
 
   double get_time() const { return eval_time; } 
 
-  friend bool operator<(const Event& a, const Event& b) { return a.eval_time < b.eval_time; } 
+  friend struct lt_event;
 
  protected:
 
   double eval_time;
-  EventHandler * my_event_handler;
+
 };
+
+
+struct lt_event
+{
+    bool operator()(const Event* a, const Event* b) const 
+    { 
+      return a->eval_time < b->eval_time; 
+    } 
+};
+
 
 #endif __EVENT__

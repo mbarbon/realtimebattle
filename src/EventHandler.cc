@@ -27,15 +27,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventHandler.h"
 #include "Event.h"
 #include "Timer.h"
-//#include "Various.h"
+#include "Various.h"
 
 EventHandler::EventHandler()
 {
-  current_time = 0;
-  finished = false;
-  pausedTime = 0;
-  paused = false;
-  NbRTEvent = NbGTEvent = 0;
+  current_time = 0.0;
+  game_speed_before_pause = 0.0;
+  nb_RT_event = 0;
+  nb_GT_event = 0;
 }
 
 EventHandler::~EventHandler()
@@ -48,49 +47,63 @@ EventHandler::~EventHandler()
 void
 EventHandler::main_loop()
 {
-  double time_for_next_event;
-  //struct timeval time_to_wait;
+  double time_for_next_event = 0.0;
+  double tm;
+
+  struct timeval time_to_wait;
+
   const Event* next_RTeventp;   //Next Event that is in realtime queue
   const Event* next_GTeventp;   //Next Event that is in gametime queue
   const Event* next_eventp;     //The one of the two we realy have to do...
-  bool RTEvent = true;          //Say that the event cames from the RT queue
+  bool RT_event;          //Say that the event cames from the RT queue
+
+  finished = false;
 
   do
     {
-      //Should we use the same algorithm twice, or should we test RT & GT at the same time (what I'm doing here)
-      
-      if( RT_event_queue.empty() || GT_event_queue.empty())
+      RT_event = true;
+
+      if( RT_event_queue.empty() && GT_event_queue.empty())
         {
-	  cout<<"Erreur Irreversible...\n";
-	  exit(0);
+          finished = true;
+          break;
 	}
 
-      //	Error(true, "Event queue unexpectedly empty", "EventHandler::eval_next_event");
-      
-      next_RTeventp = RT_event_queue.top();
-      if(!paused)
-	{//Select the one to execute...
-	  next_GTeventp = GT_event_queue.top();
-	  if((next_GTeventp->get_time() - pausedTime) < (next_RTeventp->get_time()))
-	    {
-	      RTEvent = false;
-	      next_eventp = next_GTeventp;
-	    }
-	  else
-	    {
-	      next_eventp = next_RTeventp;
-	    }
-	}
+
+      if( RT_event_queue.empty() )
+        {
+          next_eventp = GT_event_queue.top();
+          RT_event = false;
+        }
+      else if( GT_event_queue.empty() )
+        {
+          next_eventp = RT_event_queue.top();
+          RT_event = true;         
+        }
       else
-	{//The game is paused, only the RT event have to be executed
-	  next_eventp = next_RTeventp;
-	}
+        {
+          next_RTeventp = RT_event_queue.top();
+	  next_GTeventp = GT_event_queue.top();
 
+          time_for_next_event = next_RTeventp->get_time();
+          tm = timer.gametime2realtime( next_GTeventp->get_time() );
 
+          if( time_for_next_event < tm )
+            {
+              RT_event = true;
+              next_eventp = next_RTeventp;
+            }
+          else
+            {
+              RT_event = false;
+              next_eventp = next_GTeventp;
+              time_for_next_event = tm;
+            }
+        }  
+        
+      
       for(;;) 
         {
-          time_for_next_event = next_eventp->get_time();
-
           //          timer.double2timeval( time_for_next_event, time_to_wait );          
 
           current_time = timer.get_realtime();
@@ -104,74 +117,76 @@ EventHandler::main_loop()
 
       current_time = timer.get_realtime();
 
-      next_eventp->eval();
-      delete next_eventp;
+      next_eventp->eval();      
 
-      if(RTEvent)
+
+      if(RT_event)
 	{
-	  cout<<"Poping from RTEventQueue\n";
+	  cout<<"Poping from RT_event_queue" << endl;
 	  RT_event_queue.pop();
-	  NbRTEvent--;
+          nb_RT_event--;
 	}
       else
 	{
-	  cout<<"Poping from GTEventQueue\n";
+	  cout<<"Poping from GT_event_queue" << endl;
 	  GT_event_queue.pop();
-	  NbGTEvent--;
+          nb_GT_event--;
 	}
+
+      delete next_eventp;
   
-    }  while( !finished );
+    } while( !finished );
+
+  // cleanup..
 
 }
 
 //
-// Call this function with
+// Call these function with
 //
-// insert_event( new FooEvent( args ) );
+// insert_?T_event( new FooEvent( args ) );
 //
 // The event is deleted after evaluation.
-void 
-EventHandler::insert_event( Event* ev )
-{
-  RT_event_queue.push( ev );
-  cout<<"There are "<<++NbRTEvent<<" events in the RT queue\n";
-}
 
 
 void 
 EventHandler::insert_RT_event (Event* ev)
 {
   RT_event_queue.push( ev );
-  cout<<"There are "<<++NbRTEvent<<" events in the RT queue\n";
+  cout << "There are " << ++nb_RT_event << " events in the RT queue" << endl;
 }
 
 void 
 EventHandler::insert_GT_event (Event* ev)
 {
   GT_event_queue.push( ev );
-  cout<<"There are "<<++NbGTEvent<<" events in the GT queue\n";
+  cout << "There are " << ++nb_GT_event <<" events in the GT queue" << endl;
 }
 
-
 void
-EventHandler::pauseGame()
+EventHandler::pause_game()
 {
-  if(!paused)
+  if( timer.get_game_speed() == 0.0 )
     {
-      pauseStarted.reset();
+      set_game_speed( game_speed_before_pause );
     }
   else
     {
-      pausedTime += pauseStarted.get_realtime();   //How long the pause was.
+      game_speed_before_pause = get_game_speed();
+      set_game_speed( 0.0 );
     }
-  paused = !paused;
 }
 
+void
+EventHandler::set_game_speed( const double speed )
+{
+  timer.set_game_speed( speed );
+}
 
 void
 EventHandler::quit()
 {
-  insert_event( new QuitEvent( get_time(), this ) );
+  finished = true;
 }
 
 

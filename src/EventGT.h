@@ -27,63 +27,32 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Arena;
 class Script;
 
-
-class QuitEvent : public Event
-{
- public:
-  QuitEvent( const double time, EventHandler* ev) 
-    : Event(time, ev) {}
-  
-  void eval() 
-    { 
-      cout<<"Leaving and shutdown\n";
-      my_event_handler->finish(); 
-    }
-};
-
 //All the 'recursive' update event should have the same 'face'
 class RobotsUpdateEvent : public Event
 {
  public:
-  RobotsUpdateEvent(const double time, Arena* ar, EventHandler* ev)          //for compatibility if we need some...
-    : Event(time, ev), my_arena(ar), refresh(time), NoMoreThan(0) {}
-
-  RobotsUpdateEvent(const double time, const double StopAt, Arena* ar, EventHandler* ev)
-    : Event(time, ev), my_arena(ar), refresh(time), NoMoreThan(StopAt) {}
-
-  RobotsUpdateEvent(const double time, const double StopAt, const double UpDateDelay, Arena* ar, EventHandler* ev)
-    : Event(time, ev), my_arena(ar), refresh(UpDateDelay), NoMoreThan(StopAt) {}
+  RobotsUpdateEvent(const double time, const double refresh_time)
+    : Event(time), refresh(refresh_time) {}
   
   void eval() const ;
 
  protected:
-  void NextEvent() const;
-  
-  Arena* my_arena;
-  double refresh; //Time between 2 Update of robot
-  double NoMoreThan;
+
+  double refresh; //Time between 2 update of robots
 };
+
 
 class ShotsUpdateEvent : public Event
 {
 public:
-  ShotsUpdateEvent( const double time, Arena* ar, EventHandler * ev) 
-    : Event(time, ev), my_arena(ar), NoMoreThan(0) {}
-
-  ShotsUpdateEvent(const double time, const double StopAt, Arena* ar, EventHandler* ev)
-    : Event(time, ev), my_arena(ar), refresh(time), NoMoreThan(StopAt) {}
-
-  ShotsUpdateEvent(const double time, const double StopAt, const double UpDateDelay, Arena* ar, EventHandler* ev)
-    : Event(time, ev), my_arena(ar), refresh(UpDateDelay), NoMoreThan(StopAt) {}
+  ShotsUpdateEvent( const double time, const double refresh_time) 
+    : Event(time), refresh(refresh_time) {}
 
   void eval() const ;
 
 protected:
-  void NextEvent() const;
 
-  Arena* my_arena;
-  double refresh;           //Time between 2 Update of robot
-  double NoMoreThan;
+  double refresh;           //Time between 2 updates of shots
 };
 
 
@@ -91,8 +60,8 @@ protected:
 class ContinueScriptEvent : public Event
 {
 public:
-  ContinueScriptEvent( const double time, Script* scr, EventHandler* ev) 
-    : Event(time, ev), my_script(scr) {}
+  ContinueScriptEvent( const double time, Script* scr )
+    : Event(time), my_script(scr) {}
 
   void eval() const ;
 

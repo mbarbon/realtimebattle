@@ -1,5 +1,37 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include "Event.h"
 #include "EventGT.h"
+#include "EventHandler.h"
+
+#include "Arena.h"
+#include "Gadgets/Script.h"
+
+extern EventHandler* the_eventhandler;
+extern Arena* the_arena;
+
 
     ///////////////////////////////////////////////////
    //                                               //
@@ -7,26 +39,14 @@
  //                                               //
 ///////////////////////////////////////////////////
   
-void RobotsUpdateEvent::eval() const 
+void
+RobotsUpdateEvent::eval() const 
 {
-  //      my_arena->update_robots();
-  NextEvent();
+  the_arena->update_robots();
+  
+  Event* next_event = new RobotsUpdateEvent(eval_time + refresh, gui_p, refresh );
+  the_event_handler->insert_GT_event(next_event);  
 }
-
-void RobotsUpdateEvent::NextEvent() const
-{
-  if((NoMoreThan != 0)&&((eval_time+refresh < NoMoreThan)))
-    {//Add the next event if the game isn't finished...
-      cout<<"Next in "<<refresh<<endl;
-      Event * NextUpDate = new RobotsUpdateEvent(eval_time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
-      my_event_handler->insert_event(NextUpDate);
-    }
-  else
-    {
-      //cout<<eval_time+refresh<<"<"<<NoMoreThan<<" : This was the last one...\n";
-    }
-}
-
 
 
     ///////////////////////////////////////////////////
@@ -35,29 +55,25 @@ void RobotsUpdateEvent::NextEvent() const
  //                                               //
 ///////////////////////////////////////////////////
 
-void ShotsUpdateEvent::eval() const 
+void
+ShotsUpdateEvent::eval() const 
 { 
-  //      my_arena->update_shots();
-  NextEvent();
-}
- 
-void ShotsUpdateEvent::NextEvent() const
-{   
-  if((NoMoreThan != 0)&&((eval_time+refresh < NoMoreThan)))
-    { //Add the next event if the game isn't finished...
-      Event * NextUpDate = new ShotsUpdateEvent(eval_time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
-      my_event_handler->insert_event(NextUpDate);
-    }
+  the_arena->update_shots();
+
+  Event* next_event = new ShotsUpdateEvent(eval_time + refresh, gui_p, refresh );
+  the_event_handler->insert_GT_event(next_event);  
 }
 
 
     ///////////////////////////////////////////////////
    //                                               //
-  //             ShotsUpdateEvent                  //
+  //             ContinueScriptEvent               //
  //                                               //
 ///////////////////////////////////////////////////
+
+void
 ContinueScriptEvent::eval() const
 {
-  //Can't remember what was coming here...
+  my_script->continue_script();
 }
 
