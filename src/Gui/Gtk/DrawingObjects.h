@@ -76,7 +76,6 @@ public:
   ~DrawingCircle() {}
 
   void draw_shape(bool erase);
-  void draw_radar_and_cannon();
 
 protected:
   Vector2D last_drawn_center;

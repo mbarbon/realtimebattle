@@ -115,11 +115,9 @@ DrawingCircle::draw_shape(bool erase)
   the_gui.get_arenawindow_p()->draw_circle( circle_p->get_center(),
                                             circle_p->get_radius(),
                                             gdk_colour, true );
-}
 
-void
-DrawingCircle::draw_radar_and_cannon()
-{
+  // Draw radar and cannon
+
   if( typeid( *shape_p ) != typeid( Robot ))
     return;
 
