@@ -17,8 +17,7 @@ GRAPHICS_O =
 CXXFLAGS += -DNO_GRAPHICS 
 else
 GRAPHICS_O = \
-	Gui.o ControlWindow.cc ControlWindow.h \
-	MessageWindow.cc MessageWindow.h \
+	Gui.o ControlWindow.o MessageWindow.o \
 	Statistics.o StartTournament.o
 endif
 
