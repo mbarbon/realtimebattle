@@ -133,6 +133,8 @@ public:
 
   void quit_event();
 
+  void read_dirs_from_system();
+
   void clear_message_clist();
   void set_show_messages_for_robot( Robot* robotp );
   void print_to_message_output(String from_robot, String text);
@@ -188,7 +190,6 @@ public:
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
 private:
-  void read_dirs_from_system();
   void split_colonseparated_dirs(String& dirs, GList * gl);
 
   bool statistics_up;
