@@ -1,11 +1,28 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
 
-//  #ifdef HAVE_CONFIG_H
-//  #include <config.h>
-//  #endif
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <iostream.h>
 #include "List.h"
-//#include "Various.h"
 #include "String.h"
 
 void Error(const bool fatal, const String& error_msg, const String& function_name);
@@ -175,26 +192,6 @@ List<T>::remove(const T* x)
   return false;
 }
 
-
-// inserts x directly after current_pos
-//
-//  template <class T>
-//  void
-//  List<T>::insert(T* x)
-//  {
-//    if( current_pos == list_head )
-//      insert_first(x);
-
-//    if ( current_pos == NULL ) Error(true, "Nowhere to insert", "List::insert");    
-
-//    ListNode<T>*  p = new ListNode<T>(x, current_pos->next, current_pos);
-
-//    if ( p == NULL ) Error(true, "Out of memory", "List::insert");
-
-//    if( current_pos->next ) current_pos->next->prev = p;
-//    current_pos->next = p;
-//    current_pos = p;
-//  }
 
 template <class T>
 void
