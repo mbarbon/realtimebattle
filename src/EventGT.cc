@@ -41,9 +41,9 @@ void
 RobotsUpdateEvent::eval() const 
 {
   the_arena.update_robots();
-  
+  cout<<"RobotsUpdateEvent\n";
   Event* next_event = new RobotsUpdateEvent(eval_time + refresh, refresh );
-  the_eventhandler.insert_GT_event(next_event);  
+  the_eventhandler.insert_GT_event(next_event, true);  
 }
 
 
@@ -57,9 +57,9 @@ void
 ShotsUpdateEvent::eval() const 
 { 
   the_arena.update_shots();
-
+  cout<<"ShotsUpdateEvent\n";
   Event* next_event = new ShotsUpdateEvent(eval_time + refresh, refresh );
-  the_eventhandler.insert_GT_event(next_event);
+  the_eventhandler.insert_GT_event(next_event, true);
 }
 
 
@@ -72,6 +72,6 @@ ShotsUpdateEvent::eval() const
 void
 ContinueScriptEvent::eval() const
 {
+  cout<<"ContinueScriptEvent\n";
   my_script->continue_script();
 }
-
