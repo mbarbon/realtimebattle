@@ -158,6 +158,66 @@ Arena::set_filenames(String& log_fname, const String& statistics_fname,
 }
 
 void
+Arena::parse_tournament_file( String& fname )
+{
+  ifstream file(fname.chars());
+  if( !file )
+    return; // Don't know yet what to do when it isn't possible to find the tournament file
+
+  int games_p_s = 1;
+  int robots_p_s = 2;
+  int n_o_sequences = 1;
+
+  for(;;)
+    {
+      char temp;
+      char buffer[200];
+      file >> ws;
+      file.get(buffer,200,':');
+      file.get(temp);
+      String keyword = make_lower_case(buffer);
+      if( keyword == "" )
+        {
+          cout << "Games per sequence: " << games_p_s << endl;
+          cout << "Robots per sequence: " << robots_p_s << endl;
+          cout << "Number of sequences: " << n_o_sequences << endl;
+          cout << "Robots: " << endl;
+          cout << "Arenas: " << endl;
+          exit(EXIT_SUCCESS);
+        }
+      //        return;
+      if(keyword == "games per sequence")
+        {
+          file >> games_p_s;
+          file.get(buffer,200,'\n');
+        }
+      else if(keyword == "robots per sequence")
+        {
+          file >> robots_p_s;
+          file.get(buffer,200,'\n');
+        }
+      else if(keyword == "number of sequences")
+        {
+          file >> n_o_sequences;
+          file.get(buffer,200,'\n');
+        }
+      else if(keyword == "robots")
+        {
+          file.get(buffer,200,'\n');
+        }
+      else if(keyword == "arenas")
+        {
+          file.get(buffer,200,'\n');
+        }
+      else
+        {
+          file.get(buffer,200,'\n');
+          cerr << "Unrecognized keyword in tournament file: " << keyword << endl;
+        }
+    }
+}
+
+void
 Arena::print_to_logfile(const char first_letter ... )
 {
   if( !use_log_file ) return;
@@ -578,6 +638,10 @@ Arena::timeout_function()
   switch(state)
     {
     case NOT_STARTED:
+      if(auto_start_and_end)
+        parse_tournament_file(tournament_file_name);
+      break;
+
     case FINISHED:
       break;
       
