@@ -27,6 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ArenaReplay::ArenaReplay()
 {
+  reset_timer();
+  state = NOT_STARTED;
 }
 
 ArenaReplay::~ArenaReplay()
@@ -36,6 +38,14 @@ ArenaReplay::~ArenaReplay()
 bool
 ArenaReplay::timeout_function()
 {
+  update_timer();
+  
+  do
+    {
+      parse_log_line( log_file );
+    } 
+  while( !log_file.eof() && total_time < next_check_time );
+
   return true;
 }
   
@@ -86,7 +96,7 @@ ArenaReplay::parse_log_line( ifstream& file )
   file >> ws;
   file.get( first_letter );
 
-  bool get_the_rest_of_the_line = true;
+  //  bool get_the_rest_of_the_line = true;
   switch( first_letter )
     {
     case 'R': // Robot pos
@@ -99,9 +109,7 @@ ArenaReplay::parse_log_line( ifstream& file )
       break;
     case 'T': // Time
       {
-        double current_time;
-        file >> current_time;
-        // change_current_time( current_time );
+        file >> next_check_time;
       }
       break;
     case 'P': // Print a robot message
@@ -111,7 +119,7 @@ ArenaReplay::parse_log_line( ifstream& file )
         file >> robot_id;
         file.get( message, 200, '\n' );
         // add_message( robot_id, message );
-        get_the_rest_of_the_line = false;
+        //        get_the_rest_of_the_line = false;
       }
       break;
     case 'C': // Cookie
@@ -190,8 +198,9 @@ ArenaReplay::parse_log_line( ifstream& file )
         char name[200];
         file >> robot_id >> robot_colour;
         file.get( name, 200, '\n' );
-        // change_robot_name( robot_id, robot_colour, name );
-        get_the_rest_of_the_line = false;
+        // Robot* robotp = new Robot( robot_id, robot_colour, name );
+        // object_lists[ROBOT].insert_last(robotp); // array bättre?
+        //        get_the_rest_of_the_line = false;
       }
       break;
     case 'A': // Arena file line
@@ -236,7 +245,7 @@ ArenaReplay::parse_log_line( ifstream& file )
               char text[400];
               file.get( text, 400, '\n' );
               // set_string_opt( label, value, ENTRY_STRING );
-              get_the_rest_of_the_line = false;
+              //              get_the_rest_of_the_line = false;
             }
             break;
           case '?':
@@ -254,11 +263,11 @@ ArenaReplay::parse_log_line( ifstream& file )
       break;
     }
 
-  if( get_the_rest_of_the_line )
-    {
-      char buffer[200];
-      file.get( buffer, 200, '\n' ); // Ignore the rest of the line
-    }
+  //  if( get_the_rest_of_the_line )
+  //    {
+  //      char buffer[200];
+  //      file.get( buffer, 200, '\n' ); // Ignore the rest of the line
+  //    }
 
   return first_letter;
 }
