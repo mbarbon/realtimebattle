@@ -8,6 +8,9 @@ enum message_to_robot_type
   INITIALIZE = 0,
   GAME_STARTS,
   GAME_FINISHES,
+  SAVE_DATA,
+  BIN_DATA_TO,
+  LOAD_DATA_FINISHED,
   EXIT_ROBOT,
   RADAR,
   INFO,
@@ -26,6 +29,9 @@ enum message_from_robot_type
   NAME,
   COLOUR,
   PRINT,
+  LOAD_DATA,
+  BIN_DATA_FROM,
+  SAVE_DATA_FINISHED
 };
 
 enum argument_type
@@ -34,7 +40,8 @@ enum argument_type
   STRING,
   DOUBLE,
   INT,
-  HEX
+  HEX,
+  BINDATA
 };
 
 enum warning_type
@@ -68,7 +75,10 @@ static const Message message_to_robot[20] =
 {
   {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
-  {"GameFinishes", 0, {NONE,   NONE,   NONE,   NONE}},
+  {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
+  {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
+  {"BinDataTo",  2, {INT,    BINDATA,NONE,   NONE}},
+  {"LoadDataFinished",0, {NONE,   NONE,   NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
@@ -88,6 +98,9 @@ static const Message message_from_robot[20] =
   {"Name",         1, {STRING}},             // arg: name
   {"Colour",       2, {HEX, HEX}},           // first arg: home colour, second arg: away colour
   {"Print",        1, {STRING}},             // arg: message to print   
+  {"LoadData",     0, {}},
+  {"BinDataFrom",  2, {INT, BINDATA}},       // first arg: number of bytes,  second arg: data
+  {"SaveDataFinished",0, {}},
   {"",             0, {}}
 };
 
