@@ -45,19 +45,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 
-#include "ArenaController.h"
 #include "IntlDefs.h"
-#include "Arena.h"
 #include "StartTournamentWindow.h"
 #include "Various.h"
 #include "GuiVarious.h"
-#include "List.h"
 #include "Dialog.h"
 #include "OptionHandler.h"
 #include "Gui.h"
 #include "String.h"
 
-extern class Gui* gui_p;
 const string tmp_tournament_file( "/tmp.tour" );
 
 StartTournamentWindow::StartTournamentWindow( const int default_width,

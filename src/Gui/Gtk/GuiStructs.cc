@@ -22,11 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include "GuiStructs.h"
-#include "ArenaController.h"
-#include "Arena.h"
 #include "Gui.h"
 
-extern class Gui* gui_p;
 
 pixmap_t::~pixmap_t()
 {
