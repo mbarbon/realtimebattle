@@ -17,23 +17,46 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ALLGADGETS__
-#define __ALLGADGETS__
+#ifndef __DEFENSE_GADGET__
+#define __DEFENSE_GADGET__
 
+#include <limits.h>
+#include <float.h>
 
 #include "Gadget.h"
-#include "GadgetSet.h"
-
-#include "Function.h"
 #include "Variable.h"
-
-#include "ArenaGadget.h"
-#include "CommunicationGadget.h"
-#include "DefenseGadget.h"
-#include "ExplosionGadget.h"
-#include "RobotBodyGadget.h"
-#include "ShotGadget.h"
-#include "WeaponGadget.h"
+#include "Function.h"
 
 
-#endif  __ALLGADGETS__
+class DefenseGadget : public Gadget
+{
+public:
+
+  DefenseGadget( const char* name, Gadget* const p );
+
+private:
+
+  enum DefenseVars
+  {
+    COLLISIONPROTECTION=0, HEATPROTECTION, SHOTPROTECTION, FRONTANGLE,
+    MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST, USCOSTPERTIME,
+    ATTACHABLE, COLOUR, PRICE, MASS, LAST_DEFENSEVAR
+  };
+
+  const static VariableDefinition variable_def[LAST_DEFENSEVAR]; 
+
+
+
+  enum DefenseFcns
+  {
+    LAST_DEFENSEFCN
+  };
+
+  const static FunctionDefinition function_def[LAST_DEFENSEFCN];
+
+
+  void eval_function(const int fcn);
+};
+
+
+#endif __DEFENSE_GADGET__
