@@ -38,8 +38,8 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-  bool is_inside_subsquare( const SubSquare& ss ) const { return true; }
   void find_subsquares() const {}
+  bool is_inside_subsquare( const SubSquare& ss ) const { return true; }
 
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
@@ -69,8 +69,8 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
   void find_subsquares() const {}
+  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
 
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -94,8 +94,8 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
   void find_subsquares() const {}
+  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
 
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -126,8 +126,8 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
   void find_subsquares() const {}
+  bool is_inside_subsquare( const SubSquare& ss )  const { return true; }
 
   double get_inner_radius() { return inner_radius; }
   double get_outer_radius() { return outer_radius; }
