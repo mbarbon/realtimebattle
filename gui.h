@@ -48,11 +48,11 @@ struct start_tournament_glist_info_t
     row(r), selected(s)
     {
       text = new char[strlen(t)+1];
-      strcpy(text,t);
+      strcpy(filename,t);
     }
   int row;
   bool selected;
-  char * text;
+  char * filename;
 };
 
 void statistics_button_callback(GtkWidget *widget, gpointer data);
@@ -65,6 +65,7 @@ gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
 
+void start_tournament_start_callback(GtkWidget *widget, gpointer data);
 void start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p);
 void start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p);
 void start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
@@ -115,6 +116,7 @@ public:
   void add_the_statistics_to_clist();
   void stat_make_title_button();
 
+  void start_new_tournament();
   void start_tournament_change_all_selection(bool robots, bool dir, bool all);
   void start_tournament_change_one_selection(const int row, const GtkWidget * clist);
   start_tournament_glist_info_t * start_tournament_find_row_in_clist(const int row, GList * lista);

@@ -17,6 +17,13 @@ start_tournament_button_callback(GtkWidget *widget, gpointer data)
 }
 
 void
+start_tournament_start_callback(GtkWidget *widget, gpointer data)
+{
+  if(the_arena.get_state() == NOT_STARTED || the_arena.get_state() == FINISHED)
+    the_gui.start_new_tournament();
+}
+
+void
 start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p)
 {
   switch(*(int *)button_number_p)
@@ -74,6 +81,12 @@ start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
 {
   if( event != NULL )
     the_gui.start_tournament_change_one_selection( row, clist );
+}
+
+void
+Gui::start_new_tournament()
+{
+  the_arena.start_tournament( selected_items_in_robot_tournament , selected_items_in_arena_tournament, 4, 5, 8);  
 }
 
 start_tournament_glist_info_t *
@@ -185,10 +198,10 @@ Gui::start_tournament_add_all_selected( bool robots )
           gtk_clist_set_foreground(GTK_CLIST(clist_tourn), row, the_arena.get_foreground_colour_p());
           gtk_clist_set_background(GTK_CLIST(clist_tourn), row, the_arena.get_background_colour_p());
       
-          gtk_clist_set_text(GTK_CLIST(clist_tourn), row, 0, info_dir_p->text);
+          gtk_clist_set_text(GTK_CLIST(clist_tourn), row, 0, info_dir_p->filename);
       
           start_tournament_glist_info_t * info_tourn_p;
-          info_tourn_p = new start_tournament_glist_info_t(row,false,info_dir_p->text);
+          info_tourn_p = new start_tournament_glist_info_t(row,false,info_dir_p->filename);
           g_list_append(gl_tourn, info_tourn_p);                        
         }
     }
@@ -499,6 +512,9 @@ Gui::setup_start_tournament_window()
     for(int i=0;i<2;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        if(i==0)
+          gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                              GTK_SIGNAL_FUNC (start_tournament_start_callback), (gpointer) NULL );          
         if(i==1)
           gtk_signal_connect (GTK_OBJECT (button), "clicked",
                               GTK_SIGNAL_FUNC (start_tournament_button_callback), (gpointer) NULL );
