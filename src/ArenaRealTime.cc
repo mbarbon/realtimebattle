@@ -291,9 +291,14 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
       break;
 
     case 'L': // List of robot properties
-      LOG_FILE << va_arg(args, int  ) << " ";  // robot id
-      LOG_FILE << hex2str(va_arg(args, long )) << " ";  // robot colour
-      LOG_FILE << va_arg(args, char*);  // robot name
+      {
+        LOG_FILE << va_arg(args, int  ) << " ";  // robot id
+        LOG_FILE << hex2str(va_arg(args, long )) << " ";  // robot colour
+       
+        String name = va_arg(args, char*);   // robot name
+        if( name == "" ) name = "Anonymous";
+        LOG_FILE << name;
+      }
       break;
 
     case 'A': // Arena file line
