@@ -145,7 +145,7 @@ public:
   void end_game();
 
 private:
-  void parse_file(istream&);
+  void parse_arena_file(istream&);
   void check_initialization();
 
   void update();

@@ -162,7 +162,7 @@ Arena::set_filenames(String& log_fname, const String& statistics_fname,
       use_log_file = true;
       if( !LOG_FILE )
         {
-          cerr << "RealTimeBattle: Error: Couldn't open log_file" << endl;
+          cerr << "RealTimeBattle: Error: Couldn't open log file. Contuing without log file" << endl;
           use_log_file = false;
         }
     }
@@ -476,7 +476,7 @@ Arena::print_to_logfile(const char first_letter ... )
     case 'G': // Game begins
       LOG_FILE << va_arg(args, int  ) << " ";  // sequence number
       LOG_FILE << va_arg(args, int  ) << " ";  // game number
-      LOG_FILE << va_arg(args, char*);         // arena filename
+      //      LOG_FILE << va_arg(args, char*);         // arena filename
       break;
 
     case 'H': // Header
@@ -484,13 +484,22 @@ Arena::print_to_logfile(const char first_letter ... )
       LOG_FILE << va_arg(args, int  ) << " ";  // number of robots per sequence
       LOG_FILE << va_arg(args, int  ) << " ";  // number of sequences
       LOG_FILE << va_arg(args, int  ) << " ";  // number of robots
-      LOG_FILE << va_arg(args, char*);         // name of optionfile
+      //      LOG_FILE << va_arg(args, char*);         // name of optionfile
       break;
 
     case 'L': // List of robot properties
       LOG_FILE << va_arg(args, int  ) << " ";  // robot id
       LOG_FILE << hex2str(va_arg(args, long )) << " ";  // robot colour
       LOG_FILE << va_arg(args, char*);  // robot name
+      break;
+
+    case 'A': // Arena file line
+      LOG_FILE << va_arg(args, char*);  // line of arena file
+      break;
+
+    case 'O':
+      LOG_FILE << va_arg(args, int); // TODO: options to log file
+      
       break;
 
     default:
@@ -503,7 +512,7 @@ Arena::print_to_logfile(const char first_letter ... )
 
 
 void
-Arena::parse_file(istream& file)
+Arena::parse_arena_file(istream& file)
 {
   char text[20];
   double radie, bounce_c, hardn, thickness;
@@ -522,7 +531,7 @@ Arena::parse_file(istream& file)
       file.get(text, 20, ' ');
       if( strcmp(text, "scale" ) == 0 )
         {
-          if( succession != 1 ) Error(true, "Error in arenafile: 'scale' not first", "Arena::parsefile");
+          if( succession != 1 ) Error(true, "Error in arenafile: 'scale' not first", "Arena::parse_arena_file");
           succession = 2;
           double scl;
           file >> scl;
@@ -531,7 +540,7 @@ Arena::parse_file(istream& file)
       else if( strcmp(text, "boundary" ) == 0 )
         {
           if( succession > 2 ) 
-            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parsefile");
+            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parse_arena_file");
           succession = 3;
           double b1, b2;
           file >> b1;
@@ -541,19 +550,19 @@ Arena::parse_file(istream& file)
           file >> b2;
           boundary[1] = Vector2D(scale*b1, scale*b2);
           if( boundary[1][0] - boundary[0][0] <= 0 || boundary[1][1] - boundary[0][1] <= 0 ) 
-            Error(true, "Error in arenafile: 'boundary' negative", "Arena::parsefile");
+            Error(true, "Error in arenafile: 'boundary' negative", "Arena::parse_arena_file");
         }
       else if( strcmp(text, "exclusion_point" ) == 0 )
         {
           if( succession < 3 ) 
-            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parsefile");
+            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parse_arena_file");
           file >> vec1;
           Vector2D* excl_p = new Vector2D(scale*vec1);
           g_list_append(exclusion_points, excl_p);
         }
       else if( strcmp(text, "inner_circle" ) == 0 )
         {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'inner_circle' before boundary", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'inner_circle' before boundary", "Arena::parse_arena_file");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -564,7 +573,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'circle' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'circle' before 'boundary'", "Arena::parse_arena_file");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -578,7 +587,7 @@ Arena::parse_file(istream& file)
 //         }
       else if( strcmp(text, "line" ) == 0 )
         {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'line' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'line' before 'boundary'", "Arena::parse_arena_file");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -588,7 +597,7 @@ Arena::parse_file(istream& file)
           file >> vec2;      // end_point
 
 
-          if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line", "Arena::parsefile");
+          if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line", "Arena::parse_arena_file");
 
           wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                     scale*thickness, bounce_c , hardn);      
@@ -596,7 +605,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "polygon" ) == 0 )
         {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'polygon' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'polygon' before 'boundary'", "Arena::parse_arena_file");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -612,7 +621,7 @@ Arena::parse_file(istream& file)
               vec2 = vec1;
               file >> vec1;      // next point
 
-              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line in polygon", "Arena::parsefile");
+              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line in polygon", "Arena::parse_arena_file");
 
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
@@ -623,7 +632,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "closed_polygon" ) == 0 )
         {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", "Arena::parse_arena_file");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -640,7 +649,7 @@ Arena::parse_file(istream& file)
               vec2 = vec1;
               file >> vec1;      // next point
 
-              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Line in closed_polygon of zero length", "Arena::parsefile");
+              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Line in closed_polygon of zero length", "Arena::parse_arena_file");
           
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
@@ -649,15 +658,31 @@ Arena::parse_file(istream& file)
               g_list_append(object_lists[WALL], wall_circlep);
             }
 
-          if( length(vec0-vec1) == 0.0 ) Error(true, "Error in arenafile: Last line in closed_polygon of zero length", "Arena::parsefile");
+          if( length(vec0-vec1) == 0.0 ) Error(true, "Error in arenafile: Last line in closed_polygon of zero length", "Arena::parse_arena_file");
           wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                     scale*thickness, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wall_linep);
         }
       else if( text[0] != '\0' )
-        Error(true, "Incorrect arenafile: unknown keyword" + (String)text, "Arena::parsefile");
+        Error(true, "Incorrect arenafile: unknown keyword" + (String)text, "Arena::parse_arena_file");
         
     } while( text[0] != '\0' );
+
+  if( use_log_file )      // copy the arena file to the log file
+    {
+      char buffer[500];
+      
+      file.seekg(0);      // goto beginning of file for rereading
+
+      file.get(buffer, 499, '\n');
+      do
+        {
+          print_to_logfile('A', buffer);
+          file.get(buffer, 499, '\n');
+        } while( buffer[0] != '\0' );
+      
+    }
+
 }
 
 double
@@ -1311,7 +1336,7 @@ Arena::start_game()
   ifstream file(filename->chars());
   if( !file ) Error(true, "Couldn't open arena file" + *filename, "Arena::start_game");
 
-  parse_file(file);
+  parse_arena_file(file);
 
   int charpos;
   if( (charpos = filename->find('/',0,true)) != -1 )
@@ -1353,8 +1378,7 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
-  print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1, 
-                   current_arena_filename.chars());
+  print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1);
 
   broadcast(GAME_STARTS);
   broadcast(ROBOTS_LEFT, robots_left);
@@ -1631,7 +1655,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
   // start first sequence
 
   print_to_logfile('H', games_per_sequence, robots_per_game, sequences_remaining, 
-                   number_of_robots, option_file_name.chars());
+                   number_of_robots);//, option_file_name.chars());
 
   sequence_nr = 0;
   start_sequence();
