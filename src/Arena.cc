@@ -367,6 +367,15 @@ Arena::special_split_string( const string& input_str, vector<string>& strlist ) 
 Gadget*
 Arena::create_gadget( gadget_t type, const string& name, Gadget* parent ) const
 {
+/* Better would be :
+  add a new function to the gadget class called 
+      Gadget* NewInstance(string, Gadget*);
+  returning a new instance Gadget (ie Gadget* WeaponGadget::NewInstance(string, Gadget*) { return new WeaponGadget; }
+  And than create a new vector of struct{string, Gadget} (see in the map editor)
+  . : {"Weapon", WeaponGadget, "Shot", ShotGadget...}
+  and compare the string we have after the Define...
+*/
+
   Gadget* gadget = NULL;
   switch( type )
     {
