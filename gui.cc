@@ -340,8 +340,8 @@ Gui::setup_control_window()
   // Topmost buttons 
 
   button = gtk_button_new_with_label ("New Tournament");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (callback), (gpointer) "Tournament");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (start_tournament_button_callback), (gpointer) this );
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 0, 4, 0, 1);
   gtk_widget_show (button);
 
@@ -422,7 +422,7 @@ Gui::setup_score_window()
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
-  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
+  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_EXTENDED);
   gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 80);
