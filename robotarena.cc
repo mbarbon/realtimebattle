@@ -30,6 +30,8 @@ gint timeout_function(gpointer data)
   tid = g_timer_elapsed(&klocka, &musec);
   tidssnitt = tid / ++rakna;
 
+  insert_message( "RealTimeBattle", "Hej" );
+
   //  cout << "  Microsecs: " << musec;
   //  cout << "  Räkna: " << rakna << endl;
   //  g_timer_reset(&klocka);
