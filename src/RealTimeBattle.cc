@@ -69,6 +69,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "ArenaController.h"
 #include "String.h"
+//#include "Server.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
@@ -77,12 +78,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Options the_opts;
 //class ArenaRealTime the_arena;
 class ArenaController the_arena_controller;
+
+//class Server my_server;
+
 #ifndef NO_GRAPHICS
 class Gui the_gui;
 class ControlWindow* controlwindow_p;
 #endif
 
 bool no_graphics;
+
+
 
 void 
 print_help_message()
@@ -360,6 +366,16 @@ parse_command_line(int argc, char **argv)
         ( the_arena_controller.replay_filename == "-" ) );
 
   no_graphics = !graphics_flag;
+
+  if( the_arena_controller.auto_start_and_end == false 
+#ifndef NO_GRAPHICS      
+      && no_graphics
+#endif NO_GRAPHICS     
+      )
+    {
+      cerr << "No graphics and no tournament file gives me nothing to do. Leaving ..." << endl;
+      exit( EXIT_SUCCESS );
+    }
 }
 
 
