@@ -42,7 +42,7 @@ public:
   Option::Option                       () {}
   Option::Option                       ( option_value_t v, const int g,
                                          const bool br, const bool lo, const char* t )
-    : group(g), broadcast_option(br), log_option(lo), description(t) {}
+    : value_type(v), group(g), broadcast_option(br), log_option(lo), description(t) {}
   virtual Option::~Option              () {}
 
   virtual const string get_string_val  () const = 0;
