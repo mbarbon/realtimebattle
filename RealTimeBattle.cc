@@ -65,12 +65,13 @@ main ( int argc, char* argv[] )
       //          nr_failed++;
       //        }
     }
+  robotnames[nr_robots] = NULL;
   
   char** arenanames; 
   arenanames = new char*[1];
   arenanames[0] = new char[strlen("test/test.arena")+1];
   strcpy(arenanames[0], "test/test.arena");
-  
+  arenanames[1] = NULL;
 
   if(failed)
     {
