@@ -76,11 +76,11 @@ MessageWindow::MessageWindow( const int default_width,
 
   struct button_t { String label; GtkSignalFunc func; };
   struct button_t buttons[] = {
-    { " Clear all messages ", 
+    { (String)" Clear all messages ", 
       (GtkSignalFunc) MessageWindow::clear_clist },
-    { " Show only marked robot ", 
+    { (String)" Show only marked robot ", 
       (GtkSignalFunc) MessageWindow::show_one_robot },
-    { " Show all ",
+    { (String)" Show all ",
       (GtkSignalFunc) MessageWindow::show_all } };
   for(int i = 0;i < 3; i++)
     {

@@ -72,19 +72,19 @@ ControlWindow::ControlWindow( const int default_width,
   struct button_t { String label; GtkSignalFunc func; int pack; };
 
   struct button_t buttons[] = {
-    { " New Tournament ", 
+    { (String)" New Tournament ", 
       (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
-    { " Replay Tournament ", 
+    { (String)" Replay Tournament ", 
       (GtkSignalFunc) ControlWindow::replay_tournament , TRUE  },
-    { " Options ",
+    { (String)" Options ",
       (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
-    { " Statistics ",
+    { (String)" Statistics ",
       (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
-    { " Pause ",
+    { (String)" Pause ",
       (GtkSignalFunc) ControlWindow::pause             , TRUE  },
-    { " End ",
+    { (String)" End ",
       (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
-    { "         Quit         ",
+    { (String)"         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
   GtkWidget* button_hbox = NULL;
@@ -151,11 +151,11 @@ ControlWindow::display_debug_widgets()
 
   struct button_t { String label; GtkSignalFunc func; int pack; };
   struct button_t debug_buttons[] = {
-    { " Step ", 
+    { (String)" Step ", 
       (GtkSignalFunc) ControlWindow::step      , TRUE  },
-    { " End Game ", 
+    { (String)" End Game ", 
       (GtkSignalFunc) ControlWindow::end_game  , TRUE  },
-    { " Kill Marked Robot ", 
+    { (String)" Kill Marked Robot ", 
       (GtkSignalFunc) ControlWindow::kill_robot, TRUE  } };
 
   GtkWidget* button_hbox = NULL;
@@ -274,35 +274,35 @@ ControlWindow::display_replay_widgets()
   };
 
   struct button_t replay_buttons[] = {
-    { rew_xpm, "",
+    { rew_xpm, (String)"",
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::rewind_pressed,
       (GtkSignalFunc) ControlWindow::rewind_released },
-    { ffw_xpm, "", 
+    { ffw_xpm, (String)"", 
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::fast_forward_pressed,
       (GtkSignalFunc) ControlWindow::fast_forward_released },
-    { NULL, " Step forward ", 
+    { NULL, (String)" Step forward ", 
       (GtkSignalFunc) ControlWindow::step_forward,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, " Step backward ", 
+    { NULL, (String)" Step backward ", 
       (GtkSignalFunc) ControlWindow::step_backward,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, " Next Game ", 
+    { NULL, (String)" Next Game ", 
       (GtkSignalFunc) ControlWindow::next_game,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, " Prev Game ", 
+    { NULL, (String)" Prev Game ", 
       (GtkSignalFunc) ControlWindow::prev_game,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, " Next Seq ", 
+    { NULL, (String)" Next Seq ", 
       (GtkSignalFunc) ControlWindow::next_seq,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, " Prev Seq ", 
+    { NULL, (String)" Prev Seq ", 
       (GtkSignalFunc) ControlWindow::prev_seq,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy } };

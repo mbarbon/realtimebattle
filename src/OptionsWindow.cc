@@ -131,11 +131,11 @@ OptionsWindow::OptionsWindow( const int default_width,
               ( double_opts[opt].max_letters_in_entry );
 
             struct button_t buttons[] = {
-              { " Min ", true, (GtkSignalFunc) OptionsWindow::double_min,
+              { (String)" Min ", true, (GtkSignalFunc) OptionsWindow::double_min,
                 (gpointer) &double_opts[opt] },
-              { " Def ", true, (GtkSignalFunc) OptionsWindow::double_def,
+              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::double_def,
                 (gpointer) &double_opts[opt] },
-              { " Max ", true, (GtkSignalFunc) OptionsWindow::double_max,
+              { (String)" Max ", true, (GtkSignalFunc) OptionsWindow::double_max,
                 (gpointer) &double_opts[opt] } };
 
             add_option_to_notebook( description_table,
@@ -168,11 +168,11 @@ OptionsWindow::OptionsWindow( const int default_width,
               ( long_opts[opt].max_letters_in_entry );
 
             struct button_t buttons[] = {
-              { " Min ", true, (GtkSignalFunc) OptionsWindow::long_min,
+              { (String)" Min ", true, (GtkSignalFunc) OptionsWindow::long_min,
                 (gpointer) &long_opts[opt] },
-              { " Def ", true, (GtkSignalFunc) OptionsWindow::long_def,
+              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::long_def,
                 (gpointer) &long_opts[opt] },
-              { " Max ", true, (GtkSignalFunc) OptionsWindow::long_max,
+              { (String)" Max ", true, (GtkSignalFunc) OptionsWindow::long_max,
                 (gpointer) &long_opts[opt] } };
 
             add_option_to_notebook( description_table,
@@ -194,10 +194,10 @@ OptionsWindow::OptionsWindow( const int default_width,
               ( string_opts[opt].max_letters_in_entry );
 
             struct button_t buttons[] = {
-              { "" , false, (GtkSignalFunc) NULL, (gpointer) NULL },
-              { " Def ", true, (GtkSignalFunc) OptionsWindow::string_def,
+              { (String)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL },
+              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::string_def,
                 (gpointer) &string_opts[opt] },
-              { "" , false, (GtkSignalFunc) NULL, (gpointer) NULL } };
+              { (String)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL } };
 
             add_option_to_notebook( description_table,
                                     entry_table, button_table,
@@ -241,19 +241,19 @@ OptionsWindow::OptionsWindow( const int default_width,
   gtk_widget_show( hbox );
 
   struct button_t buttons[] = {
-    { " Default ", true, (GtkSignalFunc) OptionsWindow::default_opts,
+    { (String)" Default ", true, (GtkSignalFunc) OptionsWindow::default_opts,
       (gpointer) this },
-    { " Load options ", true, (GtkSignalFunc) OptionsWindow::load,
+    { (String)" Load options ", true, (GtkSignalFunc) OptionsWindow::load,
       (gpointer) this },
-    { " Save options ", true, (GtkSignalFunc) OptionsWindow::save,
+    { (String)" Save options ", true, (GtkSignalFunc) OptionsWindow::save,
       (gpointer) this },
-    { " Save as default ", true, (GtkSignalFunc) OptionsWindow::save_def,
+    { (String)" Save as default ", true, (GtkSignalFunc) OptionsWindow::save_def,
       (gpointer) this },
-    { " Apply ", true, (GtkSignalFunc) OptionsWindow::apply,
+    { (String)" Apply ", true, (GtkSignalFunc) OptionsWindow::apply,
       (gpointer) this },
-    { " Ok ", true, (GtkSignalFunc) OptionsWindow::ok,
+    { (String)" Ok ", true, (GtkSignalFunc) OptionsWindow::ok,
       (gpointer) this },
-    { " Cancel ", true, (GtkSignalFunc) OptionsWindow::cancel,
+    { (String)" Cancel ", true, (GtkSignalFunc) OptionsWindow::cancel,
       (gpointer) this } };
 
   for( int i=0; i<7; i++ )

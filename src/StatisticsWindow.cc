@@ -79,17 +79,17 @@ StatisticsWindow::StatisticsWindow( const int default_width,
     struct button_t { String label; GtkSignalFunc func; gpointer data; };
 
     struct button_t buttons[] = {
-      { " Close ", (GtkSignalFunc) StatisticsWindow::exit,
+      { (String)" Close ", (GtkSignalFunc) StatisticsWindow::exit,
         (gpointer) this },
-      { " Save Statistics ", (GtkSignalFunc) StatisticsWindow::save,
+      { (String)" Save Statistics ", (GtkSignalFunc) StatisticsWindow::save,
         (gpointer) this },
-      { " Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)" Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_TOTAL, this ) },
-      { " Sequence Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)" Sequence Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_SEQUENCE, this ) },
-      { " Game ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)" Game ", (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_GAME, this ) },
-      { " Robot ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)" Robot ", (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_ROBOT, this ) } };
 
     GtkWidget* button_w;

@@ -74,9 +74,9 @@ ArenaWindow::ArenaWindow( const int default_width,
   struct button_t { String label; GtkSignalFunc func; };
 
   struct button_t buttons[] = {
-    { " No Zoom " , (GtkSignalFunc) ArenaWindow::no_zoom  },
-    { " Zoom In " , (GtkSignalFunc) ArenaWindow::zoom_in  },
-    { " Zoom Out ", (GtkSignalFunc) ArenaWindow::zoom_out } };
+    { (String)" No Zoom " , (GtkSignalFunc) ArenaWindow::no_zoom  },
+    { (String)" Zoom In " , (GtkSignalFunc) ArenaWindow::zoom_in  },
+    { (String)" Zoom Out ", (GtkSignalFunc) ArenaWindow::zoom_out } };
 
   GtkWidget* button_table = gtk_table_new( 1, 3, TRUE );
   gtk_box_pack_start( GTK_BOX( vbox ), button_table, FALSE, FALSE, 0 );
