@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.1 rev 2
+<title>RealTimeBattle User Manual, version 0.9.3 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date>19 December 1998
+<date> 2 January 1999
 
 <!-- <abstract> -->
 
@@ -350,8 +350,9 @@ By rotating the robot you can make it turn. Note that rotation does not directly
 direction of motion, only the direction the robot is facing. The sliding friction, together with
 acceleration, will eventually carry out the actual turning of the robot.
 
-Breaking will increase the roll friction up to a maximal value. This is when the wheel and locked
-and the robot is sliding instead of rolling.
+Breaking will increase the roll friction up to a maximal value. This is when the wheel are locked
+and the robot is sliding instead of rolling. Don't forget to release the break when you want to
+speed up again.
 
 <sect1>Energy<label id="Energy">
 <p>
