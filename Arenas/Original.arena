@@ -1,6 +1,6 @@
 ! Arenafile version 2 !
 
-; TODO: Have only done Cannon, Mine and Cookie. Finish up everything else.
+; TODO: Scoringsystem
 ; Note: This arena is intended to correspond to the v1.0 arenas
 ; with these improvements:
 ; * Mines explode instead of just removing Energy.
@@ -50,6 +50,69 @@ Define Weapon Cannon
 
 EndDefine
 
+
+Define Defense FrontDefense
+
+   InfoString               _("Simple collision protecting defense.")
+
+   CollisionProtection       0.9
+   HeatProtection            0.0
+   ShotProtection            0.0
+
+   FrontAngle                1.047
+   Attachable               false
+
+   Colour                   #000000
+   Mass                      0.05
+
+EndDefine
+
+Define Engine RobotEngine
+
+   InfoString               _("An ordinary engine.")
+
+   Function Accelerate      default
+
+   MaxPower                  2.0
+   HeatPerPower            200.0   ;Note: in degrees (not kelvin), is this right?
+
+   MaxTemperature         1000.0   ;Note: in degrees (not kelvin), is this right?
+
+   Colour                   #000000
+   Mass                      0.3
+
+EndDefine 
+
+Define Sensor Radar
+
+   Function Rotate          default
+   Function RotateTo        true
+   Function RotateAmount    true
+
+   InfoString               _("The standard radio lineradar.")
+
+   Microphone               false    
+   Sonar                    false
+   InfraredLight            false
+   Laser                    false
+   Radiowave                true
+   Vision                   false
+
+   Sector                   false
+   Line                     true
+   LineWidth                0.01 ;This is very little I hope
+   OmniDirectional          false
+
+   MaxObjectsSeen            1
+
+   UpdateFrequency           0.01
+   Attachable               false
+
+   Colour                   #000000
+   Mass                      0.05
+
+EndDefine
+
 Define Ball Mine
 
    InfoString               _("Standard exploding mine.")
@@ -81,8 +144,6 @@ Define Ball Mine
    Colour                   #e02222
 
 EndDefine Ball Mine
-
-
 
 Define Ball Cookie
 
