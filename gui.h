@@ -57,6 +57,7 @@ void zoom_in_callback(GtkWidget *widget, gpointer data);
 void zoom_out_callback(GtkWidget *widget, gpointer data);
 gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
+void save_statistics_callback(GtkWidget *widget, gpointer data);
 void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
 
 void start_tournament_start_callback(GtkWidget *widget, gpointer data);
@@ -91,8 +92,8 @@ public:
   void draw_objects();
   void draw_all_walls();
 
-  double get_zoom();
-  void change_zoom( const zoom_t type );
+  void change_zoom();
+  void change_zoomfactor( const zoom_t type );
   int change_to_pixels_x(const double input);
   int change_to_pixels_y(const double input);
 
@@ -109,6 +110,7 @@ public:
   void add_new_row( void * rp, void * sp );
   void add_the_statistics_to_clist();
   void stat_make_title_button();
+  void save_statistics_to_file();
 
   void set_score_window_title();
 
@@ -124,6 +126,7 @@ public:
   GtkWidget * get_score_clist() { return score_clist; }
   String get_robotdir() { return robotdir; }
   String get_arenadir() { return arenadir; }
+  double get_zoom() { return zoom; }
 
 private:
   void clear_area();
@@ -165,6 +168,7 @@ private:
   String arenadir;
 
   int zoomfactor;
+  double zoom;
   Vector2D boundary[2];
 
   stat_table_t stat_table_type;
