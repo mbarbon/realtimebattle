@@ -77,14 +77,14 @@ main ( int argc, char* argv[] )
   
   char** arenanames; 
   arenanames = new char*[5];
-  arenanames[0] = new char[strlen("Arenas/Forest.arena")+1];
-  strcpy(arenanames[0], "Arenas/Forest.arena");
+  arenanames[3] = new char[strlen("Arenas/Forest.arena")+1];
+  strcpy(arenanames[3], "Arenas/Forest.arena");
   arenanames[1] = new char[strlen("Arenas/Rooms.arena")+1];
   strcpy(arenanames[1], "Arenas/Rooms.arena");
   arenanames[2] = new char[strlen("Arenas/Star.arena")+1];
   strcpy(arenanames[2], "Arenas/Star.arena");
-  arenanames[3] = new char[strlen("Arenas/Circles.arena")+1];
-  strcpy(arenanames[3], "Arenas/Circles.arena");
+  arenanames[0] = new char[strlen("Arenas/Circles.arena")+1];
+  strcpy(arenanames[0], "Arenas/Circles.arena");
   arenanames[4] = NULL;
 
   if(failed)
