@@ -77,8 +77,6 @@ ArenaController::init( int argc, char** argv )
   else if( replay_filename != "" )
     start_replay_arena();
 
-  gi = new GuiInterface( gui_name, argc, argv );
-
   return EXIT_SUCCESS; // TODO: what should be returned here?
 }
 
@@ -190,8 +188,8 @@ ArenaController::parse_command_line( int argc, char** argv )
               replay_filename = (String)optarg;
               break;
             case 12:
-              gui_name = (String)optarg;
-              
+              gui_list.push_back( GuiInterface( (String)optarg, argc, argv ) );
+              break;
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
                      "ArenaController.cc::parse_command_line" );
@@ -251,7 +249,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'g':
-          gui_name = (String)optarg;
+          gui_list.push_back( GuiInterface( (String)optarg, argc, argv ) );
           break;
 
         default:

@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __ARENA_CONTROLLER__
 
 #include <pthread.h>
+#include <list>
 
 #include "ArenaBase.h"
 
@@ -53,7 +54,7 @@ private:
   bool started;
   bool realtime;
 
-  GuiInterface* gi;
+  list<GuiInterface> gui_list;
 
   ArenaBase* my_arena;
 
@@ -64,7 +65,6 @@ public: // global names etc.
   String tournament_filename;
   String message_filename;
   String replay_filename;
-  String gui_name;
 
   int game_mode;
   int debug_level;
