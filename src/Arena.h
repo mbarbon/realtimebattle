@@ -137,7 +137,6 @@ private:
                                         const bool included = false ) const;
   const bool sufficient_arena_version ( vector<string>& wordlist ) const;
   vector<string>& special_split_string( const string&, vector<string>& ) const;
-  void remove_comments                ( vector<string>& wordlist ) const;
   Gadget* create_gadget               ( gadget_t, const string&, Gadget* ) const;
 };
 

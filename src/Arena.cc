@@ -136,8 +136,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
       ifstream* current_file = file_stack.top();
       string str_buffer;
       bool first_time = true;
-      while( ((count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0) ||
-             first_time )
+      while( str_buffer[str_buffer.length() - 1] != '\\' || first_time )
         {
           if( first_time )
             first_time = false;
@@ -150,11 +149,10 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           current_file->get( buffer, 400, '\n' );
           current_file->get();
           str_buffer += buffer;
-          if( ((count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0) )
-            str_buffer += '\n';
+          if( str_buffer[str_buffer.length() - 1] != '\\' )
+            str_buffer.erase( str_buffer.length() - 1 );
         }
       vector<string> wordlist = special_split_string( buffer, wordlist );
-      remove_comments( wordlist );
       if( wordlist.size() > 0 )
         {
           if( first_line && wordlist[0][0] == '!' )
@@ -218,6 +216,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           else if( mode == LAF_VARIABLE_MODE )
             {
               assert( typeid(current_gadget) == typeid(Variable*) );
+              // TODO: set variable info.
             }
           else if( mode == LAF_SCRIPT_MODE )
             {
@@ -226,6 +225,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             }            
           else if( mode == LAF_GEOMETRY_MODE )
             {
+              // TODO: Set Geometry-info
             }
           else if( wordlist.size() > 1 )
             {
@@ -274,6 +274,7 @@ Arena::find_full_arena_filename( string& filename, const string& top_file_path,
   return false;
 }
 
+// Returns true if the version on the arena file is accepted.
 const bool
 Arena::sufficient_arena_version( vector<string>& wordlist ) const
 {
@@ -284,14 +285,22 @@ Arena::sufficient_arena_version( vector<string>& wordlist ) const
 // Splits the strings into whitespace separated words. Special strings (e.g. strings
 // separated by ") is taken as ONE word, this is translated if surrounded by _( )
 // TODO: Enable use of backslash-sequences other than \,\n,\t (if needed).
-// TODO: It should be possible to write this function in a better way.
 vector<string>&
-Arena::special_split_string( const string& str, vector<string>& strlist ) const
+Arena::special_split_string( const string& input_str, vector<string>& strlist ) const
 {
+  string str( input_str );
+  if( (count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0 )
+    {
+      str += "\"";
+      cerr << "Arena::special_split_string: input_str contains unterminated strings."
+           << endl;
+    }
   string::size_type pos = 0;
   string::size_type beg_pos = 0;
-  while( (pos = min( str.find( '"', beg_pos ),
-                     str.find( "_(\"", beg_pos ) ) ) != string::npos )
+  // Note: It is somewhat ugly with two min in a row!
+  while( (pos = min( min( str.find( '"', beg_pos ),
+                          str.find( "_(\"", beg_pos ) ),
+                     str.find( ';', beg_pos ) )) != string::npos )
     {
       bool translatable = false;
       vector<string> tmp_list;
@@ -302,6 +311,8 @@ Arena::special_split_string( const string& str, vector<string>& strlist ) const
           translatable = false;
           beg_pos = pos + 1;
         }
+      else if( str[pos] == ';' )
+        return strlist;
       else
         {
           translatable = true;
@@ -320,32 +331,24 @@ Arena::special_split_string( const string& str, vector<string>& strlist ) const
       string::size_type backslash_pos = 0;
       while( (backslash_pos = temp_string.find( '\\', temp_pos)) != string::npos )
         {
-          if( temp_string.substr( backslash_pos, 2 ) == "\\\n" )
-            temp_string.erase( backslash_pos, 2 );
           if( temp_string.substr( backslash_pos, 2 ) == "\\n" )
             temp_string.replace( backslash_pos, 2, "\n" );
           if( temp_string.substr( backslash_pos, 2 ) == "\\t" )
             temp_string.replace( backslash_pos, 2, "\t" );
           temp_pos = backslash_pos;
         }
+      // Note: Should maybe add this to specify that this is a string.
+      //      temp_string = "\"" + temp_string + "\"";
       if( translatable )
         strlist.push_back( _( temp_string.c_str() ) );
       else
-        strlist.push_back( temp_string ) );
+        strlist.push_back( temp_string );
     }
 
   vector<string> tmp_list;
   split_string( str.substr( beg_pos, string::npos ), tmp_list );
   strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
   return strlist;
-}
-
-void
-Arena::remove_comments( vector<string>& wordlist ) const
-{
-  for( vector<string>::iterator vi = wordlist.begin(); vi != wordlist.end(); vi++ )
-    if( (*vi).length() > 0 && (*vi)[0] == ';' )
-      wordlist.erase( vi, wordlist.end() );
 }
 
 // Remember to delete the gadget when not used anymore!
