@@ -288,12 +288,14 @@ main ( int argc, char* argv[] )
 
 
 #ifndef NO_GRAPHICS
-  ControlWindow control_window( -1, -1, the_opts.get_l(OPTION_CONTROL_WINDOW_POS_X),
-                                the_opts.get_l(OPTION_CONTROL_WINDOW_POS_Y) );
+  ControlWindow* control_window;
   if( !no_graphics )
     {
       the_arena.set_colours();
-      //      the_gui.setup_control_window();
+      control_window = 
+        new ControlWindow( -1, -1,
+                           the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
+                           the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
     }
 #endif
       
