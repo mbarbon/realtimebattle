@@ -37,15 +37,15 @@ class InformationDistributor
 {
 public:
   struct reader_t {
-    reader_t::reader_t( const int id, list<const InfoBase*>::iterator& r )
+    reader_t( const int id, list<const InfoBase*>::iterator& r )
       : reader_id(id), reading_point(r) {}
       
     int reader_id;
     list<const InfoBase*>::iterator reading_point;
   };
 
-  InformationDistributor::InformationDistributor   ();
-  InformationDistributor::~InformationDistributor  () {}
+  InformationDistributor                           ();
+  ~InformationDistributor                          () {}
 
   void insert_information                          ( const InfoBase* );
   const InfoBase* get_information                  ( const int );

@@ -29,8 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class InfoBase
 {
 public:
-  InfoBase::InfoBase                () {}
-  InfoBase::~InfoBase               () {}
+  InfoBase                () {}
+  ~InfoBase               () {}
 
 private:
 };
@@ -38,8 +38,8 @@ private:
 class GameTimeInfo : public InfoBase
 {
 public:
-  GameTimeInfo::GameTimeInfo  ( const double t ) : game_time(t) {}
-  GameTimeInfo::~GameTimeInfo () {}
+  GameTimeInfo                ( const double t ) : game_time(t) {}
+  ~GameTimeInfo               () {}
 
   const double get_game_time  () const { return game_time; }
 
@@ -50,9 +50,8 @@ private:
 class StateInfo : public InfoBase
 {
 public:
-  StateInfo::StateInfo       ( const state_t s )
-    : state(s) {}
-  StateInfo::~StateInfo      () {}
+  StateInfo                  ( const state_t s ) : state(s) {}
+  ~StateInfo                 () {}
 
   const state_t get_state    () const { return state; }
 
@@ -62,22 +61,22 @@ private:
 
 class TournamentStartedInfo : public InfoBase
 {
-  //  TournamentStartedInfo::TournamentStartedInfo   
-  //  TournamentStartedInfo::~TournamentStartedInfo  () {}
+  //  TournamentStartedInfo   
+  //  ~TournamentStartedInfo  () {}
 };
 
 class StartGameInfo : public InfoBase
 {
 public:
-  StartGameInfo::StartGameInfo    ( const list<int> r//, const Arena g
-                                            )
+  StartGameInfo                       ( const list<int> r//, const Arena g
+                                        )
     : list_of_participating_robots(r)//, arena_geometry(g)
     {}
-  StartGameInfo::~StartGameInfo   () {}
+  ~StartGameInfo                      () {}
 
   const list<int>& get_list_of_participating_robots () const
     { return list_of_participating_robots; }
-  //  const Arena get_arena_geometry       () const { return arena_geometry; }
+  //  const Arena get_arena_geometry  () const { return arena_geometry; }
 
 private:
   list<int> list_of_participating_robots;
@@ -87,10 +86,10 @@ private:
 class ObjectMovedInfo : public InfoBase
 {
 public:
-  ObjectMovedInfo::ObjectMovedInfo  ( const object_type t, const int i,
-                                              const Vector2D& pos )
+  ObjectMovedInfo                   ( const object_type t, const int i,
+                                      const Vector2D& pos )
     : type(t), id(i), position(pos) {}
-  ObjectMovedInfo::~ObjectMovedInfo () {}
+  ~ObjectMovedInfo                  () {}
 
   const object_type get_type        () const { return type; }
   const int get_id                  () const { return id; }
@@ -105,12 +104,11 @@ private:
 class ObjectCreatedInfo : public InfoBase
 {
 public:
-  ObjectCreatedInfo::ObjectCreatedInfo  ( const object_type t, const int i )
-    : type(t), id(i) {}
-  ObjectCreatedInfo::~ObjectCreatedInfo () {}
+  ObjectCreatedInfo            ( const object_type t, const int i ) : type(t), id(i) {}
+  ~ObjectCreatedInfo           () {}
 
-  const object_type get_type            () const { return type; }
-  const int get_id                      () const { return id; }
+  const object_type get_type   () const { return type; }
+  const int get_id             () const { return id; }
 
 private:
   object_type type;
@@ -120,9 +118,9 @@ private:
 class ObjectDiedInfo : public InfoBase
 {
 public:
-  ObjectDiedInfo::ObjectDiedInfo    ( const object_type t, const int i )
+  ObjectDiedInfo                    ( const object_type t, const int i )
     : type(t), id(i) {}
-  ObjectDiedInfo::~ObjectDiedInfo   () {}
+  ~ObjectDiedInfo                   () {}
 
   const object_type get_type        () const { return type; }
   const int get_id                  () const { return id; }
@@ -135,9 +133,9 @@ private:
 class MessageInfo : public InfoBase
 {
 public:
-  MessageInfo::MessageInfo          ( const string& s, const string& m )
+  MessageInfo                       ( const string& s, const string& m )
     : sender(s), message(m) {}
-  MessageInfo::~MessageInfo         () {}
+  ~MessageInfo                      () {}
   const string& get_sender          () const { return sender; }
   const string& get_message         () const { return message; }
 
