@@ -25,13 +25,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Vector2D
 {
 public:
-  Vector2D();
-  Vector2D(const Vector2D&);
-  Vector2D(const double, const double);
+  Vector2D() { vector[0] = 0.0; vector[1] = 0.0; }
+  Vector2D(const Vector2D& v)  { vector[0] = v.vector[0]; vector[1] = v.vector[1]; }
+  Vector2D(const double x, const double y) { vector[0] = x; vector[1] = y; }
   ~Vector2D() {}
   
   friend Vector2D operator+(const  Vector2D&, const Vector2D&);
-  friend Vector2D operator-(const Vector2D&, const Vector2D&);
+  inline friend Vector2D operator-(const Vector2D&, const Vector2D&);
   friend Vector2D operator-(const Vector2D&);
   Vector2D& operator=(const Vector2D&);
   friend int operator==(const Vector2D&, const Vector2D&);
@@ -50,20 +50,55 @@ public:
   double operator[](int) const;
 
   friend double length(const Vector2D&);  
-  friend double lengthsqr(const Vector2D&);  
+  inline friend double lengthsqr(const Vector2D&);  
   friend double vec2angle(const Vector2D&);
   friend Vector2D angle2vec(const double);
   Vector2D& normalize();  
   friend Vector2D unit(const Vector2D&);  
-  friend double vedge(const Vector2D&, const Vector2D&);  
+  inline friend double vedge(const Vector2D&, const Vector2D&);  
+  inline friend double dot(const Vector2D&, const Vector2D&);  
   friend Vector2D rotate(const Vector2D&, const double angle);  
   friend Vector2D rotate90(const Vector2D&);  
-  friend double dot(const Vector2D&, const Vector2D&);  
+
 
 private:
   double vector[2];
 
   Vector2D& copy_vector(const Vector2D&);
 };
+
+
+// The following functions are critical for the speed of RTB and
+// are therefore inlined
+
+inline Vector2D
+operator-(const Vector2D& vec1, const Vector2D& vec2)
+{
+  return( Vector2D( vec1.vector[0] - vec2.vector[0],
+                    vec1.vector[1] - vec2.vector[1] ) );
+}
+
+
+inline double
+dot(const Vector2D& vec1, const Vector2D& vec2)
+{
+  return( vec1.vector[0] * vec2.vector[0] + 
+          vec1.vector[1] * vec2.vector[1] );
+}
+
+inline double
+vedge(const Vector2D& vec1, const Vector2D& vec2)
+{
+  return( vec1.vector[0]*vec2.vector[1] - 
+          vec1.vector[1]*vec2.vector[0] ); 
+}
+
+
+inline double
+lengthsqr(const Vector2D& vec)
+{
+  return( vec.vector[0]*vec.vector[0] + 
+          vec.vector[1]*vec.vector[1] );
+}
 
 #endif __VECTOR2D__

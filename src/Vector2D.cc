@@ -27,23 +27,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 void Error(const bool fatal, const String& function_name, const String& error_msg);
 
-Vector2D::Vector2D()
-{
-  vector[0] = 0.0;
-  vector[1] = 0.0;
-}
+//  Vector2D::Vector2D()
+//  {
+//    vector[0] = 0.0;
+//    vector[1] = 0.0;
+//  }
 
-Vector2D::Vector2D(const Vector2D& old)
-{
-  vector[0] = old.vector[0];
-  vector[1] = old.vector[1];
-}
+//  Vector2D::Vector2D(const Vector2D& old)
+//  {
+//    vector[0] = old.vector[0];
+//    vector[1] = old.vector[1];
+//  }
 
-Vector2D::Vector2D(const double x, const double y)
-{
-  vector[0] = x;
-  vector[1] = y;
-}
+//  Vector2D::Vector2D(const double x, const double y)
+//  {
+//    vector[0] = x;
+//    vector[1] = y;
+//  }
 
 Vector2D&
 Vector2D::copy_vector(const Vector2D& other)
@@ -62,12 +62,6 @@ operator+(const Vector2D& vec1, const Vector2D& vec2)
 }
 
 
-Vector2D
-operator-(const Vector2D& vec1, const Vector2D& vec2)
-{
-  return( Vector2D( vec1.vector[0] - vec2.vector[0],
-                    vec1.vector[1] - vec2.vector[1] ) );
-}
 
 Vector2D
 operator-(const Vector2D& vec)
@@ -75,19 +69,6 @@ operator-(const Vector2D& vec)
   return Vector2D( -vec.vector[0], -vec.vector[1] );
 }
 
-double
-dot(const Vector2D& vec1, const Vector2D& vec2)
-{
-  return( vec1.vector[0] * vec2.vector[0] + 
-          vec1.vector[1] * vec2.vector[1] );
-}
-
-double
-vedge(const Vector2D& vec1, const Vector2D& vec2)
-{
-  return( vec1.vector[0]*vec2.vector[1] - 
-          vec1.vector[1]*vec2.vector[0] ); 
-}
 
 Vector2D
 rotate(const Vector2D& vec, const double angle)
@@ -189,13 +170,6 @@ Vector2D::operator/=(const double denom)
   vector[0] /= denom;
   vector[1] /= denom;
   return( *this );
-}
-
-double
-lengthsqr(const Vector2D& vec)
-{
-  return( vec.vector[0]*vec.vector[0] + 
-          vec.vector[1]*vec.vector[1] );
 }
 
 double
