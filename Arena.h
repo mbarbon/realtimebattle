@@ -165,7 +165,7 @@ private:
 class Shape
 {
 public:
-  Shape() {colour = make_gdk_colour( 0x000000 ); }
+  Shape() {colour = make_gdk_colour( the_opts.get_l(OPTION_FOREGROUND_COLOUR) ); }
   Shape(long col) { colour = make_gdk_colour( col ); }
 
   virtual ~Shape() {}
