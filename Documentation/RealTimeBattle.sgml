@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 1.0.4 rev 1
+<title>RealTimeBattle User Manual, version 1.0.5 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
-<date> 2 May 2000
+<date> 16 September 2000
 
 <!-- <abstract> -->
 
@@ -90,11 +90,10 @@ run. The demand on hardware will, however, grow with the number of robots you wa
 battlefield simultaneously; running 120 advanced robots is certainly demanding for any
 personal computer.
 
-RealTimeBattle is only available on Unix. It is developed on a Linux-machine, but it
-should compile on other Unix dialects too. Running in 
-<ref id="Command line options" name="competition-mode"> is currently only possible in
-Linux, because of the need to read the <tt>/proc</tt> directory for information on CPU
-usage.
+RealTimeBattle is only available on Unix.  It is developed on a Linux-machine, but it
+should compile on other Unix dialects too. Running in <ref id="Command line options"
+name="competition-mode"> is currently only possible on Linux with the '/proc'-directory
+enabled, because of the need to get the cpu usage of child processes.
 
 The only software requirement is <url url="http://www.gtk.org" name="gtk+">, which is used for
 the graphical user interface.
@@ -210,7 +209,6 @@ table
 | Debug command available          |  Yes  |   No   |      No     |
 | Pause in game                    |  Yes  |  Yes   |      No     |
 | Step through game                |  Yes  |   No   |      No     |
-| Robots may start child processes |  Yes  |   No   |      No     |
 | Robot CPU time unlimited         |  Yes  |  Yes   |      No     |
 +----------------------------------+-------+--------+-------------+
 </code>
@@ -223,7 +221,6 @@ Mode                             | Debug | Normal | Competition @<hline>
 Debug command available          |  Yes  |  No    |     No      @
 Pause in game                    |  Yes  |  Yes   |     No      @
 Step through game                |  Yes  |  No    |     No      @
-Robots may start child processes |  Yes  |  No    |     No      @
 Robot CPU time unlimited         |  Yes  |  Yes   |     No      @<hline>
 </tabular>
 </table>
@@ -560,6 +557,13 @@ Since the radar information is almost all the robot will know about the environm
 crucial to make use of it as well as possible. It is also important to <ref name="maneuver
 the radar" id="Rotate"> well, to make it collect useful data.
 
+<sect1>The robots position<label id="Position">
+<p> From v1.0.5 of RTB it is possible to get the robots position more
+directly. Instead of having to analyze the surroundings with the radar and
+find your position from that, you can configure RTB to send the <ref
+name="robot coordinates" id="Coordinates">. The behavior is controlled by
+the option <ref name="Send robot coordinates" id="SendCoordinates">.
+
 <sect1>Shooting<label id="Shooting">
 <p>
 Shooting is the number one method to eliminate other robots. In RealTimeBattle a shot is moving with
@@ -755,9 +759,11 @@ other robots or even RealTimeBattle itself to get more information, by using up 
 of resources to drain the other robots and so on. This is, of course, not the intended
 method to beat opponents, so we try to inhibit it as much as possible.
 
-In <ref id="Command line options" name="competition-mode"> robots are not allowed to
-spawn child processes and their CPU usage is limited. In this way one robot cannot use
-up all the CPU. 
+In <ref id="Command line options" name="competition-mode"> robots are have limited CPU
+usage, so that one robot can't use up all the CPU. It could be possible to fiddle with
+this by launching child processes. But since the time used by the child process will be
+counted for as soon as the process dies, it should be very easy to detect if a robot does
+anything suspicious.
 
 It is not possible to prevent all ways of cheating within RTB. It is
 e.g. permitted to read and write to files, but remember that organizers of
@@ -767,6 +773,8 @@ robot executables and directories this can be done satisfactory.
 It may still be possible to find ways round these restrictions; if you detect such a way, please
 send a <ref name="bug report" id="BugReports">. By the way, it is up to the organizer of a
 tournament to make sure that the rules are followed.
+
+<!--   ################   Messages to robots   ##################   -->
 
 <sect1>Messages to robots<label id="Messages to robots">
 <p>
@@ -809,6 +817,15 @@ does always follow the <bf>Radar</bf> message. It gives more general information
 robot.  The time is the game-time elapsed since the start of the game. This is not necessarily the
 same as the real time elapsed, due to <ref id="TimeScale" name="time scale"> and 
 <ref id="MaxTimestep" name="max timestep">.
+
+<label id="Coordinates">
+<tag>Coordinates [x (double)] [y (double)] [angle (double)]</tag> Tells
+you the current robot position. It is only sent if the option <ref
+name="Send robot coordinates" id="SendCoordinates"> is 1 or 2. If it is 1
+the coordinates are sent relative the starting position, which has the
+effect that the robot doesn't know where it is starting, but only where it
+has moved since.
+
 
 <tag>RobotInfo [energy level (double)] [teammate? (int)]</tag> If you
 detect a robot with your radar, this message will follow, giving some
@@ -882,6 +899,9 @@ next!
 will be killed forcefully.
 
 </descrip>
+
+
+<!--   ################   Messages from robots   ##################   -->
 
 <sect1>Messages from robots<label id="Messages from robots">
 <p>
@@ -990,6 +1010,7 @@ troubles for the program.
 <sect1>Environmental options<label id="Environmental options">
 <p>
 <descrip>
+
 <tag>Gravitational Constant:</tag> The acceleration due to
 gravitation. It is about 9.8 on the earth. An increase will increase
 the friction, thereby slow down the robots.
@@ -1004,6 +1025,15 @@ if not braking.
 <label id="SlideFriction">
 <tag>Slide friction:</tag> The friction orthogonal to the robot
 direction. Also the maximum friction if braking.
+
+<label id="SendCoordinates">
+<tag>Send robot coordinates:</tag> Determines how coordinates are send to
+the robots. The following options are available: 
+<itemize>
+<item> 0 - don't send any coordinates (default)
+<item> 1 - send the coordinates relative the starting position
+<item> 2 - send absolute coordinates
+</itemize>
 
 </descrip>
 
