@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <iostream.h>
 
 #ifdef USE_SYS_TIME_H
 #include <sys/time.h>

@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/wait.h>
 #include <errno.h>
 #include <getopt.h>
+#include <iostream.h>
 
 #ifdef BSD_FP
 #include <floatingpoint.h>
