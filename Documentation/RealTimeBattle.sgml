@@ -322,8 +322,8 @@ directory, you need to set these options.
 <p>
 This is where the battle takes place. If you want a more detailed view, use
 the zoom buttons or press +, - or 0. The robots are visualized as coloured
-circles with an angle shape showing the front direction, the thick line is the
-cannon and the thin line points in the radar direction.
+circles with an angle shape showing the radar direction, the thick line is the
+cannon and the thin line points in the front direction.
 
 <sect1>Score window<label id="Score window">
 <p>
