@@ -98,7 +98,7 @@ main ( int argc, char* argv[] )
   try
     {
       the_arena->get_the_gui()->setup_control_window();
-      the_arena->start_tournament( robotnames, arenanames, nr_robots, 2, 2);
+      the_arena->start_tournament( robotnames, arenanames, nr_robots, 4, 4);
     }
   catch ( Error the_error )
 	 {
