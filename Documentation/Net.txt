@@ -139,6 +139,57 @@ Command from server to chat :
   
 
   /////////////////////////
+ // The Meta-Server     //
+/////////////////////////
+A Meta-server should be a 'server' at a constant address on a constant port (i.e. mycomputer.fr 4147).
+Every public Server should be refereced on the meta-server so that every allow chatter can connect to the meta-server and know what and where are the current games of RTB.
+
+exemple : 
+   Meta-Server at mycomputer.fr on port 4147
+   Server1 at somewhere.fr on port 5678
+   Server2 at somewhere.se on port 0123
+   Client1 know where is Server1
+   Client2 don't know anythink
+   Client3 ...
+
+    Meta-Server      Server1             Server2             Client1         Client2        Client3
+
+         |            starts                |                   |               |               |
+         |<-------------|                   |                   |               |               |              
+     1 Server           |                   |                   |               |               |
+         |              |                   |             connect to S1         |               |
+	 |              |<--------------------------------------|               |               |
+         |<-------------|                   |                   |               |               |
+ Server1 : 1 client     |                   |                   |         connect to MS         |
+         |<---------------------------------------------------------------------|               |
+         |--------------------------------------------------------------------->|               |
+         |              |                 starts                |       Server1 : 1 client      |
+	 |<---------------------------------|                   |         connect to S1         |
+    2 Servers           |<------------------------------------------------------|               |
+         |<-------------|                   |                   |               |               |
+ Server1 : 2 clients    |                   |                   |               |               |
+ Server2 : 0 client     |                   |                   |               |        connect to MS
+         |<-------------------------------------------------------------------------------------|
+         |------------------------------------------------------------------------------------->|
+         |              |                   |                   |               |       Server1 : 2 clients
+											       ...
+
+How to communicate with it... I think it is quite simple : 
+it is a forth application that stores and gives informations about the public servers
+When run with the option "-public", the RTB Server try to connect to the meta-server (we would have to make it configurable)
+He send him a name, a protocol/version, an address (maybe we can get it???), a port number, the number of connected people, the state of the server (i.e. 'in negociation', 'in game', ...) (also a summary, language, and a couple of thinks like that).
+i.e. "Destruction RTBNetV1 v1.0.5 jupiter6.estin.u-nancy.fr 5670 4 ..."
+
+then the meta server store this informations for each server that try to connect to him. It would probably be a good idea to check the connection every 10 seconds or less (If no answer, delete the server from the list of course).
+
+If a client connect to the meta-server, he would send him all the informations about all the servers, and than close the connection (I wouldn't need more. If he ask for lattest information, than he try to connect again, and the server would reply in the same way). Now, the client know where are the servers. He can choose the one he want to join.
+
+When a chat_client connects to the server, the server should send a message to the meta server so that he can update the data.
+Same think when starting a game, leaving a game (any information that could change something in the database of the meta-server)
+
+
+
+  /////////////////////////
  // Other               //
 /////////////////////////
 
