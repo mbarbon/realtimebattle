@@ -32,6 +32,7 @@ RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) \
 	$(STDCXX_LIBS) $(THREAD_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS) $(GUI_OBJS)
 RealTimeBattle_SOURCES = \
+	Arena.cc Arena.h \
 	ArenaBase.cc ArenaBase.h \
 	ArenaController.cc ArenaController.h \
 	ArenaRealTime.cc ArenaRealTime.h \
