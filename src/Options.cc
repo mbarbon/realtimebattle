@@ -245,11 +245,11 @@ Options::Options()
                           false, false, "Arena search path", NULL);
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 185, 10000, 6,
                         false, false, "Initial Arena window width", NULL);
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 120, 10000, 6,
                         false, false, "Initial Arena window height", NULL);
 
   all_long_options[OPTION_ARENA_WINDOW_POS_X] = 
@@ -269,11 +269,11 @@ Options::Options()
                         false, false, "Initial Control window y position", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 300, 10000, 6,
                         false, false, "Initial Message window width", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 25, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 110, 10000, 6,
                         false, false, "Initial Message window height", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_POS_X] = 
@@ -285,11 +285,11 @@ Options::Options()
                         false, false, "Initial Message window y position", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 175, 10000, 6,
                         false, false, "Initial Score window width", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 50, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 80, 10000, 6,
                         false, false, "Initial Score window height", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_POS_X] = 
@@ -301,11 +301,11 @@ Options::Options()
                         false, false, "Initial Score window y position", NULL);
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 50, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 320, 10000, 6,
                         false, false, "Initial Statistics window width", NULL);
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 50, 10000, 6,
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 130, 10000, 6,
                         false, false, "Initial Statistics window height", NULL);
 
   options_window_up = false;
@@ -451,6 +451,10 @@ Options::read_options_file(String file_string, const bool as_default)
             double option_value;
             file >> option_value;
             file.get(buffer,100,'\n');
+            option_value = min( option_value,
+                                all_double_options[i].max_value );
+            option_value = max( option_value,
+                                all_double_options[i].min_value );
             all_double_options[i].value = option_value;
             if(as_default)
               all_double_options[i].default_value = option_value;
@@ -472,6 +476,10 @@ Options::read_options_file(String file_string, const bool as_default)
                 option_value = str2hex(temp_string);
               }
             file.get(buffer,100,'\n');
+            option_value = min( option_value,
+                                all_long_options[i].max_value );
+            option_value = max( option_value,
+                                all_long_options[i].min_value );
             all_long_options[i].value = option_value;
             if(as_default)
               all_long_options[i].default_value = option_value;
