@@ -86,10 +86,6 @@ check_messages(int sig)
         case GAME_FINISHES:
           break;
 
-        case SAVE_DATA:
-          cout << "SaveDataFinished" << endl;
-          break;
-
         case INFO:
           cin >> tid >> speed  >> cannon_angle;
           if(rand() < (RAND_MAX/500))
@@ -319,5 +315,3 @@ main(int argc, char * argv[])
     }
   return(EXIT_SUCCESS);
 }
-
-
