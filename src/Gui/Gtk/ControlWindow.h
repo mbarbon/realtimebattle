@@ -139,6 +139,8 @@ private:
     MENU_SHOW_MESSAGES, MENU_SHOW_SCORE
   };
 
+  char* translate_menu_path        ( char* );
+
   GtkWidget* window_p;
   GtkWidget* status_label;
   GtkWidget* debug_level;

@@ -71,7 +71,6 @@ ControlWindow::ControlWindow( const int default_width,
 
   // The menu
 
-  // Comment from freeciv:
   //  This is the GtkItemFactoryEntry structure used to generate new menus.
   //            Item 1: The menu path. The letter after the underscore indicates an
   //                    accelerator key once the menu is open.
@@ -81,7 +80,6 @@ ControlWindow::ControlWindow( const int default_width,
   //                    which the function is called.  The default is 0.
   //            Item 5: The item type, used to define what kind of an item it is.
   //                    Here are the possible values:
-
   //                    NULL               -> "<Item>"
   //                    ""                 -> "<Item>"
   //                    "<Title>"          -> create a title item
@@ -96,55 +94,41 @@ ControlWindow::ControlWindow( const int default_width,
 
   static GtkItemFactoryEntry menu_items[] =
   {
-//      { copy_to_c_string((string)"/_" + _("File")), NULL, NULL, 0, "<Branch>" },
-//      { copy_to_c_string((string)"/"  + _("File") + "/" + _("Quit")), "<control>q",
-//        (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
-//      { copy_to_c_string((string)"/_" + _("Tournament")), NULL, NULL, 0, "<Branch>" },
-//      { copy_to_c_string((string)"/"  + _("Tournament") + "/" + _("New tournament")),
-//        "<control>n", (GtkItemFactoryCallback) ControlWindow::menu_callback,
-//        MENU_NEW_TOURNAMENT, "" },
-    { "/_File", NULL, NULL, 0, "<Branch>" },
-    { "/File/Quit", "<control>q",
+    { "/_" N_("File"), NULL, NULL, 0, "<Branch>" },
+    { "/"  N_("File") "/" N_("Quit"), "<control>q",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
-    { "/_Tournament", NULL, NULL, 0, "<Branch>" },
-    { "/Tournament/New tournament",
-      "<control>n", (GtkItemFactoryCallback) ControlWindow::menu_callback,
-      MENU_NEW_TOURNAMENT, "" },
-    // TODO: gettextify the rest of the items
-    { "/Tournament/Replay tournament", "<control>r",
+    { "/_" N_("Tournament"), NULL, NULL, 0, "<Branch>" },
+    { "/"  N_("Tournament") "/" N_("New tournament"), "<control>n",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
+    { "/" N_("Tournament") "/" N_("Replay tournament"), "<control>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_REPLAY_TOURNAMENT, "" },
-    { "/Tournament/Pause", "<shift>p",
+    { "/" N_("Tournament") "/" N_("Pause"), "<shift>p",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PAUSE, "" },
-    { "/Tournament/End", "<control>e",
+    { "/" N_("Tournament") "/" N_("End"), "<control>e",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
-    { "/_Windows", NULL, NULL, 0, "<Branch>" },
-    { "/Windows/Options", "<shift>o",
+    { "/_" N_("Windows"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Windows") "/" N_("Options"), "<shift>o",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_OPTIONS, "" },
-    { "/Windows/Statistics", "<shift>s",
+    { "/" N_("Windows") "/" N_("Statistics"), "<shift>s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STATISTICS, "" },
-    { "/Windows/sep", NULL, NULL, 0, "<Separator>" },
-//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show arena window")),
-//        "<control>a", (GtkItemFactoryCallback) ControlWindow::menu_callback,
-//        MENU_SHOW_ARENA, "<CheckItem>" },
-//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show message window")),
-//        "<control>m", (GtkItemFactoryCallback) ControlWindow::menu_callback,
-//        MENU_SHOW_MESSAGES, "<CheckItem>" },
-//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show score window")),
-//        "<control>s", (GtkItemFactoryCallback) ControlWindow::menu_callback,
-//        MENU_SHOW_SCORE, "<CheckItem>" } 
-    { "/Windows/Show arena window",
-      "<control>a", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+    { "/" N_("Windows") "/sep", NULL, NULL, 0, "<Separator>" },
+    { "/"  N_("Windows") "/" N_("Show arena window"), "<control>a",
+        (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_ARENA, "<CheckItem>" },
-    { "/Windows/Show message window",
-      "<control>m", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+    { "/"  N_("Windows") "/" N_("Show message window"), "<control>m",
+        (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_MESSAGES, "<CheckItem>" },
-    { "/Windows/Show score window",
-      "<control>s", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+    { "/"  N_("Windows") "/" N_("Show score window"), "<control>s",
+        (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_SCORE, "<CheckItem>" } 
   };
 
   const int nmenu_items = sizeof( menu_items ) / sizeof( menu_items[0] );
+
+  for( int i = 0; i < nmenu_items; i++ )
+    menu_items[i].path = translate_menu_path( menu_items[i].path );
+
   GtkAccelGroup* accel = gtk_accel_group_new();
   GtkItemFactory* item_factory = 
     gtk_item_factory_new( GTK_TYPE_MENU_BAR, "<main>", accel );
@@ -158,30 +142,23 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_menu_bar_set_shadow_type( GTK_MENU_BAR( menubar ), GTK_SHADOW_OUT );
   gtk_widget_show( menubar );
 
-  show_arena_menu_item = gtk_item_factory_get_widget
-    ( item_factory, "/Windows/Show arena window" );
-//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show arena window")) );
+  if(!(show_arena_menu_item = gtk_item_factory_get_widget
+       ( item_factory, translate_menu_path("<main>/Windows/Show arena window") ) ))
+    cerr << "show_arena_menu_item == NULL" << endl;
+  if(!(show_message_menu_item = gtk_item_factory_get_widget
+       ( item_factory, translate_menu_path("<main>/Windows/Show message window") ) ))
+    cerr << "show_message_menu_item == NULL" << endl;
+  if(!(show_score_menu_item = gtk_item_factory_get_widget
+       ( item_factory, translate_menu_path("<main>/Windows/Show score window") ) ))
+    cerr << "show_score_menu_item == NULL" << endl;
+
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
-#else
-  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
-#endif
-
-  show_message_menu_item = gtk_item_factory_get_widget
-    ( item_factory, "/Windows/Show message window" );
-//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show message window")) );
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
-#else
-  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
-#endif
-
-  show_score_menu_item = gtk_item_factory_get_widget
-    ( item_factory, "/Windows/Show score window" );
-//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show score window")) );
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
 #else
+  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
+  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
   gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
 #endif
 
@@ -223,6 +200,11 @@ ControlWindow::ControlWindow( const int default_width,
   remove_replay_widgets();
 
   gtk_widget_show( window_p );
+}
+
+ControlWindow::~ControlWindow()
+{
+  gtk_widget_destroy( window_p );
 }
 
 void
@@ -467,6 +449,40 @@ ControlWindow::display_replay_widgets()
   displayed = REPLAY_WIDGETS;
 }
 
+// ---------------------------------------------------------------------------
+// Translates '/' separated words. Ignores preceding '_' and words surrounded
+// by '<' '>'
+// ---------------------------------------------------------------------------
+char*
+ControlWindow::translate_menu_path( char* pathstr_p )
+{
+#ifndef ENABLE_NLS
+  return pathstr_p;
+#else
+  vector<string> pathlist;
+  pathlist = split_string( pathstr_p, pathlist, "/" );
+  vector<string>::iterator vi;
+  for( vi = pathlist.begin(); vi != pathlist.end(); vi++ )
+    {
+      if( !((*vi)[0] == '<' && (*vi)[(*vi).length() - 1] == '>' ) )
+        if( (*vi)[0] == '_' )
+          {
+            (*vi).erase( 0, 1 );
+            *vi = (string)"_" + gettext( (*vi).c_str() );
+          }
+        else
+          *vi = gettext( (*vi).c_str() );
+    }
+  string new_path;
+  for( vi = pathlist.begin(); vi != pathlist.end(); vi++ )
+    if( ((*vi)[0] == '<' && (*vi)[(*vi).length() - 1] == '>' ) )
+      new_path += *vi;
+    else
+      new_path += "/" + *vi;
+  return copy_to_c_string( new_path ); // Memory-leak: never deleted
+#endif
+}
+
 void
 ControlWindow::change_time_limitations()
 {
@@ -484,11 +500,6 @@ ControlWindow::change_time_limitations()
 //        gtk_range_set_adjustment( GTK_RANGE( time_control ),
 //                                  current_replay_time_adjustment );
 //      }
-}
-
-ControlWindow::~ControlWindow()
-{
-  gtk_widget_destroy( window_p );
 }
 
 void
