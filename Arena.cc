@@ -1,5 +1,5 @@
 #include <math.h>
-#include <typeinfo>
+#include <signal.h>
 #include "Arena.h"
 #include "gui.h"
 
@@ -15,12 +15,12 @@ Arena::Arena()
   shot_speed = 4.0;
   max_acceleration = 2.0;
   min_acceleration = -0.5;
-  start_energy = 100.0;
-  air_resistance = 0.035;
-  roll_friction = 0.010;
+  start_energy = 0.1;
+  air_resistance = 0.005;
+  roll_friction = 0.002;
   slide_friction = 0.098;
   grav_const = 9.82;
-  for(int i=ROBOT; i<EXPLOSION; i++)
+  for(int i=ROBOT; i<=EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
   the_gui = new Gui;
 }
@@ -275,6 +275,7 @@ Arena::update_robots()
   GList* gl;
   Robot* robotp;
 
+  int killed_robots = 0;
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; )
     {
       robotp = (Robot*)gl->data;
@@ -287,8 +288,18 @@ Arena::update_robots()
       if( robotp->is_alive() ) robotp->get_messages();
 
       gl = g_list_next(gl);
-      if( !robotp->is_alive() ) g_list_remove(object_lists[ROBOT], robotp);          
+      if( !robotp->is_alive() ) 
+        {
+          g_list_remove(object_lists[ROBOT], robotp);          
+          killed_robots++;
+        }
     }
+  
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+    {
+      kill(((Robot*)gl->data)->get_pid(), SIGUSR1);
+    }
+  robots_left -= killed_robots;
 }
 
 void
@@ -322,7 +333,7 @@ Arena::start_game()
 
       if( !found_space )
         throw Error("Couldn't find space for all robots", "Arena::start_game");
-      angle = (double)rand()*2.0*M_PI;
+      angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_initial_values(pos, angle, robot_radius, start_energy);
     }
 
@@ -350,49 +361,54 @@ Arena::start_game()
 void
 Arena::end_game()
 {
-  // pull down the arena
-  GList* gl = g_list_next(object_lists[WALL]);
+  // Close Score, Message and Control Windows
 
-  for(; gl != NULL; gl = g_list_next(gl))
-    {
-      delete gl->data;
-    }
+  the_gui->close_score_window();
+  the_gui->close_message_window();
+  the_gui->close_arena_window();
 
+  GList* gl;
   // clear the lists;
-
+  Robot* robotp;
   for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
     {
+      robotp = (Robot*)gl->data;
       gl=g_list_next(gl);
-      g_list_remove(gl, (Robot*)gl->data);
+      g_list_remove(object_lists[ROBOT], robotp);
     }
+  Mine* minep;
   for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
     {
-      delete (Mine*)(gl->data);
+      minep = (Mine*)(gl->data); 
+      delete minep;
       gl=g_list_next(gl);
-      g_list_remove(gl, (Mine*)gl->data);
+      g_list_remove(object_lists[MINE], minep);
     }
+  Cookie* cookiep;
   for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; )
     {
-      delete (Cookie*)(gl->data);
+      cookiep = (Cookie*)(gl->data);
+      delete cookiep;
       gl=g_list_next(gl);
-      g_list_remove(gl, (Cookie*)gl->data);
+      g_list_remove(object_lists[COOKIE], cookiep);
     }
+  void* wallp;
   for(gl=g_list_next(object_lists[WALL]); gl != NULL; )
     {
-      delete (Shape*)(WallCircle*)(gl->data);
+      wallp = gl->data;
+      delete (Shape*)(WallCircle*)wallp;
       gl=g_list_next(gl);
-      g_list_remove(gl, (Shape*)(WallCircle*)gl->data);
+      g_list_remove(object_lists[WALL], wallp);
     }
+  Explosion* explosionp;
   for(gl=g_list_next(object_lists[EXPLOSION]); gl != NULL; )
     {
-      delete (Explosion*)(gl->data);
+      explosionp = (Explosion*)(gl->data);
+      delete explosionp;
       gl=g_list_next(gl);
-      g_list_remove(gl, (Explosion*)gl->data);
+      g_list_remove(object_lists[EXPLOSION], explosionp);
     }
   
-  //for(int i= ROBOT; i < EXPLOSION; i++)
-  //  g_list_free(object_lists[i]);
- 
   if(games_remaining_in_sequence == 0) 
     end_sequence();
   else

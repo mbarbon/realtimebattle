@@ -126,7 +126,8 @@ void
 Robot::die()
 {
    alive = false;
-   // set points
+   position_this_game = the_arena->get_robots_left();
+   
 }
 
 
@@ -138,7 +139,7 @@ Robot::update_radar_and_cannon(const double timestep)
   robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
   void* col_obj;
-  double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape, col_obj);
+  double dist = the_arena->get_shortest_distance(center, Vector2D(cos(radar_angle), sin(robot_angle)), 0.0, closest_shape, col_obj);
   send_message(RADAR, dist, closest_shape);
 }
 

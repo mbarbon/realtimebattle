@@ -53,6 +53,7 @@ public:
   double get_roll_friction() { return roll_friction; }
   double get_slide_friction() { return slide_friction; }
   double get_grav_const() { return grav_const; }
+  int get_robots_left() { return robots_left; }
 
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
@@ -326,6 +327,8 @@ public:
   char* get_robotname() { return robot_name.str; }
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
+  pid_t get_pid() { return pid; }
+
   void display_energy();
   void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc );
 
@@ -348,6 +351,7 @@ private:
   GString robot_filename;
   GString robot_dir;
   int points;
+  int position_this_game;
 
   ifstream* instreamp;
   ofstream* outstreamp;
