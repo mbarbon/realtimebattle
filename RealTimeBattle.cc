@@ -54,8 +54,8 @@ sig_handler (int signum)
         break;
       //notice_termination (pid, status);
     }
-  if( signum == SIGCHLD ) cerr << "Sigchld caught!" << endl;
-  if( signum == SIGPIPE ) cerr << "Sigpipe caught!" << endl;
+  //  if( signum == SIGCHLD ) cerr << "Sigchld caught!" << endl;
+  //  if( signum == SIGPIPE ) cerr << "Sigpipe caught!" << endl;
   signal(signum, sig_handler);
 }
 
