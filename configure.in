@@ -741,7 +741,6 @@ AC_OUTPUT([
    src/Gui/Makefile
    src/Gui/Gtk/Makefile
    src/Gui/none/Makefile
-   src/Gui/curses/Makefile
    po/Makefile.in
    Packages/Makefile
    Packages/rpm/Makefile
