@@ -100,7 +100,7 @@ public:
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
-  void move(const double timestep, int iterstep);
+  void move(const double timestep, int iterstep, const double eps);
 
   bool alive;
   bool process_running;
