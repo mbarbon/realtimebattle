@@ -51,8 +51,7 @@ TogglePauseGameRequest::accept() const
 void
 StartTournamentRequest::accept() const
 {
-  the_eventhandler.set_tournament( new Tournament( rounds_per_match,
-                                                   robots_per_match,
+  the_eventhandler.set_tournament( new Tournament( robots_per_match,
                                                    number_of_matches,
                                                    robot_files,
                                                    arena_files ) );
