@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stack>
 #include <fstream>
 #include <typeinfo>
+#include <set>
 
 #include "Arena.h"
 #include "Gadgets/AllGadgets.h"
@@ -35,7 +36,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 
 void
-Arena::add_shot(const Shot& s)
+Arena::add_shot(Shot* s)
 {
   if(  shots.insert(s).second == false )
     Error(true, "Couldn't add element", "Arena::add_shot");
@@ -240,4 +241,13 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             }
         }
     }
+}
+
+
+
+void
+Arena::garbage_collector()
+{
+  
+  
 }
