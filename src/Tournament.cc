@@ -46,6 +46,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //    start();
 //  }
 
+//NOTE : Maybe we should prepare the Tournament instead of running everything...
+
+Tournament::Tournament() :
+  robots_per_match(0),
+  number_of_matches(0)
+{
+
+}
+
 Tournament::Tournament(const int robots_p_match,
                        const int number_o_matches,
                        const vector<string>& robot_filenames,
@@ -53,7 +62,7 @@ Tournament::Tournament(const int robots_p_match,
   robots_per_match(robots_p_match), 
   number_of_matches(number_o_matches)
 {
-  start();
+  //start();  //Really ?
 }
 
 Tournament::Tournament(const string& tournament_file)
@@ -62,9 +71,68 @@ Tournament::Tournament(const string& tournament_file)
 
   if( load_succeeded )
     {
-      start();
+      //start();  //Really ? Without any robot connected to it ?
+    }
+
+  cout<<"End of Tournament::Tournament\n";
+}
+
+bool
+Tournament::add_Robot(Robot* robot)
+{
+  if( ! started )
+    {
+      the_robots.push_back(robot);
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+};
+
+bool 
+Tournament::add_Arena(string arena_filename)
+{
+  if( ! started )
+    {
+      arena_filenames.push_back(arena_filename);
+      return true;
+    }
+  else
+    {
+      return false;
     }
 }
+
+bool 
+Tournament::set_number_o_matches(int i)
+{
+  if( ! started )
+    {
+      number_of_matches = i;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool
+Tournament::set_robots_p_match(int i)
+{
+  if( ! started )
+    {
+      robots_per_match = i;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
 
 void
 Tournament::start()
@@ -73,10 +141,16 @@ Tournament::start()
   match_nr = 0;
   create_matches();
   prepare_for_new_match();  
-
+  
   // TODO: Load all arenafiles.
 
   // TODO: Create the_robots
+  // NOTE: The robots are already 'created' as it is done when a client add a new robot name
+  //       We need to tell the client to run the robots he submitted
+  //       and get the new connection for the robot (It is done in the server socket...)
+
+  started = true;
+
 }
 
 
@@ -85,6 +159,8 @@ Tournament::prepare_for_new_match()
 {
   // TODO: Startup all robots and remove all robots that failed to startup.
   //       Copy the newly started robots to the_robots.
+  // NOTE: Maybe some robots are allready started : 
+  //         just tell them that we are about to start a new match. 
 
   // TODO: Create the_arena
 
@@ -257,18 +333,21 @@ Tournament::parse_tournament_file( const string& filename )
   list<string> robotdirs;
   list<string> arenadirs;
 
-  read_dirs_from_system(robotdirs, arenadirs);
+  //  read_dirs_from_system(robotdirs, arenadirs);
 
   bool fatal_error_on_file_failure = false;
 
   ifstream file(filename.c_str());
+
   if( !file )
     {
+      cout<<"No such file\n";
       if( fatal_error_on_file_failure )
         Error( true, "Can't open specified tournament file.",
                "parse_tournament_file" );
       else
         return false;
+      
     }
 
   int games_p_s = 1;

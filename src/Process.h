@@ -40,7 +40,6 @@ class Process
 {
 public:
   
-  Process(const string& filenm, Robot* rbt);
   Process(const string& filenm);
   ~Process();
 

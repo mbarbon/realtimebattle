@@ -10,7 +10,23 @@
 #include "Console.h"
 
 
-bool Console::rfcstyle = false;
+bool   Console::rfcstyle = false;
+bool   Console::prompt_is_showing = false;
+bool   Console::show_prompt = false;
+string Console::input_prompt = string("> ");
+
+/*
+ * TODO : Make all this works as a real Stream...
+ */
+
+
+Console C_Comment( string(" # ") );
+Console C_OK( string("") );
+Console C_Fail( string( "!!!" ) );
+Console C_Version( string(" : ") );
+Console C_Connection( string("1: ") );
+Console C_GenFail( string("2: ") );
+Console C_Rejected( string("3: ") );
 
 /************************************************************************
 Function to handle log messages.
@@ -19,11 +35,11 @@ This must match the log_callback_fn typedef signature.
 void Console::handle_log(int level, string message)
 {
   if(rfcstyle) {
-    write(C_LOG_BASE+level, message);
+    //write(C_LOG_BASE+level, message);
   } else {
     char Level[16];
     sprintf(Level, "%d", level);
-    write(C_LOG_BASE+level, string(Level) + ": " +  message);
+    //write(C_LOG_BASE+level, string(Level) + ": " +  message);
   }
 }
 
@@ -35,8 +51,7 @@ void Console::update_prompt()
   if (prompt_is_showing || !show_prompt)
     return;
   
-  dump(C_READY, prompt);
-  flush();
+  cout << input_prompt << std::flush;
   prompt_is_showing = true;
 }
 
@@ -59,6 +74,7 @@ int Console::dump(int i, string buf)
 
 /************************************************************************
 Write to console and add line-break, and show prompt if required.
+NOTE : Should be Useless now that we use a stream
 ************************************************************************/
 void Console::write(int i, char* message, ...)
 {
@@ -72,6 +88,10 @@ void Console::write(int i, char* message, ...)
   puts(i, buf);
 }
 
+void Console::write(string buf)
+{
+  puts(0, buf);
+}
 
 void Console::write(int i, string buf)
 {
@@ -81,9 +101,6 @@ void Console::write(int i, string buf)
 /************************************************************************
 Write to console and add line-break, and show prompt if required.
 Same as write, but without the format string stuff.
-The real reason for this is because __attribute__ complained
-with write(C_COMMENT,"") of "warning: zero-length format string";
-this allows puts(C_COMMENT,"");
 ************************************************************************/
 void Console::puts(int i, string str)
 {
@@ -114,9 +131,9 @@ void Console::set_style( bool i )
 {
   rfcstyle = i;
   if (rfcstyle) 
-    puts(C_OK, "Ok. RFC-style set.");
+    C_OK.write("Ok. RFC-stype set.\n");
   else
-    puts(C_OK, "Ok. Standard style set.");
+    C_OK.write("Ok. Standard style set.\n");
 }
 
 /************************************************************************
@@ -134,8 +151,7 @@ void Console::prompt_on()
 {
   static int first = true;
   if (first) {
-    puts(C_COMMENT, "");
-    puts(C_COMMENT, "For introductory help, type 'help'.");
+    C_Comment.write("For introductory help, type 'help'.");
     first = false;
   }
   show_prompt=true;

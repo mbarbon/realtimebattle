@@ -3,40 +3,53 @@
 
 #include <stdarg.h>
 #include <string>
-#include <iostream.h>
+#include <iostream>
+#include <istream.h>
+#include <unistd.h>
 
-#define C_IGNORE -1		/* never print RFC-style number prefix */
-#define C_COMMENT 0 		/* for human eyes only */
-#define C_VERSION 1		/* version info */
-#define C_DEBUG	2		/* debug info */
-#define C_LOG_BASE 10		/* 10, 11, 12 depending on log level */
-#define C_OK 100		/* success of requested operation */
-#define C_CONNECTION 101	/* new client */
-#define C_DISCONNECTED 102	/* client gone */
-#define C_REJECTED 103		/* client rejected */
-#define C_FAIL 200		/* failure of requested operation */ 
-#define C_METAERROR 201		/* failure of meta server */
-#define C_SYNTAX 300		/* syntax error or value out of range */
-#define C_BOUNCE 301		/* option no longer available */
-#define C_GENFAIL 400		/* failure not caused by a requested operation */
-#define C_WARNING 500		/* something may be wrong */
-#define C_READY 999		/* waiting for input */
+using namespace std;
 
-class Console {
+/* NOTE : Do we really need all this */
+/* TODO : Maybe let each function act as she want... */
+/* TODO : Use the readline functions ... */
+/* TODO : Use a StreamBuffer to make it more homogenious ... */
+
+class Console;
+extern Console C_Ignore;		/* never print RFC-style number prefix */
+extern Console C_Comment; 		/* for human eyes only */
+extern Console C_Version;       	/* version info */
+extern Console C_Debug;		        /* debug info */
+extern Console C_Log_Base;		/* 10, 11, 12 depending on log level */
+extern Console C_OK;	        	/* success of requested operation */
+extern Console C_Connection;    	/* new client */
+extern Console C_Disconnected;  	/* client gone */
+extern Console C_Rejected;		/* client rejected */
+extern Console C_Fail;          	/* failure of requested operation */ 
+extern Console C_MetaError;		/* failure of meta server */
+extern Console C_Syntax;		/* syntax error or value out of range */
+extern Console C_Bounce;		/* option no longer available */
+extern Console C_GenFail; 		/* failure not caused by a requested operation */
+extern Console C_Warning; 		/* something may be wrong */
+extern Console C_Ready; 		/* waiting for input */
+
+class Console { //: public std::ostream, public ConsoleStream {
  public:
-  Console() : 
-    prompt(" # "), prompt_is_showing(false), show_prompt(false)
+  Console( string prompt, int fd = STDOUT_FILENO) :
+    prompt(prompt)
+    //std::ostream(this), ConsoleStream( prompt, fd )
     {};
-  Console(string p) : 
-    prompt(p), prompt_is_showing(false), show_prompt(false) 
+  Console() : prompt(" # ")
+    //ConsoleStream( string(" # "), STDOUT_FILENO )
     {};
 
 
+  /* TODO : See what is useless */
   void handle_log(int level, string);
   void update_prompt();
   int dump(int i, string);
   void write(int i, string);
   void write(int i, char *message, ...);
+  void write(string);
   void puts(int i, string);
   void rfconly(int i, string);
   void flush();
@@ -49,9 +62,61 @@ class Console {
 
  protected:
   string prompt;
-  bool prompt_is_showing, show_prompt;
+  static bool prompt_is_showing;
+  static bool show_prompt;
   static bool rfcstyle;
-
+  static string input_prompt;
 };
 
 #endif
+
+
+
+
+/*
+  class ConsoleStream : public std::streambuf {
+  public:
+  ConsoleStream( string prompt, int fd = 0 ) : prompt( prompt ), fd( fd ) {
+  setp(buffer, buffer+1);
+  }
+  ~ConsoleStream() {
+  sync();
+  }
+  int sync() {
+  if( pptr() > pbase() ) {
+  tampon = tampon + buffer[0];
+  setp( buffer, buffer + 1 );
+  }
+  return 0;
+  }
+  int overflow( int c ) {
+  sync();
+  
+  if( c == '\n' )
+  {
+  cout<<prompt<<tampon<< std::endl ;
+  tampon = "";
+  }
+  //else if( c == std::flush )
+  //  {
+  //TODO : We dont need the prompt all the time...
+  //	cout<<prompt<<tampon<< std::flush ;
+  //	tampon = "";
+  //     }
+  
+  else
+  {
+  if( c != 0 ) {
+  *pptr() = static_cast<char>( c );
+  pbump( 1 );
+  }
+  }
+  return c;
+  }
+  private:
+  int fd;
+  string prompt;
+  char buffer[1]; // TODO : Do it with a bigger buffer and parse the buffer next... 
+  string tampon;
+  };
+*/

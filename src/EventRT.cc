@@ -30,7 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventHandler.h"
 #include "GuiInterface.h"
 #include "Tournament.h"
-
+#include "ServerSocket.h"
 
     ///////////////////////////////////////////////////
    //                                               //
@@ -46,6 +46,7 @@ void
 CheckGUIEvent::eval() const 
 {
   // Note: might have to supply process_all_options() with eventhandler in the future.
+  //cout<<"CheckGUIEvent::eval()\n";
   gui_p->process_all_requests();
 
   pthread_mutex_lock( &the_mutex );
@@ -58,37 +59,55 @@ CheckGUIEvent::eval() const
       pthread_mutex_unlock( &the_mutex );
       return;
     }
-  pthread_mutex_unlock( &the_mutex );
 
   Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
+
+  pthread_mutex_unlock( &the_mutex );
+
   the_eventhandler.insert_RT_event(next_event);
 }
 
 
-
+void
+CheckSocketEvent::eval() const
+{
+  //cout<<"CheckSocketEvent::eval()\n";
+  server_p->check_socket();
+  Event* next_event = new CheckSocketEvent(refresh, server_p);
+  the_eventhandler.insert_RT_event(next_event);
+}
 
 void
 StartTournamentEvent::eval() const 
 {
-  Tournament* t = new Tournament(filename);
+  //cout<<"StartTournamentEvent::eval() const \n";
+  Tournament* t = new Tournament();
+  /*
+    t = new Tournament(filename);
 
+  cout<<"Tournament created\n";
   if( !t->did_load_succeed() )
     {
       Error(true, "Couldn't load tournament file", "StartTournamentEvent::evel");
     }
+  */
 
   the_eventhandler.set_tournament( t );
+  //  Event* next_event = new CheckTournamentNegociationEvent(refresh, refresh, t);
+  //  the_eventhandler.insert_RT_event(next_event);
 }
 
 void
 PrepareForNewMatchEvent::eval() const
 {
+  //cout<<"PrepareForNewMatchEvent::eval() const\n";
   my_tournament->prepare_for_new_match();
 }
 
 void
 StartNewMatchEvent::eval() const
 {
+  //cout<<"StartNewMatchEvent::eval() const\n";
   my_match->start_new_match();
 }
 
@@ -96,5 +115,6 @@ StartNewMatchEvent::eval() const
 void
 EndMatchEvent::eval() const
 {
+  //cout<<"EndMatchEvent::eval() const\n";
   my_match->end_match();
 }

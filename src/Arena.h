@@ -53,7 +53,7 @@ class Arena
 public:
 
   Arena( const string& filname, set<Robot*>& rbts );
-  ~Arena() {}
+  ~Arena() {garbage_collector();}
 
   void load_arena_file( const string& filename, Gadget& hierarchy );
 

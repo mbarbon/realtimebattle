@@ -44,47 +44,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Process.h"
 #include "Messagetypes.h"
-//#include "Structs.h"
-//#include "Robot.h"
-//#include "ArenaBase.h"
-//#include "ArenaController.h"
-//#include "OptionHandler.h"
 #include "String.h"
 
 
-
+//NOTE : this function use the event_handler that only appears in the rtb_server...
+//NOTE : we can't use it in a Process::function because Process is used by the robot_client
+//TODO : find a better way to handle the errors... (Exception???)
 void Error(const bool fatal, const string& error_msg, const string& function_name);
-
-Process::Process(const string& filenm, Robot* rbt)
-{
-  filename = filenm;  
-  //my_robot = rbt;
-
-  string::size_type nr;
-  if( ( nr = filename.rfind('/')  ) == string::npos )
-    plain_filename = filename;
-  else
-    plain_filename = filename.substr(nr+1, string::npos);
-
-  process_running = false;
-
-  send_usr_signal = false;
-  signal_to_send = 0;
-  
-  use_non_blocking = get_default_non_blocking_state();
-
-  instreamp = NULL;
-  outstreamp = NULL;
-
-  pipes[0] = -1;  
-  pipes[1] = -1;
-  pid = -1;
-}
 
 Process::Process(const string &filenm)
 {
   filename = filenm;  
-  //my_robot = NULL;
 
   string::size_type nr;
   if( ( nr = filename.rfind('/')  ) == string::npos )
@@ -117,12 +87,12 @@ Process::~Process()
 void
 Process::start(const enum game_mode_t mode)
 {
-  
+  //TODO : Tell the server in case of error...
   game_mode = mode;
   
   int pipe_in[2], pipe_out[2];
   if (pipe (pipe_in)) 
-    cerr<< "Couldn't setup pipe_in for robot " << filename<< "Process::start";
+    cerr<< "Couldn't setup pipe_in for robot " << filename<< "Process::start\n";
 
   if (pipe (pipe_out)) 
     cerr << "Couldn't setup pipe_out for robot "<< filename << "Process::start\n";
@@ -144,47 +114,48 @@ Process::start(const enum game_mode_t mode)
 
       if( use_non_blocking )
 	{
+	  //TODO : make exit after an error
 	  int pd_flags;
 	  if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
 	    cerr << "Couldn't get pd_flags for pipe_out in robot " << filename<< 
-	      "Process::start, child";
+	      "Process::start, child\n";
           pd_flags |= O_NONBLOCK;
           if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
             cerr << "Couldn't change pd_flags for pipe_out in robot "<< filename<< 
-	      "Process::start, child";
+	      "Process::start, child\n";
           
           
           if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
             cerr << "Couldn't get pd_flags for pipe_in in robot " << filename << 
-	      "Process::start, child";
+	      "Process::start, child\n";
 	  pd_flags |= O_NONBLOCK;
           if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
             cerr << "Couldn't change pd_flags for pipe_in in robot " << filename << 
-	      "Process::start, child";
+	      "Process::start, child\n";
 	}
 
       // Check file attributes
       
       struct stat filestat;
       if( 0 != stat( filename.c_str(), &filestat ) ) 
-	cerr << "Couldn't get stats for robot " << filename << "Process::start, child";
+	cerr << "Couldn't get stats for robot " << filename << "Process::start, child\n";
       if( !S_ISREG( filestat.st_mode) )
 	cerr << "Robot file isn't regular, error for robot " << filename << 
-	  "Process::start, child";
+	  "Process::start, child\n";
       if( !(filestat.st_mode & S_IXOTH) )
 	cerr << "Robot file isn't executable for user, error for robot " << filename << 
-	  "Process::start, child";
+	  "Process::start, child\n";
       if( (filestat.st_mode & S_ISUID) )
 	cerr << "Set user ID is not allowed, error for robot " << filename << 
-	  "Process::start, child";
+	  "Process::start, child\n";
       
       // Lower priority by one
       
       int old;
       if( (old = getpriority (PRIO_PROCESS, 0)) == -1 )
-	cerr << "Couldn't get priority for robot " << filename << "Process::start, child";
+	cerr << "Couldn't get priority for robot " << filename << "Process::start, child\n";
       if( setpriority (PRIO_PROCESS, 0, old + 1) == -1)
-	cerr << "Couldn't set priority for robot " << filename << "Process::start, child";
+	cerr << "Couldn't set priority for robot " << filename << "Process::start, child\n";
       
       if( game_mode != DEBUG_MODE )
 	{
@@ -207,21 +178,21 @@ Process::start(const enum game_mode_t mode)
 #ifdef HAVE_RLIMIT_NPROC
 	  if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
 	    cerr << "Couldn't get proc limits for robot " << filename << 
-	      "Process::start, child";
+	      "Process::start, child\n";
 	  
 	  res_limit.rlim_cur = 0;
 	  if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
 	    cerr << "Couldn't limit child processes for robot " << filename << 
-	      "Process::start, child";
+	      "Process::start, child\n";
 #endif
 	}
       
       // Execute process. Should not return!
       if( execl(filename.c_str(), filename.c_str(), NULL) == -1 )
-	cerr << "Couldn't open robot " << filename << "Process::start, child";
+	cerr << "Couldn't open robot " << filename << "Process::start, child\n";
       
       cerr << "Robot didn't execute, SHOULD NEVER HAPPEN!, error for " << filename << 
-	"Process::start, child";
+	"Process::start, child\n";
       
     }
   else
@@ -236,18 +207,18 @@ Process::start(const enum game_mode_t mode)
       int pd_flags;
       if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
 	cerr << "Couldn't get pd_flags for pipe_in in robot " << filename << 
-	  "Process::start, parent";
+	  "Process::start, parent\n";
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
 	cerr << "Couldn't change pd_flags for pipe_in in robot " << filename << 
-	  "Process::start, parent";
+	  "Process::start, parent\n";
       if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 ) 
 	cerr << "Couldn't get pd_flags for pipe_out in robot " << filename << 
-	  "Process::start, parent";
+	  "Process::start, parent\n";
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
 	cerr << "Couldn't change pd_flags for pipe_out in robot " << filename << 
-	  "Process::start, parent";
+	  "Process::start, parent\n";
       
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
@@ -264,8 +235,8 @@ Process::start(const enum game_mode_t mode)
   
   
   process_running = true;
-  cpu_next_limit = 0;//the_opts.get_d(OPTION_CPU_START_LIMIT);
-  cpu_warning_limit = 0; //cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+  cpu_next_limit = 0;    //TODO : the_opts.get_d(OPTION_CPU_START_LIMIT);
+  cpu_warning_limit = 0; //TODO : cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
   cpu_timeout = 0.0;
 }
 
@@ -347,7 +318,7 @@ Process::check()
 void
 Process::end()
 {
-  //my_robot->send_message(EXIT_ROBOT);
+  //TODO??? : my_robot->send_message(EXIT_ROBOT);
   send_signal();
 }
 
@@ -391,7 +362,6 @@ Process::delete_pipes()
       close(pipes[1]);
       pipes[1] = -1;
     }
-  
 }
 
 // If non_blocking is _not_ used, a file, OPTION_TMP_RTB_DIR/"robotname"

@@ -48,10 +48,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "InformationDistributor.h"
 #include "EventRT.h"
 #include "EventHandler.h"
+#include "ServerSocket.h"
 
 extern EventHandler the_eventhandler;
-// ArenaController constructor
 
+
+// ArenaController constructor
 ArenaController::ArenaController()
 {
   //  started = false;
@@ -70,7 +72,7 @@ ArenaController::ArenaController()
 
 ArenaController::~ArenaController()
 {
-  //  if( started ) close_arena();
+  //if( started ) close_arena();
 
   exit_all_guis();
 
@@ -80,7 +82,6 @@ ArenaController::~ArenaController()
 void
 ArenaController::exit_all_guis()
 {
-  cout << "gui_list.size() " << gui_list.size() << endl;
   list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
@@ -89,6 +90,7 @@ ArenaController::exit_all_guis()
       delete ((GuiInterface*)*li);
     }
   gui_list.clear();
+  
 }
 
 const bool
@@ -113,7 +115,7 @@ ArenaController::init( int argc, char** argv )
 
   parse_command_line( argc, argv );
 
-  // Startup all guis
+  // Startup all guis 
   list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     (*li)->startup();
@@ -143,6 +145,7 @@ ArenaController::initialize_options()
   map<string,Option*> all_options;
   vector<string> group_names;
 
+  //Some of this options doesn't make sence anymore
   group_names.push_back( _("Environment") );
   group_names.push_back( _("Robot") );
   group_names.push_back( _("Shot") );
@@ -392,6 +395,9 @@ ArenaController::initialize_options()
 void
 ArenaController::create_gui( const char* gui_name, int argc, char* argv[] )
 {
+
+  cout << "Creating GUI "<<gui_name<<endl;
+
   GuiServerInterface* gui_p = ((GuiServerInterface*)
                                new GuiInterface( gui_name, next_gui_id,
                                                  argc, argv ));
@@ -448,7 +454,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           // If this option set a flag, do nothing else now.
           if( long_options[option_index].flag != 0 )
             break;
-          
+
           switch( option_index )
             {
             case 3:
@@ -477,6 +483,7 @@ ArenaController::parse_command_line( int argc, char** argv )
             case 12:
               create_gui( optarg, argc, argv );
               break;
+
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
                      "ArenaController.cc::parse_command_line" );
@@ -539,9 +546,9 @@ ArenaController::parse_command_line( int argc, char** argv )
           create_gui( optarg, argc, argv );
           break;
 
-        default:
-          print_help_message();
-          exit( EXIT_FAILURE );
+	  //default:
+          //print_help_message();
+          //exit( EXIT_FAILURE );
         }
     }
 
@@ -552,6 +559,7 @@ ArenaController::parse_command_line( int argc, char** argv )
 
   // TODO: A better way to determine whether a tournament can be started
   //       (i.e. some guis may not start up a tournament)
+  /*
   if( optind != argc ||
       ( tournament_filename == "" && gui_list.empty() ) )
     {
@@ -559,6 +567,7 @@ ArenaController::parse_command_line( int argc, char** argv )
       print_help_message();
       exit( EXIT_FAILURE );
     }
+  */
 
   if( version_flag )
       cout << "RealTimeBattle " << VERSION << endl;

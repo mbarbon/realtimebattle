@@ -21,10 +21,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __EventRT__
 
 #include "Event.h"
+#include <string>
 
 class GuiServerInterface;
 class Match;
 class Tournament;
+class SocketServer;
+
 
 class CheckGUIEvent : public Event
 {
@@ -42,18 +45,34 @@ protected:
 };
 
 
+//To check the incoming communications
+class CheckSocketEvent : public Event
+{
+ public:
+  CheckSocketEvent(const double refresh_time, SocketServer* socket_server) 
+    : Event(refresh_time), refresh(refresh_time), server_p(socket_server) {}
+
+  void eval() const;
+
+ protected:
+  double refresh;
+
+  SocketServer* server_p;
+};
+
+
 // This starts a tournament when given as an command line argument
 
 class StartTournamentEvent : public Event
 {
-public:
+ public:
   StartTournamentEvent(const double time, const string& the_file )
     : Event(time), filename(the_file) {}
-
+  
   void eval() const;
-
-protected:
-
+  
+ protected:
+  
   string filename;
 };
 

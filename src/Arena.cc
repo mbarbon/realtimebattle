@@ -42,6 +42,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "SubSquareIterators.h"
 #include "IntlDefs.h"
 
+Arena::Arena(const string& s, set<Robot*> &S)
+{
+}
+
 void
 Arena::add_shot(Shot* s, bool from_robot)
 {

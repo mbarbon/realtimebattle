@@ -36,8 +36,12 @@ extern pthread_mutex_t the_mutex;
 
 GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
 {
+  //Try to load all the functions from the library specified by --use_gui option
+  
   plain_name = name;
   library_name = "libRTBGui_" + name + ".so";
+
+  cout<<"Loading "<<library_name<<" for Gui\n";
 
   dl_handle = dlopen( library_name.c_str(), DLOPEN_POLICY );
   if( dl_handle == NULL )
@@ -49,25 +53,33 @@ GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
   func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
   func_Main = (int (*)( GuiClientInterface* ))load_symbol( "GIMain" );
   func_Main_pre = (void* (*)( void* ))load_symbol( "GIMain_pre" );
+  func_Command = (void (*) ( string ))load_symbol( "GICommand" );
   unique_id = (unsigned int*)load_symbol( "GI_unique_id" );
 
-  if(!(*func_Init)( argc, argv ))
-    Error( true, "Couldn't initialize gui " + name,
+  char* error = dlerror();
+
+  if( error )
+    Error( true, "Couldn't initialize gui " + name + " (" + error + ")",
              "GuiInterface::GuiInterface" );
 
+  func_Init(argc, argv);
+  
   information_reader_id = the_arena_controller.get_distributor()->add_reader();
+  cout<<"Gui loaded\n";
 }
 
 // Loads a symbol into memory.
 void*
 GuiInterface::load_symbol( const string& symname )
 {
+  
   const char* error;
   void* symbol;
   symbol = dlsym( dl_handle, symname.c_str() );
   if( (error = dlerror()) != NULL )
     {
-      symbol = dlsym( dl_handle, ("_" + symname).c_str() );
+      //symbol = dlsym( dl_handle, ("_"+ symname).c_str() );
+      symbol = dlsym( dl_handle, symname.c_str() );
       if( (error = dlerror()) != NULL )
           Error( true, "Failed to find " + symname + " for gui " + plain_name +
                  ": " + string(error), "GuiInterface::load_symbol" );
@@ -105,7 +117,7 @@ GuiInterface::quit_program( int _success )
 // TODO: Make sure that the event is not deleted before the gui has used it!
 const InfoBase*
 GuiInterface::check_information() const
-{
+{ 
   pthread_mutex_lock( &the_mutex );
   const InfoBase* info =
     the_arena_controller.get_distributor()->get_information( information_reader_id );

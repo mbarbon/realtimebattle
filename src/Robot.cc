@@ -25,6 +25,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream.h>
 #include <math.h>
 #include <string>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "Robot.h"
 #include "ArenaController.h"
@@ -36,26 +38,32 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 #include "EventHandler.h"
 #include "Rotation.h"
-#include "Process.h"
 
+int Robot::nb_robots = 0;
 
-Robot::Robot(const string& filename)
+Robot::Robot(const string& filename, NetConnection* nc) : 
+  owner( nc ), connected_to_robot_client( false ), robot_filename( filename )
 {
   //  velocity = Vector2D(0.0, 0.0);
   //  acceleration = 0.0;
 
-  robot_filename = filename;  
-
   plain_robot_name = "";
-  robot_name = "";
+
+  nb_robots ++;
+  char Code[20];
+  //TODO : Use a string stream instead of a char*
+  //TODO : Maybe include some char of the robot file name...
+  //TODO : Find a better way to identify it in fact...
+  sprintf( Code, "%d-%drtb_robot", nb_robots, int(rand() % 15) );
+  robot_name = string( Code );
+
   robot_name_uniqueness_number = 0;
 
   send_rotation_reached = 0;
   killed = true;
 
-  id = 0;//the_arena.increase_robot_count();
+  id = 0; //the_arena.increase_robot_count();
 
-  process = NULL;
 }
 
 // Constructor used by ArenaReplay. No process needed.
@@ -66,7 +74,6 @@ Robot::Robot(const int r_id, const long int col, const string& name)
   robot_name = name;
   set_colour( col );
 
-  process = NULL;
   killed = true;
 
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
@@ -75,11 +82,24 @@ Robot::Robot(const int r_id, const long int col, const string& name)
 
 Robot::~Robot()
 {
-  if( process != NULL )
+  //NOTE : we don't use process anymore...
+  /*
+    if( process != NULL )
     {
-      delete process;
+    delete process;
     }
+  */
 } 
+
+void
+Robot::set_connection( NetConnection* nc )
+{
+  if( !connected_to_robot_client )
+    {
+      owner = nc;
+      connected_to_robot_client = true;
+    }
+}
 
 void
 Robot::check_name_uniqueness()
@@ -114,30 +134,36 @@ Robot::check_name_uniqueness()
 
 
 
+
 //
 // Note that 'angle' is _not_ relative to the robot
 //
 double
 Robot::get_bounce_coeff( const double angle )
 {
+  /*
   if( cos(angle - robot_angle.angle ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
     return the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
   else
     return the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+  */
 }
 
 double
 Robot::get_hardness_coeff( const double angle )
 {
+  /*
   if( cos(angle - robot_angle.angle ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
     return the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
   else
     return the_opts.get_d(OPTION_ROBOT_HARDNESS);
+  */
 }
 
 void
 Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal)
 {
+  /*
   double angle = vec2angle(-normal);
 
   double e = get_bounce_coeff( angle ) * bounce_c;
@@ -147,11 +173,13 @@ Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vect
   velocity -= (1.0 + e) * dot(normal, velocity) * normal;
 
   injury_from_collision( 0.5 * get_mass() * h * lengthsqr(start_vel - velocity), angle );
+  */
 }
 
 void
 Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
+  /*
   center = pos;
   robot_angle.set_rot (angle, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
@@ -159,15 +187,18 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
   velocity = Vector2D(0.0, 0.0);
   brake_percentage = 0.0;
   acceleration = Vector2D(0.0, 0.0);
+  */
 }
 
 void
 Robot::start_process()
 {
-  if( process != NULL )
+  //TODO : Send to the chat_client the packet to tell him to run his robot_client
+  /*
+    if( process != NULL )
     delete process;
-
-  process = new Process( robot_filename, this );
+    process = new Process( robot_filename );
+  */
 }
 
 void
@@ -195,6 +226,7 @@ Robot::set_values_at_process_start_up()
 
 void Robot::update( )
 {
+  /*
   double current_time = the_eventhandler.get_game_time();
   double timestep = current_time - last_update_time;
   last_update_time = current_time;
@@ -206,6 +238,7 @@ void Robot::update( )
   move(timestep);
 
   get_messages();  
+  */
 }
 
 //  void
@@ -324,6 +357,9 @@ Robot::move(const double timestep, int iterstep, const double eps)
 void
 Robot::send_message(const message_to_robot_type msg_type ...)
 {
+  //Send messsages to the client using its socket
+
+  /*
   va_list args;
   va_start(args, msg_type);
 
@@ -354,6 +390,7 @@ Robot::send_message(const message_to_robot_type msg_type ...)
         }
     }
   *pout << endl;
+  */
 }
 
 
@@ -363,6 +400,7 @@ Robot::send_message(const message_to_robot_type msg_type ...)
 void
 Robot::get_messages()
 {
+  /*
   char buffer[256];
   ifstream* pin = process->get_instreamp();
 
@@ -379,17 +417,20 @@ Robot::get_messages()
       pin->clear();
       pin->peek();
     }
+  */
 }
 
 message_from_robot_type
 Robot::name2msg_from_robot_type(char* msg_name)
 {
+  /*
   for(int i=0; message_from_robot[i].msg[0] != '\0'; i++)
     {
       if( strcmp(message_from_robot[i].msg, msg_name) == 0 )
         return (message_from_robot_type)i;
     }
   return UNKNOWN_MESSAGE_FROM_ROBOT;
+  */
 }
 
 bool
@@ -413,12 +454,13 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 
 void
 Robot::change_health(const double health_diff)
-{
+{/*
   health = min(health+health_diff, the_opts.get_d(OPTION_ROBOT_MAX_HEALTH));
 //  #ifndef NO_GRAPHICS  
 //    if( !no_graphics )  display_score();
 //  #endif
   if( health <= 0.0 ) killed = true;
+ */
 }
 
 void

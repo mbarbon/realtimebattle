@@ -72,6 +72,9 @@ class RobotsUpDate  : public GTEvent;
 class QuitEvent : public GTEvent;
 
 */
+
+//TODO : Need some Wait Event classes to run a function only when an event is generated !!!
+
 #ifndef __EVENT_HANDLER__
 #define __EVENT_HANDLER__
 
@@ -87,7 +90,6 @@ class Tournament;
 
 class EventHandler
 {
-
  public:
 
   EventHandler();

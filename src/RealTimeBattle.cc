@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -63,10 +62,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <list>
 
 #include "IntlDefs.h"
-//#include "OptionHandler.h"
+#include "OptionHandler.h"
 
 #include "Arena.h"
 #include "Various.h"
+
 #include "ArenaController.h"
 #include "EventHandler.h"
 
@@ -74,14 +74,25 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Gadgets/Gadget.h"
 
+#include "EventRT.h"
+#include "EventHandler.h"
+
+
+#include "ServerSocket.h"
+
+
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
 #endif
 
 //class ArenaRealTime the_arena;
+
 class ArenaController the_arena_controller;
 class EventHandler the_eventhandler;
 class Arena* the_arenap;
+//class Tournament the_tournament;
+
+class SocketServer my_socketserver;
 
 list<unsigned int> GI_exit_list;
 pthread_mutex_t the_mutex;
@@ -116,6 +127,7 @@ sigfpe_handler(int signum)
   signal(signum, sigfpe_handler);
 }
 
+/*
 int 
 main ( int argc, char* argv[] )
 {
@@ -142,13 +154,47 @@ main ( int argc, char* argv[] )
   //  parse_command_line(argc, argv);
 
 
-  signal(SIGCHLD, sig_handler);
-  signal(SIGPIPE, sig_handler);
-  signal(SIGFPE, sigfpe_handler);
-  
   the_eventhandler.main_loop();
 
   pthread_mutex_destroy( &the_mutex );
 
+  return EXIT_SUCCESS;
+}
+*/
+
+
+int
+main( int argc, char* argv[] )
+{
+  my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
+
+  cout<<"Server succesfully initialized\n";
+
+  signal(SIGCHLD, sig_handler);
+  signal(SIGPIPE, sig_handler);
+  signal(SIGFPE, sigfpe_handler);
+
+  signal(SIGALRM, exit_cleanly);
+  signal(SIGTERM, exit_cleanly);
+  signal(SIGINT,  exit_cleanly);
+
+  //NOTE : This should be in my_socketserver.init function
+  Event* new_event = new CheckSocketEvent(0.1, &my_socketserver );
+  the_eventhandler.insert_RT_event(new_event);
+
+  //cout<<"Welcome on RealTimeBattle 2.0.0 server(in development)\n";
+  //cout<<"Enjoy the game\n";
+
+  the_arena_controller.init(argc, argv);
+  pthread_mutex_init( &the_mutex, NULL );
+
+  cout<<"Arena Controller succesfully initialized\n";
+
+  the_eventhandler.main_loop();
+
+  pthread_mutex_destroy( &the_mutex );
+
+  my_socketserver.close_socket();
+  quit();
   return EXIT_SUCCESS;
 }

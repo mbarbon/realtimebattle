@@ -112,12 +112,7 @@ EventHandler::main_loop()
       for(;;) 
         {
           timer.double2timeval( time_for_next_event, time_to_wait );
-
-          //          current_time = timer.get_realtime();
-
-	  //if(time_for_next_event - current_time < 0) break;
-
-          if( time_to_wait.tv_usec == 0 && time_to_wait.tv_sec == 0 ) 
+          if( time_to_wait.tv_usec == 0 && time_to_wait.tv_sec == 0 ) //Hmmm too strict, isn't it? 
             break;    // Time to eval next event
           
           select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
@@ -126,17 +121,13 @@ EventHandler::main_loop()
       current_time = time_for_next_event;
       current_game_time = timer.realtime2gametime( current_time );
 
-//        cout << "Current time: " << current_time;
-
       if(RT_event)
 	{
-	  //cout<<"Poping from RT_event_queue" << endl;
 	  RT_event_queue.pop();
           nb_RT_event--;
 	}
       else
 	{
-	  //cout<<"Poping from GT_event_queue" << endl;
 	  GT_event_queue.pop();
           nb_GT_event--;
 	}

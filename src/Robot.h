@@ -33,17 +33,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Rotation.h"
 #include "RollingObject.h"
 #include "Structs.h"
+#include "NetConnection.h"
 
 class Vector2D;
-class Process;
+
 class RobotBodyGadget;
 
 class Robot : public RollingObject
 {
 public:
-  Robot(const string& filename);
+  Robot(const string& filename, NetConnection* nc);
   Robot(const int r_id, const long int col, const string& name);
   ~Robot();
+
+  void set_connection(NetConnection* nc); 
 
   //  void move(const double timestep);  
   void update();
@@ -70,10 +73,8 @@ public:
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
 
+  //TODO : change the name to start_robot or something like that
   void start_process();
-
-  Process* get_process() { return process; }
-
 
   string get_robot_name() { return robot_name; }
 
@@ -83,9 +84,12 @@ public:
   void set_colour_given( const bool c ) { colour_given = c; }
   bool is_name_given() { return name_given; }
   
-
+  friend class CommandPacket;
+  friend class SocketServer;
 
   Rotation get_robot_angle() { return robot_angle; }
+
+
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -94,13 +98,16 @@ private:
                                const enum state_t state1,
                                const enum state_t state2 = NO_STATE);
 
-  class Process* process;
-
   class RobotBodyGadget* body;
 
   int  send_rotation_reached;
 
+  static int nb_robots;
 
+  NetConnection* owner;
+  bool connected_to_robot_client; //False if it is still connected to chat_client
+
+  //Doesn't correspond to the description of a robot anymore...
   double health;
   double fuel;
   double temperature;
@@ -116,6 +123,7 @@ private:
   string robot_filename;
   string plain_robot_name;      // Name given by robot
   string robot_name;            // plain_robot_name + uniqueness number
+                                // Would be used as the robot_id_key before the robot is really connected
 
   bool colour_given;
   bool name_given;

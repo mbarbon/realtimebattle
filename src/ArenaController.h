@@ -66,7 +66,8 @@ private:
   //  bool started;
   bool realtime;
 
-  list<GuiServerInterface*> gui_list;
+  list<GuiServerInterface*> gui_list; 
+
   // Mutex for locking processes.
 
   OptionHandler* main_opts;
