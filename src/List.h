@@ -22,13 +22,11 @@ struct ListIterator
 
   ListIterator(ListNode<T>* p = NULL) : listp(p) {} 
   
-  const ListIterator<T>& ListIterator<T>::operator++ (int);
-  const ListIterator<T>& ListIterator<T>::operator-- (int);
-  T* operator() () const;
+  inline const ListIterator<T>& ListIterator<T>::operator++ (int);
+  inline const ListIterator<T>& ListIterator<T>::operator-- (int);
+  inline T* operator() () const;
   //  bool operator! () const { return listp == NULL; }
-  bool ok() const { return listp != NULL;}
-
-  //  friend class List;
+  inline bool ok() const { return listp != NULL;}
 };
 
 

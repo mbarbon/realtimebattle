@@ -225,7 +225,7 @@ List<T>::insert_last(T* x)
 
 
 template <class T>
-T*
+inline T*
 ListIterator<T>::operator() () const
 {
   if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator()");
@@ -234,7 +234,7 @@ ListIterator<T>::operator() () const
 }
 
 template <class T>
-const ListIterator<T>&
+inline const ListIterator<T>&
 ListIterator<T>::operator++ (int)
 {
   if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator++");
@@ -243,7 +243,7 @@ ListIterator<T>::operator++ (int)
 }
 
 template <class T>
-const ListIterator<T>&
+inline const ListIterator<T>&
 ListIterator<T>::operator-- (int)
 {
   if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator--");
