@@ -23,10 +23,17 @@ If you encounter such a bug please send a bug report to us.
 <p>
 If you encounter a lot of parse errors with gettext and String, try to
 configure using:
-% ./configure --with-included-gettext
+<verb>% ./configure --with-included-gettext</verb>
 or if it is still a lot of compilation problems, try to configure using:
-% ./configure --disable-nls
+<verb>% ./configure --disable-nls</verb>
 If it still is problems, please send us a bug report.
+
+<tag>RTB v0.9.10 won't compile with gcc-2.95 and gcc-2.95.1</tag>
+Compilation will fail with this compiler, we have no idea why, but it seems
+that it might be a bug in gcc.
+
+<tag>There is a file missing in the 0.9.9 distribution</tag>
+Yes it is, download the latest version, for a working distribution.
 
 <tag>Statistics window doesn't work in gtk+ 1.1</tag>
 <p>
