@@ -65,7 +65,10 @@ makes easy to start constructing robots.
 
 <sect1>More information<label id="More information">
 <p>
-Installation, bugs, todo, FAQ, news, homepage
+More information can be found in the INSTALLATION, BUGS, TODO, FAQ and NEWS files in the
+distribution. More updated information are available on the 
+<url name="RealTimeBattle homepage" url="http://realtimebattle.netpedia.net/">, where you also can
+find robots, news on tournaments as well as this manual in different formats.
 
 <sect1>Requirements<label id="Requirements">
 <p>
@@ -105,7 +108,7 @@ features of a modern OS.
 <sect1>License<label id="License">
 <p>
 RealTimeBattle is distributed under the 
-<url url="http:// TODO: find GPL address" name="General Public License">, in
+<url url="http://www.gnu.org/copyleft/gpl.html" name="General Public License">, in
 the spirit of the Linux community. Official versions of
 RealTimeBattle will be released by the authors.
 
@@ -130,7 +133,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 If you find anything in this package which doesn't work, appear strange, is missing, is spellt wrong
 or is just confusing, don't hesitate to send in a bug report to the 
 <url name="authors" url="mailto: TODO: mail address">. But please check first the include bug
-list and the <url name="bug list in the homepage" url="TODO: homepage address/BUGS.html">.
+list and the <url name="bug list in the homepage" url="http://realtimebattle.netpedia.net/BUGS.html">.
 
 
 <!--   ################         Usage          ##################   -->
@@ -335,9 +338,35 @@ make use of it as well as possible. It is also important to
 
 <sect1>Shooting<label id="Shooting">
 <p>
+Shooting is the number one method to eliminate other robots. In RealTimeBattle a shot is moving with
+constant velocity, calculated as the sum of the robot velocity and the 
+<ref name="shot speed" id="ShotSpeed"> in the direction the cannon is pointing. It will move until
+it collides with an object. 
+
+When the shot is fired it is given an energy, which determines the
+injuries robots will suffer when hit. The energy is, however, limited; 
+the <ref name="minimal energy" id="ShotMinEnergy"> forbids very low energy shots, e.g. you want to
+remove mines. The <ref name="maximal energy" id="ShotMaxEnergy"> is restricted by the amount of 
+the robot's current potential shot-energy, which increases with time.
+
+Shooting is, however, not without any risk, since a firing robot itself will lose energy, 
+<ref name="proportional to the shot energy" id="ShootingPenalty">. 
+
+If a cookie or mine is hit, it is destroyed, regardless of the energy of the shot. Use therefor
+minimal amount of  energy to shoot mines.
+
+Shots colliding will not immediately by destroyed, instead there velocities and energies will be
+superposed, so that if two colliding shot are traveling in the same direction, the energies will be
+added and in case on a head on collision the energies will cancel. 
 
 <sect1>Collisions<label id="Collisions">
 <p>
+Robots are fragile objects, which get damaged by colliding with walls and other robots. When
+colliding, the robots act like bouncing balls, with there factors that influences the behavior,
+<ref name="the bounce coefficient, the hardness coefficient and the protection coefficient" 
+id="BounceCoefficient">. On the <ref name="front" id="RobotFront">, the robots are made of different
+materials, usually harder and more protective. This can be used to ram other robots, giving much
+more damage than it receives. 
 
 <sect1>Cookies and Mines<label id="Cookies_and_mines">
 <p>
@@ -366,7 +395,7 @@ the <ref name="max timestep" id="MaxTimestep">, the game time will be slow down 
 <p>
 At the start of a game, the robots are given a random position on the arena, with random
 orientation. The radar and the cannon are both pointing forwards and the 
-<ref id="ShotEnergy" name="shot energy"> is set at zero. The goal for the robots is now to survive
+<ref id="Shooting" name="potential shot-energy"> is set at zero. The goal for the robots is now to survive
 as long as possible and at the same time to destroy the other robots. A robot will get one point for
 each of the enemy robot it outlives. One extra point is, however, given to all the participating
 robots. Robots dying at the same time will get the mean value of the points they would have got if
@@ -678,15 +707,18 @@ accelerate faster than this and ...
 <tag>Robot mass:</tag> Large robot mass will increase the impact of
 collisions.
 
+<label id="BounceCoefficient">
 <tag>Robot bounce coefficient:</tag> Affects how well the robots will
-bounce.
+bounce. If zero the robots will cling together when colliding, if one they will act like perfect
+billiard balls.
 
-<tag>Robot hardness coefficient:</tag> Determines how servere injuries
-the robots will get when colliding, this will by multiplied by the ...
+<tag>Robot hardness coefficient:</tag> Determines how seriously damaged  
+the robots will be when colliding. The lower value, the softer material.
 
-<tag>Robot protection coefficient:</tag> to get how much to reduce the
-robot energy.
+<tag>Robot protection coefficient:</tag> Influences how well protected the robot is. This factor is
+to be multiplied with the damaging energy to get hoe much to reduce the robot energy.
 
+<label id="RobotFront">
 <tag>Robot frontszie:</tag> The front of the robot is a section with
 different materials, usually harder and more protective, so robots can
 injure each other by ramming.
@@ -727,23 +759,27 @@ used.
 <tag>Shot radius:</tag> Size of shots. Should be less than 
 <ref id="RobotRadius" name="robot radius">.
 
+<label id="ShotSpeed">
 <tag>Shot speed:</tag> Shots are moving in this speed in the direction
 of the cannon plus the velocity of the robot.
 
+<label id="ShootingPenalty">
 <tag>Shooting penalty:</tag> When shooting the robot itself get
 damaged. This is the factor, by which the shot energy is multiplied,
 to get the damaging energy. If the number of robots is large, this
 number is reduced, so that you never lose in average by shooting (if
 you hit).
 
+<label id="ShotMinEnergy">
 <tag>Shot min energy:</tag> The lowest shot energy allowed. A robot
 trying to shoot with less energy will fail to shoot.
 
-<label id="ShotEnergy">
-<tag>Shot max energy:</tag> The robots have a shot energy, which
+<label id="ShotMaxEnergy">
+<tag>Shot max potential energy:</tag> The robots have a shot energy, which
 increase with time, but will never exceed this value.
 
-<tag>Shot energy increase speed:</tag> Determines how fast the robots
+<label id="ShotEnergyIncreaseSpeed">
+<tag>Shot potential energy increase speed:</tag> Determines how fast the robots
 shot energy noted above, will increase. Unit: energy/s .
 
 </descrip>
