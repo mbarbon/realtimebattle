@@ -363,8 +363,8 @@ Gui::setup_control_window()
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Options");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (callback), (gpointer) "Options");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (options_window_requested), (gpointer) NULL);
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 0, 5, 1, 2);
   gtk_widget_show (button);
 
