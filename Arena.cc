@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "Arena.h"
+#include "Error.h"
 #include "gui.h"
 #include "Various.h"
 
@@ -514,22 +515,6 @@ Arena::update_robots()
     ((Robot*)gl->data)->send_signal();
 }
 
-GdkColor
-make_gdk_colour(const long col)
-{
-  GdkColormap *cmap;
-  GdkColor colour;
-
-  cmap = gdk_colormap_get_system();
-  colour.red =   ((col & 0xff0000) >> 16 ) * 0x101;
-  colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
-  colour.blue =  (col & 0x0000ff) * 0x101;
-  if( !gdk_color_alloc (cmap, &colour) )
-    throw Error("Couldn't allocate colour", "Arena::make_gdk_color");
-
-  return colour;
-}
-
 double
 Arena::colour_dist(const long col1, const GdkColor& col2)
 {
@@ -733,16 +718,15 @@ Arena::start_sequence()
 
   // Make list of robots in this sequence
 
-  GList* gl = g_list_next(all_robots_in_tournament);
-
   for(int i=0; i<robots_per_game; i++)
     {
-      g_list_append(all_robots_in_sequence, gl->data);
-      gl = g_list_next(gl);
+      g_list_append( all_robots_in_sequence, 
+                     g_list_nth(all_robots_in_tournament, 
+                                robots_in_sequence[sequence_nr][i])->data );
     }
 
   // execute robot processes
-  gl = g_list_next(all_robots_in_sequence);
+  GList* gl = g_list_next(all_robots_in_sequence);
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
@@ -851,16 +835,77 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   games_per_sequence = games_p_sequence;
   sequences_remaining = n_o_sequences;
 
-  // TODO: make list of robots to compete in the sequences
-  long games_per_round = binomial(number_of_robots, robots_per_game);
+  // make list of robots to compete in the sequences
+  int games_per_round = binomial(number_of_robots, robots_per_game);
   int complete_rounds = n_o_sequences / games_per_round;
   int rem_games = n_o_sequences % games_per_round;
 
-  //robots_in_sequence = new (int*)[n_o_sequences];
+  robots_in_sequence = new (int*)[n_o_sequences];
+  for(int i=0; i<n_o_sequences; i++) robots_in_sequence[i] = new int[robots_per_game];
   
-  //int* current_sequence;
-  //for(int i=0; i< games_per_round; i++)
-    
+  int current_sequence[robots_per_game];
+  int current_nr = 0;
+  for(int i=0; i<robots_per_game; i++) current_sequence[i] = i+1;
+  
+  // set complete rounds first
+
+  for(int round_nr=0; round_nr < complete_rounds; round_nr++)
+    {
+      int k, i, j;
+      for(i=0; i< games_per_round; i++)
+        {
+          
+          k = number_of_robots - 1;
+          while( current_sequence[k] == number_of_robots - 1 - robots_per_game + k )
+            k--;
+
+          if( k < 0 ) throw Error("Problem generating list of participants, k < 0", 
+                                  "Arena::start_tournament");
+
+          current_sequence[k]++;
+          for(j=k+1; j<robots_per_game; j++) current_sequence[j] = current_sequence[j-1]+1;
+
+          for(j=0; j<robots_per_game; j++) 
+            robots_in_sequence[current_nr][j] = current_sequence[j];
+
+          current_nr++;
+        }
+      reorder_pointer_array((void**)robots_in_sequence, games_per_round);
+    }
+
+  // the remaining game will be randomly chosen
+
+  int robot_matches_played[number_of_robots];
+  for(int i=0; i<number_of_robots; i++) robot_matches_played[i] = 0;
+
+  bool robot_playing_this_match[number_of_robots];
+  int min_matches_played = 0;
+  int number_of_robots_on_min_matches = number_of_robots;
+  int nr;
+
+  for(int i=0; i< rem_games; i++)
+    {
+      for(int i=0; i<number_of_robots; i++) robot_playing_this_match[i] = false;
+
+      for(int j=0; j<robots_per_game; j++)
+        {
+          do 
+            nr = (int)floor(number_of_robots*((double)rand() / (double)RAND_MAX));
+          while( robot_playing_this_match[nr] || robot_matches_played[nr] != min_matches_played );
+
+          robot_playing_this_match[nr] = true;
+          robot_matches_played[nr]++;
+          number_of_robots_on_min_matches--;
+          if( number_of_robots_on_min_matches == 0 ) 
+            {
+              min_matches_played++;
+              number_of_robots_on_min_matches = number_of_robots;
+            }
+
+          robots_in_sequence[current_nr][j] = nr + 1;   // robot count will start from 1
+        }      
+      current_nr++;
+    }
           
   sequence_nr = 0;
   start_sequence();
