@@ -20,42 +20,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __TOURNAMENT__
 #define __TOURNAMENT__
 
-class Match;
+#include <vector>
+#include <string>
 
+#include "Gadgets/ArenaGadget.h"
+#include "Event.h"
+#include "Various.h"
 
-// The Tournament class takes care of the match schedule.
-// It will start the games in order and store the results using 
-// the Statistics class.
+class Robot;
+class ArenaGadget;
 
-class Tournament
-{
-public:
-
-  Tournament() {}
-  ~Tournament() {}
-
-  void prepare_for_new_match();
-
-private:
-
-  int round_nr;
-  int rounds_per_match;
-  int match_nr;
-  int matches_in_tournament;
-
-  int total_number_of_robots;
-  int number_of_robots_this_match;
-
-  
-  Match* the_matches;
-
-
-  Robot** the_robots;
-  
-}
 
 class Match
 {
+public:
   Match() {}
   ~Match() {}
 
@@ -71,7 +49,46 @@ private:
   string stats_file_name;
 
   int* robot_ids;
-}
+};
+
+
+// The Tournament class takes care of the match schedule.
+// It will start the games in order and store the results using 
+// the Statistics class.
+
+class Tournament
+{
+public:
+
+  Tournament(const int rounds_p_match,
+             const int robots_p_match,
+             const int number_o_matches,
+             const vector<Robot*>& robots,
+             const vector<ArenaGadget>& arenas);
+
+  ~Tournament() {}
+
+  void prepare_for_new_match();
+
+private:
+
+  void create_matches();
+
+  int round_nr;
+  int rounds_per_match;
+  int match_nr;
+  int number_of_matches;
+
+  int total_number_of_robots;
+  int robots_per_match;
+
+  
+  vector<Match> the_matches;
+  vector<Robot*> the_robots;
+
+  vector<ArenaGadget> the_arenagadgets;
+  
+};
 
 class PrepareForNewMatchEvent : public Event
 {
