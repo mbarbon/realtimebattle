@@ -357,7 +357,7 @@ Arena::get_random_position()
 double 
 Arena::get_shooting_penalty() 
 { 
-  return the_opts.get_d(OPTION_SHOOTING_PENALTY) / max(1.0, ((double)robots_left)/10.0); 
+  return min( the_opts.get_d(OPTION_SHOOTING_PENALTY), 0.5 / (double)robots_left ); 
 }
 
 void
