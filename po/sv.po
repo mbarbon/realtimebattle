@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-08 12:21+0200\n"
+"POT-Creation-Date: 1999-08-10 18:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,7 +58,7 @@ msgstr " Zooma ut "
 msgid "Arena"
 msgstr "Arena"
 
-#: src/ArenaRealTime.cc:744
+#: src/ArenaRealTime.cc:756
 #, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "Spel %d i sekvens %d börjar på arena"
@@ -833,8 +833,8 @@ msgid "Choose file to save tournament into"
 msgstr "Välj turneringsfil att spara till"
 
 #: src/StartTournamentWindow.cc:563
-msgid "Couldn't parse specified tournament file."
-msgstr "Kunde inte tolka innehållet i turneringsfilen."
+msgid "Error in specified tournament file."
+msgstr "Fel i den angivna turneringsfilen."
 
 #: src/StartTournamentWindow.cc:566
 msgid "Tournament could not be loaded."
