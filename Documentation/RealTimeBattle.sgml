@@ -21,13 +21,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual
-<author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="TODO: get email address" url=""> 
-<date>November 30, 1998
+<title>RealTimeBattle User Manual, version 0.9.1 rev 1
+<author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
+<date>12 December 1998
 
 <abstract>
 
-*Short description of RealTimeBattle*
+RealTimeBattle is a programming game, in which robots controlled by
+programs are fighting each other. The goal is to
+destroy the enemies, using the radar to examine the environment and
+the cannon to shoot.
 
 </titlepag>
 
@@ -38,34 +41,38 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <sect>Introduction<label id="Introduction">
 <p>
-RealTimeBattle is a programming game, in which robots controlled by
-the competitors programs are fighting each other. The goal is to
-destroy the opponents, using the radar to examine the environment and
-the cannon to shoot.
+This is the user manual for RealTimeBattle. Here you should find how to run the program, how the
+program work, how to create your own robots and how to construct arenas.
 
+RealTimeBattle constructed to be easy to use, flexible and fast.
 Features include:
 
 <itemize>
 <item> Game progresses in real time, with the robot programs running
-as child processes to RealTimeBattle and communication with standard
+as child processes to RealTimeBattle.
+
+<item>  The robots communicate with the main program using the standard
 input and output.
 
-<item> Robots can be construct in almost any programming language.
+<item> Robots can be constructed in almost any programming language.
 
-<item> Up to 120 robots competing simultaneously.
+<item> Up to 120 robots can compete simultaneously.
 
 <item> A simple messaging language is used for communication, which
 makes easy to start constructing robots.
 
 <item> Robots behave like real physical object.
 
-<item> High configurability.
+<item> You can create your own arenas.
+
+<item> Highly configurable.
 
 </itemize>
 
 <sect1>More information<label id="More information">
 <p>
-More information can be found in the INSTALLATION, BUGS, TODO, FAQ and NEWS files in the
+More information can be found in the <tt>INSTALLATION</tt>, <tt>BUGS</tt>, <tt>TODO</tt>,
+<tt>FAQ</tt> and <tt>ChangeLog</tt> files in the 
 distribution. More updated information are available on the 
 <url name="RealTimeBattle homepage" url="http://realtimebattle.netpedia.net/">, where you also can
 find robots, news on tournaments as well as this manual in different formats.
@@ -132,7 +139,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <p>
 If you find anything in this package which doesn't work, appear strange, is missing, is spellt wrong
 or is just confusing, don't hesitate to send in a bug report to the 
-<url name="authors" url="mailto: TODO: mail address">. But please check first the include bug
+<url name="authors" url="mailto: realtimebattle@telia.com">. But please check first the include bug
 list and the <url name="bug list in the homepage" url="http://realtimebattle.netpedia.net/BUGS.html">.
 
 
