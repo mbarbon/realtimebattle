@@ -19,7 +19,7 @@ double tid=0.0, radar_angle=0.0, prev_radar_angle, cannon_angle, tid0, slumprota
 double maxspeed =3.0, robotmaxrotate, cannonmaxrotate, radarmaxrotate, dist=0.0, prev_dist;
 double robotstartenergy, robotmaxenergy, robotenergylevels, shotspeed, shotmaxenergy;
 double  shotminenergy, shotenergyincreasespeed,timeout, rotend=0.0, broms=0.0;
-double prev_speed, speed=0.0, prev_tid, energy, sweepleft, sweepright;
+double prev_speed, speed=0.0, prev_tid, energy, sweepleft, sweepright, prev_energy;
 int robots_left = 20, rotating, enemy = 0, cookie = 0, flee = 0, wallcoll=0;
 bool sweep = false, align_cro= true, align_cra = true;
 
@@ -127,9 +127,12 @@ check_messages(int sig)
           break;
 
         case ENERGY:
+          prev_energy=energy;
           cin >> energy;
+          //          if (prev_energy != energy)
+          //            cout << "Print Energiförlust: " << prev_energy-energy << endl;
           break;
-
+          
         case ROBOTS_LEFT:
           cin >> robots_left;
           break;
@@ -145,19 +148,29 @@ check_messages(int sig)
             switch(object)
               {
               case ROBOT:
-                enemy = max(20-robots_left,1);
+                enemy = max(15-robots_left,1);
                 broms=1.0;
                 if (speed<maxspeed)
                   acceleration = 2.0;
                 else
                   acceleration = 0.0;
 
+                radar_angle=asin(sin(radar_angle));
+
                 sweepleft=radar_angle-M_PI/20.0;
                 sweepright=radar_angle+M_PI/20.0;
-                cout << "RotateAmount 1 " << robotmaxrotate << " " << radar_angle << endl;
+                if (abs(radar_angle)>M_PI/20.0)
+                  {
+                    cout << "RotateAmount 1 " << robotmaxrotate << " " << radar_angle << endl;
+                    cout << "RotateAmount 6 " << robotmaxrotate << " " << -radar_angle << endl; 
+                  }
+                else
+                  {
+                        cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
+                  }
                 cout << "Accelerate " << acceleration << endl;
-                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl; 
                 cout << "Shoot 2" << endl;
+                //    cout << "Print Skjuter" << endl;
                 cout << "Break " << broms << endl;
                 break;
               case WALL:
@@ -188,16 +201,38 @@ check_messages(int sig)
                 if (enemy>0)
                   {
                     enemy--;
-                    sweepleft=sweepleft-M_PI/20.0;
-                    sweepright=sweepright+M_PI/20.0;
+                    if (abs(radar_angle)>M_PI/20.0)
+                      {
+                        acceleration=0.0;
+                        broms=1.0;
+                      }
+                    else
+                      {
+                        sweepleft=sweepleft-M_PI/200.0;
+                        sweepright=sweepright+M_PI/200.0;
+                        cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
+                      }
+                    //cout << "Debug enemy " << enemy << " radar " << radar_angle << endl;
                   }
                 else
                   {
                     if (cookie>0)
                       {
                         cookie--;
-                        sweepleft=sweepleft-M_PI/20.0;
-                        sweepright=sweepright+M_PI/20.0;
+                        sweepleft=sweepleft-M_PI/200.0;
+                        sweepright=sweepright+M_PI/200.0;
+                        if (abs(radar_angle)>M_PI/20.0)
+                          {
+                            acceleration=0.0;
+                            broms=1.0;
+                          }
+                        else
+                          {
+                            sweepleft=sweepleft-M_PI/200.0;
+                            sweepright=sweepright+M_PI/200.0;
+                            cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
+                          }
+                        // cout << "Debug cookie" << cookie << endl;
                       }
                     else
                       {
@@ -221,24 +256,25 @@ check_messages(int sig)
                             else
                               {
                                 s = (prev_dist*cos(prev_radar_angle) - dist*cos(radar_angle)- (prev_speed+speed)/2.0*(tid-prev_tid))*
-                                  (abs(radar_angle)-abs(prev_radar_angle));
+                                  (radar_angle-prev_radar_angle);
                                 if (s>0)
                                   rot = robotmaxrotate;
                                 else
                                   rot = -robotmaxrotate;
                               }
                           }
+
                             //cout << "Print " << s << endl;
                         if (((prev_dist/(dist+1e-7)>1.2) && (dist<2.0)) || ((dist<0.5) && (dist<prev_dist)))
                           {
                             if (radar_angle<prev_radar_angle)
                               {
                                 sweepleft = prev_radar_angle;
-                                sweepright = prev_radar_angle+M_PI;
+                                sweepright = prev_radar_angle+M_PI/2.0;
                               }
                             else
                               {
-                                sweepleft = prev_radar_angle-M_PI;
+                                sweepleft = prev_radar_angle-M_PI/2.0;
                                 sweepright = prev_radar_angle;
                                   }
                           }
@@ -249,16 +285,17 @@ check_messages(int sig)
                           }
                       }
                     cout << "Rotate 1 " << rot << endl;
+                    cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
+                    //cout << "Debug Rot " << rot << " Radar " << radar_angle << endl;
                     
                   }
-                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
                 cout << "Accelerate " << acceleration << endl;
                 cout << "Break " << broms << endl;
                 break;
               case SHOT:
                 break;
               case COOKIE:
-                cookie = 10;
+                cookie = 7;
                 broms = 1.0;
                 robot_rotate = 0.0;
                 sweepleft=radar_angle-M_PI/20.0;
@@ -267,15 +304,20 @@ check_messages(int sig)
                   acceleration = 2.0;
                 else
                   acceleration = 0.0;
+
+                radar_angle = asin(sin(radar_angle));
                 cout << "RotateAmount 1 " << robotmaxrotate << " " << radar_angle << endl;
                 cout << "Accelerate " << acceleration << endl;
-                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl; 
+                cout << "RotateAmount 6 " << robotmaxrotate << " " << -radar_angle << endl;
                 cout << "Break " << broms << endl;
                 break;
 
               case MINE:
                 if (dist < 5.0)
-                  cout << "Shoot " << shotminenergy << endl;
+                  {
+                    cout << "Shoot " << shotminenergy << endl;
+                    //cout << "Print Skjuter" << endl;
+                  }
                 break;
 
               case EXPLOSION:
@@ -293,9 +335,12 @@ check_messages(int sig)
             switch(tmp)
               {
               case ROBOT: 
+                enemy=0;
                 break;
               case SHOT:
+                //cout << "Print Skjuten!" << endl;
                 flee = 10;
+                enemy=0;
                 maxspeed = 10.0;
                 acceleration = 2.0;
                 cout << "Accelerate " << acceleration << endl;
