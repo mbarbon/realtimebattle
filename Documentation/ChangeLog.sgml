@@ -18,6 +18,10 @@ incompatible with the replay function.
 
 It is now possible to show hidden windows.
 
+The window for starting tournaments now remembers a tournament and the next time an
+tournament is to be played, the participating robots and arenas of the last tournament
+is shown.
+
 <item> <bf>0.9.7:</bf>
 <p>
 Lots of internal changes, the class hierarchy is completely
@@ -51,9 +55,9 @@ Some extra bits of information are now displayed in the window titles.
 The robot 'Rotate and Fire' is more or less remade to be a slightly better
 robot and a much better example.
 
-The arena is now draw using a normal right handed coordinate system instead of the one
-used be gtk+ by default. The result is that everything is turned upside down. Angles
-do now increase in the counterclockwise direction as they should.
+The arena is now drawn using a normal right handed coordinate system instead of the
+one used by gtk+ by default. The result is that everything is turned upside
+down. Angles do now increase in the counterclockwise direction as they should.
 
 New option: 'Update interval' which determines how often the robot positions
 and radars are updated.
