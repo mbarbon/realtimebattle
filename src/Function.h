@@ -28,6 +28,8 @@ public:
   Function() {}
   ~Function() {}
 
+  void operator() () { (*my_function)(); }
+
 private:
 
   void (*my_function)(void);
