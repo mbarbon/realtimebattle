@@ -474,7 +474,7 @@ StatisticsWindow::change_stats_viewed( GtkWidget* widget,
         the_arena.get_games_per_sequence() + game;
       break;
     case STAT_TYPE_ROBOT:
-      max_nr = the_arena.get_all_robots_in_tournament()->number_of_elements();
+      max_nr = the_arena.get_all_robots_in_tournament()->size();
       break;
     }
 
@@ -841,16 +841,16 @@ StatisticsWindow::row_selected( GtkWidget* clist, gint row,
       if( clist_text != NULL )
         robot_name = clist_text;
 
-      ListIterator<Robot> li;
-      Robot* robot_p = NULL;
+      vector<Robot>::iterator li;
       int counter = 0;
       bool found_robot = false;
-      for( the_arena.get_all_robots_in_tournament()->first(li);
-           li.ok() && !found_robot; li++ )
+
+      for( li = the_arena.get_all_robots_in_tournament()->begin();
+           li != the_arena.get_all_robots_in_tournament()->end() && !found_robot;
+           li++ )
         {
           counter--;
-          robot_p = li();
-          if( robot_p->get_robot_name() == robot_name )
+          if( (*li).get_robot_name() == robot_name )
             {
               found_robot = true;
               change_type_data_t type_data( STAT_TYPE_ROBOT, sw_p );

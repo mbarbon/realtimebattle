@@ -157,14 +157,15 @@ Process::start(const enum game_mode_t mode)
       
       // Close all pipes not belonging to the robot
       
-        Robot* robotp;
+      Robot* robotp;
 
-        ListIterator<Robot> li;
-        for( the_arena.get_all_robots_in_sequence()->first(li); li.ok(); li++ )
-          {
-            robotp = li();
-            if( robotp != my_robot ) robotp->get_process()->delete_pipes();
-          }
+      list<Robot*>::iterator li;
+      for( li = the_arena.get_all_robots_in_sequence()->begin();
+           li != the_arena.get_all_robots_in_sequence()->end(); li++ )
+        {
+          robotp = (*li);
+          if( robotp != my_robot ) robotp->get_process()->delete_pipes();
+        }
 
       if( game_mode != DEBUG_MODE )
         {

@@ -230,26 +230,25 @@ Robot::set_angles( double robot_a, const double cannon_a, const double radar_a)
 void
 Robot::check_name_uniqueness()
 {
-  Robot* robotp = NULL;
   int first_avail = 0;
 
   robot_name = plain_robot_name;
   
-  ListIterator<Robot> li;
-  for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
+  vector<Robot>::iterator li;
+  for( li = the_arena.get_all_robots_in_tournament()->begin();
+       li != the_arena.get_all_robots_in_tournament()->end(); li++ )
     {
-      robotp = li();
-      if( robotp != this && plain_robot_name == robotp->plain_robot_name )
+      if( &(*li) != this && plain_robot_name == (*li).plain_robot_name )
         {
-          if( robotp->robot_name_uniqueness_number == 0 )
+          if( (*li).robot_name_uniqueness_number == 0 )
             {
-              robotp->robot_name_uniqueness_number = 1;
-              robotp->robot_name += "(1)";
+              (*li).robot_name_uniqueness_number = 1;
+              (*li).robot_name += "(1)";
             }
 
-          first_avail = max( robotp->robot_name_uniqueness_number + 1, first_avail );
+          first_avail = max( (*li).robot_name_uniqueness_number + 1, first_avail );
 
-          if( robot_name_uniqueness_number == robotp->robot_name_uniqueness_number 
+          if( robot_name_uniqueness_number == (*li).robot_name_uniqueness_number 
               || robot_name_uniqueness_number == 0 )
             robot_name_uniqueness_number = first_avail;
         }

@@ -78,7 +78,6 @@ ArenaBase::ArenaBase()
   reset_timer();
   
   object_lists[ROBOT].set_deletion_responsibility(false);
-  all_robots_in_sequence.set_deletion_responsibility(false);
 
   debug_level = 0;
 }
@@ -160,16 +159,14 @@ ArenaBase::save_statistics_to_file(String filename)
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
 
-  Robot* robotp;
-
-  ListIterator<Robot> li;
+  vector<Robot>::iterator li;
   list<stat_t>::const_iterator stat_li;
-  for(all_robots_in_tournament.first(li); li.ok() ; li++ )
+  for( li = all_robots_in_tournament.begin();
+       li != all_robots_in_tournament.end(); li++ )
     {
-      robotp = li();
-      file << robotp->get_robot_name() << ": " << endl;
-      for( stat_li = robotp->get_statistics()->begin();
-           stat_li != robotp->get_statistics()->end(); stat_li++ )
+      file << (*li).get_robot_name() << ": " << endl;
+      for( stat_li = (*li).get_statistics()->begin();
+           stat_li != (*li).get_statistics()->end(); stat_li++ )
         {
           file << "Seq: " << (*stat_li).sequence_nr 
                << "  Game: " << (*stat_li).game_nr 
@@ -588,14 +585,15 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
     {
       if( kill_robots )
         {
-          ListIterator<Robot> li;
-          for( all_robots_in_sequence.first(li); li.ok(); li++)
-            li()->get_process()->kill_forcefully();
+          list<Robot*>::iterator li;
+          for( li = all_robots_in_sequence.begin();
+               li != all_robots_in_sequence.end(); li++)
+            (*li)->get_process()->kill_forcefully();
         }
-      all_robots_in_sequence.delete_list();
+      all_robots_in_sequence.clear();
     }
 
-  if( del_tourn_list )  all_robots_in_tournament.delete_list();
+  if( del_tourn_list )  all_robots_in_tournament.clear();
   if( del_arena_filename_list ) arena_filenames.clear();
 }
 
@@ -613,13 +611,12 @@ ArenaBase::find_object_by_id( const List<Shape>& obj_list,
 }
 
 bool
-ArenaBase::find_object_by_id( const List<Robot>& obj_list, 
-                              ListIterator<Robot>& li,
+ArenaBase::find_object_by_id( vector<Robot>& obj_list, vector<Robot>::iterator& li,
                               const int obj_id )
 {
-  for( obj_list.first(li); li.ok(); li++)
+  for( li = obj_list.begin(); li != obj_list.end(); li++)
     {
-      if( li()->get_id() == obj_id ) 
+      if( (*li).get_id() == obj_id ) 
         return true;
     }
   return false;

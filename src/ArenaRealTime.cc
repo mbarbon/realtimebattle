@@ -415,9 +415,10 @@ ArenaRealTime::timeout_function()
       
     case SHUTTING_DOWN_ROBOTS:
       {     
-        ListIterator<Robot> li;
-        for( all_robots_in_sequence.first(li); li.ok(); li++ )
-          li()->get_messages();
+        list<Robot*>::iterator li;
+        for( li = all_robots_in_sequence.begin();
+             li != all_robots_in_sequence.end(); li++ )
+          (*li)->get_messages();
         
         if( total_time > next_check_time ) end_sequence_follow_up();
       }
@@ -543,11 +544,12 @@ ArenaRealTime::add_mine()
 void
 ArenaRealTime::check_robots()
 {
-  ListIterator<Robot> li;
+  list<Robot*>::iterator li;
   Process* process_p;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      process_p = li()->get_process();
+      process_p = (*li)->get_process();
       if( process_p->is_process_running() )
         {
           process_p->check();
@@ -560,11 +562,12 @@ ArenaRealTime::check_robots()
 void
 ArenaRealTime::read_robot_messages()
 {
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      if( li()->is_alive() || state != GAME_IN_PROGRESS )  
-        li()->get_messages();
+      if( (*li)->is_alive() || state != GAME_IN_PROGRESS )  
+        (*li)->get_messages();
     }
 }
 
@@ -620,10 +623,11 @@ ArenaRealTime::update_robots()
 //  #endif
         }
 
-      ListIterator<Robot> li2;
-      for( all_robots_in_sequence.first(li2); li2.ok(); li2++ )
-        if( li2()->is_dead_but_stats_not_set() )
-          li2()->set_stats(robots_killed_this_round);
+      list<Robot*>::iterator li2;
+      for( li2 = all_robots_in_sequence.begin();
+           li2 != all_robots_in_sequence.end(); li2++ )
+        if( (*li2)->is_dead_but_stats_not_set() )
+          (*li2)->set_stats(robots_killed_this_round);
       
       broadcast(ROBOTS_LEFT, robots_left);
     }
@@ -664,13 +668,14 @@ bool
 ArenaRealTime::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
 {
   double d;
-  ListIterator<Robot> li;
+  list<Robot*>::iterator li;
 
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      if(li() != robotp)
+      if((*li) != robotp)
         {
-          d = colour_dist( colour, li()->get_rgb_colour() );
+          d = colour_dist( colour, (*li)->get_rgb_colour() );
           if( d < min_dist ) return false;          
         }
     }
@@ -767,10 +772,11 @@ ArenaRealTime::start_game()
   
   set_state( BEFORE_GAME_START );
 
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      robotp = li();
+      robotp = (*li);
       robotp->get_messages();
 
       found_space = false;
@@ -830,14 +836,15 @@ void
 ArenaRealTime::end_game()
 {
   Robot* robotp;
-  ListIterator<Robot> li;
 
   int robots_died_by_timeout = robots_left;
   robots_left = 0;
 
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      robotp = li();
+      robotp = (*li);
       if( robotp->is_alive() || robotp->is_dead_but_stats_not_set() )
         {
           robotp->die();
@@ -867,17 +874,17 @@ ArenaRealTime::start_sequence()
   for(int i=0; i<robots_per_game; i++)
     {
       all_robots_in_sequence.
-        insert_last( all_robots_in_tournament.
-                     get_nth(robots_in_sequence[sequence_nr][i]));
+        push_back( &all_robots_in_tournament[ robots_in_sequence[sequence_nr][i] ]);
     }
 
   // execute robot processes
 
 
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      li()->get_process()->start(game_mode);
+      (*li)->get_process()->start(game_mode);
     }
   
   // wait a second before checking
@@ -894,13 +901,14 @@ ArenaRealTime::start_sequence_follow_up()
   // check if the process have started correctly
   Robot* robotp = NULL;
 
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      robotp = li();
+      robotp = (*li);
       if( !(robotp->get_process()->is_process_running()) ) 
         {
-          all_robots_in_sequence.remove(li);
+          all_robots_in_sequence.erase(li);
           robots_left--;
         }
       else
@@ -935,10 +943,11 @@ ArenaRealTime::end_sequence()
 {
   // kill all robot processes
 
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      li()->get_process()->end();
+      (*li)->get_process()->end();
     }
 
   // wait a second before checking
@@ -954,13 +963,14 @@ ArenaRealTime::end_sequence_follow_up()
   
   Process* processp;
 
-  ListIterator<Robot> li;
-  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+  list<Robot*>::iterator li;
+  for( li = all_robots_in_sequence.begin();
+       li != all_robots_in_sequence.end(); li++ )
     {
-      processp = li()->get_process();
+      processp = (*li)->get_process();
       if( processp->is_process_running() ) processp->kill_forcefully();
       processp->delete_pipes();
-      all_robots_in_sequence.remove(li);
+      all_robots_in_sequence.erase(li);
     }
 
   if( sequence_nr == sequences_in_tournament ) 
@@ -1009,13 +1019,11 @@ start_tournament(const list<start_tournament_info_t>& robotfilename_list,
 
   number_of_robots = 0;
   robot_count = 0;
-  Robot* robotp;
 
   list<start_tournament_info_t>::const_iterator li;
   for( li = robotfilename_list.begin(); li != robotfilename_list.end(); li++ )
     {
-      robotp = new Robot((*li).filename);
-      all_robots_in_tournament.insert_last( robotp );
+      all_robots_in_tournament.push_back( Robot((*li).filename) );
       number_of_robots++;
     }
 

@@ -105,8 +105,8 @@ public:
 
 
   List<Shape>* get_object_lists() { return object_lists; }
-  List<Robot>* get_all_robots_in_sequence() { return &all_robots_in_sequence; }
-  List<Robot>* get_all_robots_in_tournament() { return &all_robots_in_tournament; }
+  list<Robot*>* get_all_robots_in_sequence() { return &all_robots_in_sequence; }
+  vector<Robot>* get_all_robots_in_tournament() { return &all_robots_in_tournament; }
   String get_current_arena_filename() { return current_arena_filename; }
   int get_game_nr() { return game_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
@@ -152,13 +152,13 @@ protected:
 
   bool find_object_by_id(const List<Shape>& obj_list, 
                          ListIterator<Shape>& li, const int obj_id);
-  bool find_object_by_id(const List<Robot>& obj_list, 
-                         ListIterator<Robot>& li, const int obj_id);
+  bool find_object_by_id(vector<Robot>& obj_list, 
+                         vector<Robot>::iterator& li, const int obj_id);
 
   List<Shape> object_lists[LAST_OBJECT_TYPE];
   
-  List<Robot> all_robots_in_tournament;
-  List<Robot> all_robots_in_sequence;
+  vector<Robot> all_robots_in_tournament;
+  list<Robot*> all_robots_in_sequence;
   list<Vector2D> exclusion_points;
 
   String current_arena_filename;

@@ -334,9 +334,10 @@ ArenaReplay::parse_log_line()
         if( !log_from_stdin )
           get_time_positions_in_game();
 
-        ListIterator<Robot> li;
-        for( all_robots_in_tournament.first(li); li.ok(); li++ )
-          li()->set_values_before_game(Vector2D(infinity,infinity), 0.0);
+        vector<Robot>::iterator li;
+        for( li = all_robots_in_tournament.begin();
+             li != all_robots_in_tournament.end(); li++ )
+          (*li).set_values_before_game(Vector2D(infinity,infinity), 0.0);
 
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
@@ -371,8 +372,8 @@ ArenaReplay::parse_log_line()
             log_file.get( robot_colour, 7, ' ');
             long int col = str2hex( (String)robot_colour );
             log_file.get( name, 200, '\n' );
-            Robot* robotp = new Robot( robot_id, col, (String)name );
-            all_robots_in_tournament.insert_last(robotp); // used by statistics
+            all_robots_in_tournament.
+              push_back( Robot( robot_id, col, (String)name ) ); // used by statistics
           }
         else
           {
@@ -465,12 +466,12 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
           }
         else
           {
-            ListIterator<Robot> li2;
+            vector<Robot>::iterator li2;
             if( log_from_stdin &&
                 find_object_by_id( all_robots_in_tournament, li2, robot_id ) )
               {
-                object_lists[ROBOT].insert_last( li2() ); 
-                robotp = li2();
+                object_lists[ROBOT].insert_last( &(*li2) ); 
+                robotp = &(*li2);
               }
             else
               Error(true, "Robot not in list", "ArenaReplay::parse_log_line_forward");
@@ -1185,9 +1186,9 @@ ArenaReplay::make_statistics_from_file()
             long int col = str2hex( (String)robot_colour );
             log_file >> ws;
             log_file.get( name, 200, '\n' );
-            Robot* robotp = new Robot( robot_id, col, (String)name );
-            object_lists[ROBOT].insert_last(robotp); // array better?
-            all_robots_in_tournament.insert_last(robotp); // used by statistics
+            Robot robot = Robot( robot_id, col, (String)name );
+            object_lists[ROBOT].insert_last(&robot); // array better?
+            all_robots_in_tournament.push_back(robot); // used by statistics
           }
           break;
             
@@ -1318,9 +1319,9 @@ ArenaReplay::get_time_positions_in_game()
                 object_positions_in_log.push_back
                   ( object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
                                        0, the_opts.get_d( OPTION_TIMEOUT ) ) );
-                ListIterator<Robot> li;
+                vector<Robot>::iterator li;
                 find_object_by_id( all_robots_in_tournament, li, robot_id );
-                object_lists[ROBOT].insert_last( li() );
+                object_lists[ROBOT].insert_last( &(*li) );
               }
           }
           break;
