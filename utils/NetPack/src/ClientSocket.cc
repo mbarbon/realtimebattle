@@ -103,7 +103,6 @@ SocketClient::connect_to_server( string hostname, int port_nb = 0 )
 
   server_connection = new NetConnection;
   server_connection->the_socket = the_socket;
-  cout<<"Connected to "<<the_socket<<endl;
   server_connection->connected = true;
   server_connection->make_nonblocking();
 
@@ -140,12 +139,12 @@ SocketClient::check_fd( )
       {
         //Extract the string for the queue and make a packet with it
         string data = server_connection->read_buffers.front();
-	server_connection->read_buffers.pop_front();
-        cout<<"data in client : "<<data<<endl;
+        server_connection->read_buffers.pop_front();
+
         P = client_packet_factory->MakePacket( data, server_connection );
       
-      	if( !P ) continue; //Jump to the next Packet
-	cout<<"I'm here\n";
+        if( !P ) continue; //Jump to the next Packet
+
         P->handle_packet( );
         delete P;
       }

@@ -47,6 +47,9 @@ public:
   void delete_pipes();
   void kill_forcefully();
 
+  void reset_messages();
+  string get_next_message();
+  bool more_messages();
 
   pid_t get_pid() { return pid; }
 

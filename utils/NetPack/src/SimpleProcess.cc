@@ -306,3 +306,26 @@ SimpleProcess::get_default_non_blocking_state()
   
   return true;
 }
+
+
+void
+SimpleProcess::reset_messages()
+{
+  *ipipe_streamp >> ws;
+  ipipe_streamp->clear();
+  ipipe_streamp->peek();
+}
+
+bool
+SimpleProcess::more_messages()
+{
+  return (!ipipe_streamp->eof());
+}
+
+string
+SimpleProcess::get_next_message( )
+{
+  char temp[512] ;
+  ipipe_streamp->getline( temp, 512, '\n' );
+  return string(temp);
+}

@@ -62,8 +62,6 @@ SocketServer::open_socket( int port_nb = 0 )
     port_number += 100;
   if( nb_try == 50 ) quit() ;
 
-  cout<<"Opening on port "<<port_number<<endl;
-
   //Set my host name
   char sn[256];
   gethostname(sn, 256);
@@ -99,7 +97,6 @@ SocketServer::open_socket( int port_nb = 0 )
       port_number ++;
       continue;
     }
-    cout<<"Opened on socket "<< server_socket<<endl;
   break;
   }
 }
@@ -152,7 +149,6 @@ SocketServer::check_fd( )
   //New comer.
   if( is_fd_read( server_socket ) )
     {
-      cout << "Got new connection."<<endl;
       accept_connection();
     }
 
@@ -168,7 +164,6 @@ SocketServer::check_fd( )
 	    {
 	      //Extract the string for the queue and make a packet with it
 	      string data = (**li).read_buffers.front();
-        cout<<"data in server : "<<data<<endl;
         Packet * P;
         P = server_packet_factory->MakePacket( data, *li );
         (*li)->read_buffers.pop_front();
@@ -211,7 +206,6 @@ SocketServer::accept_connection()
   nc->id = next_id;
   next_id++;
 
-  cout<<"New connection on "<<new_socket<<endl;
   nc->the_socket = new_socket;
   nc->make_nonblocking();
   nc->connected = true;

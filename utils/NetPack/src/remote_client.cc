@@ -27,6 +27,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ClientSocket.h"
 #include "SocketHandler.h"
 #include <unistd.h>
+#include "SimpleProcess.h"
+
+string robot_path;
+SimpleProcess* process = NULL;
 
 class RawSocketClient : public SocketClient {
 public:
@@ -53,6 +57,7 @@ class ClientsLinkPacketFactory : public PacketFactory {
  public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
+	  cout<<">>"<<s<<endl;
 	 cout<<"I'm here\n";
     if( s == "@CQuit" )
       exit( 0 );
@@ -90,6 +95,10 @@ class ClientServerLinkFactory : public PacketFactory{
     cout<<"Setting the packet factory\n";
     sc.set_packet_factory( new ClientsLinkPacketFactory );
     cout<<"Done\n";
+    cout<<"Running the robot \n";
+    process = new SimpleProcess( robot_path. c_str() );
+    process->start(  );
+    cout<<"Done\n";
     /*
     if( s == "@CQuit" )
       exit( 0 );
@@ -114,13 +123,31 @@ protected:
 };
 
 
-int main()
+int main(int argc, char* argv[])
 {
-  sc.connect_to_server( "localhost", 4147 );
+  if( argc != 3 ) {
+    cout<<"Usage : "<<argv[0]<<" <server> <robot_name>"<<endl;
+    exit( 0 );
+  }
+
+  robot_path = string( argv[2] );
+  
+  sc.connect_to_server( string(argv[1]), 4147 );
   sc.send_to_server( "remote" );
   sc.set_packet_factory( new ClientServerLinkFactory );
   while(1)
     {
       sc.check_socket();
+      if( process )
+      {
+        process->reset_messages();
+        while( process->more_messages()  )
+        {
+          string message = process->get_next_message();
+          cout<<"<<"<<message<<endl;
+          sc.send_to_server("OM" + message );
+        }
+      }
     }
+
 }

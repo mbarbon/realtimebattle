@@ -32,7 +32,10 @@ class ASmallServerPacketFactory : public PacketFactory{
 public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
-    cout<<"I receive (server) "<<s<<endl;
+    if(s.substr(0, 2) == "OM") //This is a message from the ro
+	cout<<s.substr(2, s.length() - 2 )<<endl;
+    else
+	cout<<s<<endl;
     if( s == "@CQuit" ) nc->close_socket();
 
     return NULL;
@@ -43,7 +46,10 @@ class ASmallClientPacketFactory : public PacketFactory {
 public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
-    cout<<"I receive (client) "<<s<<endl;
+    if(s.substr(0, 2) == "0M") //This is a message from the robot
+	cout<<s.substr(2, s.length() - 2 )<<endl;
+    else
+      cout<<s<<endl;
     if( s == "@CQuit" ) nc->close_socket();
     return NULL;
   }
@@ -63,19 +69,8 @@ protected:
   //Functions needed by SocketHandler
   void handle_stdin( char * buffer )
   {
-    istrstream is(buffer);
-    string command;
-    is >> command;
-
-    if( command == "quit" )   //The quit event (maybe a click for a chat)
-      {
-        cout<<"Ciao\n";
-        exit( 0 );
-      }
-    else
-      {
-        send_to_server( (string)buffer );
-      }
+	cout<<"Print "<<buffer<<endl;
+     	send_to_server( (string)buffer );
   }
 };
 
