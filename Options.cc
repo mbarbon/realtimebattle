@@ -215,11 +215,101 @@ Options::get_options_from_rtbrc()
 void
 Options::setup_options_window()
 {
+  int options_per_column = 20;
+  int number_of_options = LAST_DOUBLE_OPTION + LAST_LONG_OPTION + LAST_STRING_OPTION + LAST_BOOL_OPTION;
+  int number_of_columns = (number_of_options / options_per_column) + 1;
+  GtkWidget * vboxes[number_of_columns];
+
+  options_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (options_window), "RealTimeBattle Start New Tournament");
+  gtk_signal_connect (GTK_OBJECT (options_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(options_window));
+  gtk_container_border_width (GTK_CONTAINER (options_window), 12);
+
+  GtkWidget * hbox = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (options_window), hbox);
+  gtk_widget_show (hbox);
+
+  for(int i=0; i < number_of_columns; i++)
+    {
+      vboxes[i] = gtk_vbox_new (FALSE, 5);
+      gtk_container_add (GTK_CONTAINER (hbox), vboxes[i]);
+      gtk_widget_show (vboxes[i]);
+    }
+
+  for( int i=0;i<LAST_DOUBLE_OPTION;i++ )
+    {
+      GtkWidget * option_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_container_add (GTK_CONTAINER (vboxes[i / options_per_column]), option_hbox);
+      gtk_widget_show (option_hbox);
+
+      GtkWidget * label = gtk_label_new(all_double_options[i].label.chars());
+      gtk_box_pack_start (GTK_BOX (option_hbox), label, TRUE, FALSE, 0);
+      gtk_widget_show(label);
+
+      all_double_options[i].entry = gtk_entry_new_with_max_length(all_double_options[i].max_letters_in_entry);
+
+      bool sign = false;
+      if( all_double_options[i].min_value < 0.0 )
+        sign = true;
+
+      gtk_entry_set_text( GTK_ENTRY( all_double_options[i].entry ), String(all_double_options[i].value).chars() );
+
+      entry_t * info = new entry_t( ENTRY_DOUBLE, sign );
+
+      gtk_signal_connect(GTK_OBJECT(all_double_options[i].entry), "changed",
+                         GTK_SIGNAL_FUNC(entry_handler), info);
+      gtk_box_pack_start (GTK_BOX (option_hbox), all_double_options[i].entry, FALSE, FALSE, 0);
+      gtk_widget_set_usize(all_double_options[i].entry, all_double_options[i].max_letters_in_entry * 9,18);
+      gtk_widget_show(all_double_options[i].entry);
+    }
+
+  for( int i=0;i<LAST_LONG_OPTION;i++ )
+    {
+      GtkWidget * option_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_container_add (GTK_CONTAINER (vboxes[(i + LAST_DOUBLE_OPTION) / options_per_column]), option_hbox);
+      gtk_widget_show (option_hbox);
+
+      GtkWidget * label = gtk_label_new(all_long_options[i].label.chars());
+      gtk_box_pack_start (GTK_BOX (option_hbox), label, TRUE, FALSE, 0);
+      gtk_widget_show(label);
+
+      all_long_options[i].entry = gtk_entry_new_with_max_length(all_long_options[i].max_letters_in_entry);
+
+      bool sign = false;
+      if( all_long_options[i].min_value < 0.0 )
+        sign = true;
+
+      if( all_long_options[i].datatype == ENTRY_INT )
+        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), String(all_long_options[i].value).chars() );
+      else if (all_long_options[i].datatype == ENTRY_HEX)
+        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), hex2str(all_long_options[i].value).chars() );
+
+      entry_t * info = new entry_t( ENTRY_DOUBLE, sign );
+
+      gtk_signal_connect(GTK_OBJECT(all_long_options[i].entry), "changed",
+                         GTK_SIGNAL_FUNC(entry_handler), info);
+      gtk_box_pack_start (GTK_BOX (option_hbox), all_long_options[i].entry, FALSE, FALSE, 0);
+      gtk_widget_set_usize(all_long_options[i].entry, all_long_options[i].max_letters_in_entry * 9,18);
+      gtk_widget_show(all_long_options[i].entry);
+    }
+
+  gtk_widget_show(options_window);
   options_window_up = true;
 }
 
 void
 Options::close_options_window()
 {
+  gtk_widget_destroy(options_window);
   options_window_up = false;
+}
+
+void
+options_window_requested(GtkWidget *widget, gpointer data)
+{
+  if(the_opts.get_options_window_up() == false)
+    the_opts.setup_options_window();
+  else
+    the_opts.close_options_window();
 }
