@@ -32,11 +32,11 @@ message_to_robot_type name2msg_to_robot_type(char* msg_name);
 class RotateAndFire
 {
 public:
+  // The constructor and destructor.
   RotateAndFire               ();
   ~RotateAndFire              () {}
 
-  // From robot
-
+  // These functions are equivalent to messages sent from the robot
   void robot_option           ( const int option_nr, const int value );
   void name                   ( const char* name );
   void colour                 ( const char* home, const char* away );
@@ -60,8 +60,10 @@ public:
                                 const double center_radius,
                                 const double circle_radius );
 
-  // To robot
-
+  // These functions are called when the robot gets a message
+  // of the corresponding type. There are several radar and
+  // collision functions. These functions corresponds to each
+  // object that the robot has collided with or found with the radar.
   void initialize             ( const int first_seq );
   void your_name              ( const char* prev_name );
   void your_colour            ( const char* colour );
@@ -90,26 +92,35 @@ public:
   void game_finishes          ();
   void exit_robot             ();
 
-  // generic functions
-
+  // This function is called before checking messages.
   void pre_checking_messages  ();
+
+  // This function goes through all messages and calls the
+  // corresponding function whenever a message is recieved.
   static void check_messages  ( int sig );
 
 private:
 
+  // These variables contains the current values of the robot rotation,
+  // acceleration and brake.
   double robot_rotate;
   double acceleration;
   double brake_value;
 
+  // Boolean variables to control if it is allowed to change robot
+  // rotation and acceleration.
   bool rotate_allowed;
+  bool acceleration_change_allowed;
 
+  // Variables that controls how frequent the robot has been hit by shots.
   int shots_hit;
   double last_shot_hit_time;
-  double current_time;
   int number_of_robots_left;
 
-  // game options
+  // The current time is stored in this variable.
+  double current_time;
 
+  // All game options are stored in these variables.
   double robot_max_rotate;
   double robot_cannon_max_rotate;
   double robot_radar_max_rotate;
@@ -124,14 +135,16 @@ private:
   double shot_energy_increase_speed;
   double timeout;
   double debug_level;
-
 };
 
-// Declare the class_object
+// Declare the robot object
 
 class RotateAndFire raf_obj;
 
-
+// The constructor. Initialize standard values of robot_rotate,
+// acceleration and brake_value.
+// Robot options is also sent here.
+// We wnat the SIGUSR1 signal to be sent to us.
 RotateAndFire::RotateAndFire()
 {
   robot_rotate = 0.53;
@@ -141,10 +154,8 @@ RotateAndFire::RotateAndFire()
   robot_option( SIGNAL, SIGUSR1 );
 }
 
-//
-// Messages from robot
-//
-
+// Function for sending messages from robot. 
+// They do nothing but write the command and its arguments to cout.
 void
 RotateAndFire::robot_option( const int option, const int value )
 {
@@ -240,10 +251,10 @@ RotateAndFire::debug_circle( const double center_angle,
        << " " << circle_radius << endl;
 }
 
-//
-// Messages to robot
-//
+// Here are all functions that is called whenever a message of
+// corresponding type is recieved.
 
+// Send name and colour if it is the first sequence.
 void
 RotateAndFire::initialize( const int first_seq )
 {
@@ -254,16 +265,20 @@ RotateAndFire::initialize( const int first_seq )
     }
 }
 
+// The name the robot got in the game.
 void
 RotateAndFire::your_name( const char* prev_name )
 {
 }
 
+// The colour the robot got in the game.
 void
 RotateAndFire::your_colour( const char* colour )
 {
 }
 
+// This function is called when a game option is changed and
+// the robot's copy of this option will change.
 void
 RotateAndFire::game_option( const int option, const double value )
 {
@@ -314,9 +329,15 @@ RotateAndFire::game_option( const int option, const double value )
     }
 }
 
+// Reset the robot when a new game starts. Send initial rotate and
+// accelerate commands.
 void
 RotateAndFire::game_starts()
 {
+  robot_rotate = 0.53;
+  acceleration = 0.54;
+  brake_value = 0.0;
+
   rotate_allowed = true;
   shots_hit = 0;
   last_shot_hit_time = 0;
@@ -327,30 +348,39 @@ RotateAndFire::game_starts()
   accelerate( acceleration );
 }
 
+// Radar info when no object is seen, should never happen.
 void
 RotateAndFire::radar_noobject( const double dist, const double angle )
 {
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
+// Radar info when robot is seen.
+// Lock cannon and radar on the seen robot,
+// and if it is near enough, begin to brake. Shoot at it.
 void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
   rotate( 6, -robot_rotate );
   if( dist < 2 )
     {
-      acceleration = 0;
-      accelerate( 0 );
+      acceleration = 0.0;
+      accelerate( acceleration );
+      brake_value = 1.0;
+      brake( brake_value );
     }
   shoot( 2 );
 }
 
+// Radar info when a shot is seen.
 void
 RotateAndFire::radar_shot( const double dist, const double angle )
 {
   rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
+// Radar info when a wall is seen.
+// If a wall is near in the robot direction, begin to brake,
+// else have normal acceleration.
 void
 RotateAndFire::radar_wall( const double dist, const double angle )
 {
@@ -381,12 +411,14 @@ RotateAndFire::radar_wall( const double dist, const double angle )
     }
 }
 
+// Radar info when a cookie is seen.
 void
 RotateAndFire::radar_cookie( const double dist, const double angle )
 {
   rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
+// Radar info when a mine is seen.
 void
 RotateAndFire::radar_mine( const double dist, const double angle )
 {
@@ -394,6 +426,9 @@ RotateAndFire::radar_mine( const double dist, const double angle )
   shoot( shot_min_energy );
 }
 
+// Get information about time, speed and cannon_angle
+// Update current time and check how long time has passed since
+// we were last hit by a shot.
 void
 RotateAndFire::info( const double time, const double speed,
                      const double cannon_angle )
@@ -404,40 +439,57 @@ RotateAndFire::info( const double time, const double speed,
     shots_hit = 0;
 }
 
+// Information about seen robots
 void
 RotateAndFire::robot_info( const double energy, int enemy )
 {
 }
 
+// Check if rotation has been reached.
+// If it is the robot. Begin normal acceleration and rotation
 void
 RotateAndFire::rotation_reached( const int what )
 {
-  rotate_allowed = true;
-  int direction = rand() / (RAND_MAX/2);
-  if( direction == 0 ) direction = -1;
-  robot_rotate = 0.53 * direction;
+  if( what & 1 == 1 )
+    {
+      rotate_allowed = true;
+      acceleration_change_allowed = true;
+      int direction = rand() / (RAND_MAX/2);
+      if( direction == 0 ) direction = -1;
+      robot_rotate = 0.53 * direction;
+      acceleration = 1.0;
+      accelerate( acceleration );
+    }
 }
 
+// Our energy level.
 void
 RotateAndFire::energy( const double energylevel )
 {
 }
 
+// How many robots is left in the game.
 void
 RotateAndFire::robots_left( const int number_of_robots )
 {
   number_of_robots_left = number_of_robots;
 }
 
+// We have collided with no object. Should not happen.
 void
 RotateAndFire::collision_noobject( const double angle )
 {
 }
 
+// We have collided with another robot.
 void
 RotateAndFire::collision_robot( const double angle )
 {
 }
+
+// We have collided with a shot.
+// Set last_shot_hit_time and increase shots_hit.
+// If shots_hit is too high, begin fleeing acceleration and rotation.
 
 void
 RotateAndFire::collision_shot( const double angle )
@@ -452,27 +504,35 @@ RotateAndFire::collision_shot( const double angle )
       robot_rotate = robot_max_rotate * direction;
       rotate_amount( 1, robot_rotate, pi / 2 );
       rotate_allowed = false;
+      acceleration = robot_max_acceleration;
+      accelerate( acceleration );
+      acceleration_change_allowed = false;
       shots_hit = 0;
     }
 }
 
+// We have collided with a wall.
 void
 RotateAndFire::collision_wall( const double angle )
 {
 }
 
+// We have collided with a cookie.
 void
 RotateAndFire::collision_cookie( const double angle )
 {
   print( "Cookie eaten!" );
 }
 
+// We have collided with a mine.
 void
 RotateAndFire::collision_mine( const double angle )
 {
   print( "Oh no! A mine" );
 }
 
+// We have received a warning message.
+// Print the message.
 void
 RotateAndFire::warning( const int type, const char* message )
 {
@@ -501,16 +561,19 @@ RotateAndFire::warning( const int type, const char* message )
   print( full_message );
 }
 
+// Unfortunately we have died.
 void
 RotateAndFire::dead()
 {
 }
 
+// The game has finished
 void
 RotateAndFire::game_finishes()
 {
 }
 
+// You have been ordered to exit the robot
 void
 RotateAndFire::exit_robot()
 {
@@ -518,8 +581,8 @@ RotateAndFire::exit_robot()
   quit_robot = true;
 }
 
-// generic functions
-
+// This function is called before checking messages.
+// Every hundred time, change the direction of the rotation.
 void
 RotateAndFire::pre_checking_messages()
 {
@@ -530,6 +593,10 @@ RotateAndFire::pre_checking_messages()
     }
 }
 
+// This function handles all the message checking and
+// calls the appropriate function.
+// This function is called whenever a SIGUSR1 (decided in the
+// robotoption sent to the server) signal is received.
 void
 RotateAndFire::check_messages(int sig)
 {
@@ -704,6 +771,7 @@ RotateAndFire::check_messages(int sig)
   signal (sig, check_messages);
 }
 
+// A function to convert the messagename to an enum message_to_robot_type
 message_to_robot_type
 name2msg_to_robot_type(char* msg_name)
 {
@@ -716,6 +784,9 @@ name2msg_to_robot_type(char* msg_name)
 }
 
 
+// The main function.
+// Initialize the signal function and get a random seed based on current
+// time in microseconds.
 int 
 main(int argc, char * argv[])
 {
