@@ -89,6 +89,10 @@ public:
                                            class StatisticsWindow* sw_p );
   static void change_sorting_in_clist( GtkCList *clist, gint column,
                                        class StatisticsWindow* sw_p );
+  static void row_selected           ( GtkWidget* clist,
+                                       gint row, gint column,
+                                       GdkEventButton *event,
+                                       class StatisticsWindow* sw_p );
 
   GtkWidget* get_clist               () { return clist; }
   enum stat_types get_type           () { return type; }

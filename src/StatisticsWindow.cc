@@ -247,6 +247,9 @@ StatisticsWindow::StatisticsWindow( const int default_width,
                                       GTK_JUSTIFY_RIGHT );
   gtk_clist_set_column_justification( GTK_CLIST( clist ), 6,
                                       GTK_JUSTIFY_RIGHT );
+  gtk_signal_connect( GTK_OBJECT( clist ), "select_row",
+                      (GtkSignalFunc) row_selected, this );
+
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_clist_set_compare_func( GTK_CLIST( clist ), float_compare );
@@ -774,4 +777,45 @@ StatisticsWindow::change_sorting_in_clist( GtkCList* clist, gint column,
   add_the_statistics_to_clist( GTK_WIDGET( clist ), sw_p );
   gtk_clist_thaw( clist );
 #endif
+}
+
+void
+StatisticsWindow::row_selected( GtkWidget* clist, gint row,
+                                gint column, GdkEventButton *event,
+                                class StatisticsWindow* sw_p )
+{
+  stat_types sw_type = sw_p->get_type();
+
+  if( column == 1 && sw_type != STAT_TYPE_ROBOT )
+    {
+      gtk_clist_freeze( GTK_CLIST( clist ) );
+
+      gchar* clist_text;
+
+      gtk_clist_get_text( GTK_CLIST( clist ), row, column, &clist_text );
+      String robot_name;
+      if( clist_text != NULL )
+        robot_name = clist_text;
+
+      ListIterator<Robot> li;
+      Robot* robot_p = NULL;
+      int counter = 0;
+      bool found_robot = false;
+      for( the_arena.get_all_robots_in_tournament()->first(li);
+           li.ok() && !found_robot; li++ )
+        {
+          counter--;
+          robot_p = li();
+          if( robot_p->get_robot_name() == robot_name )
+            {
+              found_robot = true;
+              change_type_data_t type_data( STAT_TYPE_ROBOT, sw_p );
+              change_table_type( clist, &type_data );
+
+              change_stat_data_t stat_data( counter, true, sw_p );
+              change_stats_viewed( clist, &stat_data );
+            }
+        }
+      gtk_clist_thaw( GTK_CLIST( clist ) );
+    }
 }
