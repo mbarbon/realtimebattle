@@ -36,6 +36,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GeometricalObjects.h"
 #include "ArenaWindow.h"
 #include "ScoreWindow.h"
+#include "String.h"
 
 extern class Gui* gui_p;
 
@@ -266,40 +267,48 @@ DrawingRobot::display_score()
   if( last_displayed_energy != energy )
     {
       last_displayed_energy = energy;
+      char* energy_str = int2chars( energy );
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         2, String(energy).non_const_chars());
+                         row_in_score_clist, 2, energy_str);
+      delete [] energy_str;
     }
 
   int position_this_game = robot_p->get_position_this_game();
 
   if( last_displayed_place != position_this_game )
     {
-      String str;
-      if( position_this_game != 0 ) str = String(position_this_game);
+      char* str;
+      if( position_this_game != 0 )
+        str = int2chars(position_this_game);
+      else
+        {
+          str = new char[1];
+          str[0] = 0;
+        }
       last_displayed_place = position_this_game;
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         3, str.non_const_chars());
+                         row_in_score_clist, 3, str );
+      delete [] str;
     }
 
   p = robot_p->get_last_position();
   if( p != 0 && p != last_displayed_last_place  )
     {
       last_displayed_last_place = p;
+      char* str = int2chars( p );
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         4, String(p).non_const_chars());
+                         row_in_score_clist, 4, str);
+      delete [] str;
     }
-
 
   double pnts = robot_p->get_total_points();
   if( last_displayed_score != (int)(10 * pnts) )
     {
       last_displayed_score = (int)(10 * pnts);
+      char* str = double2chars( pnts );
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         5, String(pnts).non_const_chars());
+                         row_in_score_clist, 5, str);
+      delete [] str;
     }
 }
 

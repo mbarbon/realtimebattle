@@ -22,13 +22,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <pthread.h>
 #include <list>
+#include <string>
 
 #include "Options.h"
 //#include "ArenaBase.h"
 #include "Structs.h"
 
 class ArenaController;
-class String;
 class Vector2D;
 
 // ---------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class GuiInterface
 public:
   // Constructor & Destructor
 
-  GuiInterface( const String&, int, char** );
+  GuiInterface( const string&, pthread_mutex_t*, int, char** );
   ~GuiInterface();
 
   // Start up and Shut down the gui
@@ -53,7 +53,7 @@ public:
 
 // Functions that supplies information to the Gui.
 
-  String get_current_arena_filename           ();
+  string get_current_arena_filename           ();
   int get_game_nr                             ();
   int get_games_per_sequence                  ();
   int get_sequence_nr                         ();
@@ -69,7 +69,7 @@ public:
 
   const double   get_opt_d                    ( option_double_t option );
   const long int get_opt_l                    ( option_long_t   option );
-  const String   get_opt_s                    ( option_string_t option );
+  const string   get_opt_s                    ( option_string_t option );
 
   // Functions that enables the gui to have some influence over the server.
 
@@ -90,7 +90,7 @@ public:
 
   void set_opt_d                              ( option_double_t option, double   val );
   void set_opt_l                              ( option_long_t   option, long int val );
-  void set_opt_s                              ( option_string_t option, String   val );
+  void set_opt_s                              ( option_string_t option, string   val );
 
   // guivent??? pop_event                        ();
 
@@ -102,8 +102,8 @@ public:
   // push_event                                  ( guievent??? );
 
   // Gui functions
-  const String Name                           () const { return (*func_Name)(); }
-  const String UsageMessage                   () const
+  const string Name                           () const { return (*func_Name)(); }
+  const string UsageMessage                   () const
     { return (*func_UsageMessage)(); }
   int Main                                    ( GuiInterface* gi )
     { return (*func_Main)( gi ); }
@@ -121,15 +121,13 @@ private:
   void* dl_handle;
 
   // Gui functions stored
-  const String (*func_Name)();
-  const String (*func_UsageMessage)();
+  const string (*func_Name)();
+  const string (*func_UsageMessage)();
   bool (*func_Init)( int, char** );
   int (*func_Main)( GuiInterface* );
 
-  // Mutexes
-  pthread_mutex_t gi_mutex;
-  // Mutexes should not be a part of the GuiInterface, so all guis and the server
-  // have good access to the mutexes.
+  // Mutex
+  pthread_mutex_t* mutex_p;
 };
 
 // ---------------------------------------------------------------------------
@@ -140,10 +138,10 @@ private:
 extern "C" {
 #endif
 
-// The name of the gui should be returned as a const String
-const String GIName();
-// The usage string of the gui should be returned as a const String
-const String GIUsageMessage();
+// The name of the gui should be returned as a const string
+const string GIName();
+// The usage string of the gui should be returned as a const string
+const string GIUsageMessage();
 
 // Initialization of gui
 bool GIInit( int , char** );

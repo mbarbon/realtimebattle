@@ -38,7 +38,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Structs.h"
 #include "RollingObject.h"
-#include "String.h"
 #include "List.h"
 #include "Process.h"
 //#include "Vector2D.h"
@@ -49,8 +48,8 @@ class Vector2D;
 class Robot : public RollingObject
 {
 public:
-  Robot(const String& filename);
-  Robot(const int r_id, const long int col, const String& name);
+  Robot(const string& filename);
+  Robot(const int r_id, const long int col, const string& name);
   ~Robot();
 
   //arenaobject_t get_arenaobject_t() { return ROBOT; }
@@ -99,8 +98,8 @@ public:
   void live();
   void die();
 
-  String get_robot_name() { return robot_name; }
-  //  String get_robot_filename() { return robot_filename; }
+  string get_robot_name() { return robot_name; }
+  //  string get_robot_filename() { return robot_filename; }
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
 //    pid_t get_pid() { return pid; }
@@ -182,17 +181,17 @@ private:
   list<stat_t> statistics;
 
   int robot_name_uniqueness_number;
-  class String plain_robot_name;      // Name given by robot
-  class String robot_name;            // plain_robot_name + uniqueness number
+  string plain_robot_name;      // Name given by robot
+  string robot_name;            // plain_robot_name + uniqueness number
 
-//    class String robot_filename;        // Filename with path  
-//    class String robot_plain_filename;  // Filename without path
+//    string robot_filename;        // Filename with path  
+//    string robot_plain_filename;  // Filename without path
 
   bool colour_given;
   bool name_given;
   
 
-  //class String robot_dir;
+  //string robot_dir;
   //  double total_points;
   //  double points_this_game;
   int position_this_game;

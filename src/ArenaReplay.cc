@@ -38,6 +38,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  #include "ScoreWindow.h"
 //  #include "ControlWindow.h"
 #include "Robot.h"
+#include "String.h"
 
 const int max_time_infos = 16384;
 
@@ -117,7 +118,7 @@ ArenaReplay::timeout_function()
 //            the_gui.get_scorewindow_p()->update_robots();
           char msg[64];
           snprintf(msg, 63, _("Game %d of sequence %d"), game_nr, sequence_nr);
-          print_message( "RealTimeBattle", (String)msg );
+          print_message( "RealTimeBattle", (string)msg );
 //          }
 //  #endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );
@@ -315,7 +316,7 @@ ArenaReplay::parse_log_line()
         if( li.ok() ) 
           {
             Robot* robotp = (Robot*)li();
-            print_message( robotp->get_robot_name(), (String)message );
+            print_message( robotp->get_robot_name(), (string)message );
           }
         // else: robot sent a message before first game of sequences.
         // Robot data is not yet known to us, thus ignore!
@@ -370,10 +371,10 @@ ArenaReplay::parse_log_line()
             char name[200];
             log_file >> robot_id >> ws;
             log_file.get( robot_colour, 7, ' ');
-            long int col = str2hex( (String)robot_colour );
+            long int col = chars2hex( robot_colour );
             log_file.get( name, 200, '\n' );
             all_robots_in_tournament.
-              push_back( Robot( robot_id, col, (String)name ) ); // used by statistics
+              push_back( Robot( robot_id, col, (string)name ) ); // used by statistics
           }
         else
           {
@@ -394,7 +395,7 @@ ArenaReplay::parse_log_line()
         char label[200];
         log_file.get( label, 200, ':');
         log_file.get( temp );
-        option_return_t opt = the_opts.get_option_from_string( String( label ) );
+        option_return_t opt = the_opts.get_option_from_string( string( label ) );
         switch( opt.datatype )
           {
           case ENTRY_INT:
@@ -434,7 +435,7 @@ ArenaReplay::parse_log_line()
     case '?':
     default:
       Error( false, "Unrecognized first letter in logfile: " + 
-             String(first_letter), "ArenaReplay::parse_log_line" );
+             first_letter, "ArenaReplay::parse_log_line" );
       char buffer[400];
       log_file.get( buffer, 400, '\n' );
       log_file >> ws;
@@ -727,13 +728,13 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
 }
 
 void
-ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
-                            const String& statistics_fname,
-                            const String& option_fname )
+ArenaReplay::set_filenames( string& replay_fname, string& message_fname,
+                            const string& statistics_fname,
+                            const string& option_fname )
 {
   if( replay_fname != "-" )
     {
-      log_file.open( replay_fname.chars() );
+      log_file.open( replay_fname.c_str() );
       if( !log_file )
         Error( true, "Couldn't open replay file",
                "ArenaReplay::set_filenames" );
@@ -758,7 +759,7 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
   else
     {
       use_message_file = true;
-      message_file.open( message_fname.chars(), ios::out, S_IRUSR | S_IWUSR );
+      message_file.open( message_fname.c_str(), ios::out, S_IRUSR | S_IWUSR );
       if( !message_file )
         {
           Error( false, "Couldn't open message file. Message file disabled",
@@ -1017,7 +1018,7 @@ ArenaReplay::recreate_lists()
 // The file pointer will be directly after the found letter.
 // Returns the letter found, or '?' if none found.
 char
-ArenaReplay::search_forward( const String& search_letters )
+ArenaReplay::search_forward( const string& search_letters )
 {
   if( log_from_stdin )
     return '?';
@@ -1031,7 +1032,7 @@ ArenaReplay::search_forward( const String& search_letters )
       log_file.clear();
 
       log_file >> letter;   // check first letter of line
-      if( search_letters.find( letter ) != -1 )
+      if( search_letters.find( letter ) != string::npos )
         {
           return letter;
         }
@@ -1046,14 +1047,14 @@ ArenaReplay::search_forward( const String& search_letters )
 // Similar to the previous function, but the argument is a list
 // of strings (string lengths between 1 and 16) to serach for.
 // Returns the string found, or the empty string if none found.
-String
-ArenaReplay::search_forward( const list<String>& search_strings )
+string
+ArenaReplay::search_forward( const list<string>& search_strings )
 {
   if( log_from_stdin ) return "";
 
   bool found = false;
   char buffer[400];
-  list<String>::const_iterator li;
+  list<string>::const_iterator li;
   int i;
   int read_letters;
   char letter[16];
@@ -1066,7 +1067,7 @@ ArenaReplay::search_forward( const list<String>& search_strings )
       for( li = search_strings.begin(); li != search_strings.end() && !found; li++ )
         {
           found = true; 
-          for( i=0; i < (*li).get_length() && found; i++ )
+          for( i=0; i < (int)(*li).length() && found; i++ )
             {
               if( read_letters < i+1 )
                 {
@@ -1086,14 +1087,14 @@ ArenaReplay::search_forward( const list<String>& search_strings )
 }
 
 
-String
-ArenaReplay::search_backwards( const String& search_letters )
+string
+ArenaReplay::search_backwards( const string& search_letters )
 {
   if( log_from_stdin )
     return "";
 
   char letter='?';
-  while( search_letters.find( letter ) == -1 && log_file.tellg() != 0 )
+  while( search_letters.find( letter ) == string::npos && log_file.tellg() != 0 )
     {
       beginning_of_prev_line();
       letter = log_file.peek();
@@ -1106,7 +1107,7 @@ ArenaReplay::search_backwards( const String& search_letters )
       char buffer[400];
       log_file.get( buffer, 400, '\n' );
       beginning_of_current_line();
-      return (String) buffer;
+      return (string) buffer;
     }
 
   return "";
@@ -1146,18 +1147,18 @@ ArenaReplay::beginning_of_current_line()
 void
 ArenaReplay::make_statistics_from_file()
 {
-  list<String> str_list;
-  str_list.push_back( String("DR") );
-  str_list.push_back( String("L") );
-  str_list.push_back( String("G") );
-  str_list.push_back( String("T") );
-  str_list.push_back( String("H") );
+  list<string> str_list;
+  str_list.push_back( string("DR") );
+  str_list.push_back( string("L") );
+  str_list.push_back( string("G") );
+  str_list.push_back( string("T") );
+  str_list.push_back( string("H") );
 
   ListIterator<Shape> li;             
   double points_received;
   int pos_this_game, object_id;
   char buffer[400];
-  String letters;
+  string letters;
 
   streampos old_pos = log_file.tellg();
 
@@ -1183,10 +1184,10 @@ ArenaReplay::make_statistics_from_file()
             char name[200];
             log_file >> robot_id >> ws;
             log_file.get( robot_colour, 7, ' ');
-            long int col = str2hex( (String)robot_colour );
+            long int col = chars2hex( robot_colour );
             log_file >> ws;
             log_file.get( name, 200, '\n' );
-            Robot robot = Robot( robot_id, col, (String)name );
+            Robot robot = Robot( robot_id, col, (string)name );
             object_lists[ROBOT].insert_last(&robot); // array better?
             all_robots_in_tournament.push_back(robot); // used by statistics
           }
@@ -1238,7 +1239,7 @@ ArenaReplay::make_statistics_from_file()
 void
 ArenaReplay::get_time_positions_in_game()
 {  
-  String letter_list = "TGHSMCDR";
+  string letter_list = "TGHSMCDR";
   char letter;
   char buffer[400];
   int time_pos_index = 0;
@@ -1362,8 +1363,9 @@ ArenaReplay::get_time_positions_in_game()
                     obj_info->end_time = cur_time;
                   }
                 else
-                  Error(false, "Dying object not in list: " + String(obj) + " "
-                        + String(object_id), "ArenaReplay::get_time_positions_in_game");
+                  Error(false, "Dying object not in list: " + obj + (string)" "
+                        + int2string(object_id),
+                        "ArenaReplay::get_time_positions_in_game");
               }
           }
           break;

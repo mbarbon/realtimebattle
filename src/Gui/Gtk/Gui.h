@@ -35,7 +35,6 @@ class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
 class Robot;
-class String;
 
 #define the_gui (*(gui_p))
 

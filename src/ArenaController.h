@@ -26,7 +26,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaBase.h"
 
 
-class String;
 class GuiInterface;
 
 class ArenaController
@@ -55,16 +54,18 @@ private:
   bool realtime;
 
   list<GuiInterface> gui_list;
+  // Mutex for locking processes.
+  pthread_mutex_t gi_mutex;
 
   ArenaBase* my_arena;
 
 public: // global names etc.
-  String option_filename;
-  String statistics_filename;
-  String log_filename;
-  String tournament_filename;
-  String message_filename;
-  String replay_filename;
+  string option_filename;
+  string statistics_filename;
+  string log_filename;
+  string tournament_filename;
+  string message_filename;
+  string replay_filename;
 
   int game_mode;
   int debug_level;

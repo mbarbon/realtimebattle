@@ -29,7 +29,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaBase.h"
 
-class String;
 
 class ArenaReplay : public ArenaBase
 {
@@ -56,18 +55,18 @@ public:
   bool timeout_function         ();
   void start_tournament         ();
   void end_game                 ();
-  void set_filenames            ( String& replay_fname, String& message_fname,
-                                  const String& statistics_fname,
-                                  const String& option_fname );
+  void set_filenames            ( string& replay_fname, string& message_fname,
+                                  const string& statistics_fname,
+                                  const string& option_fname );
   void   change_speed           ( const bool forward, const bool fast );
   void   change_game            ( const int inc_game, const int inc_seq );
   bool   step_forward           ( const int n_o_steps, const bool clear_time = true );
   void   step_forward_or_backward(const bool forward );
   void   change_replay_time     ( const double time );
 
-  char   search_forward         ( const String& search_letters );
-  String search_forward         ( const list<String>& search_strings );
-  String search_backwards       ( const String& search_letters );
+  char   search_forward         ( const string& search_letters );
+  string search_forward         ( const list<string>& search_strings );
+  string search_backwards       ( const string& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
   double get_length_of_current_game();

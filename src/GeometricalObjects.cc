@@ -236,7 +236,7 @@ Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
   double speedsqr = lengthsqr(vel);
   if( speedsqr == 0.0 ) return infinity;
 
-  double c, r, angle, t;
+  double c, r, t;
   double dt = dot(vel, d);
 
   if( lengthsqr( d ) > mid_radiussqr )

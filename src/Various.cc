@@ -46,19 +46,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string.h>
 #include <iostream.h>
 #include <fstream.h>
-#include <list>
 
 #include "Various.h"
 #include "IntlDefs.h"
-#include "String.h"
 #include "Options.h"
 #include "Structs.h"
+#include "String.h"
 
 extern class Options the_opts;
 extern bool no_graphics;
 
 void
-Error(const bool fatal, const String& error_msg, const String& function_name)
+Error(const bool fatal, const string& error_msg, const string& function_name)
 {
   cerr << "RealTimeBattle: " << _("Error in") << " "
        << function_name << ": " << error_msg << endl;
@@ -141,9 +140,9 @@ reorder_pointer_array(void** array, int size)
 }
 
 void
-read_dirs_from_system(list<String>& robotdirs, list<String>& arenadirs)
+read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs)
 {
-  String dirs;
+  string dirs;
 
   robotdirs.clear();
   arenadirs.clear();
@@ -152,49 +151,49 @@ read_dirs_from_system(list<String>& robotdirs, list<String>& arenadirs)
   split_colonseparated_dirs(dirs, robotdirs);
 
 #ifdef ROBOTDIR
-  robotdirs.push_back( String(ROBOTDIR "/") );
+  robotdirs.push_back( string(ROBOTDIR "/") );
 #endif
 
   dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
   split_colonseparated_dirs(dirs, arenadirs);
 
 #ifdef ARENADIR
-  arenadirs.push_back( String(ARENADIR "/") );
+  arenadirs.push_back( string(ARENADIR "/") );
 #endif
 }
 
 // This function splits a string of colonseparated directories into a glist
 void
-split_colonseparated_dirs(String& dirs, list<String>& str_list)
+split_colonseparated_dirs(string& dirs, list<string>& str_list)
 {
-  String current_dir = dirs;
-  int pos, lastpos = 0;
-  while( (pos = dirs.find(':', lastpos)) != -1 )
+  string current_dir = dirs;
+  string::size_type pos, lastpos = 0;
+  while( (pos = dirs.find(':', lastpos)) != string::npos )
     {
-      current_dir = get_segment(dirs, lastpos, pos-1);
-      if(current_dir[current_dir.get_length() - 1] != '/')
+      current_dir = dirs.substr(lastpos, pos-1);
+      if(current_dir[current_dir.length() - 1] != '/')
         current_dir += '/';
 
-      str_list.push_back( String(current_dir) );
+      str_list.push_back( current_dir );
 
       lastpos = pos+1;
     }
 
   if(current_dir != "")
     {
-      current_dir = get_segment(dirs, lastpos, -1); 
-      if(current_dir[current_dir.get_length() - 1] != '/')
+      current_dir = dirs.substr(lastpos, string::npos); 
+      if(current_dir[current_dir.length() - 1] != '/')
         current_dir += '/';
 
-      str_list.push_back( String(current_dir) );
+      str_list.push_back( current_dir );
     }
 }
 
 bool
-check_if_filename_is_robot( String& fname )
+check_if_filename_is_robot( string& fname )
 {
   struct stat filestat;
-  if( 0 == stat( fname.chars(), &filestat ) )
+  if( 0 == stat( fname.c_str(), &filestat ) )
     if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
       return true;
 
@@ -202,43 +201,42 @@ check_if_filename_is_robot( String& fname )
 }
 
 bool
-check_if_filename_is_arena( String& fname )
+check_if_filename_is_arena( string& fname )
 {
   struct stat filestat;
-  if( 0 == stat( fname.chars(), &filestat ) && fname.get_length() > 6 )
+  if( 0 == stat( fname.c_str(), &filestat ) && fname.length() > 6 )
     // Check if file is a regular file that is readable and ends with .arena
     if( S_ISREG( filestat.st_mode) &&
         (filestat.st_mode & S_IROTH)  &&
-        String(".arena") == get_segment(fname, -6, -1) )
+        string(".arena") == fname.substr( fname.length() - 6, string::npos ) )
       return true;
 
   return false;
 }
 
 void
-check_for_robots_and_arenas( String& word, 
+check_for_robots_and_arenas( string& word, 
                              list<start_tournament_info_t>& tour_list,
-                             list<String>& dir_list, 
+                             list<string>& dir_list, 
                              const bool check_robots )
 {
   bool found = false;
-  String full_file_name = "";
+  string full_file_name = "";
 
-  if( word.get_length() > 1 )
-    if( get_segment( word, -2, -1 ) == "/*" )
+  if( word.length() > 1 )
+    if( word.substr( word.length() - 2, string::npos ) == "/*" )
       {
-        search_directories( get_segment( word, 0, -2 ), tour_list, check_robots );
+        search_directories( word.substr( 0, word.length() - 1 ), tour_list, check_robots );
         return;
       }
-  if( word.get_length() == 1 && word[0] == '*' )
+  if( word.length() == 1 && word[0] == '*' )
     {
-      
-      list<String>::iterator li;
+      list<string>::iterator li;
       for( li = dir_list.begin(); li != dir_list.end(); li++ )
         search_directories( (*li), tour_list, check_robots );
       return;
     }
-  if( word.find('/') != -1 )
+  if( word.find('/') != string::npos )
     {
       if((check_robots && check_if_filename_is_robot( word )) ||
          (!check_robots && check_if_filename_is_arena( word )))
@@ -249,10 +247,10 @@ check_for_robots_and_arenas( String& word,
     }
   if( !found )
     {
-      list<String>::iterator li;
+      list<string>::iterator li;
       for( li = dir_list.begin(); li != dir_list.end(); li++ )
         {
-          String temp_name = (*li) + word;
+          string temp_name = (*li) + word;
 
           if((check_robots && check_if_filename_is_robot( temp_name )) ||
              (!check_robots && check_if_filename_is_arena( temp_name )))
@@ -277,17 +275,17 @@ check_for_robots_and_arenas( String& word,
 }
 
 void
-search_directories( String directory, 
+search_directories( string directory, 
                     list<start_tournament_info_t>& tour_list,
                     const bool check_robots )
 {
   DIR* dir;
-  if( NULL != ( dir = opendir(directory.chars()) ) )
+  if( NULL != ( dir = opendir(directory.c_str()) ) )
     {
       struct dirent* entry;
       while( NULL != ( entry = readdir( dir ) ) )
         {
-          String full_file_name = directory + entry->d_name;
+          string full_file_name = directory + entry->d_name;
           bool res = false;
           if(check_robots)
             res = check_if_filename_is_robot(full_file_name);
@@ -302,15 +300,15 @@ search_directories( String directory,
 }
 
 bool
-parse_tournament_file( const String& fname, const StartTournamentFunction function,
+parse_tournament_file( const string& fname, const StartTournamentFunction function,
                        void* data, bool fatal_error_on_file_failure )
 {
-  list<String> robotdirs;
-  list<String> arenadirs;
+  list<string> robotdirs;
+  list<string> arenadirs;
 
   read_dirs_from_system(robotdirs, arenadirs);
 
-  ifstream file(fname.chars());
+  ifstream file(fname.c_str());
   if( !file )
     {
       if( fatal_error_on_file_failure )
@@ -332,7 +330,7 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
     {
       char buffer[200];
       file >> buffer;
-      String word(buffer);
+      string word(buffer);
 
       if( word == "" )
         {
@@ -353,8 +351,8 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
           if(robots_p_s < 2)
             {
               if( fatal_error_on_file_failure )
-                Error(true, "Can't start tournament with only " + String(robots_p_s) + 
-                      " robots per sequence", 
+                Error(true, "Can't start tournament with only " +
+                      int2string(robots_p_s) + " robots per sequence", 
                       "parse_tournament_file");
               else
                 return false;
@@ -364,7 +362,7 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
             {
               if(fatal_error_on_file_failure)
                 Error(true, "Must have at least one game per sequence. " 
-                      "Current value is: " + String(games_p_s),
+                      "Current value is: " + int2string(games_p_s),
                       "parse_tournament_file");
               else
                 return false;
@@ -374,8 +372,7 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
             {
               if(fatal_error_on_file_failure)
                 Error(true, "Must have at least one sequence. Current value is: " + 
-                      String(n_o_sequences),
-                      "parse_tournament_file");
+                      int2string(n_o_sequences), "parse_tournament_file");
               else
                 return false;
             }
@@ -389,39 +386,41 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
         }
 
 
-      if((make_lower_case(word) == "games/sequence:") || 
-         (make_lower_case(word) == "g/s:"))
+      if( (equal_strings_nocase(word,"games/sequence:")) || 
+          (equal_strings_nocase(word,"g/s:") ) )
         {
           looking_for = 0;
           file >> buffer;
           if( buffer[0] == '*' )
             games_p_s = -1;
           else
-            games_p_s = str2int( buffer );
+            games_p_s = string2int( buffer );
         }
-      else if((make_lower_case(word) == "robots/sequence:") || 
-              (make_lower_case(word) == "r/s:"))
+      else if( (equal_strings_nocase(word,"robots/sequence:")) || 
+               (equal_strings_nocase(word,"r/s:")) )
         {
           looking_for = 0;
           file >> buffer;
           if( buffer[0] == '*' )
             robots_p_s = -1;
           else
-            robots_p_s = str2int( buffer );
+            robots_p_s = string2int( buffer );
         }
-      else if((make_lower_case(word) == "sequences:") || 
-              (make_lower_case(word) == "seq:"))
+      else if( (equal_strings_nocase(word,"sequences:")) || 
+               (equal_strings_nocase(word,"seq:")) )
         {
           looking_for = 0;
           file >> buffer;
           if( buffer[0] == '*' )
             n_o_sequences = -1;
           else
-            n_o_sequences = str2int( buffer );
+            n_o_sequences = string2int( buffer );
         }
-      else if((make_lower_case(word) == "robots:") || (make_lower_case(word) == "r:"))
+      else if( (equal_strings_nocase(word,"robots:")) ||
+               (equal_strings_nocase(word,"r:")) )
         looking_for = 1;
-      else if((make_lower_case(word) == "arenas:") || (make_lower_case(word) == "a:"))
+      else if( (equal_strings_nocase(word,"arenas:")) ||
+               (equal_strings_nocase(word,"a:")) )
         looking_for = 2;
       else
         {
@@ -446,8 +445,8 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
 void
 create_tmp_rtb_dir()
 {
-  String dirname = the_opts.get_s( OPTION_TMP_RTB_DIR );
+  string dirname = the_opts.get_s( OPTION_TMP_RTB_DIR );
   struct stat filestat;
-  if( 0 != stat( dirname.chars(), &filestat ) ) 
-    mkdir( dirname.chars(), S_IRWXU | S_IRWXG | S_IRWXO );
+  if( 0 != stat( dirname.c_str(), &filestat ) ) 
+    mkdir( dirname.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
 }

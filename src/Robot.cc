@@ -26,7 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <iostream.h>
 #include <math.h>
-
+#include <string>
 //  #ifdef TIME_WITH_SYS_TIME 
 //  # include <sys/time.h>
 //  # include <time.h>
@@ -44,7 +44,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  #include <stdio.h>
 
 #include "Robot.h"
-#include "String.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
@@ -53,6 +52,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Wall.h"
 #include "Shot.h"
 #include "Extras.h"
+#include "String.h"
 
 //  #include "MovingObject.h"
 //  #include "Arena.h"
@@ -60,7 +60,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  #include "Options.h"
 //  #include "Messagetypes.h"
 
-Robot::Robot(const String& filename)
+Robot::Robot(const string& filename)
 {
   //  velocity = Vector2D(0.0, 0.0);
   //  acceleration = 0.0;
@@ -105,7 +105,7 @@ Robot::Robot(const String& filename)
 
 // Constructor used by ArenaReplay. No process needed.
 //
-Robot::Robot(const int r_id, const long int col, const String& name)
+Robot::Robot(const int r_id, const long int col, const string& name)
 {
   id = r_id;
   robot_name = name;
@@ -255,7 +255,7 @@ Robot::check_name_uniqueness()
     }
 
   if( robot_name_uniqueness_number > 0 )
-    robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
+    robot_name += ('(' + int2string(robot_name_uniqueness_number) + ')');
 }
 
 double
@@ -476,7 +476,7 @@ Robot::set_values_at_process_start_up()
   else        // not first sequence !
     {
       send_message(INITIALIZE, 0);
-      send_message(YOUR_NAME, robot_name.chars());
+      send_message(YOUR_NAME, robot_name.c_str());
       int long col = rgb_colour;
       int long newcol = realtime_arena.find_free_colour(col, col, this);
       if( col != newcol ) set_colour( newcol );
@@ -1078,7 +1078,7 @@ Robot::get_messages()
           //              }
           //            break;
         default:
-          Error(true, "Message_type not implemented, " + (String)msg_name, "Robot::get_messages");
+          Error(true, "Message_type not implemented, " + (string)msg_name, "Robot::get_messages");
         }
 
       *pin >> ws;
@@ -1119,7 +1119,7 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 //  bool
 //  Robot::get_default_non_blocking_state()
 //  {
-//    String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+//    string filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
 //      "/" + robot_plain_filename;
   
 //    int fd;
@@ -1139,7 +1139,7 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 //  {
 //    if( non_bl == use_non_blocking ) return;
 
-//    String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+//    string filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
 //      "/" + robot_plain_filename;
 
 //    create_tmp_rtb_dir();
@@ -1169,7 +1169,7 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 //    cerr << "Sorry, save_data is broken at the moment!" << endl;
 //    return;
 
-//    String filename;
+//    string filename;
 
 //  //    if( robot_name_uniqueness_number == 0 )
 //  //      filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
@@ -1214,7 +1214,7 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 //    cerr << "Sorry, load_data is broken at the moment!" << endl;
 //    return;
 
-//    String filename;
+//    string filename;
 
 //    ifstream file;
 
@@ -1300,13 +1300,13 @@ Robot::injury_from_collision(const double en, const double angle)
 //        last_displayed_energy = (int)energy;
 //        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
 //                           row_in_score_clist,
-//                           2, String((int)energy).non_const_chars());
+//                           2, string((int)energy).non_const_chars());
 //      }
 
 //    if( last_displayed_place != position_this_game )
 //      {
-//        String str;
-//        if( position_this_game != 0 ) str = String(position_this_game);
+//        string str;
+//        if( position_this_game != 0 ) str = string(position_this_game);
 //        last_displayed_place = position_this_game;
 //        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
 //                           row_in_score_clist,
@@ -1319,7 +1319,7 @@ Robot::injury_from_collision(const double en, const double angle)
 //        last_displayed_last_place = p;
 //        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
 //                           row_in_score_clist,
-//                           4, String(p).non_const_chars());
+//                           4, string(p).non_const_chars());
 //      }
 
 
@@ -1329,7 +1329,7 @@ Robot::injury_from_collision(const double en, const double angle)
 //        last_displayed_score = (int)(10 * pnts);
 //        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
 //                           row_in_score_clist,
-//                           5, String(pnts).non_const_chars());
+//                           5, string(pnts).non_const_chars());
 //      }
 //  }
 

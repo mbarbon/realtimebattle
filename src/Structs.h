@@ -20,8 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __STRUCTS__
 #define __STRUCTS__
 
-#include "String.h"
-
+#include <string>
 
 enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
@@ -64,12 +63,12 @@ struct start_tournament_info_t
     { row = i.row; selected = i.selected;
     filename = i.filename; directory = i.directory; }
   start_tournament_info_t(const int r, const bool s,
-                          const class String fn, const class String dir) :
+                          const string fn, const string dir) :
     row(r), selected(s), filename(fn), directory(dir) {}
   int row;
   bool selected;
-  class String filename;
-  class String directory;
+  string filename;
+  string directory;
 };
 
 

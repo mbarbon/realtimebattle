@@ -18,6 +18,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <gtk/gtk.h>
+#include <string>
 
 #include "ScoreWindow.h"
 #include "IntlDefs.h"
@@ -26,6 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #include "GuiVarious.h"
 #include "Gui.h"
+#include "String.h"
 
 extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
@@ -148,17 +150,17 @@ ScoreWindow::~ScoreWindow()
 void
 ScoreWindow::set_window_title()
 {
-  String title = (String)
-    (String)_("Score") + "  " + 
-    (String)_(" Seq: ") + String( the_arena.get_sequence_nr() ) + 
-    " (" + String( the_arena.get_sequences_in_tournament() ) +
+  string title = (string)
+    (string)_("Score") + "  " + 
+    (string)_(" Seq: ") + int2string( the_arena.get_sequence_nr() ) + 
+    " (" + int2string( the_arena.get_sequences_in_tournament() ) +
 
-    ")  " + (String)_("Game") + ": " + String( the_arena.get_game_nr() ) +
-    " (" + String( the_arena.get_games_per_sequence() ) +
+    ")  " + (string)_("Game") + ": " + int2string( the_arena.get_game_nr() ) +
+    " (" + int2string( the_arena.get_games_per_sequence() ) +
 
-    ")  " + (String)_("Time") + ": " + String( (int)the_arena.get_total_time() );
+    ")  " + (string)_("Time") + ": " + int2string( (int)the_arena.get_total_time() );
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
+  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
 
 //

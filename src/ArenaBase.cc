@@ -56,7 +56,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "Extras.h"
 #include "Various.h"
-#include "String.h"
 #include "Shot.h"
 #include "Options.h"
 #include "Wall.h"
@@ -99,7 +98,7 @@ ArenaBase::set_state( const state_t st )
 //  #ifndef NO_GRAPHICS
 //    if( !no_graphics )
 //      {
-//        String infotext;
+//        string infotext;
 //        switch( state )
 //          {
 //          case NO_STATE:
@@ -107,26 +106,26 @@ ArenaBase::set_state( const state_t st )
 //            infotext = "RealTimeBattle";
 //            break;
 //          case STARTING_ROBOTS:
-//            infotext = "RTB  " + (String)_("*Starting robots*");
+//            infotext = "RTB  " + (string)_("*Starting robots*");
 //            break;
 //          case SHUTTING_DOWN_ROBOTS:
-//            infotext = "RTB  " + (String)_("*Shutting down robots*");
+//            infotext = "RTB  " + (string)_("*Shutting down robots*");
 //            break;
 //          case BEFORE_GAME_START:
 //          case GAME_IN_PROGRESS:
-//            infotext = "RealTimeBattle  " + (String)_("*Running*");
+//            infotext = "RealTimeBattle  " + (string)_("*Running*");
 //            if( pause_after_next_game )
-//              infotext = "RTB  " + (String)_("*Pausing after game*");
+//              infotext = "RTB  " + (string)_("*Pausing after game*");
 //            break;
 //          case PAUSING_BETWEEN_GAMES:
 //          case PAUSED:
-//            infotext = "RealTimeBattle  " + (String)_("*Paused*");
+//            infotext = "RealTimeBattle  " + (string)_("*Paused*");
 //            break;
 //          case EXITING:
-//            infotext = "RealTimeBattle  " + (String)_("*Exiting*");
+//            infotext = "RealTimeBattle  " + (string)_("*Exiting*");
 //            break;
 //          case FINISHED:
-//            infotext = "RealTimeBattle  " + (String)_("*Finished*");
+//            infotext = "RealTimeBattle  " + (string)_("*Finished*");
 //            break;
           
 //          default:
@@ -154,10 +153,10 @@ ArenaBase::interrupt_tournament()
 
 // This function takes the statistics and saves into a selected file
 void
-ArenaBase::save_statistics_to_file(String filename)
+ArenaBase::save_statistics_to_file(string filename)
 {
   int mode = _IO_OUTPUT;
-  ofstream file(filename.chars(), mode);
+  ofstream file(filename.c_str(), mode);
 
   vector<Robot>::iterator li;
   list<stat_t>::const_iterator stat_li;
@@ -179,8 +178,8 @@ ArenaBase::save_statistics_to_file(String filename)
 }
 
 void
-ArenaBase::print_message( const String& messager,
-                          const String& text )
+ArenaBase::print_message( const string& messager,
+                          const string& text )
 {
   if( use_message_file )
     message_file << messager << ": " << text << endl;
@@ -486,7 +485,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
     }
   
   else if( text[0] != '\0' )
-    Error(true, "Incorrect arenafile: unknown keyword" + (String)text, 
+    Error(true, "Incorrect arenafile: unknown keyword" + (string)text, 
           "ArenaBase::parse_arena_line");
   
 }

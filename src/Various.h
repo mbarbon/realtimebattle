@@ -21,9 +21,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __VARIOUS__
 
 #include <list>
+#include <string>
 
-//#include "String.h"
-class String;
 struct start_tournament_info_t;
 
 typedef void (*StartTournamentFunction)( const list<start_tournament_info_t>&,
@@ -52,7 +51,7 @@ struct entry_t
   bool allow_sign;
 };
 
-void Error(const bool fatal, const String& error_msg, const String& function_name);
+void Error(const bool fatal, const string& error_msg, const string& function_name);
 void Quit(const bool success = true);
 
 int factorial(const int n);
@@ -61,18 +60,18 @@ int binomial(const int n, const int k);
 
 void reorder_pointer_array(void** array, int size);
 
-void read_dirs_from_system(list<String>& robotdirs, list<String>& arenadirs);
-void split_colonseparated_dirs(String& dirs, list<String>& arenadirs);
+void read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs);
+void split_colonseparated_dirs(string& dirs, list<string>& arenadirs);
 
-bool check_if_filename_is_robot( String& fname );
-bool check_if_filename_is_arena( String& fname );
-void check_for_robots_and_arenas( String& word, 
+bool check_if_filename_is_robot( string& fname );
+bool check_if_filename_is_arena( string& fname );
+void check_for_robots_and_arenas( string& word, 
                                   list<start_tournament_info_t>& tour_list,
-                                  list<String>& dir_list, 
+                                  list<string>& dir_list, 
                                   const bool check_robots );
-void search_directories( String directory, list<start_tournament_info_t>& tour_list,
+void search_directories( string directory, list<start_tournament_info_t>& tour_list,
                          const bool check_robots );
-bool parse_tournament_file( const String& fname,
+bool parse_tournament_file( const string& fname,
                             const StartTournamentFunction function,
                             void* data, bool fatal_error_on_file_failure = true );
 
@@ -80,6 +79,3 @@ bool parse_tournament_file( const String& fname,
 void create_tmp_rtb_dir();
 
 #endif __VARIOUS__
-
-
-

@@ -21,15 +21,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __OPTIONS__
 
 #include "Various.h"
-#include "String.h"
 
-//class String;
-class OptionsWindow;
 
-#ifndef NO_GRAPHICS
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-#endif
+//  #ifndef NO_GRAPHICS
+//  struct _GtkWidget;
+//  typedef struct _GtkWidget GtkWidget;
+//  #endif
 
 enum option_double_t
 {
@@ -161,8 +158,8 @@ struct option_info_t
   option_info_t() {}
   option_info_t(const entry_datatype_t d, const pages_in_options_t p,
                 const T v, const T mn, const T mx, const int l,
-                const bool bo, const bool lo, const String& s,
-                const String& t ) :
+                const bool bo, const bool lo, const string& s,
+                const string& t ) :
     datatype(d), page(p), value(v), default_value(v), min_value(mn),
     max_value(mx), max_letters_in_entry(l), broadcast_option(bo),
     log_option(lo), label(s), translated_label(t) {}
@@ -187,8 +184,8 @@ struct option_info_t
   int max_letters_in_entry;
   bool broadcast_option;
   bool log_option;
-  String label;
-  String translated_label;
+  string label;
+  string translated_label;
 //  #ifndef NO_GRAPHICS
 //    GtkWidget * entry;
 //  #endif
@@ -217,25 +214,25 @@ public:
     { return all_double_options[option].value; }
   inline long   get_l                          ( option_long_t    option )
     { return all_long_options[option].value; }
-  inline const String get_s                    ( option_string_t  option )
-    { return all_string_options[option].value.chars(); }
+  inline const string get_s                    ( option_string_t  option )
+    { return all_string_options[option].value.c_str(); }
   //  inline bool get_b                        ( option_bool_t option )
   // { return all_bool_options[option].value; }
 
   void broadcast_opts                          ();
   void log_all_options                         ();
 
-  void save_all_options_to_file                ( String filename,
+  void save_all_options_to_file                ( string filename,
                                                  const bool as_default );
   void get_options_from_rtbrc                  ();
-  void read_options_file                       ( String file_string,
+  void read_options_file                       ( string file_string,
                                                  const bool as_default );
 
   option_info_t<double>* get_all_double_options() { return all_double_options; }
   option_info_t<long>* get_all_long_options    () { return all_long_options; }
-  option_info_t<String>* get_all_string_options() { return all_string_options; }
+  option_info_t<string>* get_all_string_options() { return all_string_options; }
 
-  option_return_t get_option_from_string       ( const String& option_name );
+  option_return_t get_option_from_string       ( const string& option_name );
 
 //  #ifndef NO_GRAPHICS
 //    OptionsWindow* get_optionswindow_p           ()
@@ -246,10 +243,12 @@ public:
 //  #endif
 
 private:
+  void initialize_options                      ();
+
   option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
   option_info_t<long> all_long_options[LAST_LONG_OPTION];
 
-  option_info_t<String> all_string_options[LAST_STRING_OPTION];
+  option_info_t<string> all_string_options[LAST_STRING_OPTION];
   //  option_info_t<bool> all_bool_options[LAST_BOOL_OPTION];
 
 //  #ifndef NO_GRAPHICS

@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream.h>
 #include <list>
 #include <vector>
+#include <string>
 
 //  #ifndef NO_GRAPHICS
 //  #include "Gui.h"
@@ -49,7 +50,6 @@ extern ArenaController the_arena_controller;
 #define replay_arena   (*( (ArenaReplay*) (the_arena_controller.get_the_arena()) ))
 
 class Robot;
-class String;
 class Options;
 class WallLine;
 class WallCircle;
@@ -101,13 +101,14 @@ public:
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list,
                     const bool del_robot_obj_list=true);
-  void save_statistics_to_file(String filename);
+  void save_statistics_to_file(string filename);
 
 
   List<Shape>* get_object_lists() { return object_lists; }
   list<Robot*>* get_all_robots_in_sequence() { return &all_robots_in_sequence; }
   vector<Robot>* get_all_robots_in_tournament() { return &all_robots_in_tournament; }
-  String get_current_arena_filename() { return current_arena_filename; }
+  string get_current_arena_filename() { return current_arena_filename; }
+  vector<string>& get_arena_filenames() { return arena_filenames; }
   int get_game_nr() { return game_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_sequence_nr() { return sequence_nr; }
@@ -115,7 +116,7 @@ public:
   int get_robots_per_game() { return robots_per_game; }
   int get_number_of_robots() { return number_of_robots; }
   
-  void print_message( const String& messager, const String& text );
+  void print_message( const string& messager, const string& text );
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
@@ -161,11 +162,11 @@ protected:
   list<Robot*> all_robots_in_sequence;
   list<Vector2D> exclusion_points;
 
-  String current_arena_filename;
-  vector<String> arena_filenames;               // list of Strings
+  string current_arena_filename;
+  vector<string> arena_filenames;               // list of Strings
 
-  String statistics_file_name;
-  String option_file_name;
+  string statistics_file_name;
+  string option_file_name;
   ofstream message_file;
   bool use_message_file;
 

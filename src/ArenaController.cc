@@ -37,6 +37,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "GuiInterface.h"
 #include "Structs.h"
+#include "String.h"
 
 extern class Options the_opts;
 extern bool no_graphics;
@@ -60,6 +61,8 @@ ArenaController::ArenaController()
   game_mode = NORMAL_MODE;
   debug_level = 1;
   auto_start_and_end = false;
+
+  pthread_mutex_init( &gi_mutex, NULL );
 }
 
 ArenaController::~ArenaController()
@@ -69,6 +72,8 @@ ArenaController::~ArenaController()
   list<GuiInterface>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     (*li).shutdown();
+
+  pthread_mutex_destroy( &gi_mutex );
 }
 
 int
@@ -174,30 +179,31 @@ ArenaController::parse_command_line( int argc, char** argv )
           switch( option_index )
             {
             case 3:
-              debug_level = str2int( optarg );
+              debug_level = chars2int( optarg );
               game_mode = DEBUG_MODE;
               break;
             case 6: 
-              option_filename = (String)optarg;
+              option_filename = (string)optarg;
               break;
             case 7:
-              log_filename = (String)optarg;
+              log_filename = (string)optarg;
               break;
             case 8:
-              statistics_filename = (String)optarg;
+              statistics_filename = (string)optarg;
               break;
             case 9:
-              tournament_filename = (String)optarg;
+              tournament_filename = (string)optarg;
               auto_start_and_end = true;
               break;
             case 10:
-              message_filename = (String)optarg;
+              message_filename = (string)optarg;
               break;
             case 11:
-              replay_filename = (String)optarg;
+              replay_filename = (string)optarg;
               break;
             case 12:
-              gui_list.push_back( GuiInterface( (String)optarg, argc, argv ) );
+              gui_list.push_back( GuiInterface( optarg, &gi_mutex,
+                                                argc, argv ) );
               break;
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
@@ -212,7 +218,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'D':
-          debug_level = str2int( optarg );
+          debug_level = chars2int( optarg );
           game_mode = DEBUG_MODE;
           break;
 
@@ -233,32 +239,32 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'o':
-          option_filename = (String)optarg;
+          option_filename = (string)optarg;
           break;
 
         case 'l':
-          log_filename = (String)optarg;
+          log_filename = (string)optarg;
           break;
 
         case 's':
-          statistics_filename = (String)optarg;
+          statistics_filename = (string)optarg;
           break;
 
         case 't':
-          tournament_filename = (String)optarg;
+          tournament_filename = (string)optarg;
           auto_start_and_end = true;
           break;
 
         case 'm':
-          message_filename = (String)optarg;
+          message_filename = (string)optarg;
           break;
 
         case 'r':
-          replay_filename = (String)optarg;
+          replay_filename = (string)optarg;
           break;
 
         case 'g':
-          gui_list.push_back( GuiInterface( (String)optarg, argc, argv ) );
+          gui_list.push_back( GuiInterface( optarg, &gi_mutex, argc, argv ) );
           break;
 
         default:

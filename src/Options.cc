@@ -29,28 +29,34 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <locale.h>
 #endif
 
-#include "IntlDefs.h"
+#include <string>
 
-#include "Options.h"
 #include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
 //#include "OptionsWindow.h"
 #include "Messagetypes.h"
 #include "Various.h"
+#include "Options.h"
+#include "String.h"
 
 //extern class ArenaRealTime the_arena;
-
-
 
 Options::Options()
 {
 #ifdef HAVE_LOCALE_H
   setlocale( LC_MESSAGES, "" );
+  setlocale( LC_NUMERIC, "POSIX" );
 #endif
   bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
   textdomain( "RealTimeBattle" );
 
+  initialize_options();
+}
+
+void
+Options::initialize_options()
+{
   // Entries are: entry_datatype, page in option, 
   //              default value, max value, min value, 
   //              max letters in entry,
@@ -305,15 +311,15 @@ Options::Options()
                         _("Max robots allowed simultaneously") );
 
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
+    option_info_t<string>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
                           false, false, "Robot search path", _("Robot search path") );
 
   all_string_options[OPTION_ARENA_SEARCH_PATH] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
+    option_info_t<string>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
                           false, false, "Arena search path", _("Arena search path") );
 
   all_string_options[OPTION_TMP_RTB_DIR] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "/tmp/rtb", "", "", 1000,
+    option_info_t<string>(ENTRY_CHAR, PAGE_MISC, "/tmp/rtb", "", "", 1000,
                           false, false, "Directory for temporary files",
                           _("Directory for temporary files") );
 
@@ -432,7 +438,7 @@ Options::log_all_options()
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
     if( all_double_options[i].log_option )
       realtime_arena.print_to_logfile( 'O', (int)'D', 
-                                  (all_double_options[i].label + ":").chars(),
+                                  (all_double_options[i].label + ":").c_str(),
                                   all_double_options[i].value );
                         
   for(int i=0;i<LAST_LONG_OPTION;i++)
@@ -440,18 +446,18 @@ Options::log_all_options()
       {
         if( all_long_options[i].datatype == ENTRY_INT )
           realtime_arena.print_to_logfile( 'O', (int)'L',
-                                      (all_long_options[i].label + ":").chars(),
+                                      (all_long_options[i].label + ":").c_str(),
                                       all_long_options[i].value );
         if( all_long_options[i].datatype == ENTRY_HEX )
           realtime_arena.print_to_logfile( 'O', (int)'H',
-                                      (all_long_options[i].label + ":").chars(),
+                                      (all_long_options[i].label + ":").c_str(),
                                       all_long_options[i].value );
       }
   for(int i=0;i<LAST_STRING_OPTION;i++)
     if( all_string_options[i].log_option )
       realtime_arena.print_to_logfile( 'O', (int)'S',
-                                  (all_string_options[i].label + ":").chars(),
-                                  all_string_options[i].value.chars() );
+                                  (all_string_options[i].label + ":").c_str(),
+                                  all_string_options[i].value.c_str() );
 }
 
 void
@@ -461,14 +467,14 @@ Options::get_options_from_rtbrc()
   if( NULL == ( home_dir = getenv("HOME") ) )
     return;
 
-  String resource_file = String(home_dir) + "/.rtbrc";
+  string resource_file = string(home_dir) + "/.rtbrc";
   read_options_file(resource_file,true);
 }
 
 void
-Options::read_options_file(String file_string, const bool as_default)
+Options::read_options_file(string file_string, const bool as_default)
 {
-  ifstream file(file_string.chars());
+  ifstream file(file_string.c_str());
   if( !file )
     return;
 
@@ -481,7 +487,7 @@ Options::read_options_file(String file_string, const bool as_default)
       file >> ws;
       file.get(buffer,100,':');
       file.get(temp);
-      String option_name(buffer);
+      string option_name(buffer);
       if(option_name == "")
         break;
 
@@ -509,11 +515,12 @@ Options::read_options_file(String file_string, const bool as_default)
               file >> option_value;
             if( all_long_options[i].datatype == ENTRY_HEX )
               {
-                String temp_string;
+                string temp_string;
                 file >> temp_string;
-                while( temp_string[0] == ' ' )
-                  temp_string = get_segment(temp_string,1,-1);
-                option_value = str2hex(temp_string);
+                int i = 0;
+                while( temp_string[i] == ' ' ) i++;
+                temp_string = temp_string.substr(i,string::npos);
+                option_value = string2hex(temp_string);
               }
             file.get(buffer,100,'\n');
             option_value = min( option_value,
@@ -529,10 +536,11 @@ Options::read_options_file(String file_string, const bool as_default)
       for(int i=0;i<LAST_STRING_OPTION;i++)
         if(option_name == all_string_options[i].label )
           {
-            String option_value;
+            string option_value;
             file >> option_value;
-            while( option_value[0] == ' ' )
-              option_value = get_segment(option_value,1,-1);
+            int i = 0;
+            while( option_value[i] == ' ' ) i++;
+            option_value = option_value.substr(i,string::npos);
             file.get(buffer,100,'\n');
             all_string_options[i].value = option_value;
             if(as_default)
@@ -545,7 +553,7 @@ Options::read_options_file(String file_string, const bool as_default)
 }
 
 void
-Options::save_all_options_to_file(String filename, const bool as_default)
+Options::save_all_options_to_file(string filename, const bool as_default)
 {
   if(as_default)
     {
@@ -553,10 +561,10 @@ Options::save_all_options_to_file(String filename, const bool as_default)
       if( NULL == ( home_dir = getenv("HOME") ) )
         return;
 
-      filename = String(home_dir) + "/.rtbrc";
+      filename = string(home_dir) + "/.rtbrc";
     }
 
-  ofstream file(filename.chars(), ios::out);
+  ofstream file(filename.c_str(), ios::out);
 
   if( !file )
     {
@@ -577,7 +585,7 @@ Options::save_all_options_to_file(String filename, const bool as_default)
       if(all_long_options[i].datatype == ENTRY_INT)
         file << all_long_options[i].label << ": " << all_long_options[i].value << endl;
       if(all_long_options[i].datatype == ENTRY_HEX)
-        file << all_long_options[i].label << ": " << hex2str(all_long_options[i].value) << endl;
+        file << all_long_options[i].label << ": " << hex2string(all_long_options[i].value) << endl;
     }
 
   for(int i=0;i<LAST_STRING_OPTION;i++)
@@ -585,7 +593,7 @@ Options::save_all_options_to_file(String filename, const bool as_default)
 }
 
 option_return_t
-Options::get_option_from_string( const String& option_name )
+Options::get_option_from_string( const string& option_name )
 {
   option_return_t result( ENTRY_INT, -1 );
 

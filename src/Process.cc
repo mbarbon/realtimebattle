@@ -40,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string>
 
 #include "Process.h"
 #include "Messagetypes.h"
@@ -48,19 +49,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaBase.h"
 #include "ArenaController.h"
 #include "Options.h"
+#include "String.h"
 
-void Error(const bool fatal, const String& error_msg, const String& function_name);
+void Error(const bool fatal, const string& error_msg, const string& function_name);
 
-Process::Process(const String& filenm, Robot* rbt)
+Process::Process(const string& filenm, Robot* rbt)
 {
   filename = filenm;  
   my_robot = rbt;
 
-  int nr;
-  if( ( nr = filename.find( '/', 0, true) ) == -1 )
+  string::size_type nr;
+  if( ( nr = filename.rfind('/')  ) == string::npos )
     plain_filename = filename;
   else
-    plain_filename = get_segment(filename, nr+1, -1);
+    plain_filename = filename.substr(nr+1, string::npos);
 
   process_running = false;
 
@@ -135,7 +137,7 @@ Process::start(const enum game_mode_t mode)
       // Check file attributes
 
       struct stat filestat;
-      if( 0 != stat( filename.chars(), &filestat ) ) 
+      if( 0 != stat( filename.c_str(), &filestat ) ) 
         Error(true, "Couldn't get stats for robot " + filename, "Process::start, child");
       if( !S_ISREG( filestat.st_mode) )
         Error(true, "Robot file isn't regular, error for robot " + filename, 
@@ -198,7 +200,7 @@ Process::start(const enum game_mode_t mode)
         }
 
       // Execute process. Should not return!
-      if( execl(filename.chars(), filename.chars(), NULL) == -1 )
+      if( execl(filename.c_str(), filename.c_str(), NULL) == -1 )
         Error(true, "Couldn't open robot " + filename, "Process::start, child");
 
       Error(true, "Robot didn't execute, SHOULD NEVER HAPPEN!, error for " + filename, 
@@ -259,11 +261,11 @@ Process::is_process_running()
 void
 Process::check()
 {
-  String procfilename = "/proc/" + String(pid) + "/stat";
+  string procfilename = "/proc/" + int2string(pid) + "/stat";
 
   if( is_process_running() )
     {
-      ifstream procfile(procfilename.chars());
+      ifstream procfile(procfilename.c_str());
       if( !procfile ) 
         {
           process_running = false;
@@ -312,7 +314,9 @@ Process::check()
         }
       else if( current_cpu > cpu_warning_limit && tot_time < cpu_timeout )
         {
-          my_robot->send_message( WARNING, PROCESS_TIME_LOW, String(cpu_next_limit - current_cpu).chars());
+          const char* str = double2chars( cpu_next_limit - current_cpu );
+          my_robot->send_message( WARNING, PROCESS_TIME_LOW, str);
+          delete [] str;
           cpu_warning_limit = cpu_next_limit;
         }
     }
@@ -376,16 +380,16 @@ Process::set_non_blocking_state(const bool non_bl)
 {
   if( non_bl == use_non_blocking ) return;
 
-  String tmp_filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+  string tmp_filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
     "/" + plain_filename;
 
   create_tmp_rtb_dir();
 
   if( non_bl )
-    remove( tmp_filename.chars() );
+    remove( tmp_filename.c_str() );
   else
     {
-      int fd = open(tmp_filename.chars(), 
+      int fd = open(tmp_filename.c_str(), 
                     O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
 
       if( fd != -1 )  close( fd );
@@ -403,11 +407,11 @@ Process::set_non_blocking_state(const bool non_bl)
 bool
 Process::get_default_non_blocking_state()
 {
-  String tmp_filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+  string tmp_filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
     "/" + plain_filename;
   
   int fd;
-  if( ( fd = open(tmp_filename.chars(), O_RDONLY) ) != -1 )
+  if( ( fd = open(tmp_filename.c_str(), O_RDONLY) ) != -1 )
     {
       close(fd);
       return false;

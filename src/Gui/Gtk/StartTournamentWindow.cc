@@ -43,20 +43,22 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
+#include <string>
+
 #include "ArenaController.h"
 #include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "StartTournamentWindow.h"
-#include "String.h"
 #include "Various.h"
 #include "GuiVarious.h"
 #include "List.h"
 #include "Dialog.h"
 #include "Options.h"
 #include "Gui.h"
+#include "String.h"
 
 extern class Gui* gui_p;
-const String tmp_tournament_file( "/tmp.tour" );
+const string tmp_tournament_file( "/tmp.tour" );
 
 StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_height,
@@ -93,8 +95,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
   // Lists for clists
 
-  list<String> robotdirs;
-  list<String> arenadirs;
+  list<string> robotdirs;
+  list<string> arenadirs;
 
   read_dirs_from_system( robotdirs, arenadirs );
 
@@ -181,8 +183,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       add_clist( dir_clist, hbox );
 
-      list<String>::const_iterator li;
-      list<String>::const_iterator li_end;
+      list<string>::const_iterator li;
+      list<string>::const_iterator li_end;
 
       if( robot )
         {
@@ -198,12 +200,12 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       for( ; li != li_end ; li++ )
         {
           DIR* dir;
-          if( NULL != (dir = opendir((*li).chars())))
+          if( NULL != (dir = opendir((*li).c_str())))
             {
               struct dirent * entry;
               while (NULL != ( entry = readdir( dir ) ) )
                 {
-                  String full_file_name = (*li) + entry->d_name;
+                  string full_file_name = (*li) + entry->d_name;
                   if( ( robot && check_if_filename_is_robot( full_file_name ) ) ||
                       ( !robot && check_if_filename_is_arena( full_file_name ) ) )
                     {
@@ -218,7 +220,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 #endif
                       dir_list->push_back( start_tournament_info_t
                                            ( row, false, entry->d_name,
-                                             (*li).chars() ) );
+                                             (*li).c_str() ) );
                     }
                 }
               closedir( dir );
@@ -518,7 +520,7 @@ StartTournamentWindow::load_file_selected( GtkWidget* widget,
                                            class StartTournamentWindow* stw_p )
 {
   stw_p->load_tournament_file
-    ( String( gtk_file_selection_get_filename
+    ( string( gtk_file_selection_get_filename
               ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ),
       true );
   destroy_filesel( stw_p->get_filesel(), stw_p );
@@ -552,7 +554,7 @@ StartTournamentWindow::save_file_selected( GtkWidget* widget,
                                            class StartTournamentWindow* stw_p )
 {
   stw_p->save_tournament_file
-    ( String( gtk_file_selection_get_filename
+    ( string( gtk_file_selection_get_filename
              ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ),
       true, true );
   destroy_filesel( stw_p->get_filesel(), stw_p );
@@ -567,7 +569,7 @@ StartTournamentWindow::destroy_filesel( GtkWidget* widget,
 }
 
 void
-StartTournamentWindow::load_tournament_file( const String& full_filename,
+StartTournamentWindow::load_tournament_file( const string& full_filename,
                                              bool display_fail_message )
 {
   if(!parse_tournament_file( full_filename,
@@ -575,10 +577,10 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
                              StartTournamentWindow::new_tournament_from_tournament_file,
                              this, false ) && display_fail_message )
     {
-      String error_msg( _("Error in specified tournament file.") );
-      list<String> button_list;
-      button_list.push_back( String( _(" Ok ") ) );
-      String info_text = (String)_("Tournament could not be loaded.") + String('\n')
+      string error_msg( _("Error in specified tournament file.") );
+      list<string> button_list;
+      button_list.push_back( string( _(" Ok ") ) );
+      string info_text = (string)_("Tournament could not be loaded.") + string("\n")
         + error_msg;
       Dialog( info_text, button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
@@ -653,28 +655,41 @@ new_tournament( list<start_tournament_info_t>& robotfilename_list,
                                     the_gui.get_bg_gdk_colour_p());
 #endif
       
-          String fname = (*li).filename;
-          fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
+          string fname = (*li).filename;
+          string::size_type charpos = 0;
+          if( (charpos = fname.rfind('/')) != string::npos )
+            fname = fname.substr( charpos+1, string::npos );
+          else
+            Error(true, "Incomplete arena file path" + fname,
+                  "StartTournamentWindow::new_tournament");
       
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_clist_set_text( GTK_CLIST( tour_clist ),
-                              row, 0, fname.chars() );
-#else
-          gtk_clist_set_text( GTK_CLIST( tour_clist ),
-                              row, 0, fname.non_const_chars() );
+                              row, 0, fname.c_str() );
+#else // TODO: Should we really do this test?
+          char* cstr = copy_to_c_string( fname );
+          gtk_clist_set_text( GTK_CLIST( tour_clist ), row, 0, cstr );
+          delete [] cstr;
 #endif
           (*li).selected = false;
           (*li).row = row;
           tour_list->push_back( start_tournament_info_t( (*li) ) );
         }
     }
-  gtk_entry_set_text( GTK_ENTRY( entries[1] ), String(robots_p_game).chars() );
-  gtk_entry_set_text( GTK_ENTRY( entries[0] ), String(games_p_sequence).chars() );
-  gtk_entry_set_text( GTK_ENTRY( entries[2] ), String(n_o_sequences).chars() );
+
+  const char* str = int2chars(robots_p_game);
+  gtk_entry_set_text( GTK_ENTRY( entries[1] ), str );
+  delete [] str;
+  str = int2chars(games_p_sequence);
+  gtk_entry_set_text( GTK_ENTRY( entries[0] ), str );
+  delete [] str;
+  str = int2chars(n_o_sequences);
+  gtk_entry_set_text( GTK_ENTRY( entries[2] ), str );
+  delete [] str;
 }
 
 void
-StartTournamentWindow::save_tournament_file( const String& full_filename,
+StartTournamentWindow::save_tournament_file( const string& full_filename,
                                              bool display_file_fail_message,
                                              bool display_tour_fail_message )
 {
@@ -698,13 +713,13 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
       else
         min_value = 2;
 
-      value[i] = str2int( gtk_entry_get_text( GTK_ENTRY( get_entries()[i] ) ) );
+      value[i] = string2int( gtk_entry_get_text( GTK_ENTRY( get_entries()[i] ) ) );
 
       value[i] = min( max_value, value[i] );
       value[i] = max( min_value, value[i] );
     }
 
-  ofstream file(full_filename.chars(), ios::out);
+  ofstream file(full_filename.c_str(), ios::out);
   if( robot_number > 1 && file &&
       !( selected_arena_tournament.empty() ) )
     {
@@ -725,22 +740,22 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
     }
   else if( display_file_fail_message || display_tour_fail_message )
     {
-      String error_msg( "" );
+      string error_msg( "" );
       if( display_tour_fail_message )
         {
           if( robot_number <= 1 )
-            error_msg += String('\n') + _("There are too few robots in the tournament.");
+            error_msg += string("\n") + _("There are too few robots in the tournament.");
           if( selected_arena_tournament.empty() )
-            error_msg += String('\n') + _("There are no arenas in the tournament.");
+            error_msg += string("\n") + _("There are no arenas in the tournament.");
         }
       if( display_file_fail_message && !file )
-        error_msg += String('\n') + _("Could not open file.");
+        error_msg += string("\n") + _("Could not open file.");
 
       if( error_msg != "" )
         {
-          list<String> button_list;
-          button_list.push_back( String( _(" Ok ") ) );
-          String info_text = (String)_("Tournament could not be saved.") + error_msg;
+          list<string> button_list;
+          button_list.push_back( string( _(" Ok ") ) );
+          string info_text = (string)_("Tournament could not be saved.") + error_msg;
           Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
@@ -771,9 +786,10 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
               get_selected_robot_tournament()->size();
             if( number_of_robots > the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ) )
               number_of_robots = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
+            const char* str = int2chars(number_of_robots);
             gtk_entry_set_text
-              ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ),
-                String(number_of_robots).chars() );
+              ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ), str );
+            delete [] str;
           }
       }
       break;
@@ -783,7 +799,7 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
           get_selected_robot_tournament()->size();
 
         int robots_per_sequence = 
-          str2int( gtk_entry_get_text
+          string2int( gtk_entry_get_text
                    ( GTK_ENTRY( mmf_p->stw_p->get_entries()[1] ) ) );
 
         if( number_of_robots < robots_per_sequence )
@@ -792,10 +808,11 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
           robots_per_sequence = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
         if( robots_per_sequence < 2 )
           robots_per_sequence = 2;
+        const char* str = int2chars( min( 9999, binomial( number_of_robots,
+                                                          robots_per_sequence ) ) );
         gtk_entry_set_text
-          ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ),
-            String( min ( 9999, binomial( number_of_robots,
-                                          robots_per_sequence) ) ).chars() );
+          ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ), str );
+        delete [] str;
       }
       break;
     case MMF_ALL_ARENAS:
@@ -807,9 +824,10 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
           number_of_arenas = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
         if( number_of_arenas < 1 )
           number_of_arenas = 1;
+        const char* str = int2chars( number_of_arenas );
         gtk_entry_set_text
-          ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ),
-            String(number_of_arenas).chars() );
+          ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ), str );
+        delete [] str;
       }
       break;
     }
@@ -846,7 +864,7 @@ StartTournamentWindow::start( GtkWidget* widget,
       else
         min_value = 2;
 
-      value[i] = str2int( gtk_entry_get_text( GTK_ENTRY( stw_p->get_entries()[i] ) ) );
+      value[i] = string2int( gtk_entry_get_text( GTK_ENTRY( stw_p->get_entries()[i] ) ) );
 
       value[i] = min( max_value, value[i] );
       value[i] = max( min_value, value[i] );
@@ -870,17 +888,17 @@ StartTournamentWindow::start( GtkWidget* widget,
     }
   else
     {
-      String error_msg( "" );
+      string error_msg( "" );
       if( robot_number <= 1 )
-        error_msg += String('\n') + _("There must be at least two robots in the tournament.");
+        error_msg += string("\n") + _("There must be at least two robots in the tournament.");
       if( stw_p->selected_arena_tournament.size() )
-        error_msg += String('\n') + _("There are no arenas in the tournament.");
+        error_msg += string("\n") + _("There are no arenas in the tournament.");
 
       if( error_msg != "" )
         {
-          list<String> button_list;
-          button_list.push_back( String( _(" Ok ") ) );
-          String info_text = _("Tournament could not be started.") + error_msg;
+          list<string> button_list;
+          button_list.push_back( string( _(" Ok ") ) );
+          string info_text = _("Tournament could not be started.") + error_msg;
           Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
@@ -994,10 +1012,11 @@ StartTournamentWindow::add_all_selected( const bool robots )
                                     the_gui.get_bg_gdk_colour_p() );
 #endif
 
-          gtk_clist_set_text( GTK_CLIST( clist_tourn ), row, 0,
-                              (*li).filename.non_const_chars() );
+          char* cstr = copy_to_c_string( (*li).filename );
+          gtk_clist_set_text( GTK_CLIST( clist_tourn ), row, 0, cstr );
+          delete [] cstr;
       
-          String full_filename = (*li).directory + (*li).filename;
+          string full_filename = (*li).directory + (*li).filename;
 
           info_tourn_list->push_back( start_tournament_info_t
                                       ( row, false, full_filename,

@@ -22,10 +22,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <iostream.h>
+#include <string>
 #include "List.h"
-#include "String.h"
 
-void Error(const bool fatal, const String& error_msg, const String& function_name);
+void Error(const bool fatal, const string& error_msg, const string& function_name);
 
 template <class T>
 List<T>::List(bool resp)

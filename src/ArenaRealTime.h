@@ -21,7 +21,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __ARENA_REALTIME__
 
 #include "ArenaBase.h"
-#include <list>
 
 class ArenaRealTime : public ArenaBase
 {
@@ -47,17 +46,16 @@ public:
 
   void broadcast(enum message_to_robot_type ...);
   
-  void parse_arena_file(String& filename);
+  void parse_arena_file(string& filename);
   
-  void set_filenames( String& log_fname, const String& statistics_fname, 
-                      const String& tournament_fname,
-                      String& message_fname, const String& option_fname );
+  void set_filenames( string& log_fname, const string& statistics_fname, 
+                      const string& tournament_fname,
+                      string& message_fname, const string& option_fname );
 
   void print_to_logfile( const char first_letter ... );
   
   bool get_use_message_file() { return use_message_file; }
   Vector2D get_random_position();
-  vector<String>& get_arena_filenames() { return arena_filenames; }
   int get_current_arena_nr() { return current_arena_nr; }
 
   int set_debug_level( const int new_level);
@@ -93,7 +91,7 @@ private:
   void end_sequence_follow_up();
   void end_tournament();
 
-  String tournament_file_name;
+  string tournament_file_name;
   
   ofstream LOG_FILE;
   bool use_log_file;

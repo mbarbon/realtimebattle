@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 #include <iostream.h>
 #include <list>
+#include <string>
 #include <iomanip.h>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -42,11 +43,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "Extras.h"
 #include "Various.h"
-#include "String.h"
 #include "Shot.h"
 #include "Options.h"
 #include "Wall.h"
 #include "Robot.h"
+#include "String.h"
 
 ArenaRealTime::ArenaRealTime()
 {
@@ -88,11 +89,11 @@ ArenaRealTime::clear()
 }
 
 void
-ArenaRealTime::set_filenames( String& log_fname,
-                              const String& statistics_fname, 
-                              const String& tournament_fname,
-                              String& message_fname,
-                              const String& option_fname )
+ArenaRealTime::set_filenames( string& log_fname,
+                              const string& statistics_fname, 
+                              const string& tournament_fname,
+                              string& message_fname,
+                              const string& option_fname )
 {
   bool log_stdout = false;
 
@@ -108,7 +109,7 @@ ArenaRealTime::set_filenames( String& log_fname,
     }
   else
     {
-      LOG_FILE.open(log_fname.chars(), ios::out, S_IRUSR | S_IWUSR);
+      LOG_FILE.open(log_fname.c_str(), ios::out, S_IRUSR | S_IWUSR);
       use_log_file = true;
       if( !LOG_FILE )
         {
@@ -137,7 +138,7 @@ ArenaRealTime::set_filenames( String& log_fname,
   else
     {
       use_message_file = true;
-      message_file.open( message_fname.chars(), ios::out, S_IRUSR | S_IWUSR );
+      message_file.open( message_fname.c_str(), ios::out, S_IRUSR | S_IWUSR );
       if( !message_file )
         {
           Error( false, "Couldn't open message file. Message file disabled",
@@ -155,11 +156,11 @@ ArenaRealTime::set_filenames( String& log_fname,
 }
 
 void
-ArenaRealTime::parse_arena_file(String& filename)
+ArenaRealTime::parse_arena_file(string& filename)
 {
   Vector2D vec1, vec2, vec0;
 
-  ifstream file(filename.chars());
+  ifstream file(filename.c_str());
   if( !file ) Error(true, "Couldn't open arena file" + filename, "ArenaBase::parse_arena_file");
 
   int succession = 1;
@@ -177,7 +178,7 @@ ArenaRealTime::parse_arena_file(String& filename)
     {
       char buffer[500];
       
-      ifstream file(filename.chars());
+      ifstream file(filename.c_str());
       if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "ArenaBase::parse_arena_file");
   
       do
@@ -283,7 +284,7 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
 
     case 'L': // List of robot properties
       LOG_FILE << va_arg(args, int  ) << " ";  // robot id
-      LOG_FILE << hex2str(va_arg(args, long )) << " ";  // robot colour
+      LOG_FILE << hex2string(va_arg(args, long )) << " ";  // robot colour
       LOG_FILE << va_arg(args, char*);  // robot name
       break;
 
@@ -298,16 +299,16 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
         switch( option_type )
           {
           case 'D':
-            LOG_FILE << String( va_arg(args, double) ).chars(); // Option value
+            LOG_FILE << double2string( va_arg(args, double) ); // Option value
             break;
           case 'L':
-            LOG_FILE << String( va_arg(args, long) ).chars();   // Option value
+            LOG_FILE << double2string( va_arg(args, long) );   // Option value
             break;
           case 'H':
-            LOG_FILE << hex2str( va_arg(args, long) ).chars();   // Option value
+            LOG_FILE << hex2string( va_arg(args, long) );   // Option value
             break;
           case 'S':
-            LOG_FILE << String( va_arg(args, char*) ).chars();   // Option value
+            LOG_FILE << va_arg(args, char*);   // Option value
             break;
           }
       }
@@ -336,7 +337,7 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
-  String str = (String)message_to_robot[msg_type].msg + ' ';
+  string str = (string)message_to_robot[msg_type].msg + ' ';
   for(int i=0; i<message_to_robot[msg_type].number_of_args; i++)
     {
       switch(message_to_robot[msg_type].arg_type[i])
@@ -345,16 +346,16 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
           Error(true, "Couldn't send message, no arg_type", "ArenaRealTime::broadcast");
           break;
         case INT:
-          str += (String)va_arg(args, int) + ' ';
+          str += int2string( va_arg(args, int) ) + ' ';
           break;
         case DOUBLE:
-          str += String(va_arg(args, double), 6) + ' ';
+          str += double2string( va_arg(args, double), 6 ) + ' ';
           break;
         case STRING:
-          str += (String)va_arg(args, char*) + ' ';
+          str += (string)va_arg(args, char*) + ' ';
           break;   
         case HEX:
-          str += hex2str(va_arg(args, int)) + ' ';
+          str += hex2string(va_arg(args, int)) + ' ';
           break;
         default:
           Error(true, "Couldn't send message, unknown arg_type", "ArenaRealTime::broadcast");
@@ -739,22 +740,22 @@ ArenaRealTime::start_game()
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
-  String filename = arena_filenames[current_arena_nr];
+  string filename = arena_filenames[current_arena_nr];
 
   print_to_logfile('G', sequence_nr, game_nr + 1);
 
   parse_arena_file(filename);
 
-  int charpos = -1;
-  if( (charpos = filename.find('/',0,true)) != -1 )
-    current_arena_filename = get_segment(filename, charpos+1, -1);
+  string::size_type charpos = 0;
+  if( (charpos = filename.rfind('/')) != string::npos )
+    current_arena_filename = filename.substr(charpos+1, string::npos);
   else
     Error(true, "Incomplete arena file path" + filename, "ArenaRealTime::start_game");
 
   char msg[128];
   snprintf( msg, 127, _("Game %d of sequence %d begins on arena"),
             game_nr+1, sequence_nr );
-  print_message( "RealTimeBattle", String(msg) + " " + current_arena_filename );
+  print_message( "RealTimeBattle", string(msg) + " " + current_arena_filename );
 
   // reset some variables
 
@@ -917,15 +918,15 @@ ArenaRealTime::start_sequence_follow_up()
         {      
           if( !robotp->set_and_get_has_competed() )
             print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), 
-                             robotp->get_robot_name().chars());
+                             robotp->get_robot_name().c_str());
           
           if( !robotp->is_name_given() )
             {
               robotp->send_message(WARNING, NAME_NOT_GIVEN, "");
               char msg[128];
               snprintf( msg, 127, _("Robot with filename %s has not given any name"),
-                        robotp->get_process()->get_robot_filename().chars() );
-              print_message( "RealTimeBattle", String(msg) );
+                        robotp->get_process()->get_robot_filename().c_str() );
+              print_message( "RealTimeBattle", string(msg) );
             }
 
           if( !robotp->is_colour_given() )
@@ -1034,7 +1035,7 @@ start_tournament(const list<start_tournament_info_t>& robotfilename_list,
   
   for( li = arenafilename_list.begin(); li != arenafilename_list.end(); li++ )
     {
-      arena_filenames.push_back( String((*li).filename) );
+      arena_filenames.push_back( string((*li).filename) );
       number_of_arenas++;
     }
 

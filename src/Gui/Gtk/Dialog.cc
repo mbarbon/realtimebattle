@@ -18,9 +18,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <gtk/gtk.h>
+#include <string>
 
 #include "Dialog.h"
-#include "String.h"
 #include "IntlDefs.h"
 
 //
@@ -29,7 +29,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // If the delete_event is received, no value will be returned
 //
 
-Dialog::Dialog( const String& info, const list<String>& button_labels,
+Dialog::Dialog( const string& info, const list<string>& button_labels,
                 const DialogFunction func )
 {
   // The window
@@ -52,7 +52,7 @@ Dialog::Dialog( const String& info, const list<String>& button_labels,
 
   // The info text
 
-  GtkWidget* label = gtk_label_new( info.chars() );
+  GtkWidget* label = gtk_label_new( info.c_str() );
   gtk_box_pack_start( GTK_BOX( vbox ), label, TRUE, TRUE, 0 );
   gtk_widget_show( label );
 
@@ -62,13 +62,13 @@ Dialog::Dialog( const String& info, const list<String>& button_labels,
   gtk_box_pack_start( GTK_BOX( vbox ), hbox, TRUE, TRUE, 0 );
   gtk_widget_show( hbox );
 
-  list<String>::const_iterator li;
+  list<string>::const_iterator li;
   GtkWidget* button_w;
   int list_nr = 0;
   for( li = button_labels.begin(); li != button_labels.end(); li++ )
     {
       list_nr++;
-      button_w = gtk_button_new_with_label( (*li).chars() );
+      button_w = gtk_button_new_with_label( (*li).c_str() );
       gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
                           (GtkSignalFunc) Dialog::generate_result,
                           (gpointer) new result_t( list_nr, func, window_p ) );

@@ -18,6 +18,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <gtk/gtk.h>
+#include <string>
 
 #include "MessageWindow.h"
 #include "IntlDefs.h"
@@ -26,9 +27,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
-#include "String.h"
 #include "Robot.h"
 #include "GuiVarious.h"
+#include "String.h"
 
 extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
@@ -78,18 +79,18 @@ MessageWindow::MessageWindow( const int default_width,
   gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
   gtk_widget_show( hbox );
 
-  struct button_t { String label; GtkSignalFunc func; };
+  struct button_t { string label; GtkSignalFunc func; };
   struct button_t buttons[] = {
-    { (String)_(" Clear all messages "), 
+    { (string)_(" Clear all messages "), 
       (GtkSignalFunc) MessageWindow::clear_clist },
-    { (String)_(" Show only marked robot "), 
+    { (string)_(" Show only marked robot "), 
       (GtkSignalFunc) MessageWindow::show_one_robot },
-    { (String)_(" Show all "),
+    { (string)_(" Show all "),
       (GtkSignalFunc) MessageWindow::show_all } };
   for(int i = 0;i < 3; i++)
     {
       GtkWidget* button =
-        gtk_button_new_with_label( buttons[i].label.chars() );
+        gtk_button_new_with_label( buttons[i].label.c_str() );
       gtk_signal_connect( GTK_OBJECT( button ), "clicked",
                           (GtkSignalFunc) buttons[i].func,
                           (gpointer) this );
@@ -185,18 +186,18 @@ MessageWindow::~MessageWindow()
 void
 MessageWindow::set_window_title()
 {
-  String title = (String)_("Messages");
+  string title = (string)_("Messages");
   if( viewed_robot != NULL )
     title += "  -  " + viewed_robot->get_robot_name();
   else
-    title += "  -  " + (String)_(" All ");
+    title += "  -  " + (string)_(" All ");
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
+  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
 
 void
-MessageWindow::add_message( const String& name_of_messager, 
-                            const String& message )
+MessageWindow::add_message( const string& name_of_messager, 
+                            const string& message )
 {
   if( window_shown )
     {
@@ -206,9 +207,10 @@ MessageWindow::add_message( const String& name_of_messager,
           name_of_messager != "RealTimeBattle" )
         return;
 
-      char* lst[2] = { name_of_messager.non_const_chars(),
-                       message.non_const_chars() };
-  
+      char* nom = copy_to_c_string( name_of_messager );
+      char* cmess = copy_to_c_string( message );
+      char* lst[2] = { nom, cmess };
+
       int row = 0;
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
       row = gtk_clist_insert( GTK_CLIST( clist ), row, lst );
@@ -235,6 +237,8 @@ MessageWindow::add_message( const String& name_of_messager,
                                 the_gui.get_bg_gdk_colour_p() );
 #endif
       //      gtk_clist_thaw( GTK_CLIST( clist ) );
+      delete [] nom;
+      delete [] cmess;
     }
 }
 

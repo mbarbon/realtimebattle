@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <string.h>
+#include <string>
 
 #include "GuiVarious.h"
 #include "Various.h"
@@ -56,11 +57,11 @@ gdk2hex_colour(const GdkColor& col)
 void
 entry_handler( GtkWidget * entry, entry_t * entry_info )
 {
-  String entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
-  String old_entry_text = entry_text;
+  string entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
+  string old_entry_text = entry_text;
   bool point_found = false;
 
-  for(int i=0;i<entry_text.get_length();i++)
+  for(string::size_type i=0;i<entry_text.length();i++)
     {
       switch( entry_info->datatype )
         {
@@ -94,7 +95,7 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
     }
 
   if(old_entry_text != entry_text)
-    gtk_entry_set_text(GTK_ENTRY(entry),entry_text.chars());
+    gtk_entry_set_text(GTK_ENTRY(entry),entry_text.c_str());
 }
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
@@ -137,7 +138,7 @@ int_compare(GtkCList* clist, gconstpointer ptr1, gconstpointer ptr2)
   if (!text1)
     return -1;
 
-  return (str2int(text1) - str2int(text2));
+  return (string2int(text1) - string2int(text2));
 }
 
 gint
@@ -179,8 +180,8 @@ float_compare(GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
   if (!text1)
     return -1;
 
-  double n1 = str2dbl(text1);
-  double n2 = str2dbl(text2);
+  double n1 = string2double(text1);
+  double n2 = string2double(text2);
 
   if(n1 > n2)
     return 1;

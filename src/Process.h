@@ -24,7 +24,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/types.h>
 #include <fstream>
 
-#include "String.h"
 #include "Messagetypes.h"
 #include "Structs.h"
 
@@ -34,10 +33,10 @@ class Process
 {
 public:
   
-  Process(const String& filenm, Robot* rbt);
+  Process(const string& filenm, Robot* rbt);
   ~Process();
 
-  //  void set_name_and_robot(const String& filenm, Robot* rbt);
+  //  void set_name_and_robot(const string& filenm, Robot* rbt);
   
   void start(const enum game_mode_t mode);
   bool is_process_running();
@@ -57,7 +56,7 @@ public:
   //  void get_messages();
   //  void send_message(enum message_to_robot_type ...);
 
-  String get_robot_filename() { return filename; }
+  string get_robot_filename() { return filename; }
   ofstream* get_outstreamp() { return outstreamp; }  
   ifstream* get_instreamp() { return instreamp; }  
 
@@ -74,8 +73,8 @@ private:
 
   Robot* my_robot;
 
-  String filename;
-  String plain_filename;  // Filename without path
+  string filename;
+  string plain_filename;  // Filename without path
 
   bool process_running;
 

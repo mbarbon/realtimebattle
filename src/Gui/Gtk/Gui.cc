@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 
 #include <typeinfo>
+#include <string>
 
 #include "Gui.h"
 #include "GuiInterface.h"
@@ -40,7 +41,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "DrawingObjects.h"
 #include "List.h"
 #include "Options.h"
-#include "String.h"
 #include "GuiVarious.h"
 
 class Gui* gui_p;
@@ -48,17 +48,17 @@ class Gui* gui_p;
 //Move this into gui sometime soon.
 class ControlWindow* controlwindow_p;
 
-const String
+const string
 GIName()
 {
-  static const String name(_("Gtk+ based GUI"));
+  static const string name(_("Gtk+ based GUI"));
   return name;
 }
 
-const String
+const string
 GIUsageMessage()
 {
-  static const String usage(_("No options"));
+  static const string usage(_("No options"));
   return usage;
 }
 
@@ -298,11 +298,11 @@ Gui::open_starttournamentwindow()
         if( the_arena.get_state() != NOT_STARTED &&
             the_arena.get_state() != FINISHED )
           {
-            String info_text = _("This action will kill the current tournament.\n"
+            string info_text = _("This action will kill the current tournament.\n"
                                  "Do you want to do that?");
-            list<String> string_list;
-            string_list.push_back( String( _("Yes") ) );
-            string_list.push_back( String( _("No")  ) );
+            list<string> string_list;
+            string_list.push_back( string( _("Yes") ) );
+            string_list.push_back( string( _("No")  ) );
             Dialog( info_text, string_list,
                     (DialogFunction) Gui::kill_and_start_new_tournament );
           }

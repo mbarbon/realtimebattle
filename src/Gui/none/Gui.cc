@@ -21,21 +21,22 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <string>
+
 #include "GuiInterface.h"
-#include "String.h"
 #include "IntlDefs.h"
 
-const String
+const string
 GIName()
 {
-  static const String name(_("No graphics at all"));
+  static const string name(_("No graphics at all"));
   return name;
 }
 
-const String
+const string
 GIUsageMessage()
 {
-  static const String usage(_("No options"));
+  static const string usage(_("No options"));
   return usage;
 }
 

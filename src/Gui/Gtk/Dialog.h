@@ -25,8 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <list>
-
-#include "String.h"
+#include <string>
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
@@ -48,8 +47,8 @@ public:
     GtkWidget* widget;
   };
 
-  Dialog                            ( const String& info,
-                                      const list<String>& button_labels,
+  Dialog                            ( const string& info,
+                                      const list<string>& button_labels,
                                       const DialogFunction func );
   ~Dialog                           () {}
 

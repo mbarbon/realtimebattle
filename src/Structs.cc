@@ -21,8 +21,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
-
 #include "Structs.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
@@ -72,5 +70,3 @@ pixmap_t::get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*
   pixm = pixmap;
   bitm = bitmap;
 }
-
-#endif
