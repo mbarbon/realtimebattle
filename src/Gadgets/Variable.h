@@ -44,7 +44,7 @@ class Variable : public Gadget
 public:
 
   Variable() {}
-  Variable( const char* name, Gadget* const p ) : Gadget(name, p) {}
+  Variable( const char* name, Gadget* const p ) : Gadget(name, p, VARIABLE_GDT) {}
   ~Variable() {}
 
   void make_bool( const double val=double(false) );

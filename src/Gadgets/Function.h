@@ -31,9 +31,9 @@ class Function : public Gadget
 {
 public:
   Function() {}
-  Function(const char* name, Gadget* const p ) : Gadget(name, p) {}
+  Function(const char* name, Gadget* const p ) : Gadget(name, p, FUNCTION_GDT) {}
   Function(const char* name, Gadget* const p, const int fcn ) 
-    : Gadget(name, p), fcn_nr(fcn) {}
+    : Gadget(name, p, FUNCTION_GDT), fcn_nr(fcn) {}
 
   ~Function() {}
 

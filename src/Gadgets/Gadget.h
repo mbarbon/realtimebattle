@@ -47,11 +47,11 @@ public:
 
 
   Gadget() : 
-    info(this, 0, ""), 
+    info(this, 0, "", NO_GDT), 
     variables(NULL), functions(NULL) {}
 
-  Gadget( const char* name, Gadget* const p ) : 
-    info(this, last_id_used++, name), 
+  Gadget( const char* name, Gadget* const p, gadget_type type ) : 
+    info(this, last_id_used++, name, type), 
     parent(p), 
     variables(NULL), functions(NULL) {}
 

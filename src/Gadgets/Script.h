@@ -35,7 +35,7 @@ class Script : public Gadget
 {
 public:
   
-  Script( const char* name, Gadget* const p ) : Gadget(name,p) {}
+  Script( const char* name, Gadget* const p ) : Gadget(name,p, SCRIPT_GDT) {}
   ~Script() {}
 
   void run();
