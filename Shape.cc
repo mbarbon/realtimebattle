@@ -1,5 +1,5 @@
+#include <math.h>
 #include "Arena.h"
-#include "math.h"
 
 void
 Shape::set_colour(const long col)
@@ -21,8 +21,8 @@ Line::Line()
   thickness = 0.0;
   last_drawn_start_point = Vector2D(-infinity,-infinity);
   last_drawn_direction = Vector2D(-infinity,-infinity);
-  last_drawn_length = 0.1;
-  last_drawn_thickness = 0.1;
+  last_drawn_length = 0.0;
+  last_drawn_thickness = 0.0;
 }
 
 Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th)
@@ -31,6 +31,17 @@ Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double
   last_drawn_direction = direction = d;
   last_drawn_length = length = len;
   last_drawn_thickness = thickness = th;
+}
+
+Line::Line(const Vector2D& sp, const Vector2D& d, const double len, 
+           const double th, const double b_c, const double hardn)
+{
+  last_drawn_start_point = start_point = sp;
+  last_drawn_direction = direction = d;
+  last_drawn_length = length = len;
+  last_drawn_thickness = thickness = th;
+  bounce_coeff = b_c;
+  hardness_coeff = hardn;
 }
 
 inline double
@@ -52,9 +63,12 @@ Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
 }
 
 Vector2D
-Line::get_normal(const Vector2D& pos, const Vector2D& vel, const double size)
+Line::get_normal(const Vector2D& pos)
 {
-  return Vector2D(0.0, 0.0);  
+  if( vedge( direction , pos-start_point ) > 0.0 )
+    return rotate90(direction);
+  else
+    return -rotate90(direction);
 }
 
 bool
@@ -83,13 +97,21 @@ Circle::Circle()
   center = Vector2D(0.0, 0.0);
   radius = 0.0;
   last_drawn_center = Vector2D(-infinity,-infinity);
-  last_drawn_radius = 0.1;
+  last_drawn_radius = 0.0;
 }
 
 Circle::Circle(const Vector2D& c, const double r)
 {
   last_drawn_center = center = c;
   last_drawn_radius = radius = r;
+}
+
+Circle::Circle(const Vector2D& c, const double r, const double b_c, const double hardn)
+{
+  last_drawn_center = center = c;
+  last_drawn_radius = radius = r;
+  bounce_coeff = b_c;
+  hardness_coeff = hardn;
 }
 
 inline double
@@ -112,9 +134,9 @@ Circle::within_distance(const Vector2D& pos, const double size)
 }
 
 Vector2D
-Circle::get_normal(const Vector2D& pos, const Vector2D& vel, const double size)
+Circle::get_normal(const Vector2D& pos)
 {
-  return Vector2D(0.0, 0.0);
+  return unit(pos - center);
 }
 
 void

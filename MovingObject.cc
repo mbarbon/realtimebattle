@@ -151,30 +151,55 @@ Robot::update_radar_and_cannon(const double timestep)
 }
 
 void
-Robot::bounce_on_wall(Wall* colliding_object)
+bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 {
-  velocity = -velocity;  // TODO: bounce on wall
-  send_message(COLLISION, WALL, 0.0);
+  double e = robot.bounce_coeff * wall.bounce_coeff;
+  double start_speedsqr = lengthsqr(robot.velocity);
+  robot.velocity -= (1.0 + e) * dot(normal, robot.velocity) * normal;
+
+  double en_diff = 0.5 * robot.mass * ( start_speedsqr - lengthsqr(robot.velocity) );
+  double injury = en_diff * 0.5 * (robot.hardness_coeff + wall.hardness_coeff ) * (1.0-e) * (1.0-robot.protection_coeff);
+  robot.change_energy(-injury);
+
+  robot.send_message(COLLISION, WALL, -injury);
 }
 
 void
-Robot::bounce_on_robot(Robot* colliding_object)
+bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
 {
-  velocity = -velocity;  // TODO: bounce on robot
-  send_message(COLLISION, ROBOT, 0.0);
+  double e = robot1.bounce_coeff * robot2.bounce_coeff;  
+  double start_speedsqr1 = lengthsqr(robot1.velocity);
+  double start_speedsqr2 = lengthsqr(robot2.velocity);
+  double mass_quotient = robot1.mass / robot2.mass;
+  Vector2D tmp = ((1.0 + e) / ( 1 + mass_quotient )) * dot(robot2.velocity - robot1.velocity, normal) * normal;
+  robot1.velocity += tmp;
+  robot2.velocity -= mass_quotient * tmp;
+  
+  double en_diff = 0.5 * robot1.mass * ( start_speedsqr1 - lengthsqr(robot1.velocity) );
+  double injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot1.protection_coeff);
+  robot1.change_energy(-injury);
+  robot1.send_message(COLLISION, ROBOT, -injury);
+
+  en_diff = 0.5 * robot2.mass * ( start_speedsqr2 - lengthsqr(robot2.velocity) );
+  injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot2.protection_coeff);
+  robot2.change_energy(-injury);
+  robot2.send_message(COLLISION, ROBOT, -injury);
 }
 
 void
-Robot::set_initial_values(const Vector2D& pos, const double angle, 
-                          const double size, const double start_energy)
+Robot::set_initial_values(const Vector2D& pos, const double angle)
 {
   center = pos;
   robot_angle = angle;
   cannon_angle = angle;
   radar_angle = angle;
-  radius = size;
-  energy = start_energy;
-  velocity = Vector2D(0.7, 0.0); // Just for testing! 
+  radius = the_arena->get_robot_radius();
+  protection_coeff = the_arena->get_robot_protection();
+  hardness_coeff = the_arena->get_robot_hardness();
+  bounce_coeff = the_arena->get_robot_bounce_coeff();
+  mass = the_arena->get_robot_mass();
+  energy = the_arena->get_start_energy();
+  velocity = Vector2D(0.0, 0.0);
 }
 
 void
@@ -182,15 +207,20 @@ Robot::change_velocity(const double timestep)
 {
   Vector2D dir = Vector2D(cos(robot_angle),sin(robot_angle));
   double gt = the_arena->get_grav_const() * timestep;
-  velocity = -velocity* (the_arena->get_air_resistance() * 
-                       sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1])) +
+  velocity = -velocity* (the_arena->get_air_resistance() * timestep) +
     timestep*acceleration*dir + 
     dot(velocity, dir) * max(0.0, 1.0-gt*the_arena->get_roll_friction()) * dir +
-    vedge(velocity, dir) * max(0.0, 1.0-gt*the_arena->get_slide_friction()) * rotate90(dir);
+    vedge(dir, velocity) * max(0.0, 1.0-gt*the_arena->get_slide_friction()) * rotate90(dir);
 }
 
 void
 Robot::move(const double timestep)
+{
+  move(timestep, 1);
+}
+
+void
+Robot::move(const double timestep, int iterstep)
 {
   object_type closest_shape;
   void* colliding_object;
@@ -207,10 +237,17 @@ Robot::move(const double timestep)
       switch( closest_shape )
         {
         case WALL:
-          bounce_on_wall((Wall*)colliding_object);
+          {
+            Vector2D normal = ((Shape*)(WallCircle*)colliding_object)->get_normal(center);
+            bounce_on_wall(*this, *(Shape*)(WallCircle*)colliding_object, normal);
+          }
           break;
         case ROBOT:
-          bounce_on_robot((Robot*)colliding_object);
+          {
+            Vector2D normal = ((Robot*)colliding_object)->get_normal(center);
+            bounce_on_robot(*this, *(Robot*)colliding_object, normal);
+            time_remaining = 0.0;
+          }
           break;
         case SHOT:
           {
@@ -231,7 +268,8 @@ Robot::move(const double timestep)
           throw Error("Collided with unknown object", "Robot::move");
           break;
         }
-      if( alive ) move( time_remaining );
+      if( iterstep > 20 ) throw Error("Too many bounces, must be a bug!", "Robot::move");
+      if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1 );
     }
 }
 
@@ -288,11 +326,13 @@ Robot::get_messages()
           instreamp->get(buffer, 80, '\n');
           break;
         case NAME:
+          if( the_arena->get_state() != Arena::STARTING_ROBOTS ) break;
           *instreamp >> text;
           g_string_assign(&robot_name, text);
           // TODO: Tell gui to change name
           break;
         case COLOUR:
+          if( the_arena->get_state() != Arena::STARTING_ROBOTS ) break;
           {
             bool got_colour=false;
             long colour,robot_colour[2];
@@ -363,6 +403,7 @@ Robot::get_messages()
           the_arena->get_the_gui()->print_to_message_output(robot_name.str, text, colour);
           break;
         case SHOOT:
+          if( the_arena->get_state() != Arena::GAME_IN_PROGRESS ) break;
           {
             double en;
             *instreamp >> en;
@@ -374,6 +415,7 @@ Robot::get_messages()
                 Shot* shotp = new Shot( shot_center, shot_radius,
                                         velocity + dir * the_arena->get_shot_speed(),
                                         the_arena, en );
+                change_energy(-en * the_arena->get_shooting_penalty() );
                 g_list_append((the_arena->get_object_lists())[SHOT], shotp);
               }
             else
@@ -423,7 +465,7 @@ void
 Robot::display_energy()
 {
   strstream ss;
-  char str_energy[5];
+  char str_energy[25];
 
   ss << (int)energy;
   ss >> str_energy;

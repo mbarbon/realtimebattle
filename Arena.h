@@ -56,11 +56,17 @@ public:
   double get_shot_radius() { return shot_radius; }
   double get_shot_speed() { return shot_speed; }
   double get_robot_radius() { return robot_radius; }
+  double get_robot_mass() { return robot_mass; }
+  double get_robot_protection() { return robot_protection; }
+  double get_robot_hardness() { return robot_hardness; }
+  double get_robot_bounce_coeff() { return robot_bounce_coeff; }
+  double get_start_energy() { return start_energy; }
   double get_air_resistance() { return air_resistance; }
   double get_roll_friction() { return roll_friction; }
   double get_slide_friction() { return slide_friction; }
   double get_grav_const() { return grav_const; }
   int get_robots_left() { return robots_left; }
+  double get_shooting_penalty() { return shooting_penalty / max(1.0, ((double)robots_left)/10.0); }
   state_t get_state() { return state; }
   
 private:
@@ -102,9 +108,14 @@ private:
   int robots_left;
   int robots_per_game;
   double robot_radius;
+  double robot_mass;
+  double robot_bounce_coeff;
+  double robot_hardness;
+  double robot_protection;
   double shot_radius;
   double shot_speed;
   double start_energy;
+  double shooting_penalty;
   state_t state;
   
   double grav_const;
@@ -156,17 +167,20 @@ public:
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
                               const double size) = 0;
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
-  virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, 
-                              const double size) = 0;
+  virtual Vector2D get_normal(const Vector2D& pos) = 0;
   virtual void draw_shape(Gui& the_gui, bool erase) = 0;
   //virtual void get_args(istream&) = 0;
 
   void set_colour(const long);
   GdkColor get_colour() { return colour; }
 
+  friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
+
 protected:
   touch_type touch_action;
   double bounce_coeff;
+  double hardness_coeff;
+  double mass;
   GdkColor colour;
 };
 
@@ -178,11 +192,13 @@ class Line : public virtual Shape
 public:
   Line();
   Line(const Vector2D& sp, const Vector2D& d, const double len, const double th);
+  Line(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
+       const double b_c, const double hardn);
   ~Line() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
-  Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, const double size);
+  Vector2D get_normal(const Vector2D& pos);
   void draw_shape(Gui& the_gui, bool erase);
 
   Vector2D get_start_point() { return start_point; }
@@ -209,11 +225,12 @@ class Circle : public virtual Shape
 public:
   Circle();
   Circle(const Vector2D& c, const double r); 
+  Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
   ~Circle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
-  Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
+  Vector2D get_normal(const Vector2D& pos);
   void draw_shape(Gui& the_gui, bool erase);
   
   double get_radius() { return radius; }
@@ -240,7 +257,8 @@ public:
 class WallCircle : public virtual Wall, public virtual Circle
 {
 public:
-  WallCircle(const Vector2D& c, const double r) : Circle(c, r) {}
+  WallCircle(const Vector2D& c, const double r, 
+             const double b_c, const double hardn) : Circle(c, r, b_c, hardn) {}
   ~WallCircle() {}
 };
 
@@ -248,7 +266,8 @@ class WallLine : public virtual Wall, public virtual Line
 {
 public:
   WallLine(const Vector2D& sp, const Vector2D& d, const double len, 
-           const double th) : Line(sp, d, len, th) {}
+           const double th, const double b_c, const double hardn) 
+    : Line(sp, d, len, th, b_c, hardn) {}
   ~WallLine() {}
 };
 
@@ -322,13 +341,12 @@ public:
   void move(const double timestep);  
   void change_velocity(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
-  void bounce_on_wall(Wall* colliding_object);
-  void bounce_on_robot(Robot* colliding_object);
+  friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
+  friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
   void change_energy(const double energy_diff);
   void get_messages();
   void send_message(enum message_to_robot_type ...);
-  void set_initial_values(const Vector2D& pos, double angle, 
-                          const double size, const double start_energy);
+  void set_initial_values(const Vector2D& pos, double angle);
   void start_process();
   bool is_process_running();
   void send_signal();
@@ -348,6 +366,8 @@ public:
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
+  void move(const double timestep, int iterstep);  
+
   bool alive;
   bool process_running;
   double energy; 
@@ -360,6 +380,8 @@ private:
   double robot_angle;
   double robot_angle_speed;
   double acceleration;
+
+  double protection_coeff;
 
   GString robot_name;
   GString robot_filename;

@@ -11,11 +11,16 @@ Arena::Arena()
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
   robot_radius = 0.5;
+  robot_mass = 1.0;
+  robot_hardness = 0.5;
+  robot_protection = 0.5;
+  robot_bounce_coeff = 0.7;
   shot_radius = 0.1;
   shot_speed = 10.0;
   max_acceleration = 2.0;
   min_acceleration = -0.5;
   start_energy = 100.0;
+  shooting_penalty = 0.075;
   air_resistance = 0.005;
   roll_friction = 0.002;
   slide_friction = 0.098;
@@ -40,7 +45,7 @@ void
 Arena::parse_file(istream& file)
 {
   char text[20];
-  double number1, number2;
+  double number1, number2, bounce_c, hardn;
 
   Vector2D vec1, vec2;
   //Wall* wallp;
@@ -60,10 +65,12 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
-          file >> ws >> vec1;
-          file >> ws >> number1;
+          file >> vec1;
+          file >> number1;
+          file >> bounce_c;
+          file >> hardn;
 
-          WallCircle* wallp = new WallCircle(vec1, number1);
+          WallCircle* wallp = new WallCircle(vec1, number1, bounce_c, hardn);
           g_list_append(object_lists[WALL], wallp);
         }
       //  else if( strcmp(text, "outer_circle" ) == 0 )
@@ -74,11 +81,14 @@ Arena::parse_file(istream& file)
       //     }
       else if( strcmp(text, "line" ) == 0 )
         {
-          file >> ws >> vec1;      // start_point
-          file >> ws >> vec2;      // end_point
-          file >> ws >> number2;   // thickness
-          
-          WallLine* wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
+          file >> vec1;      // start_point
+          file >> vec2;      // end_point
+          file >> number2;   // thickness
+          file >> bounce_c;
+          file >> hardn;
+
+          WallLine* wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), 
+                                         number2, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wallp);
         }
       //   else if( strcmp(text, "polygon" ) == 0 )
@@ -348,7 +358,7 @@ Arena::start_game()
       if( !found_space )
         throw Error("Couldn't find space for all robots", "Arena::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
-      robotp->set_initial_values(pos, angle, robot_radius, start_energy);
+      robotp->set_initial_values(pos, angle);
     }
 
   // Make list of living robots and tell them to get ready
@@ -393,6 +403,7 @@ Arena::end_game()
   for(gl=g_list_next(object_lists[SHOT]); gl != NULL; )
     {
       shotp = (Shot*)gl->data;
+      delete shotp;
       gl=g_list_next(gl);
       g_list_remove(object_lists[SHOT], shotp);
     }
