@@ -9,7 +9,7 @@ rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
-NOTE_FILES = ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO 
+NOTE_FILES = ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO ../CVS-Help
 
 MAINTAINERCLEANFILES = *.{html,dvi,info,txt} $(NOTE_FILES)
 
@@ -47,7 +47,7 @@ html_docs: RealTimeBattle-1.html RealTimeBattle-2.html RealTimeBattle-3.html \
 
 note-files: $(NOTE_FILES)
 
-note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
+note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html CVS-Help.html
 
 realclean: 
 	rm -f $(MAINTAINERCLEANFILES)
