@@ -34,8 +34,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //extern class ArenaRealTime the_arena;
 
+
+
 Options::Options()
 {
+  // Entries are: entry_datatype, page in option, 
+  //              default value, max value, min value, 
+  //              max letters in entry,
+  //              broadcast option?, log option?, description
+
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,
                           false, true, "Gravitational Constant" );
@@ -161,7 +168,7 @@ Options::Options()
 
   all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x1111ee, 0x000000, 0xffffff, 6,
-                        false, false, "The colour for RealTimeBattle messages" );
+                        false, false, "Colour for RTB messages" );
 
   all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
@@ -206,6 +213,10 @@ Options::Options()
   all_double_options[OPTION_ARENA_SCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12,
                           false, true, "Arena scale" );
+
+  all_double_options[OPTION_FAST_FORWARD_FACTOR] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 5.0, 0.001, 1000, 12,
+                          false, false, "Fast forward factor" );
 
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12,
