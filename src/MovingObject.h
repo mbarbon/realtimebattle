@@ -98,7 +98,7 @@ public:
   void move(const double timestep);  
   void change_velocity(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
-  void update_rotation(rotation_t& angle, const double timestep);
+  bool update_rotation(rotation_t& angle, const double timestep);
   friend void bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& normal);
   friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
   void change_energy(const double energy_diff);
@@ -153,6 +153,7 @@ private:
   bool have_saved;
 
   bool send_usr_signal;
+  int  send_rotation_reached;
 
   double energy; 
   double extra_air_resistance;

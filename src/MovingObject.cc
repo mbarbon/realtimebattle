@@ -52,6 +52,7 @@ Robot::Robot(const String& filename)
   extra_air_resistance = 0.0;
   process_running = false;
   send_usr_signal = false;
+  send_rotation_reached = 0;
   alive = false;
   total_points = 0.0;
 
@@ -426,30 +427,49 @@ Robot::get_last_position()
           : 0 );
 }
 
-void
+bool
 Robot::update_rotation(rotation_t& angle, const double timestep)
 {
   angle.pos += timestep * angle.vel;
-  
+  bool rot_reached = false;
+
   if( angle.pos >= angle.right && angle.mode == ROTATE_TO_RIGHT )
-    angle.set( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
+    {
+      angle.set( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
+      if( send_rotation_reached >= 1 ) rot_reached = true;
+    }
 
   if( angle.pos >= angle.right && angle.mode == SWEEP_RIGHT )
-    angle.set( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
+    {
+      angle.set( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
+      if( send_rotation_reached >= 2 ) rot_reached = true;
+    }
   
   if( angle.pos <= angle.left && angle.mode == ROTATE_TO_LEFT )
-    angle.set( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
+    {      
+      angle.set( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
+      if( send_rotation_reached >= 1 ) rot_reached = true;
+    }
 
   if( angle.pos <= angle.left && angle.mode == SWEEP_LEFT )
-    angle.set( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
+    {
+      angle.set( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
+      if( send_rotation_reached >= 2 ) rot_reached = true;
+    }
+
+  return rot_reached;
 }
 
 void
 Robot::update_radar_and_cannon(const double timestep)
 {
-  update_rotation(robot_angle, timestep);
-  update_rotation(cannon_angle, timestep);
-  update_rotation(radar_angle, timestep);
+  int rot_reached = 0;
+  if( update_rotation(robot_angle, timestep) )  rot_reached += 1;
+  if( update_rotation(cannon_angle, timestep) ) rot_reached += 2;
+  if( update_rotation(radar_angle, timestep) )  rot_reached += 4;
+
+  if( rot_reached > 0 ) send_message(ROTATION_REACHED, rot_reached);
+
   shot_energy = min( the_opts.get_d(OPTION_SHOT_MAX_ENERGY), 
                      shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
   object_type closest_shape;
@@ -756,6 +776,12 @@ Robot::get_messages()
                   *instreamp >> val;
                   send_usr_signal = (val == true);
                   send_signal();
+                  break;
+                case SEND_ROTATION_REACHED:
+                  *instreamp >> val;
+                  if( val < 0 ) val = 0;
+                  if( val > 2 ) val = 2;
+                  send_rotation_reached = val;
                   break;
                 default:
                   send_message(WARNING, UNKNOWN_OPTION, msg_name);

@@ -34,6 +34,7 @@ enum message_to_robot_type
   RADAR,
   INFO,
   ROBOT_INFO,
+  ROTATION_REACHED,
   ENERGY,
   ROBOTS_LEFT,
   COLLISION,
@@ -105,12 +106,14 @@ enum game_option_type
 
   TIMEOUT,
 
-  DEBUG_LEVEL
+  DEBUG_LEVEL            // 0 - no debug, 5 - highest debug level
 };
 
 enum robot_option_type
 {
-  SEND_SIGNAL
+  SEND_SIGNAL,              // 0 - true, 1 - false   
+  SEND_ROTATION_REACHED     // 0 - no messages, 1 - messages when RotateTo and RotateAmount finished, 
+                            // 2 - messages also when sweep direction is changed 
 };
 
 enum object_type 
@@ -133,7 +136,7 @@ struct Message
   enum argument_type arg_type[4];
 };
 
-static const struct Message message_to_robot[20] = 
+static const struct Message message_to_robot[25] = 
 {
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
@@ -141,13 +144,12 @@ static const struct Message message_to_robot[20] =
   {"BinData",    2, {INT,    BINDATA,NONE,   NONE}},
   {"AsciiData",  1, {STRING, NONE,   NONE,   NONE}},
   {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
-  {"GameOption", 2, {INT,    DOUBLE, NONE,   NONE}},  // arg 1: OPTION_NR,  arg 2:  value 
+  {"GameOption", 2, {INT,    DOUBLE, NONE,   NONE}},   // arg 1: OPTION_NR,  arg 2:  value 
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
-  {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, 
-                                                       // third arg: radar_angle
-                                                       // TODO: fourth arg: if robot, its energylevel ??
+  {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
   {"RobotInfo",  2, {DOUBLE, INT,    NONE,   NONE}},   // first arg: Other robots energylevel, second arg: enemy - 0, teammate - 1
+  {"RotationReached",1,{INT, NONE,  NONE,   NONE}},    // first arg: what has finished rotation (see Rotate below)
   {"Energy",     1, {DOUBLE, NONE,   NONE,   NONE}},   // arg: energylevel
   {"RobotsLeft", 1, {INT,    NONE,   NONE,   NONE}},   // arg: robots left
   {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: collision angle
@@ -161,7 +163,7 @@ static const struct Message message_to_robot[20] =
   {"",           0, {}}
 };
 
-static const struct Message message_from_robot[20] = 
+static const struct Message message_from_robot[25] = 
 {
   {"RobotOption",  2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
   {"Name",         1, {STRING}},             // arg: name
