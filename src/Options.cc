@@ -61,6 +61,12 @@ Options::Options()
   //              max letters in entry,
   //              broadcast option?, log option?, description
 
+  all_long_options[OPTION_SEND_ROBOT_COORDINATES] =
+    option_info_t<long>(ENTRY_INT, PAGE_ENVIRONMENT, 0, 0, 2, 4,
+                        true, true, "Send robot coordinates", 
+                        _("Send robot coordinates") );
+
+
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,
                           false, true, "Gravitational Constant",

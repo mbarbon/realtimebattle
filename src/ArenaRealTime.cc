@@ -351,7 +351,7 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
       switch(message_to_robot[msg_type].arg_type[i])
         {
         case NONE: 
-          Error(true, "Couldn't send message, no arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, no arg_type", "ArenaRealTime::broadcast");
           break;
         case INT:
           str += (String)va_arg(args, int) + ' ';
@@ -366,7 +366,7 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
           str += hex2str(va_arg(args, int)) + ' ';
           break;
         default:
-          Error(true, "Couldn't send message, unknown arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, unknown arg_type", "ArenaRealTime::broadcast");
         }
     }
   str += '\n';

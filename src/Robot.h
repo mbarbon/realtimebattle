@@ -147,6 +147,9 @@ private:
   double acceleration;
   double shot_energy;
 
+  Vector2D start_pos;
+  double start_angle;
+
   Vector2D last_drawn_robot_center;
   double last_drawn_radar_angle;
   double last_drawn_cannon_angle;

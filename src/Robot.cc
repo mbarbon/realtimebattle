@@ -704,7 +704,16 @@ Robot::update_radar_and_cannon(const double timestep)
       double en = ((Robot*)col_obj)->get_energy();
       send_message(ROBOT_INFO, rint( en / lvls ) * lvls, 0);
     }
+
+  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 1 )
+    send_message(COORDINATES, center[0] - start_pos[0], center[1] - start_pos[1], 
+                 robot_angle.pos - start_angle);
+  
+  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 2 )
+    send_message(COORDINATES, center[0], center[1], robot_angle.pos);
+
   send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
+  
 }
 
 void
@@ -1339,7 +1348,7 @@ Robot::get_messages()
                          cl_shape, col_obj, this))    >   radius+1.5*shot_radius )
                     {
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
-                      cerr << "col_shape: " << cl_shape << endl; 
+                      cerr << "col_shape: " << (int)cl_shape << endl; 
                       Error(false, "Shot has space available after all?", "Robot::get_messages");                  
                     }
                   switch(cl_shape)

@@ -98,6 +98,7 @@ enum option_double_t
 
 enum option_long_t
 {
+  OPTION_SEND_ROBOT_COORDINATES,
   OPTION_MAX_ROBOTS_ALLOWED, 
 
   OPTION_ROBOT_ENERGY_LEVELS,
