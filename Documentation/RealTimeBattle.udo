@@ -8,6 +8,9 @@
 !code_iso
 !html_merge_subnodes
 
+!autoref [off]
+!autoref_items [off]
+
 !begin_document
 
 !maketitle
@@ -26,7 +29,7 @@
 
 !node Robot construction
 !label RobotConstruction
-#!include RobotConstruction
+!include RobotConstruction.udo
 
 !node Options
 !label Options
@@ -48,4 +51,9 @@
 #!label Appendices
 #!include Appendices.udo
 
+#to get rid of error message in AboutUdo
+!autoref [on] 
+!autoref_items [on]
+
 !end_document
+
