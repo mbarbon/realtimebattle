@@ -126,6 +126,7 @@ shot_collision(Shot* shot1p, Shot* shot2p)
 {
   shot_collision(shot1p, shot2p->velocity, shot2p->energy);
   shot2p->die();
+  the_arena.get_object_lists()[SHOT].remove( shot2p );
 }
 
 void
@@ -139,7 +140,10 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
 
   if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) || 
       length(vel) < the_opts.get_d(OPTION_SHOT_SPEED) * 0.5 )
-    shot1p->die();
+    {
+      shot1p->die();
+      the_arena.get_object_lists()[SHOT].remove( shot1p );
+    }
   else
     {
       shot1p->velocity = vel;
