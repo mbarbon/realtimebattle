@@ -76,12 +76,16 @@ main ( int argc, char* argv[] )
   robotnames[nr_robots] = NULL;
   
   char** arenanames; 
-  arenanames = new char*[2];
-  arenanames[0] = new char[strlen("test/test2.arena")+1];
-  strcpy(arenanames[0], "test/test2.arena");
-  arenanames[1] = new char[strlen("test/test.arena")+1];
-  strcpy(arenanames[1], "test/test.arena");
-  arenanames[2] = NULL;
+  arenanames = new char*[5];
+  arenanames[0] = new char[strlen("Arenas/Forest.arena")+1];
+  strcpy(arenanames[0], "Arenas/Forest.arena");
+  arenanames[1] = new char[strlen("Arenas/Rooms.arena")+1];
+  strcpy(arenanames[1], "Arenas/Rooms.arena");
+  arenanames[2] = new char[strlen("Arenas/Star.arena")+1];
+  strcpy(arenanames[2], "Arenas/Star.arena");
+  arenanames[3] = new char[strlen("Arenas/Circles.arena")+1];
+  strcpy(arenanames[3], "Arenas/Circles.arena");
+  arenanames[4] = NULL;
 
   if(failed)
     {
