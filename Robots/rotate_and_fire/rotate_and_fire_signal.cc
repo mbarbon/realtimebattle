@@ -16,7 +16,8 @@ class RotateAndFire raf_obj("Rotate&Fire-signal", "aaaaff");
 
 
 // We need a function to be called when a signal arrives
-void handle_signal(int signr)
+RETSIGTYPE
+handle_signal(int signr)
 {
   raf_obj.check_messages();
 
