@@ -14,14 +14,6 @@ INCLUDES = -I$(top_srcdir)/intl $(PROFFLAGS) $(THREAD_FLAGS) \
            -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
            -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 
-if LINK_STATICALLY
-GUI_OBJS = Gui/$(GUI_NAME)/.libs/libGui.a
-GUI_ADD_LIBS = $(GUI_LIBS)
-else
-GUI_OBJS = Gui/$(GUI_NAME)/.libs/libGui.so
-GUI_ADD_LIBS =
-endif
-
 if NO_GETOPT_LONG
 GETOPT_O = getopt.o
 else
@@ -35,7 +27,8 @@ CCMALLOC_O =
 endif
 
 #Note the gui-lib should be taken via configure
-RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(THREAD_LIBS) $(GUI_ADD_LIBS) $(GUI_OBJS)
+RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) \
+	$(STDCXX_LIBS) $(THREAD_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS) $(GUI_OBJS)
 RealTimeBattle_SOURCES = \
 	ArenaBase.cc ArenaBase.h \

@@ -77,9 +77,7 @@ ArenaController::init( int argc, char** argv )
   else if( replay_filename != "" )
     start_replay_arena();
 
-  GIInit( argc, argv );
-
-  gi = new GuiInterface;
+  gi = new GuiInterface( gui_name, argc, argv );
 
   return EXIT_SUCCESS; // TODO: what should be returned here?
 }
@@ -120,7 +118,7 @@ ArenaController::close_arena()
 void
 ArenaController::parse_command_line( int argc, char** argv )
 {
-  int version_flag=false, help_flag=false, graphics_flag=true;
+  int version_flag=false, help_flag=false;
   int c;
 
   extern char* optarg;
@@ -142,8 +140,7 @@ ArenaController::parse_command_line( int argc, char** argv )
     {"tournament_file", 1, 0, 0},
     {"message_file", 1, 0, 0},
     {"replay", 1, 0, 0},
-
-    {"no_graphics", 0, &graphics_flag, false},
+    {"use_gui", 1, 0, 0},
 
     {0, 0, 0, 0}
   };
@@ -152,7 +149,7 @@ ArenaController::parse_command_line( int argc, char** argv )
     {
       int option_index = 0;
      
-      c = getopt_long( argc, argv, "dncD:vho:l:s:t:m:r:g",
+      c = getopt_long( argc, argv, "dncD:vho:l:s:t:m:r:g:",
                        long_options, &option_index );
 
       // Detect the end of the options.
@@ -192,6 +189,9 @@ ArenaController::parse_command_line( int argc, char** argv )
             case 11:
               replay_filename = (String)optarg;
               break;
+            case 12:
+              gui_name = (String)optarg;
+              
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
                      "ArenaController.cc::parse_command_line" );
@@ -251,7 +251,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'g':
-          graphics_flag = false;
+          gui_name = (String)optarg;
           break;
 
         default:
@@ -291,7 +291,6 @@ ArenaController::parse_command_line( int argc, char** argv )
     = ( ( tournament_filename != "" ) ||
         ( replay_filename == "-" ) );
 
-  no_graphics = !graphics_flag;
 }
 
 
@@ -306,7 +305,7 @@ ArenaController::print_help_message()
   cout << _("    --normal_mode,               -n   normal mode (default)") << endl;
   cout << _("    --competition_mode,          -c   competition mode") << endl ;
   cout << endl;
-  cout << _("    --no_graphics,               -g   no graphics will be displayed") << endl ;
+  cout << _("    --use_gui [gui],             -g   sets the gui to be used") << endl ;
   cout << _("    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)")  << endl;
   cout << endl;
   cout << _("    --log_file [file],           -l   make log file, if 'file' is '-'\n"

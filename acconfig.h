@@ -214,6 +214,9 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Policy used for dlopen() mode */
+#undef DLOPEN_POLICY
+
 /* Define on System V Release 4.  */
 #undef SVR4
 

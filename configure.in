@@ -120,6 +120,8 @@ AM_CONDITIONAL(SGML2RTF, test x$sgml2rtf = xyes)
 AC_ARG_ENABLE(dummy, [
 Library options: ])
 
+AC_LIBTOOL_DLOPEN
+AC_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
 #  debug
@@ -435,6 +437,21 @@ fi
 AC_SUBST(THREAD_FLAGS)
 AC_SUBST(THREAD_LIBS)
 
+# Switch to C++ mode and check for needed C++ headers
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
+AC_CHECK_LIB(stdc++, getc,stdcxx=yes,
+	AC_MSG_ERROR(You need to have libstdc++ installed))
+AC_CHECK_HEADER(vector.h,,
+	AC_MSG_ERROR(You need to have the libstdc++ headers installed))
+
+AC_LANG_RESTORE
+
+if test "x$stdcxx" = "xyes"; then
+	STDCXX_LIBS=-lstdc++
+fi
+AC_SUBST(STDCXX_LIBS)
 
 #  RPM - set the correct CXXFLAGS and CFLAGS. Do not install the docs.
 
@@ -449,12 +466,6 @@ if test "x$use_rpm" = "xyes"; then
 fi
 changequote([,])dnl
 AM_CONDITIONAL(ENABLE_RPM, test x$use_rpm = xyes)
-
-
-#AC_ARG_ENABLE(docs-install,[ --enable-docs-install   install documentation], enable_docs_install=yes)
-
-#AM_CONDITIONAL(INSTALL_DOCS, test x$enable_docs_install = xyes)
-
 
 # rtb-dir
 
@@ -476,63 +487,102 @@ RTB_LOCALEDIR=$with_nls_localedir
 AM_GNU_GETTEXT
 
 # Choose a graphical user interface
-# TODO: Make it possible to select several guis
 AC_ARG_ENABLE(gui,
-[  --enable-gui=[guess/type] compile a graphical user interface [default=guess]],
-[case "${enableval}" in
-  yes) gui=guess ;;
-  *)   gui="${enableval}"
-       if test ! -d "src/Gui/$gui" ; then
-         AC_MSG_ERROR(bad value ${enableval} for --enable-gui)
-       fi ;;
-esac], [gui=guess])
+[  --enable-gui=[guess/types] compile these graphical user interface [default=guess]],
+	[enable_gui=${enableval}], [enable_gui=guess])
 
-# Should the gui be linked statically or dynamically?
+# Check for library containing dlopen()
+AC_CHECK_LIB(c_r, dlopen, [], [
+  AC_CHECK_LIB(c, dlopen, [], [
+    AC_CHECK_LIB(dl, dlopen, [], [
+      echo "I can't find the library containing dlopen()"
+      exit 1
+    ])
+  ])
+])
 
-AC_ARG_ENABLE(link_statically,
-[  --enable-link-statically  link the gui statically [defualt=no]],
-enable_link_statically=yes, enable_link_statically=no)
-AM_CONDITIONAL(LINK_STATICALLY, test x$enable_link_statically = xyes)
+# Check for dlopen_policy
+AC_MSG_CHECKING([for dlopen modes])
+AC_TRY_COMPILE([
+#include <stdio.h>
+#include <dlfcn.h>
+],[
+dlopen(NULL, RTLD_LAZY)
+],[
+  AC_MSG_RESULT([RTLD_LAZY])
+  AC_DEFINE_UNQUOTED(DLOPEN_POLICY, RTLD_LAZY)
+],[
+  AC_TRY_COMPILE([
+  #include <stdio.h>
+  #include <dlcfn.h>
+  ],[
+  dlopen(NULL, DL_LAZY)
+  ],[
+    AC_MSG_RESULT([DL_LAZY])
+    AC_DEFINE_UNQUOTED(DLOPEN_POLICY, DL_LAZY)
+  ],[
+    AC_MSG_RESULT([cannot determine, bailing])
+    exit 1;
+  ])
+])
 
-# Check for and choose a graphical user interface
 
-GUI_FLAGS=
-GUI_LIBS=
+
+# Check for and choose graphical user interfaces
+
+all_known_guis="Gtk none"
+
+for gui_alias in ${all_known_guis} ;
+do
+	if test "x$enable_gui" = "xguess" ; then
+		use_this_gui=yes
+	else
+		case "${enable_gui}" in
+			${gui_alias} | "${gui_alias},"* | *",${gui_alias},"* | *",${gui_alias}" )
+			use_this_gui=yes ;;
+			* )
+			use_this_gui=no ;;
+		esac
+	fi
 
 # Gtk?
 
-if test "$gui" = "Gtk" || test "$gui" = "guess" ; then
-	AC_ARG_ENABLE(dummy, [
+	if test "x$gui_alias" = "xGtk" ; then
+		if test "x$use_this_gui" = xyes ; then
+			AC_ARG_ENABLE(dummy, [
 GTK options: ])
-	AM_PATH_GTK(0.99.7, gtk_found="yes", gtk_found="no")
-	if test "x$gtk_found" = "xyes"; then
-		GUI_FLAGS="$GTK_CFLAGS"
-		GUI_LIBS="$GTK_LIBS"
-		found_gui=yes
-	fi
-
-	if test "x$found_gui" = "xyes"; then
-		gui=Gtk
-	elif test "$gui" = "Gtk"; then
-		AC_MSG_ERROR(
+			AM_PATH_GTK(0.99.7, gtk_found="yes", gtk_found="no")
+			if test "x$gtk_found" = "xyes"; then
+				use_this_gui=yes
+			else
+				use_this_gui=no
+				case "${enable_gui}" in
+					${gui_alias} | "${gui_alias},"* | *",${gui_alias},"* | *",${gui_alias}" )
+					AC_MSG_WARN([
 *** GTK+ >= 0.99.7 is not correctly installed.
 *** If you want the gtk gui. Please install Gtk+ >= 0.99.7
-*** The latest version of GTK can be found at http://www.gtk.org)
+*** The latest version of GTK can be found at http://www.gtk.org])
+					;;
+					* )
+					;;
+				esac
+			fi
+		fi
+		use_gtk=${use_this_gui}
 	fi
-fi
 
-# No graphics (Couldn't find a suitable user interface)
-if test "$gui" = "guess" ; then
-	gui=none
-fi
+# none?
+	if test "x$gui_alias" = "xnone" ; then
+		use_none=${use_this_gui}
+	fi
 
-GUI_NAME=$gui
+	AC_MSG_CHECKING([checking whether gui ${gui_alias} should be compiled])
+	AC_MSG_RESULT(${use_this_gui})
 
-AC_SUBST(GUI_NAME)
-AC_SUBST(GUI_FLAGS)
-AC_SUBST(GUI_LIBS)
-AM_CONDITIONAL(GUI_GTK, test "$gui" = "Gtk")
-AM_CONDITIONAL(GUI_NONE, test "$gui" = "none")
+done
+
+AM_CONDITIONAL(GUI_GTK, test "x$use_gtk" = xyes)
+AM_CONDITIONAL(GUI_NONE, test "x$use_none" = xyes)
 
 #  ccmalloc
 

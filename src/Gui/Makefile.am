@@ -1,8 +1,8 @@
 if GUI_GTK
-GUI_SUBDIR = Gtk
+GTK_SUBDIR = Gtk
 endif
 if GUI_NONE
-GUI_SUBDIR = none
+NONE_SUBDIR = none
 endif
 
-SUBDIRS = $(GUI_SUBDIR)
+SUBDIRS = $(GTK_SUBDIR) $(NONE_SUBDIR)

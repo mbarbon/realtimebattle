@@ -64,6 +64,7 @@ public: // global names etc.
   String tournament_filename;
   String message_filename;
   String replay_filename;
+  String gui_name;
 
   int game_mode;
   int debug_level;

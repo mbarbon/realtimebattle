@@ -52,7 +52,7 @@ public:
 
   // Constructor & Destructor
 
-  GuiInterface();
+  GuiInterface( const String&, int, char** );
   ~GuiInterface();
 
   // Functions that supplies information to the Gui.
@@ -105,6 +105,10 @@ public:
 
   //TODO: Perhaps an eventlist?
 
+  const String Name                           () { return (*func_Name)(); }
+  const String UsageMessage                   () { return (*func_UsageMessage)(); }
+  int Main                                    ( GuiInterface* gi )
+    { return (*func_Main)( gi ); }
 
 private:
 
@@ -112,9 +116,16 @@ private:
 
   pthread_t thread;
 
+  // dl_handle
+  void* dl_handle;
+
+  const String (*func_Name)();
+  const String (*func_UsageMessage)();
+  bool (*func_Init)( int, char** );
+  int (*func_Main)( GuiInterface* );
+
   // Mutexes
   pthread_mutex_t gi_mutex;
-  // There should be many mutexes so server and gui isn't unnecessarily stopped.
   // Mutexes should not be a part of the GuiInterface, so all guis and the server
   // have good access to the mutexes.
 };
@@ -132,7 +143,7 @@ const String GIUsageMessage();
 bool GIInit( int , char** );
 // The main loop of the gui
 int  GIMain( GuiInterface* );
-// Exit from gui. This function is not needed to be set from gui.
+// Exit from gui. This function should not needed to be set from gui.
 void GIExit( int );
 
 //Internal GI functions
