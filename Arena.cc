@@ -14,6 +14,7 @@ Arena::Arena()
   all_robots_in_tournament = g_list_alloc();
   solid_objects = g_list_alloc();
   arena_filenames = g_list_alloc();
+  robot_size = 1.0;
   for(int i=ROBOT; i<EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
   the_gui = new Gui;
@@ -38,24 +39,24 @@ Arena::parse_file(istream& file)
   double number1, number2;
 
   Vector2D vec1, vec2;
-  Wall* wallp;
+  //Wall* wallp;
 
   do
     {
       file >> ws >> text;
       if( strcmp(text, "boundary" ) == 0 )
         {
+          file >> boundary[0];
           file >> boundary[1];
           file >> boundary[2];
           file >> boundary[3];
-          file >> boundary[4];
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
           file >> ws >> vec1;
           file >> ws >> number1;
 
-          wallp = new WallCircle(vec1, number1);
+          WallCircle* wallp = new WallCircle(vec1, number1);
           g_list_append(object_lists[WALL], wallp);
           g_list_append(solid_objects, wallp);
         }
@@ -71,7 +72,7 @@ Arena::parse_file(istream& file)
           file >> ws >> vec2;      // end_point
           file >> ws >> number2;   // thickness
           
-          wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
+          WallLine* wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
           g_list_append(object_lists[WALL], wallp);
           g_list_append(solid_objects, wallp);
         }
@@ -81,7 +82,7 @@ Arena::parse_file(istream& file)
       //   else if( strcmp(text, "closed_polygon" ) == 0 )
       //     {
       //     }
-      else
+      else if( text[0] != '\0' )
         throw Error("Incorrect arenafile, unknown keyword", 
                     text, "Arena::parsefile");
         
@@ -114,21 +115,21 @@ Arena::remove_from_solid_object_list(class Shape& obj)
 
 
 double
-Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, Shape* closest_shape)
+Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, object_type& closest_shape)
 {
   double dist = infinity;
   double d;
   Shape* objp;
-  closest_shape = NULL;
+  closest_shape = NOOBJECT;
   GList* gl;
 
-  for(gl = g_list_next(solid_objects); gl->next != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(solid_objects); gl != NULL; gl = g_list_next(gl))
     {
-      objp = (Shape*)gl->data;
-      objp->get_distance(pos, dir, size);
+      objp = (Shape*)(WallCircle*)gl->data;   // Strange, but it works !!
+      d = objp->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = objp;
+          closest_shape = ((ArenaObject*)(WallCircle*)gl->data)->get_object_type();   // Strange, but it works !!
           dist = d;
         }
     }
@@ -142,9 +143,9 @@ Arena::space_available(const Vector2D& pos, const double margin)
   Shape* objp;
   GList* gl =g_list_next(solid_objects);
 
-  for(; gl->next != NULL; gl = g_list_next(gl))
+  for(; gl != NULL; gl = g_list_next(gl))
     {
-      objp = (Shape*)gl->data;
+      objp = (Shape*)(WallCircle*)gl->data;   // Strange, but it works !!
       if( objp->within_distance(pos, margin) ) return false;
     }
 
@@ -165,7 +166,7 @@ Arena::timeout_function()
 {
   update_timer ();
 
-  the_gui->draw_objects( this );
+  //  the_gui->draw_objects( this );
 
   switch(state)
     {
@@ -183,7 +184,7 @@ Arena::timeout_function()
       
     case GAME_IN_PROGRESS:
       update();
-      if( robots_left <= 1 ) end_game();
+      //if( robots_left <= 1 ) end_game();
       //      if( total_time > next_check_time ) check_robots();
       break;
 
@@ -218,7 +219,7 @@ Arena::update_robots()
   GList* gl;
   Robot* robotp;
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl->next != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)gl->data;
       if( robotp->is_alive() )
@@ -276,8 +277,10 @@ Arena::start_game()
       g_list_append(solid_objects, gl->data);
       ((Robot*)gl->data)->send_message(GAME_STARTS);
       robots_left++;
+      ((Robot*)gl->data)->live();
     }
 
+  state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
   g_timer_reset(timer);
   update_timer();
@@ -309,6 +312,7 @@ void
 Arena::start_sequence()
 {
   games_remaining_in_sequence = games_per_sequence;
+  current_arena_nr = 1;
 
   // Make list of robots in this sequence
 
@@ -329,7 +333,8 @@ Arena::start_sequence()
     }
   
   // wait a second before checking
-  
+
+  state = STARTING_ROBOTS;
   next_check_time = total_time + 1.0;
 }
 
@@ -365,7 +370,8 @@ Arena::end_sequence()
     }
 
   // wait a second before checking
-  
+
+  state = SHUTTING_DOWN_ROBOTS;
   next_check_time = total_time + 1.0;
 }
 
@@ -428,4 +434,5 @@ Arena::end_tournament()
       delete gl->data;
     }
   //g_list_free(all_robots_in_tournament);
+  state = FINISHED;
 }
