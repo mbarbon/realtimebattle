@@ -42,6 +42,7 @@ RealTimeBattle_SOURCES = \
 	Extras.cc Extras.h \
 	Function.h \
 	Gadget.h \
+	GadgetSet.h GadgetSet.cc \
 	InfoClasses.h \
 	InformationDistributor.cc InformationDistributor.h \
 	GeometricalObjects.cc GeometricalObjects.h \
@@ -65,7 +66,7 @@ RealTimeBattle_SOURCES = \
 	Various.cc Various.h \
 	Vector2D.cc Vector2D.h \
 	Wall.h \
-	WeaponGadget.h
+	WeaponGadget.h WeaponGadget.cc
 
 
 EXTRA_RealTimeBattle_SOURCES = \
