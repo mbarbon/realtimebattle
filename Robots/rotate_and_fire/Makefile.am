@@ -1,5 +1,5 @@
 robotexecdir = $(RTB_DIR)/Robots
-INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/intl
+INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)/intl
 
 robotexec_PROGRAMS = rotate_and_fire_signal.robot \
                      rotate_and_fire_blocking.robot \
