@@ -498,8 +498,25 @@ Arena::print_to_logfile(const char first_letter ... )
       break;
 
     case 'O':
-      LOG_FILE << va_arg(args, int); // TODO: options to log file
-      
+      {
+        char option_type = va_arg(args, char);
+        LOG_FILE << va_arg(args, char*);                        // Option label
+        switch( option_type )
+          {
+          case 'D':
+            LOG_FILE << String( va_arg(args, double) ).chars(); // Option value
+            break;
+          case 'L':
+            LOG_FILE << String( va_arg(args, long) ).chars();   // Option value
+            break;
+          case 'H':
+            LOG_FILE << hex2str( va_arg(args, long) ).chars();   // Option value
+            break;
+          case 'S':
+            LOG_FILE << String( va_arg(args, char*) ).chars();   // Option value
+            break;
+          }
+      }
       break;
 
     default:
@@ -673,8 +690,8 @@ Arena::parse_arena_file(istream& file)
       char buffer[500];
       
       file.seekg(0);      // goto beginning of file for rereading
-
       file.get(buffer, 499, '\n');
+
       do
         {
           print_to_logfile('A', buffer);
@@ -1656,6 +1673,8 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   print_to_logfile('H', games_per_sequence, robots_per_game, sequences_remaining, 
                    number_of_robots);//, option_file_name.chars());
+
+  the_opts.log_all_options();
 
   sequence_nr = 0;
   start_sequence();
