@@ -6,9 +6,16 @@ FAQ
 <descrip>
 <tag>The program doesn't compile on my computer</tag> 
 <p>
-Well, it is not stable yet, so there may be problems around. Please read the <tt>INSTALL</tt> file
+Please read the <tt>INSTALL</tt> file
 carefully, and study the 
-<url name="BUGS" url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html"> file.
+<url name="BUGS"
+url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html">
+file. Make sure you have got the latest version. If it still doesn't work,
+send a bug report to 
+<htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
+or 
+<url name="SourceForge" url="https://www.sourceforge.net/bugs/?group_id=561"> 
+and we will try to fix it as soon as possible.  
 
 <tag>I have installed gtk, but configure doesn't find it</tag>
 <p>
