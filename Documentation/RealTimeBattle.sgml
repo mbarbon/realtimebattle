@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 1.0.3 rev 2
+<title>RealTimeBattle User Manual, version 1.0.4 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
-<date> 24 April 2000
+<date> 2 May 2000
 
 <!-- <abstract> -->
 
@@ -939,8 +939,8 @@ command to rotate the robot itself, use <bf>RotateAmount</bf> instead!
  As <bf>Rotate</bf>, but will rotate relative to the current angle.
 
 
-<tag>Sweep [what to rotate (int)] [angular velocity (double)] [left angle (double)] 
-[right angle (double)]</tag>
+<tag>Sweep [what to rotate (int)] [angular velocity (dbl)] [left angle (dbl)] 
+[right angle (dbl)]</tag>
  As <bf>rotate</bf>, but sets the radar and/or the cannon (not
 available for the robot itself) in a sweep mode.
 
@@ -1240,23 +1240,28 @@ of robots. Here the subdirectory is <tt>Arenas</tt>.
 <sect>Arena construction<label id="Arena construction">
 <p>
 In RealTimeBattle, it is very simple to construct your own arenas. The
-language consists of only eight commands, and there are essentially
-three building blocks: line, circle and inner&lowbar;circle. This is mainly
+language consists of only eleven commands, and there are essentially
+four building blocks: line, circle, inner&lowbar;circle and arc. This is mainly
 because of speed reason, for circles and lines it is very easy to
 check if a collision has occured. Circle and inner&lowbar;circle prevents
 robots from entering into a circle or getting out of a circle
-respectively. The line stops the robots from entering through the long
-side, but no check is made on the short side, so you have to put
+respectively. The line and the arc stop the robots from entering through
+the long side ( the curved for the arc ), but no check is made on the
+short side, so you have to put
 circles at each end of the line to make it a solid object. The
-commands <tt>polygon</tt> and <tt>closed&lowbar;polygon</tt> are intended to
+commands <tt>polygon</tt>, <tt>closed&lowbar;polygon</tt> and
+<tt>poly_curve</tt> are intended to
 simplify this procedure, always giving a proper object.
+
+All angles are by default in radians but can be changed to degrees by the
+command <tt>angle_unit degrees</tt>.
 
 Note that RealTimeBattle does not check whether the arena file gives
 a correct arena, it is entirely up to you. However, it will complain
 if there are violations to the language rules.
 
 Arena files should be given the postfix <tt>.arena</tt> and be stored
-in the arena directory, for RealTimeBattle to find them.
+in the arena directory for RealTimeBattle to find them.
 
 The <tt>bounce coefficient</tt> and <tt>hardness</tt> argument given to
 all wall creating commands, determines the material of the wall. They
@@ -1280,6 +1285,9 @@ In the command list, the arguments are given in square brackets.
 will give the scale factor, by which all coordinates are multiplied. This command must be,
 if it exists, the very first in the file, default is 1.0.
 
+<tag>angle_unit [unit]</tag> Switches to the selected angle unit, which
+can be either of <tt>degrees</tt> or <tt>radians</tt>. Default is radians.
+
 <tag>boundary [left] [up] [right] [down]</tag> The boundary encloses the area, in which robot,
 cookies and mines are placed. It also determines the visible area in the 
 <ref id="Arena_window" name="arena window">. This command is required and may only be preceded by
@@ -1291,20 +1299,46 @@ cookies and mines are placed. It also determines the visible area in the
 <tag>circle [bounce] [hardness] [center&lowbar;x] [center&lowbar;y] [radius]</tag>
 Circle shaped wall.
 
+<tag>line [bounce] [hardness] [thickness] [start&lowbar;x]
+ [start&lowbar;y] [end&lowbar;x] [end&lowbar;y]</tag>
+ Creates a line. It only prevents the robot from passing through to long
+ side, so remember to put circles at the short ends.
 
-<tag>polygon [bounce] [hardness] [thickness] [number of vertices] ([center&lowbar;x] [center&lowbar;y])...</tag>
+<tag>arc [bnc] [hardn] [thickn] [center&lowbar;x] [ctr&lowbar;y]
+[inner_radius] [outer_rds] [angle1] [angle2]</tag>
+ An arc is a sector of a ring within to angles. Like the line, it needs
+ circles at both the ends.
+
+
+<tag>polygon [bounce] [hardn] [thickn] [number of vertices] ([center&lowbar;x] [center&lowbar;y])...</tag>
  This will create a number of circles, connected by lines.
 
 
-<tag>closed&lowbar;polygon [bounce] [hardness] [thickness] [number of vertices]
+<tag>closed&lowbar;polygon [bounce] [hardn] [thickn] [number of vertices]
 ([center&lowbar;x] [center&lowbar;y])...</tag>
  As a <tt>polygon</tt>, but the first and the last vertices are also
 connected by a line.
 
+<tag>poly_curve [bnc] [hardn] [thickn] [start&lowbar;x]
+[start&lowbar;y] [dir&lowbar;x] [dir&lowbar;y] 
+([command args ...]) ...</tag>
+ The <tt>poly_curve</tt> is the most powerful of the arena commands. It is
+ used to build walls with lines and arcs. At each step you have a current
+ position and direction, which are affected by the subcommands. The last
+ subcommand must be <tt>C</tt> or <tt>Q</tt>.
 
-<tag>line [bounce] [hardness] [thickness] [start&lowbar;x] [start&lowbar;y] [end&lowbar;x] [end&lowbar;y]</tag>
-Creates a line. See the <ref id="Arena construction" name="beginning of the chapter"> for
-more information.
+ <descrip>
+ <tag>L [length]</tag> Draw a line with given length in the current
+ direction.
+ <tag>T [angle]</tag> Turn the current dircetion.
+ <tag>A [angle] [radius]</tag> Draw an arc.
+ <tag>C</tag> Finish by connecting with the starting point.
+ <tag>Q</tag> Quit.
+ </descrip>
+
+
+
+
 
 <tag>exclusion&lowbar;point [position&lowbar;x] [position&lowbar;y]</tag> When the arena
 inside the boundary consists of several separated areas, you should
@@ -1314,6 +1348,3 @@ crossing a wall, are considered to be outside the arena.
 
 </descrip>
 </article>
-
-
-
