@@ -1,8 +1,7 @@
 Makefile
 Makefile.in
-libGuiGtk.a
 .deps
 TAGS
 *.lo
 .libs
-libGuiGtk.la
+libGui.la
