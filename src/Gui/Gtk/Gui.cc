@@ -40,7 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "DrawingObjects.h"
 #include "List.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "GuiVarious.h"
 
 class Gui* gui_p;

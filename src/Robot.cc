@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
 #include "Various.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Wall.h"
 #include "Shot.h"
 #include "Extras.h"
@@ -57,7 +57,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  #include "MovingObject.h"
 //  #include "Arena.h"
 //  #include "Extras.h"
-//  #include "Options.h"
+//  #include "OptionHandler.h"
 //  #include "Messagetypes.h"
 
 Robot::Robot(const string& filename)

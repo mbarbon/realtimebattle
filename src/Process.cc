@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #include "ArenaBase.h"
 #include "ArenaController.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "String.h"
 
 void Error(const bool fatal, const string& error_msg, const string& function_name);

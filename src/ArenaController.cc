@@ -35,14 +35,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "IntlDefs.h"
 #include "GuiInterface.h"
 #include "Structs.h"
 #include "String.h"
 #include "Various.h"
 
-extern class Options the_opts;
+extern class OptionHandler the_opts;
 extern bool no_graphics;
 
 // TODO: These should probably be moved to a better place.
@@ -331,7 +331,7 @@ ArenaController::parse_command_line( int argc, char** argv )
 
   if( option_filename == "" )
     {
-      the_opts.get_options_from_rtbrc();
+      the_opts.read_options_from_rtbrc();
       option_filename = ".rtbrc";
     }
   else

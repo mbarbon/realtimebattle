@@ -34,7 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
 #include "Robot.h"
-#include "Options.h"
+#include "OptionHandler.h"
 
 extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;

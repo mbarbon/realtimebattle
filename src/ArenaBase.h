@@ -58,7 +58,7 @@ class WallInnerCircle;
 static const double infinity = 1.0e10;  //approximately ;-)
 static const int max_debug_level = 5;
 
-extern class Options the_opts;
+extern class OptionHandler the_opts;
 
 extern bool no_graphics;
 

@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shape.h"
 #include "Vector2D.h"
 #include "GuiVarious.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Gui.h"
 #include "ArenaController.h"
 #include "GuiStructs.h"

@@ -27,9 +27,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include "Gui.h"
 #include "Shape.h"
 #include "Various.h"
-#include "Options.h"
+#include "OptionHandler.h"
 
-extern class Options the_opts;
+extern class OptionHandler the_opts;
 
 Shape::Shape()
 {

@@ -61,7 +61,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include "IntlDefs.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
 #include "Various.h"
@@ -73,7 +73,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define WAIT_ANY (pid_t)-1
 #endif
 
-class Options the_opts;
+class OptionHandler the_opts;
 //class ArenaRealTime the_arena;
 class ArenaController the_arena_controller;
 

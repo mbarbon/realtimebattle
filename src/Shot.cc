@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include "ArenaWindow.h"
 #include "Extras.h"
 #include "Various.h"
-#include "Options.h"
+#include "OptionHandler.h"
 
 Shot::Shot(const Vector2D& c, //const double r, 
            const Vector2D& vel, const double en, const int shot_id = -1 ) 

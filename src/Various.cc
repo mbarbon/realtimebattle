@@ -49,11 +49,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Various.h"
 #include "IntlDefs.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Structs.h"
 #include "String.h"
 
-extern class Options the_opts;
+extern class OptionHandler the_opts;
 extern bool no_graphics;
 
 void

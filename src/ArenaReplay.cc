@@ -30,7 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "IntlDefs.h"
 #include "Various.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Extras.h"
 #include "Shot.h"
 //  #include "MessageWindow.h"
@@ -398,33 +398,28 @@ ArenaReplay::parse_log_line()
         option_return_t opt = the_opts.get_option_from_string( string( label ) );
         switch( opt.datatype )
           {
-          case ENTRY_INT:
-          case ENTRY_HEX:
+          case OPTIONTYPE_LONG:
             {
-              long val;
+              long int val;
               log_file >> val;
-              //              cerr << label << ": " << val << endl;
-              the_opts.get_all_long_options()[opt.option_number].value = val;
+              the_opts.set_long_option( (option_long_t)opt.option_number, val );
             }
             break;
-          case ENTRY_DOUBLE:
+          case OPTIONTYPE_DOUBLE:
             {
               double val;
               log_file >> val;
-              //              cerr << label << ": " << val << endl;
-              the_opts.get_all_double_options()[opt.option_number].value = val;
+              the_opts.set_double_option( (option_double_t)opt.option_number, val );
             }
             break;
-          case ENTRY_CHAR:
+          case OPTIONTYPE_STRING:
             {
               char val[400];
               log_file.get( val, 400, '\n' );
-              //              cerr << label << ": " << val << endl;
-              the_opts.get_all_string_options()[opt.option_number].value = val;
+              the_opts.set_string_option( (option_string_t)opt.option_number, val );
             }
             break;
-          case ENTRY_BOOL:
-            break;
+          case OPTIONTYPE_NOTFOUND:
           default:
             Error( true, "Unknown datatype", "ArenaReplay::parse_log_line" );
             break;

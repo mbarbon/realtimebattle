@@ -57,7 +57,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Extras.h"
 #include "Various.h"
 #include "Shot.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Wall.h"
 #include "Robot.h"
 

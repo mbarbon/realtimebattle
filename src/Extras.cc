@@ -27,7 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Extras.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
-#include "Options.h"
+#include "OptionHandler.h"
 
 Extras::Extras(const Vector2D& c, const double r, const double e, const long int col)
   : Circle(c, r, col), energy(e)

@@ -53,7 +53,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiVarious.h"
 #include "List.h"
 #include "Dialog.h"
-#include "Options.h"
+#include "OptionHandler.h"
 #include "Gui.h"
 #include "String.h"
 
