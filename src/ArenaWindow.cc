@@ -324,46 +324,45 @@ ArenaWindow::draw_circle( const Vector2D& center, const double radius,
 
 void
 ArenaWindow::draw_arc( const Vector2D& center, 
-                       const double radius1, const double radius2,
+                       const double inner_radius, const double outer_radius,
                        const double angle1, const double angle2,
-                       GdkColor& colour, GdkColor& bgcolour,
-                       const bool filled )
+                       GdkColor& colour )
 {
-  const double rad2GDK = ((double)GDK_360_DEGREES) / ( 2.0 * M_PI );
-
-  gint a1 = (gint)( ( angle1 < 0.0 ? angle1 + 2 * M_PI : angle1 ) * rad2GDK );
-
-  double angle_diff = angle2 - angle1;
-  gint a2 = (gint)( ( angle_diff < 0.0 ? angle_diff + 2 * M_PI : angle_diff ) * rad2GDK );
-
   if( window_shown )
-    {
+    {  
+      const double rad2GDK = ((double)GDK_360_DEGREES) / ( 2.0 * M_PI );
+      
+      gint a1 = (gint)( ( angle1 < 0.0 ? angle1 + 2 * M_PI : angle1 ) 
+                        * rad2GDK + 0.5 );
+      
+      double angle_diff = angle2 - angle1;
+      gint a2 = (gint)( ( angle_diff < 0.0 ? angle_diff + 2 * M_PI : angle_diff ) 
+                        * rad2GDK + 0.5 );
+    
+    
       GdkGC * colour_gc;
 
       colour_gc = gdk_gc_new( drawing_area->window );
       gdk_gc_set_foreground( colour_gc, &colour );
 
-      double r = radius2 * drawing_area_scale;
-      if( r > 1.0 )
+      int line_width = (int)((outer_radius - inner_radius) * drawing_area_scale + 0.5);
+      gdk_gc_set_line_attributes (colour_gc,
+                                  line_width,
+                                  GDK_LINE_SOLID,
+                                  GDK_CAP_NOT_LAST,
+                                  GDK_JOIN_MITER);
+
+      double r = 0.5 * ( outer_radius + inner_radius );
+      int box_size = (int)( r*2.0*drawing_area_scale + 0.5 );
+      if( box_size >= 2.0 )
         {
           gdk_draw_arc( drawing_area->window,
                         colour_gc,
-                        filled,
-                        boundary2pixel_x( center[0]-radius2 ),
-                        boundary2pixel_y( center[1]+radius2 ),
-                        (int)(r*2.0 + 0.5), (int)(r*2.0 + 0.5),
+                        false,
+                        boundary2pixel_x( center[0] - r ),
+                        boundary2pixel_y( center[1] + r ),
+                        box_size, box_size,
                         a1, a2 );
-
-          r = radius1 * drawing_area_scale;
-          if( filled )
-            gdk_gc_set_foreground( colour_gc, &bgcolour );
-          gdk_draw_arc( drawing_area->window,
-                        colour_gc,
-                        filled,
-                        boundary2pixel_x( center[0]-radius1),
-                        boundary2pixel_y( center[1]+radius1),
-                        (int)(r*2.0), (int)(r*2.0),
-                        0, GDK_360_DEGREES );
         }
       else
         {

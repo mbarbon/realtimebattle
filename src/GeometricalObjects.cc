@@ -253,20 +253,18 @@ InnerCircle::draw_shape(bool erase)
 {
   if( erase )
     the_gui.get_arenawindow_p()->
-      draw_circle( last_drawn_center,
-                   last_drawn_radius,
-                   *(the_gui.get_bg_gdk_colour_p()),
-                   true );
+      draw_arc( last_drawn_center,
+                last_drawn_radius, last_drawn_radius*1.5,
+                0.0, 2*M_PI,
+                *(the_gui.get_bg_gdk_colour_p()) );
+
   last_drawn_center = center;
   last_drawn_radius = radius;
-  the_gui.get_arenawindow_p()->
-    draw_rectangle( the_arena.get_boundary()[0],
-                    the_arena.get_boundary()[1],
-                    gdk_colour, true );
-  the_gui.get_arenawindow_p()->
-    draw_circle( center, radius,
-                 *(the_gui.get_bg_gdk_colour_p()),
-                 true );
+
+    the_gui.get_arenawindow_p()->
+      draw_arc( center, radius, radius*1.5,
+                0.0, 2*M_PI, gdk_colour );
+
 }
 
 
@@ -390,17 +388,14 @@ Arc::draw_shape(bool erase)
     the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
                                            inner_radius, outer_radius,
                                            start_angle, end_angle,
-                                           *(the_gui.get_bg_gdk_colour_p()),
-                                           *(the_gui.get_bg_gdk_colour_p()),
-                                           true );
+                                           *(the_gui.get_bg_gdk_colour_p()) );
   last_drawn_center = center;
 
   
   the_gui.get_arenawindow_p()->draw_arc( center, 
                                          inner_radius, outer_radius,
                                          start_angle, end_angle,
-                                         gdk_colour, *(the_gui.get_bg_gdk_colour_p()),
-                                         true );
+                                         gdk_colour );
 }
 
 
