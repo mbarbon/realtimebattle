@@ -53,7 +53,7 @@ EventHandler::main_loop()
   const Event* next_RTeventp;   //Next Event that is in realtime queue
   const Event* next_GTeventp;   //Next Event that is in gametime queue
   const Event* next_eventp;     //The one of the two we realy have to do...
-
+  bool RTEvent = true;          //Say that the event cames from the RT queue
 
   do
     {
@@ -68,6 +68,7 @@ EventHandler::main_loop()
 	  next_GTeventp = GT_event_queue.top();
 	  if((next_GTeventp->get_time() - pausedTime) < (next_RTeventp->gettime()))
 	    {
+	      RTEvent = false;
 	      next_eventp = next_GTeventp;
 	    }
 	  else
@@ -97,7 +98,14 @@ EventHandler::main_loop()
       next_eventp->eval();
       delete next_eventp;
 
-      event_queue.pop();
+      if(RTEvent)
+	{
+	  RT_event_queue.pop();
+	}
+      else
+	{
+	  GT_event_queue.pop();
+	}
   
     }  while( !finished );
 
