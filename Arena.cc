@@ -491,7 +491,7 @@ Arena::add_mine()
     (the_opts.get_d(OPTION_MINE_MAX_ENERGY) - the_opts.get_d(OPTION_MINE_MIN_ENERGY)) * 
     (double)rand() / (double)RAND_MAX;
   bool found_space = false;
-  double r = the_opts.get_d(OPTION_COOKIE_RADIUS);
+  double r = the_opts.get_d(OPTION_MINE_RADIUS);
   Vector2D pos;
 
   for( int i=0; i<100 && !found_space; i++)
