@@ -56,6 +56,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 //#include "Vector2D.h"
 #include "ArenaRealTime.h"
+#include "ArenaReplay.h"
 #include "Various.h"
 #include "ArenaController.h"
 
@@ -94,6 +95,9 @@ print_help_message()
   cout << "                                    '-' as 'file' is equivalent to STDOUT." << endl;
   cout << "                                    If both log and messages are send" << endl;
   cout << "                                    to STDOUT, '-m' will be ignored" << endl;
+  cout << "    --replay [file]            -r   a log file to replay." << endl;
+  cout << "                                    if '-' is specified as file," << endl;
+  cout << "                                    input is taken from STDIN" << endl;
   cout << endl;
   cout << "    --help,                    -h   prints this message" << endl;
   cout << "    --version,                 -v   prints the version number" << endl;
@@ -163,6 +167,8 @@ parse_command_line(int argc, char **argv)
   String log_file("");
   String tournament_file("");
   String message_file("");
+  String replay_file("");
+  bool realtime = true; // if false -> replay
 
   static struct option long_options[] =
   {
@@ -179,6 +185,7 @@ parse_command_line(int argc, char **argv)
     {"statistics_file", 1, 0, 0},
     {"tournament_file", 1, 0, 0},
     {"message_file", 1, 0, 0},
+    {"replay", 1, 0, 0},
 
     {"no_graphics", 0, &graphics_flag, false},
 
@@ -189,7 +196,7 @@ parse_command_line(int argc, char **argv)
     {
       int option_index = 0;
      
-      c = getopt_long (argc, argv, "dncvho:l:s:t:m:g", long_options, &option_index);
+      c = getopt_long (argc, argv, "dncvho:l:s:t:m:r:g", long_options, &option_index);
 
       /* Detect the end of the options. */
       if (c == -1)
@@ -219,6 +226,10 @@ parse_command_line(int argc, char **argv)
               break;
             case 9:
               message_file = (String)optarg;
+              break;
+            case 10:
+              replay_file = (String)optarg;
+              realtime = false;
               break;
             default:
               Error( true, "Bad error, this shouldn't happen",
@@ -268,6 +279,11 @@ parse_command_line(int argc, char **argv)
           message_file = (String)optarg;
           break;
 
+        case 'r':
+          replay_file = (String)optarg;
+          realtime = false;
+          break;
+
         case 'g':
           graphics_flag = false;
           break;
@@ -300,10 +316,21 @@ parse_command_line(int argc, char **argv)
   else
     the_opts.read_options_file(option_file,true);
 
-  the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
   no_graphics = !graphics_flag;
-  realtime_arena.set_filenames(log_file, statistics_file, tournament_file,
-                               message_file, option_file);
+
+  if( realtime )
+    {
+      the_arena_controller.start_realtime_arena();
+      the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
+      realtime_arena.set_filenames( log_file, statistics_file, tournament_file,
+                                    message_file, option_file );
+    }
+  else
+    {
+      the_arena_controller.start_replay_arena();
+      the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
+      replay_arena.set_filenames( replay_file );
+    }
 }
 
 
@@ -319,8 +346,6 @@ main ( int argc, char* argv[] )
 #ifndef NO_GRAPHICS
   gtk_init (&argc, &argv);
 #endif NO_GRAPHICS
-
-  the_arena_controller.start_realtime_arena();
 
   parse_command_line(argc, argv);
 
