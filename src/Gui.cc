@@ -944,7 +944,7 @@ Gui::setup_arena_window()
   gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
   gtk_widget_show (button_table);
 
-  // Scrolled Window 
+  // Scrolled Window
 
   da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
@@ -962,7 +962,11 @@ Gui::setup_arena_window()
   gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
                       (GtkSignalFunc) redraw_arena, (gpointer) NULL);
   gtk_widget_set_events (drawing_area, GDK_EXPOSURE_MASK);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_scrolled_window_add_with_viewport( GTK_SCROLLED_WINDOW( da_scrolled_window ), drawing_area );
+#else
   gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
+#endif
   gtk_widget_show (drawing_area);
 
   gtk_widget_show (arena_window);  
