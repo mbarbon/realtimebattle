@@ -184,10 +184,10 @@ Options::set_all_options_from_gui()
       if( all_long_options[i].datatype == ENTRY_HEX )
         entry_value = str2hex(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
 
-      if( entry_value > (long)all_long_options[i].max_value )
-        entry_value = (long)all_long_options[i].max_value;
-      if( entry_value < (long)all_long_options[i].min_value )
-        entry_value = (long)all_long_options[i].min_value;
+      if( entry_value > all_long_options[i].max_value )
+        entry_value = all_long_options[i].max_value;
+      if( entry_value < all_long_options[i].min_value )
+        entry_value = all_long_options[i].min_value;
 
       all_long_options[i].value = entry_value;
     }
@@ -200,9 +200,9 @@ Options::set_all_options_from_gui()
 void
 Options::setup_options_window()
 {
-  int options_per_column = 20;
+  int number_of_columns = 2;
   int number_of_options = LAST_DOUBLE_OPTION + LAST_LONG_OPTION + LAST_STRING_OPTION + LAST_BOOL_OPTION;
-  int number_of_columns = (number_of_options / options_per_column) + 1;
+  int options_per_column = (number_of_options / number_of_columns) + 1;
   GtkWidget * vboxes[number_of_columns];
 
   options_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -215,7 +215,7 @@ Options::setup_options_window()
   gtk_container_add (GTK_CONTAINER (options_window), vbox);
   gtk_widget_show (vbox);
 
-  GtkWidget * hbox = gtk_hbox_new (FALSE, 5);
+  GtkWidget * hbox = gtk_hbox_new (FALSE, 20);
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
@@ -251,6 +251,24 @@ Options::setup_options_window()
       gtk_box_pack_start (GTK_BOX (option_hbox), all_double_options[i].entry, FALSE, FALSE, 0);
       gtk_widget_set_usize(all_double_options[i].entry, all_double_options[i].max_letters_in_entry * 9,18);
       gtk_widget_show(all_double_options[i].entry);
+
+      GtkWidget * button = gtk_button_new_with_label ("min");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (double_options_min_callback), (gpointer) &all_double_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("def");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (double_options_def_callback), (gpointer) &all_double_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("max");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (double_options_max_callback), (gpointer) &all_double_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
     }
 
   for( int i=0;i<LAST_LONG_OPTION;i++ )
@@ -281,6 +299,24 @@ Options::setup_options_window()
       gtk_box_pack_start (GTK_BOX (option_hbox), all_long_options[i].entry, FALSE, FALSE, 0);
       gtk_widget_set_usize(all_long_options[i].entry, 108,18);
       gtk_widget_show(all_long_options[i].entry);
+
+      GtkWidget * button = gtk_button_new_with_label ("min");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (long_options_min_callback), (gpointer) &all_long_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("def");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (long_options_def_callback), (gpointer) &all_long_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("max");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (long_options_max_callback), (gpointer) &all_long_options[i] );
+      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
     }
 
   hbox = gtk_hbox_new (FALSE, 5);
@@ -311,16 +347,61 @@ Options::close_options_window()
 }
 
 void
-apply_options_requested(GtkWidget *widget, gpointer data)
+apply_options_requested(GtkWidget * widget, gpointer data)
 {
   the_opts.set_all_options_from_gui();
 }
 
 void
-options_window_requested(GtkWidget *widget, gpointer data)
+options_window_requested(GtkWidget * widget, gpointer data)
 {
   if(the_opts.get_options_window_up() == false)
     the_opts.setup_options_window();
   else
     the_opts.close_options_window();
+}
+
+void
+double_options_min_callback( GtkWidget * widget, option_info_t<double> * option )
+{
+  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->min_value).chars() );
+}
+
+void
+double_options_max_callback( GtkWidget * widget, option_info_t<double> * option )
+{
+  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->max_value).chars() );
+}
+
+void
+double_options_def_callback( GtkWidget * widget, option_info_t<double> * option )
+{
+  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->default_value).chars() );
+}
+
+void
+long_options_min_callback( GtkWidget * widget, option_info_t<long> * option )
+{
+  if(option->datatype == ENTRY_INT)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->min_value).chars() );
+  else if(option->datatype == ENTRY_HEX)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->min_value).chars() );
+}
+
+void
+long_options_max_callback( GtkWidget * widget, option_info_t<long> * option )
+{
+  if(option->datatype == ENTRY_INT)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->max_value).chars() );
+  else if(option->datatype == ENTRY_HEX)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->max_value).chars() );
+}
+
+void
+long_options_def_callback( GtkWidget * widget, option_info_t<long> * option )
+{
+  if(option->datatype == ENTRY_INT)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->default_value).chars() );
+  else if(option->datatype == ENTRY_HEX)
+    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->default_value).chars() );
 }

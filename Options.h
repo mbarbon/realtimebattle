@@ -83,13 +83,14 @@ template<class T>
 struct option_info_t
 {
   option_info_t() {}
-  option_info_t(const entry_datatype_t d, const T v, const double mn, const double mx,
+  option_info_t(const entry_datatype_t d, const T v, const T mn, const T mx,
                 const int l, const String& s, GtkWidget * e ) :
-    datatype(d), value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), label(s), entry(e) {}
+    datatype(d), value(v), default_value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), label(s), entry(e) {}
   entry_datatype_t datatype;
   T value;
-  double min_value;
-  double max_value;
+  T default_value;
+  T min_value;
+  T max_value;
   int max_letters_in_entry;
   String label;
   GtkWidget * entry;
@@ -97,6 +98,12 @@ struct option_info_t
 
 void options_window_requested(GtkWidget *widget, gpointer data);
 void apply_options_requested(GtkWidget *widget, gpointer data);
+void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
+void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );
+void double_options_def_callback( GtkWidget * widget, option_info_t<double> * option );
+void long_options_min_callback( GtkWidget * widget, option_info_t<long> * option );
+void long_options_max_callback( GtkWidget * widget, option_info_t<long> * option );
+void long_options_def_callback( GtkWidget * widget, option_info_t<long> * option );
 
 class Options
 {
