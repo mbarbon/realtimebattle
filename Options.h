@@ -102,7 +102,7 @@ struct option_info_t
 
 void options_window_requested(GtkWidget *widget, gpointer data);
 void apply_options_requested(GtkWidget *widget, gpointer data);
-void dump_options_requested(GtkWidget *widget, gpointer data);
+void save_options_requested(GtkWidget *widget, gpointer data);
 
 void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
 void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );

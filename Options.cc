@@ -140,10 +140,10 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
 
   all_string_options[OPTION_STATISTICS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, "statistics.txt", "", "", 100, "File to dump the statistics", NULL);
+    option_info_t<String>(ENTRY_CHAR, "statistics.txt", "", "", 100, "File to save the statistics", NULL);
 
   all_string_options[OPTION_OPTIONS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, "options.txt", "", "", 100, "File to dump the options", NULL);
+    option_info_t<String>(ENTRY_CHAR, "options.txt", "", "", 100, "File to save the options", NULL);
 
   options_window_up = false;
 }
@@ -424,9 +424,9 @@ Options::setup_options_window()
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
-  GtkWidget * button = gtk_button_new_with_label ("Dump options");
+  GtkWidget * button = gtk_button_new_with_label ("Save options");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (dump_options_requested), (gpointer) NULL);
+                      GTK_SIGNAL_FUNC (save_options_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
   gtk_widget_show (button);
 
@@ -460,7 +460,7 @@ apply_options_requested(GtkWidget * widget, gpointer data)
 }
 
 void
-dump_options_requested(GtkWidget * widget, gpointer data)
+save_options_requested(GtkWidget * widget, gpointer data)
 {
   the_opts.save_all_options_to_file();
 }
