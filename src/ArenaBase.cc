@@ -458,7 +458,7 @@ ArenaBase::get_shooting_penalty()
 
 
 void
-ArenaBase::update_timer()
+ArenaBase::update_timer(const double factor)
 {
   double last_timer = current_timer;
 
@@ -467,7 +467,7 @@ ArenaBase::update_timer()
   if( state == GAME_IN_PROGRESS ) timescale = the_opts.get_d(OPTION_TIMESCALE);
   timestep = min( (current_timer - last_timer) * timescale, 
                   the_opts.get_d(OPTION_MAX_TIMESTEP) );
-  total_time += timestep;
+  total_time += timestep*factor;
 }
 
 void

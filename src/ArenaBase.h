@@ -142,7 +142,7 @@ public:
 
 protected:
 
-  void update_timer();
+  void update_timer( const double factor = 1.0 );
   void reset_timer();
 
   void move_shots(const double time_period); 
