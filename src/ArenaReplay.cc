@@ -213,12 +213,9 @@ ArenaReplay::parse_log_line()
             for( object_lists[ROBOT].first(li); li.ok(); li++ )
               {                
                 robotp = (Robot*)li();
-                if( robotp->is_alive() || robotp->get_died_this_round() )
+                if( robotp->is_alive() )
                   {
-                    if( robotp->is_alive() )
-                      robotp->add_points(robots_killed_this_round);
-                    else
-                      robotp->set_stats(robots_killed_this_round);
+                    robotp->add_points(robots_killed_this_round);
 #ifndef NO_GRAPHICS
                     if( robots_left < 15 && !no_graphics ) 
                       robotp->display_score();
@@ -284,15 +281,18 @@ ArenaReplay::parse_log_line()
           case 'R':
             {
               double points_received;
-              log_file >> points_received;
+              int pos_this_game;
+              log_file >> points_received >> pos_this_game;
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[ROBOT], li, object_id );
               if( !li.ok() ) 
                 Error(true, "Dying robot not in list", "ArenaReplay::parse_log_line");
               Robot* robotp = (Robot*) li();
               robotp->die();
-              robotp->change_energy( -robotp->get_energy() );
               robots_killed_this_round++;
+              robotp->set_stats( points_received, pos_this_game,
+                                 current_replay_time);
+              robotp->change_energy( -robotp->get_energy() );
             }
             break;
           case 'C':
@@ -368,7 +368,8 @@ ArenaReplay::parse_log_line()
         long int col = str2hex( (String)robot_colour );
         log_file.get( name, 200, '\n' );
         Robot* robotp = new Robot( robot_id, col, (String)name );
-        object_lists[ROBOT].insert_last(robotp); // array bättre?
+        object_lists[ROBOT].insert_last(robotp); // array better?
+        all_robots_in_tournament.insert_last(robotp); // used by statistics
       }
       break;
     case 'A': // Arena file line
@@ -423,6 +424,10 @@ ArenaReplay::parse_log_line()
     default:
       Error( false, "Unrecognized first letter in logfile: " + 
              String(first_letter), "ArenaReplay::parse_log_line" );
+      char buffer[400];
+      log_file.get( buffer, 400, '\n' );
+      log_file >> ws;
+      log_file.clear();
       break;
     }
 
