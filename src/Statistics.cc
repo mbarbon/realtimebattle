@@ -42,7 +42,33 @@ statistics_button_callback(GtkWidget *widget, gpointer data)
 void
 save_statistics_callback(GtkWidget *widget, gpointer data)
 {
-  the_gui.save_statistics_to_file();
+  if(the_gui.get_filesel_widget() == NULL)
+    {
+      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
+      gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
+                          (GtkSignalFunc) destroy_stats_filesel, GTK_OBJECT(filesel));
+      gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
+                          "clicked", (GtkSignalFunc) save_stats_filesel_ok_selected, filesel );
+      gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->cancel_button),
+                                 "clicked", (GtkSignalFunc) destroy_stats_filesel,
+                                 GTK_OBJECT (filesel));
+      gtk_widget_show(filesel);
+      the_gui.set_filesel_widget(filesel);
+    }
+}
+
+void
+save_stats_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
+{
+  the_gui.save_statistics_to_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));
+  destroy_stats_filesel();
+}
+
+void
+destroy_stats_filesel()
+{
+  gtk_widget_destroy(the_gui.get_filesel_widget());
+  the_gui.set_filesel_widget(NULL);
 }
 
 void
@@ -415,10 +441,8 @@ Gui::add_the_statistics_to_clist()
 
 // This function takes the statistics and saves into one file chosen in options
 void
-Gui::save_statistics_to_file()
+Gui::save_statistics_to_file(String filename)
 {
-  String filename(the_opts.get_s(OPTION_STATISTICS_SAVE_FILE));
-
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
 

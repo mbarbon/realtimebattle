@@ -34,6 +34,8 @@ extern class Gui the_gui;
 
 Options::Options()
 {
+  filesel_widget = NULL;
+
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,"Gravitational Constant", NULL);
 
@@ -178,12 +180,6 @@ Options::Options()
   all_double_options[OPTION_CPU_WARNING_PERCENT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.9, 0.1, 1.0, 12, "CPU time warning percentage", NULL);
 
-  all_string_options[OPTION_STATISTICS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "statistics.txt", "", "", 100, "Statistics savefile", NULL);
-
-  all_string_options[OPTION_OPTIONS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "Options savefile", NULL);
-
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000, "Robot search path", NULL);
 
@@ -214,7 +210,6 @@ Options::Options()
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 50, 10000, 6, "Initial Statistics window height", NULL);
 
-  get_options_from_rtbrc();
   options_window_up = false;
 }
 
@@ -297,17 +292,25 @@ Options::get_options_from_rtbrc()
     return;
 
   String resource_file = String(home_dir) + "/.rtbrc";
-  ifstream rc_file(resource_file.chars());
-  if( !rc_file )
+  read_options_file(resource_file,true);
+}
+
+void
+Options::read_options_file(String file_string, const bool as_default)
+{
+  ifstream file(file_string.chars());
+  if( !file )
     return;
 
   for(;;)
     {
       char temp;
-      char buffer[100];
-      rc_file >> ws;
-      rc_file.get(buffer,100,':');
-      rc_file.get(temp);
+      char buffer[1000];
+      bool option_found_flag = false;
+
+      file >> ws;
+      file.get(buffer,100,':');
+      file.get(temp);
       String option_name(buffer);
       if(option_name == "")
         break;
@@ -316,10 +319,12 @@ Options::get_options_from_rtbrc()
         if(option_name == all_double_options[i].label )
           {
             double option_value;
-            rc_file >> option_value;
-            rc_file.get(buffer,100,'\n');
+            file >> option_value;
+            file.get(buffer,100,'\n');
             all_double_options[i].value = option_value;
-            all_double_options[i].default_value = option_value;
+            if(as_default)
+              all_double_options[i].default_value = option_value;
+            option_found_flag = true;
           }
 
       for(int i=0;i<LAST_LONG_OPTION;i++)
@@ -327,49 +332,51 @@ Options::get_options_from_rtbrc()
           {
             long option_value = 0;
             if( all_long_options[i].datatype == ENTRY_INT )
-              rc_file >> option_value;
+              file >> option_value;
             if( all_long_options[i].datatype == ENTRY_HEX )
               {
                 String temp_string;
-                rc_file >> temp_string;
+                file >> temp_string;
                 while( temp_string[0] == ' ' )
                   temp_string = get_segment(temp_string,1,-1);
                 option_value = str2hex(temp_string);
               }
-            rc_file.get(buffer,100,'\n');
+            file.get(buffer,100,'\n');
             all_long_options[i].value = option_value;
-            all_long_options[i].default_value = option_value;
+            if(as_default)
+              all_long_options[i].default_value = option_value;
+            option_found_flag = true;
           }
 
       for(int i=0;i<LAST_STRING_OPTION;i++)
         if(option_name == all_string_options[i].label )
           {
             String option_value;
-            rc_file >> option_value;
+            file >> option_value;
             while( option_value[0] == ' ' )
               option_value = get_segment(option_value,1,-1);
-            rc_file.get(buffer,100,'\n');
+            file.get(buffer,100,'\n');
             all_string_options[i].value = option_value;
-            all_string_options[i].default_value = option_value;
+            if(as_default)
+              all_string_options[i].default_value = option_value;
+            option_found_flag = true;
           }
-
+      if(!option_found_flag)
+        file.get(buffer,1000,'\n');        
     }
 }
 
 void
-Options::save_all_options_to_file(const bool as_default)
+Options::save_all_options_to_file(String filename, const bool as_default)
 {
-  String filename;
   if(as_default)
     {
       char* home_dir;
       if( NULL == ( home_dir = getenv("HOME") ) )
-        strcpy(home_dir,"/??");
+        return;
 
       filename = String(home_dir) + "/.rtbrc";
     }
-  else
-    filename = gtk_entry_get_text(GTK_ENTRY(all_string_options[OPTION_OPTIONS_SAVE_FILE].entry));
 
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
@@ -398,26 +405,31 @@ Options::save_all_options_to_file(const bool as_default)
 }
 
 void
-Options::revert_all_options_to_default()
+Options::update_all_gtk_entries()
 {
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-    {
-      all_double_options[i].value = all_double_options[i].default_value;
-      gtk_entry_set_text( GTK_ENTRY( all_double_options[i].entry ), String(all_double_options[i].value).chars() );
-    }
+    gtk_entry_set_text( GTK_ENTRY( all_double_options[i].entry ), String(all_double_options[i].value).chars() );
   for(int i=0;i<LAST_LONG_OPTION;i++)
     {
-      all_long_options[i].value = all_long_options[i].default_value;
       if( all_long_options[i].datatype == ENTRY_INT )
         gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), String(all_long_options[i].value).chars() );
       else if (all_long_options[i].datatype == ENTRY_HEX)
         gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), hex2str(all_long_options[i].value).chars() );
     }
   for(int i=0;i<LAST_STRING_OPTION;i++)
-    {
-      all_string_options[i].value = all_string_options[i].default_value;
-      gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
-    }
+    gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
+}
+
+void
+Options::revert_all_options_to_default()
+{
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    all_double_options[i].value = all_double_options[i].default_value;
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    all_long_options[i].value = all_long_options[i].default_value;
+  for(int i=0;i<LAST_STRING_OPTION;i++)
+    all_string_options[i].value = all_string_options[i].default_value;
+  update_all_gtk_entries();
 }
 
 void
@@ -494,7 +506,7 @@ Options::setup_options_window()
 
             gtk_signal_connect(GTK_OBJECT(all_double_options[opt].entry), "changed",
                                GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_double_options[opt].entry, 108 ,18);
+            gtk_widget_set_usize(all_double_options[opt].entry, 108 ,22);
             gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_double_options[opt].entry, 0, 1, row, row + 1 );
             gtk_widget_show(all_double_options[opt].entry);
 
@@ -545,7 +557,7 @@ Options::setup_options_window()
 
             gtk_signal_connect(GTK_OBJECT(all_long_options[opt].entry), "changed",
                                GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_long_options[opt].entry, 108,18);
+            gtk_widget_set_usize(all_long_options[opt].entry, 108,22);
             gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_long_options[opt].entry, 0, 1, row, row + 1 );
             gtk_widget_show(all_long_options[opt].entry);
 
@@ -589,7 +601,7 @@ Options::setup_options_window()
 
             gtk_signal_connect(GTK_OBJECT(all_string_options[opt].entry), "changed",
                                GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_string_options[opt].entry, 108 ,18);
+            gtk_widget_set_usize(all_string_options[opt].entry, 108 ,22);
             gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_string_options[opt].entry, 0, 1, row, row + 1 );
             gtk_widget_show(all_string_options[opt].entry);
 
@@ -621,6 +633,12 @@ Options::setup_options_window()
   GtkWidget * button = gtk_button_new_with_label (" Default ");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (default_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label (" Load options ");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (load_options_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
   gtk_widget_show (button);
 
@@ -679,15 +697,67 @@ ok_options_requested(GtkWidget * widget, gpointer data)
 }
 
 void
+load_options_requested(GtkWidget * widget, gpointer data)
+{
+  if(the_opts.get_filesel_widget() == NULL)
+    {
+      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
+      gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
+                          (GtkSignalFunc) destroy_options_filesel, GTK_OBJECT(filesel));
+      gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
+                          "clicked", (GtkSignalFunc) load_filesel_ok_selected, filesel );
+      gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->cancel_button),
+                                 "clicked", (GtkSignalFunc) destroy_options_filesel,
+                                 GTK_OBJECT (filesel));
+      gtk_widget_show(filesel);
+      the_opts.set_filesel_widget(filesel);
+    }
+}
+
+void
+load_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
+{
+  the_opts.read_options_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)),false);
+  the_opts.update_all_gtk_entries();
+  destroy_options_filesel();
+}
+
+void
 save_options_requested(GtkWidget * widget, gpointer data)
 {
-  the_opts.save_all_options_to_file(false);
+  if(the_opts.get_filesel_widget() == NULL)
+    {
+      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
+      gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
+                          (GtkSignalFunc) destroy_options_filesel, GTK_OBJECT(filesel));
+      gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
+                          "clicked", (GtkSignalFunc) save_filesel_ok_selected, filesel );
+      gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->cancel_button),
+                                 "clicked", (GtkSignalFunc) destroy_options_filesel,
+                                 GTK_OBJECT (filesel));
+      gtk_widget_show(filesel);
+      the_opts.set_filesel_widget(filesel);
+    }
+}
+
+void
+save_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
+{
+  the_opts.save_all_options_to_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)),false);
+  destroy_options_filesel();
 }
 
 void
 save_def_options_requested(GtkWidget * widget, gpointer data)
 {
-  the_opts.save_all_options_to_file(true);
+  the_opts.save_all_options_to_file("",true);
+}
+
+void
+destroy_options_filesel()
+{
+  gtk_widget_destroy(the_opts.get_filesel_widget());
+  the_opts.set_filesel_widget(NULL);
 }
 
 void

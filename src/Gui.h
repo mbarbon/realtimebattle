@@ -98,6 +98,8 @@ void zoom_out_callback(GtkWidget *widget, gpointer data);
 gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 void save_statistics_callback(GtkWidget *widget, gpointer data);
+void save_stats_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
+void destroy_stats_filesel();
 void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
 
 void start_tournament_start_callback(GtkWidget *widget, gpointer data);
@@ -129,7 +131,7 @@ public:
 
   void quit_event();
 
-  void print_to_message_output( const String& from_robot, const String& text, GdkColor& colour);
+  void print_to_message_output(String from_robot, String text);
   void draw_objects(const bool clear_objects_first);
   void draw_all_walls();
 
@@ -150,7 +152,7 @@ public:
   void add_new_row( void* rp, void* sp, int games_played );
   void add_the_statistics_to_clist();
   void stat_make_title_button();
-  void save_statistics_to_file();
+  void save_statistics_to_file(String filename);
 
   void set_control_window_title( const bool halted );
   void set_score_window_title();
@@ -177,6 +179,8 @@ public:
   GList* get_arenadirs() { return arenadirs; }
   Robot* get_selected_robot() { return selected_robot; }
   double get_zoom() { return zoom; }
+  GtkWidget* get_filesel_widget() { return filesel_widget; }
+  void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
 private:
   void read_dirs_from_system();
@@ -185,7 +189,7 @@ private:
   bool statistics_up;
   bool start_tournament_up;
 
-  GtkWidget* message_output;
+  GtkWidget* message_clist;
   GtkWidget* drawing_area;
   GtkWidget* da_scrolled_window;
 
@@ -193,6 +197,8 @@ private:
   GtkWidget* stat_clist;
   GtkWidget* stat_title_button;
   GtkWidget* stat_title_hbox;
+
+  GtkWidget* filesel_widget;
 
   Robot* selected_robot;
   GtkWidget* debug_level_widget;

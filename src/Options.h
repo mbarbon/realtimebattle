@@ -109,8 +109,6 @@ enum option_long_t
 
 enum option_string_t
 {
-  OPTION_STATISTICS_SAVE_FILE,
-  OPTION_OPTIONS_SAVE_FILE,
   OPTION_ROBOT_SEARCH_PATH,
   OPTION_ARENA_SEARCH_PATH,
   LAST_STRING_OPTION
@@ -158,12 +156,16 @@ struct option_info_t
   GtkWidget * entry;
 };
 
-void options_window_requested(GtkWidget *widget, gpointer data);
-void apply_options_requested(GtkWidget *widget, gpointer data);
-void ok_options_requested(GtkWidget *widget, gpointer data);
-void save_options_requested(GtkWidget *widget, gpointer data);
-void save_def_options_requested(GtkWidget *widget, gpointer data);
-void default_options_requested(GtkWidget *widget, gpointer data);
+void options_window_requested(GtkWidget* widget, gpointer data);
+void apply_options_requested(GtkWidget* widget, gpointer data);
+void ok_options_requested(GtkWidget* widget, gpointer data);
+void load_options_requested(GtkWidget* widget, gpointer data);
+void load_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
+void save_options_requested(GtkWidget* widget, gpointer data);
+void save_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
+void save_def_options_requested(GtkWidget* widget, gpointer data);
+void destroy_options_filesel();
+void default_options_requested(GtkWidget* widget, gpointer data);
 
 void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
 void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );
@@ -188,11 +190,16 @@ public:
   void broadcast_opts();
   void setup_options_window();
   void close_options_window();
+  void update_all_gtk_entries();
   void revert_all_options_to_default();
   void set_all_options_from_gui();
-  void save_all_options_to_file(const bool as_default);
+  void save_all_options_to_file(String filename, const bool as_default);
   void get_options_from_rtbrc();
+  void read_options_file(String file_string, const bool as_default);
+
   bool get_options_window_up() { return options_window_up; }
+  GtkWidget* get_filesel_widget() { return filesel_widget; }
+  void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
 private:
 
@@ -203,6 +210,7 @@ private:
   //  option_info_t<bool> all_bool_options[LAST_BOOL_OPTION];
 
   bool options_window_up;
-  GtkWidget * options_window;
+  GtkWidget* options_window;
+  GtkWidget* filesel_widget;
 };
 #endif __OPTIONS__
