@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 1999-09-01 18:13+0200\n"
+"POT-Creation-Date: 2000-01-06 09:50+0100\n"
 "PO-Revision-Date: 1999-10-10 18:08+0200\n"
 "Last-Translator: Uwe Hermann <uh1763@bingo-ev.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -592,8 +592,9 @@ msgid ""
 "    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
 msgstr ""
-"    --debug_level [0-5],         -D   Setzt den anfänglichen Debug-Level."
-"Bezieht -d mit ein"
+"    --debug_level [0-5],         -D   Setzt den anfänglichen "
+"Debug-Level.Bezieht -d mit ein"
+
 #: src/RealTimeBattle.cc:95
 msgid "    --normal_mode,               -n   normal mode (default)"
 msgstr "    --normal_mode,               -n   normaler Modus (Standard)"
@@ -604,7 +605,8 @@ msgstr "    --competition_mode,          -c   Wettkampf Modus"
 
 #: src/RealTimeBattle.cc:98
 msgid "    --no_graphics,               -g   no graphics will be displayed"
-msgstr "    --no_graphics,               -g   es werden keine Grafiken angezeigt"
+msgstr ""
+"    --no_graphics,               -g   es werden keine Grafiken angezeigt"
 
 #: src/RealTimeBattle.cc:99
 msgid ""
@@ -613,6 +615,7 @@ msgid ""
 msgstr ""
 "    --option_file [Datei],       -o   gibt Options-Datei an (Standard: "
 "$HOME/.rtbrc)"
+
 #: src/RealTimeBattle.cc:101
 msgid ""
 "    --log_file [file],           -l   make log file, if 'file' is '-'\n"
@@ -620,6 +623,7 @@ msgid ""
 msgstr ""
 "    --log_file [Datei],          -l   schreibt Log-Datei, wenn 'Datei' ein\n"
 "                                      '-' ist, wird nach STDOUT geschrieben"
+
 #: src/RealTimeBattle.cc:104
 msgid ""
 "    --tournament_file [file],    -t   specify a tournament file to\n"
@@ -627,6 +631,7 @@ msgid ""
 msgstr ""
 "    --tournament_file [Datei],   -t   Gibt eine Turnier-Datei an, um\n"
 "                                      selbständig das Turnier zu starten"
+
 #: src/RealTimeBattle.cc:107
 msgid ""
 "    --statistics_file [file],    -s   file to print the statistics to\n"
@@ -634,6 +639,7 @@ msgid ""
 msgstr ""
 "    --statistics_file [Datei],   -s   Datei um die Statistiken zu speichern\n"
 "                                      wenn selbständig gestartet wird"
+
 #: src/RealTimeBattle.cc:110
 msgid ""
 "    --message_file [file],       -m   redirect messages to 'file'.\n"
@@ -647,6 +653,7 @@ msgstr ""
 "                                      Wenn sowohl Logs als auch Nachrichten\n"
 "                                      nach STDOUT geschrieben werden, wird\n"
 "                                      '-m' ignoriert"
+
 #: src/RealTimeBattle.cc:115
 msgid ""
 "    --replay [file]              -r   a log file to replay.\n"
