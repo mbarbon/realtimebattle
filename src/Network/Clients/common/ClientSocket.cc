@@ -59,7 +59,10 @@ SocketClient::connect_to_server( string hostname, int port )
       return;
     }
 
+
   nc.the_socket = the_socket;
+  nc.make_nonblocking();
+
   nc.connected = true;
   nc.address = hostname;
 }
@@ -99,6 +102,7 @@ SocketClient::check_connection()
       my_cons.prompt_enter();
       my_cons.update_prompt();
       string buf = string (buffer);
+
       if( buf == "quit\n")   //The quit event (maybe a click for a chat)
 	{ 
 	  //Use ClientRequest packet instead ...
@@ -137,17 +141,26 @@ SocketClient::check_connection()
 
   if( (nc).connected && FD_ISSET( (nc).the_socket, &readfs ) )
     {
-      if( (nc).read_data() < 0 )
+      if( nc.read_data() < 0 )
 	{
 	  (nc).close_socket();
 	}
       else
 	{
-	  Packet* P ;
-	  while( (P = make_packet( nc.read_buffer )) )
+	  Packet *P;
+	  //cout<< "Read succesfully\n";
+	  while( ! (nc.read_buffers).empty() )
 	    {
-	      nc.read_buffer = 
-		P->get_string_from_netstring( nc.read_buffer );
+	      //Extract the string for the queue and make a packet with it
+	      string data = nc.read_buffers.front();
+	      //cout<<" >> "<< data <<endl;
+	      P = make_packet( data );
+	      nc.read_buffers.pop();
+	      
+	      if( !P ) continue; //Jump to the next Packet
+	      
+	      P->get_string_from_netstring( data );
+
 	      switch(P->packet_type()) 
 		{
 		case PACKET_COMMAND :
