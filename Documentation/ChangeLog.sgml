@@ -5,6 +5,11 @@
 Change log
 <itemize>
 
+<item> <bf>1.1.0</bf>
+<p>
+
+Fixed a problem with COLLISION giving wrong angle. Thanks to Nathan D Green.
+
 <item> <bf>1.0.0</bf>
 <p>
 
