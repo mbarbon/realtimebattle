@@ -1,0 +1,29 @@
+bin_PROGRAMS = Server Client
+
+if ENABLE_PROF
+PROFFLAGS = -pg
+endif
+
+INCLUDES = $(PROFFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
+           -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+
+if ENABLE_CCMALLOC
+CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
+else
+CCMALLOC_O =
+endif
+
+
+
+Server_DEPENDENCIES = $(INTLOBJS)
+Server_SOURCES = \
+	Server.cc \
+	Socklib.c Socklib.h
+
+
+
+Client_DEPENDENCIES = $(INTLOBJS)
+Client_SOURCES = \
+	Client.cc \
+	SimpleProcess.cc SimpleProcess.h \
+	Socklib.c Socklib.h
