@@ -19,8 +19,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <fstream.h>
 #include <math.h>
+
+#include "Gui.h"
 #include "Options.h"
-#include "Arena.h"
+//#include "Arena.h"
 
 // void
 // Options::set_options()
@@ -205,6 +207,8 @@ Options::broadcast_opts()
   the_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED, get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED));
 
   the_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT));  
+
+  the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, the_arena.get_debug_level());  
 }
 
 void
