@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiStructs.h"
 #include "Gui.h"
 
+// pixmap_t
 
 pixmap_t::~pixmap_t()
 {
@@ -69,4 +70,32 @@ pixmap_t::get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*
   
   pixm = pixmap;
   bitm = bitmap;
+}
+
+// rgb_gdk_colour_t
+
+rgb_gdk_colour_t::rgb_gdk_colour_t( const long int& rgb_col )
+  : rgb_colour( rgb_col )
+{
+  gdk_colour = make_gdk_colour( rgb_col );
+}
+
+rgb_gdk_colour_t::rgb_gdk_colour_t( const GdkColor& gdk_col )
+  : gdk_colour( gdk_col )
+{
+  rgb_colour = gdk2hex_colour( gdk_col );
+}
+
+void
+rgb_gdk_colour_t::set_colour( const long int& rgb_col )
+{
+  rgb_colour = rgb_col;
+  gdk_colour = make_gdk_colour( rgb_col );
+}
+
+void
+rgb_gdk_colour_t::set_colour( const GdkColor& gdk_col )
+{
+  rgb_colour = gdk2hex_colour( gdk_col );
+  gdk_colour = gdk_col;
 }

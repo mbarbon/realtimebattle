@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <gdk/gdk.h>
 
+#include "GuiVarious.h"
+
 struct pixmap_t
 {
   pixmap_t() : pixmap( (GdkPixmap*)NULL ), window( (GdkWindow*)NULL ) {}
@@ -34,6 +36,17 @@ struct pixmap_t
   GdkWindow* window;
   GdkBitmap* bitmap;
 };
-    
+
+struct rgb_gdk_colour_t
+{
+  rgb_gdk_colour_t               ( const long int&    rgb_col );
+  rgb_gdk_colour_t               ( const GdkColor&    gdk_col );
+
+  void set_colour                ( const long int&    rgb_col );
+  void set_colour                ( const GdkColor&    gdk_col );
+
+  long int rgb_colour;
+  GdkColor gdk_colour;
+};
 
 #endif __GUISTRUCTS__
