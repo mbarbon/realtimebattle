@@ -68,16 +68,21 @@ print_help_message()
 {
   cout << endl;
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
-  cout << " Options: --debug_mode,         -d   debug mode" << endl;
-  cout << "          --normal_mode,        -n   normal mode (default)" << endl;
-  cout << "          --competition_mode,   -c   competition mode" << endl ;
-  //  cout << "          --no_graphics,        -g   no graphics will be displayed" << endl ;
-  cout << "          --option_file [file], -o   selects option-file " << endl;
-  cout << "                                     (default: $HOME/.rtbrc)"  << endl;
-  cout << "          --log_file [file],    -l   make log file, file=- logs to STDOUT" << endl;
+  cout << " Options: --debug_mode,              -d   debug mode" << endl;
+  cout << "          --normal_mode,             -n   normal mode (default)" << endl;
+  cout << "          --competition_mode,        -c   competition mode" << endl ;
+  cout << "          --no_graphics,             -g   no graphics will be displayed" << endl ;
+  cout << "          --option_file [file],      -o   selects option-file " << endl;
+  cout << "                                          (default: $HOME/.rtbrc)"  << endl;
+  cout << "          --log_file [file],         -l   make log file," << endl;
+  cout << "                                          file=- logs to STDOUT" << endl;
+  cout << "          --tournament_file [file],  -t   specify a tournament file to" << endl;
+  cout << "                                          autostart a tournament" << endl;
+  cout << "          --statistics_file [file],  -s   file to print the statistics to" << endl;
+  cout << "                                          when autostarting" << endl;
   cout << endl;
-  cout << "          --help,               -h   prints this message" << endl;
-  cout << "          --version,            -v   prints the version number" << endl;
+  cout << "          --help,                    -h   prints this message" << endl;
+  cout << "          --version,                 -v   prints the version number" << endl;
   cout << endl;
 }
 
