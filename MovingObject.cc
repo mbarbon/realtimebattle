@@ -6,7 +6,6 @@
 
 Robot::Robot(char* filename)
 {
-  my_shape = Circle();
   velocity = Vector2D(0.0, 0.0);
   robot_filename = *g_string_new(filename);
   robot_name = *g_string_new("");
@@ -70,19 +69,19 @@ Robot::update_radar_and_cannon(const double timestep)
 {
   radar_angle += timestep*radar_speed;
   cannon_angle += timestep*cannon_speed;
-  SolidObject* closest_shape;
-  double dist = the_arena->get_shortest_distance(my_shape.get_center(), velocity, 0.0, closest_shape);
-  send_message(RADAR, dist, closest_shape->get_object_type());
+  Shape* closest_shape;
+  double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape);
+  send_message(RADAR, dist, ((ArenaObject*)closest_shape)->get_object_type());
 }
 
 void
 Robot::move(const double timestep)
 {
-  SolidObject* closest_shape;
-  double dist = the_arena->get_shortest_distance(my_shape.get_center(), velocity, my_shape.get_radius(), closest_shape);
+  Shape* closest_shape;
+  double dist = the_arena->get_shortest_distance(center, velocity, radius, closest_shape);
   if( dist > timestep )
     {
-      my_shape.add_to_center(timestep*velocity);
+      center += timestep*velocity;
     }
   else
     {

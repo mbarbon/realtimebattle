@@ -23,21 +23,18 @@ static const number_of_object_types = 6;
 class Arena 
 {
 public:
-  Arena(char* filename);
+  Arena();
   ~Arena();
 
-  double get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, class SolidObject* closest_shape);
-  void update_robots();
-  void move_shots();
-  void update_explosions();
-  void add_to_list(class ArenaObject&);
-  void remove_from_list(class ArenaObject&);
-  void add_to_solid_object_list(class SolidObject&);
-  void remove_from_solid_object_list(class SolidObject&);
-  void start_robot(char* filename);
+  gint update();
+
+  double get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
+                               const double size, class Shape* closest_shape);
+  
   void start_game(int arenanr);
   void start_sequence_of_games(int first_arena);
-  void start_tournament(char**robotfilenamelist, char** arenafilenamelist, int robots_per_game); // NULL terminated lists
+  void start_tournament(char**robotfilenamelist, char** arenafilenamelist, // NULL terminated lists
+                        int robots_per_game); 
   
 private:
   double timestep;
@@ -46,11 +43,24 @@ private:
   void parse_file(istream&);
   void check_initialization();
 
+  void start_robot(char* filename);
+  void update_robots();
+  void move_shots();
+  void update_explosions();
+
+  void add_to_list(class ArenaObject&);
+  void remove_from_list(class ArenaObject&);
+  void add_to_solid_object_list(class Shape&);
+  void remove_from_solid_object_list(class Shape&);
+
   GList object_lists[number_of_object_types];
   
   GList all_robots_in_tournament;
+  GList all_robots_in_sequence;
   GList solid_objects;
   GList arena_filenames;               // list of GStrings
+  
+  int games_remaining_in_sequence;
 
   double air_resistance;
   double roll_friction;
@@ -83,28 +93,23 @@ private:
 
 };
 
-// ---------------------  SolidObject ---------------------
-
-class SolidObject : public ArenaObject 
-{
-public:
-  virtual double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) = 0;
-};
-
 //---------------------  Shape ---------------------
 
-class Shape : protected ArenaObject
+class Shape
 {
 public:
   Shape() {touch_action = BOUNCE;bounce_coeff = 0.5;}
-  ~Shape() {}
-  object_type get_object_type() { return WALL; }
+  virtual ~Shape() {}
+
+  virtual double get_distance(const Vector2D& pos, const Vector2D& dir, 
+                              const double size) = 0;
   //virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size) = 0;
   //virtual void get_args(istream&) = 0;
 
 protected:
   touch_type touch_action;
   double bounce_coeff;
+  GdkColor colour;
 };
 
 
@@ -119,9 +124,8 @@ public:
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
-  object_type get_object_type() { return WALL; }
 
-private:
+protected:
   Vector2D start_point;
   Vector2D direction;
   double length;
@@ -139,23 +143,39 @@ public:
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
-  object_type get_object_type() { return WALL; }
   
-  double get_radius() { return radius; }
-  Vector2D get_center() { return center; }
-  void add_to_center(const Vector2D& diff) { center += diff; }
+  // double get_radius() { return radius; }
+  //Vector2D get_center() { return center; }
+  //void add_to_center(const Vector2D& diff) { center += diff; }
   
-private:
+protected:
   Vector2D center;
   double radius;
   //  double radiussqr;
 };
 
+// ---------------------  Wall : ArenaObject ---------------------
+
+class Wall : protected ArenaObject 
+{
+public:
+  object_type get_object_type() { return WALL; }
+};
+
+class WallCircle : private Wall, private Circle
+{
+};
+
+class WallLine : private Wall, private Line
+{
+};
+
+
 // ---------------------  Extras : ArenaObject  ---------------------
 
 class Robot;
 
-class Extras : protected ArenaObject //, public Circle 
+class Extras : protected ArenaObject
 {
 public:
   //Extras(const Vector2D& c, const double r); 
@@ -169,7 +189,7 @@ protected:
 
 // ---------------------  Cookie : Extras  ---------------------
 
-class Cookie : private Extras
+class Cookie : private Extras, private Circle
 {
 public:
   Cookie(const Vector2D& c, const double r, const double e); 
@@ -183,7 +203,7 @@ private:
 
 // ---------------------  Mine : Extras  ---------------------
 
-class Mine : private Extras
+class Mine : private Extras, private Circle
 {
 public:
   Mine(const Vector2D& c, const double r, const double e); 
@@ -197,7 +217,7 @@ private:
 
 // ----------------  MovingObject : ArenaObject  ---------------------
 
-class MovingObject : protected ArenaObject//, public Circle 
+class MovingObject : protected ArenaObject
 {
 public:
   //MovingObject(const Vector2D& c, const double r); 
@@ -206,14 +226,14 @@ public:
   virtual void move(const double timestep) = 0;
 
 protected:
-  Circle my_shape;
+  //Circle my_shape;
   Vector2D velocity;
   
 };
 
 // ---------------------  Robot : MovingObject  ---------------------
 
-class Robot : private MovingObject
+class Robot : private MovingObject, private Circle
 {
 public:
   Robot(char* filename);
@@ -262,10 +282,11 @@ private:
 
 // ---------------------  Shot : MovingObject  ---------------------
 
-class Shot : private MovingObject
+class Shot : private MovingObject, private Circle
 {
 public:
-  Shot(const Vector2D& c, const double r, const Vector2D& velocity, const double energy); 
+  Shot(const Vector2D& c, const double r, 
+       const Vector2D& velocity, const double energy); 
   ~Shot() {}
 
   void move(const double timestep);
