@@ -1,3 +1,4 @@
+#include <strstream.h>
 #include <math.h>
 #include "gui.h"
 #include "Vector2D.h"
@@ -47,7 +48,7 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor co
 }
 
 void
-Gui::draw_objects( gpointer the_arenap )
+Gui::draw_objects( void * the_arenap )
 {
   GList** object_lists;
   GList* gl;
@@ -167,7 +168,6 @@ Gui::draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled 
 
   gdk_gc_destroy( colour_gc );
 }
-
 void
 Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 {
@@ -175,21 +175,25 @@ Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 }
 
 void
-Gui::setup_control_window( char * robot_name_list[] )
+Gui::setup_control_window( void * the_arenap )
 {
   int robot_number=0;
 
   GtkWidget *window;
   GtkWidget *button;
   GtkWidget *toptable,*messagetable,*bottomtable,*rltable,*rhtable;
-  GtkWidget *life,*score,*place;
   GtkWidget *label;
   GtkWidget *vbox,*scr_vbox,*hbox, *robothbox;
   GtkWidget *scrolled_window;
   GtkWidget * vscrollbar;
   GdkColormap *cmap;
 
-  for( int i=0; robot_name_list[i] != NULL;i++)
+  GList** object_lists;
+  GList* gl;
+  Robot* robotp;
+
+  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
   /* Window */
@@ -284,51 +288,66 @@ Gui::setup_control_window( char * robot_name_list[] )
 
   /* Robots */
 
-  for(int i=0;robot_name_list[i] != NULL ;i++) {
+  GtkWidget * widget_energy;
+  GtkWidget * widget_place;
+  GtkWidget * widget_score;
 
-    hbox = gtk_hbox_new (FALSE, 10);
-    gtk_table_attach_defaults (GTK_TABLE(rhtable), hbox, 0, 1, i, i + 1);
-    gtk_widget_show (hbox);  
+  int i = 0;
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      strstream ss;
+      char str[10];
 
-    /* Robot Buttons */
+      robotp = (Robot*)(gl->data);
 
-    label = gtk_label_new (robot_name_list[i]);
-    gtk_table_attach_defaults (GTK_TABLE(rltable), label, 0, 1, i, i + 1);
-    gtk_widget_show (label);
+      hbox = gtk_hbox_new (FALSE, 10);
+      gtk_table_attach_defaults (GTK_TABLE(rhtable), hbox, 0, 1, i, i + 1);
+      gtk_widget_show (hbox);
 
-    label = gtk_label_new ("Life");
-    gtk_container_add (GTK_CONTAINER (hbox), label);
-    gtk_widget_show (label);
+      /* Robot Buttons */
 
-    life = gtk_entry_new_with_max_length(3);
-    gtk_entry_set_text (GTK_ENTRY (life), "");
-    gtk_entry_set_editable(GTK_ENTRY(life),FALSE);
-    gtk_widget_set_usize(life, 30,25);
-    gtk_container_add (GTK_CONTAINER (hbox), life);
-    gtk_widget_show (life);
+      label = gtk_label_new (robotp->get_robotname() );
+      gtk_table_attach_defaults (GTK_TABLE(rltable), label, 0, 1, i, i + 1);
+      gtk_widget_show (label);
 
-    label = gtk_label_new ("Place");
-    gtk_container_add (GTK_CONTAINER (hbox), label);
-    gtk_widget_show (label);
+      label = gtk_label_new ("Energy");
+      gtk_container_add (GTK_CONTAINER (hbox), label);
+      gtk_widget_show (label);
 
-    place = gtk_entry_new_with_max_length(2);
-    gtk_entry_set_text (GTK_ENTRY (place), "");
-    gtk_entry_set_editable(GTK_ENTRY(place),FALSE);
-    gtk_widget_set_usize(place, 24,25);
-    gtk_container_add (GTK_CONTAINER (hbox), place);
-    gtk_widget_show (place);
+      widget_energy = gtk_entry_new_with_max_length(3);
+      ss << robotp->get_energy();
+      ss >> str;
+      gtk_entry_set_text (GTK_ENTRY (widget_energy), str );
+      gtk_entry_set_editable(GTK_ENTRY(widget_energy),FALSE);
+      gtk_widget_set_usize(widget_energy, 30,25);
+      gtk_container_add (GTK_CONTAINER (hbox), widget_energy);
+      gtk_widget_show (widget_energy);
 
-    label = gtk_label_new ("Score");
-    gtk_container_add (GTK_CONTAINER (hbox), label);
-    gtk_widget_show (label);
+      label = gtk_label_new ("Place");
+      gtk_container_add (GTK_CONTAINER (hbox), label);
+      gtk_widget_show (label);
 
-    score = gtk_entry_new_with_max_length(4);
-    gtk_entry_set_text (GTK_ENTRY (score), "");
-    gtk_entry_set_editable(GTK_ENTRY(score),FALSE);
-    gtk_widget_set_usize(score, 36,25);
-    gtk_container_add (GTK_CONTAINER (hbox), score);
-    gtk_widget_show (score);
-  }
+      widget_place = gtk_entry_new_with_max_length(2);
+      gtk_entry_set_text (GTK_ENTRY (widget_place), "");
+      gtk_entry_set_editable(GTK_ENTRY(widget_place),FALSE);
+      gtk_widget_set_usize(widget_place, 24,25);
+      gtk_container_add (GTK_CONTAINER (hbox), widget_place);
+      gtk_widget_show (widget_place);
+
+      label = gtk_label_new ("Score");
+      gtk_container_add (GTK_CONTAINER (hbox), label);
+      gtk_widget_show (label);
+
+      widget_score = gtk_entry_new_with_max_length(4);
+      gtk_entry_set_text (GTK_ENTRY (widget_score), "");
+      gtk_entry_set_editable(GTK_ENTRY(widget_score),FALSE);
+      gtk_widget_set_usize(widget_score, 36,25);
+      gtk_container_add (GTK_CONTAINER (hbox), widget_score);
+      gtk_widget_show (widget_score);
+
+      robotp->set_gtk_widgets( widget_energy, widget_place, widget_score );
+      i++;
+    }
 
   gtk_table_set_row_spacings (GTK_TABLE(rhtable), 5);
   gtk_table_set_row_spacings (GTK_TABLE(rltable), 5);
@@ -407,7 +426,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (window), da_scrolled_window);
-  gtk_widget_set_usize(da_scrolled_window,200,200);
+  gtk_widget_set_usize(da_scrolled_window,204,204);
   gtk_widget_show (da_scrolled_window);
 
   /* Drawing Area */
