@@ -11,10 +11,19 @@
 void
 statistics_button_callback(GtkWidget *widget, gpointer data)
 {
-  if(the_gui.get_statistics_up() == false)
-    the_gui.setup_statistics_window();
-  else
-    the_gui.close_statistics_window();
+  if(the_arena.get_state() != Arena::NOT_STARTED)
+    {
+      if(the_gui.get_statistics_up() == false)
+        the_gui.setup_statistics_window();
+      else
+        the_gui.close_statistics_window();
+    }
+}
+
+void
+save_statistics_callback(GtkWidget *widget, gpointer data)
+{
+  the_gui.save_statistics_to_file();
 }
 
 void
@@ -384,6 +393,31 @@ Gui::add_the_statistics_to_clist()
 }
 
 void
+Gui::save_statistics_to_file()
+{
+  String filename(the_opts.get_s(OPTION_STATISTICS_SAVE_FILE));
+
+  int mode = _IO_OUTPUT;
+  ofstream file(filename.chars(), mode);
+
+  GList * gl, * stat_gl;
+  Robot * robotp;
+
+  for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot *)gl->data;
+      file << robotp->get_robot_name() << ": " << endl;
+      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+        {
+          stat_t * statp = (stat_t*)(stat_gl->data);
+          file << "Seq: " << statp->sequence_nr << "  Game: " << statp->game_nr << "  Pos: " << statp->position
+               << "  Points: " << statp->points << "  Time Survived: " << statp->time_survived
+               << "  Total Points: " << statp->total_points << endl;
+        }
+    }
+}
+
+void
 Gui::stat_make_title_button()
 {
   if( stat_title_hbox != NULL )
@@ -498,6 +532,12 @@ Gui::setup_statistics_window()
   button_widget = gtk_button_new_with_label ("Close");
   gtk_signal_connect (GTK_OBJECT (button_widget), "clicked",
                       GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button_widget, TRUE, TRUE, 0);
+  gtk_widget_show (button_widget);
+
+  button_widget = gtk_button_new_with_label ("Save Statistics");
+  gtk_signal_connect (GTK_OBJECT (button_widget), "clicked",
+                      GTK_SIGNAL_FUNC (save_statistics_callback), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button_widget, TRUE, TRUE, 0);
   gtk_widget_show (button_widget);
 
