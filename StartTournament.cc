@@ -88,14 +88,22 @@ void
 Gui::start_new_tournament()
 {
   int min_value,max_value;
+  int robot_number = 0;
   int value[3];
+
+  GList * gl;
+  for(gl = g_list_next( selected_items_in_robot_tournament ); gl != NULL ; gl = g_list_next(gl))
+    robot_number++;
+
   for(int i = 0 ; i < 3; i++)
     {
       String text = gtk_entry_get_text(GTK_ENTRY(start_tournament_entries[i]));
       if(i != 1)
         max_value = 10000;
       else
-        max_value = 120;
+        {
+          max_value = min(120,robot_number);
+        }
       if(i != 1)
         min_value = 1;
       else
@@ -107,8 +115,11 @@ Gui::start_new_tournament()
       if( value[i] < min_value )
         value[i] = min_value;
     } 
-  the_arena.start_tournament( selected_items_in_robot_tournament , selected_items_in_arena_tournament, value[1], value[0], value[2]);  
-  close_start_tournament_window();
+  if(robot_number > 1 && g_list_next( selected_items_in_arena_tournament ) != NULL )
+    {
+      the_arena.start_tournament( selected_items_in_robot_tournament , selected_items_in_arena_tournament, value[1], value[0], value[2]);  
+      close_start_tournament_window();
+    }
 }
 
 start_tournament_glist_info_t *
@@ -527,11 +538,7 @@ Gui::setup_start_tournament_window()
       else
         gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[i] ), "2");
 
-      entry_t * info;
-      if(i != 1)
-        info = new entry_t( ENTRY_INT, 1.0, 10000.0 );
-      else
-        info = new entry_t( ENTRY_INT, 2.0, 120.0 );
+      entry_t * info = new entry_t( ENTRY_INT, false );
 
       gtk_signal_connect(GTK_OBJECT(start_tournament_entries[i]), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
