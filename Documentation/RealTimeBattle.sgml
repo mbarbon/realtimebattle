@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>
 <title>RealTimeBattle User Manual, version 0.9.8 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 13 June 1999
+<date> 15 June 1999
 
 <!-- <abstract> -->
 
@@ -290,12 +290,16 @@ the left and can be removed correspondingly.
 
 <label id="NumberOfGames">
 A <ref id="A_tournament" name="tournament"> consists of a number of 
-<ref id="A_sequence" name="sequences"> of <ref id="A_game" name="games">. In each sequence the same
-robots are playing in all games. Here you select the number of games and sequences as well as the
-number of robots in each sequence. If you intend to play with all robots every game you are advised
-to choose only one sequence and instead increase the number of games. The reason is to avoid
-restarting of the robot processes which can take a while, especially if the number of robots is
-large.
+<ref id="A_sequence" name="sequences"> of <ref id="A_game" name="games">. In each
+sequence the same robots are playing in all games. Here you select the number of games
+and sequences as well as the number of robots in each sequence. If you intend to play
+with all robots every game you are advised to choose only one sequence and instead
+increase the number of games. The reason is to avoid restarting of the robot processes
+which can take a while, especially if the number of robots is large.
+
+It is also possible to load a tournament file or save the current tournament.
+The last tournament played is stored in /tmp/rtb/tmp.tour and is always displayed
+when this window opens. If it is not available an empty tournament is displayed.
 
 You have to select at least two robots and one arena to be able to
 start.
@@ -362,11 +366,11 @@ different columns by clicking on the corresponding title box.
 <p>
 If you want, you can run RealTimeBattle without any graphics at all. This can be
 especially useful when currying out a long series of tests or running a competition. To
-use this option you have two choices: Either you add the flag <tt>-g</tt> when lounging
-the program, or you disable the graphics at compile time (see the <tt>INSTALL</tt> file
-for more information). The latter alternative is useful as the executable gets
-smaller and therefore faster on low memory machines. It also enables you to run
-RealTimeBattle on machines which haven't got <tt>gtk+</tt> installed.
+use this option you have two choices: Either you add the flag <tt>-g</tt> when
+launching the program, or you disable the graphics at compile time (see the
+<tt>INSTALL</tt> file for more information). The latter alternative is useful as the
+executable gets smaller and therefore faster on low memory machines. It also enables
+you to run RealTimeBattle on machines which haven't got <tt>gtk+</tt> installed.
 
 When running without graphics you have to give a tournament file, otherwise nothing at
 all will happen. It is also a good idea to create a log file and/or a statistics file
@@ -385,19 +389,21 @@ times, but keep in mind that only the last one of the keywords that takes a numb
 counted. All keywords should be followed by a semicolon.
 
 <descrip>
-<tag>Games/Sequence or g/s:</tag> Takes a number or a <tt>*</tt> as an argument. The number is how
-many games should be played per tournament. The star means that the program takes the exact amount
-of arenas and uses this as the argument. The default value is 1.
+<tag>Games/Sequence or g/s:</tag> Takes a number or a <tt>*</tt> as an argument. The
+number is how many games should be played per tournament. The asterisk means that the
+program takes the exact amount of arenas and uses this as the argument. The default
+value is 1. 
 
-<tag>Robots/Sequence or r/s:</tag> Takes a number or a <tt>*</tt> as an argument. The number is how
-many robots is playing in each sequence. The star means that the program takes the exact amount of
-robots and uses this as the argument. The default value is 2.
+<tag>Robots/Sequence or r/s:</tag> Takes a number or a <tt>*</tt> as an argument. The
+number is how many robots is playing in each sequence. The asterisk means that the
+program takes the exact amount of robots and uses this as the argument. The default
+value is 2.
 
-<tag>Sequences or seq:</tag> Takes a number or a <tt>*</tt> as an argument. This number tells
-how many sequences shall be played in the tournament. The star means that the program
-takes the exact amount of robots and the robots per sequence, does a binomial calculation to
-determine the number of sequence for all robots to meet each other exactly once, and
-uses this number as the argument.  The default value is 1.
+<tag>Sequences or seq:</tag> Takes a number or a <tt>*</tt> as an argument. This
+number tells how many sequences shall be played in the tournament. The asterisk means
+that the program takes the exact amount of robots and the robots per sequence, does a
+binomial calculation to determine the number of sequence for all robots to meet each
+other exactly once, and uses this number as the argument.  The default value is 1.
 
 <tag>Robots or r:</tag> Takes one or more robot files as its argument.
 
@@ -465,7 +471,7 @@ received] [position])
 You can replay a game from its <ref name="log file" id="log_files"> either
 by giving the <ref name="command line option" id="Command line options">
 <tt>&lsquo;-r&rsquo;</tt> or from the <ref name="control window" id="Control window">.
-Note that if the log is comming from standard input (command line option
+Note that if the log is coming from standard input (command line option
 <tt>&lsquo;-r&nbsp;-&rsquo;</tt>), you cannot do much but watch the game, but otherwise
 you can influence the flow of the game:
 
@@ -478,7 +484,7 @@ by changing the option
 <ref name="fast forward factor" id="Fast forward factor">.
 
 <item> Step forward and step backward can be used to study what happens in
-detail, first should, however, the game be <ref name="paused" id="pause">.
+detail. First, however, the game should be <ref name="paused" id="pause">.
 
 <item> With the four bottom buttons you can jump between games and
 sequences.
@@ -564,10 +570,10 @@ the robot's current potential shot-energy, which increases with time.
 Shooting is, however, not without any risk, since a firing robot itself will lose energy, 
 <ref name="proportional to the shot energy" id="ShootingPenalty">. 
 
-If a cookie or mine is hit, it is destroyed, regardless of the energy of the shot. Therefore
-you should minimal amount of energy to shoot mines.
+If a cookie or mine is hit, it is destroyed, regardless of the energy of the
+shot. Therefore you should use a minimal amount of energy to shoot mines.
 
-Shots colliding will not immediately be destroyed, instead there velocities and energies
+Shots colliding will not immediately be destroyed, instead their velocities and energies
 will be superposed, so that if two colliding shots are traveling in the same direction,
 their energies will be added and, in case of a head on collision, their energies will
 cancel.
