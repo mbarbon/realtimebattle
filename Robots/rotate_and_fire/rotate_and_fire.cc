@@ -282,7 +282,7 @@ RotateAndFire::radar_robot( const double dist, const double angle )
       brake_value = 1.0;
       brake( brake_value );
       if( debug_level >= 1 )
-        cout << "Debug "<< _("Robot found and locked at distance")
+        cout << "Debug "<< _("Brakes locked: Robot found and at distance")
              << " " << dist << endl;
     }
   shoot( 2 );
