@@ -677,7 +677,7 @@ ArenaRealTime::find_free_colour(const long int home_colour,
 {  
   long int tmp_colour;
 
-  for(double min_dist = 0.2; min_dist > 0.01 ; min_dist *= 0.8)
+  for(double min_dist = 0.1; min_dist > 0.01 ; min_dist *= 0.8)
     {
       if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
       if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
