@@ -11,7 +11,7 @@ rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
-install-local:
+install-data-local:
 	gzip $(rtbinfodir)/RealTimeBattle.info; \
 	install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
                 --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz
@@ -20,7 +20,7 @@ uninstall-local:
 	install-info --delete --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
 	rm $(rtbinfodir)/RealTimeBattle.info.gz
 
-docs: target RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt note-files.html
+docs: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt note-files note-files.html
 
 html_docs: RealTimeBattle.html note-files.html
 
