@@ -38,6 +38,8 @@ RealTimeBattle_SOURCES = \
 	Event.h \
 	EventHandler.h EventHandler.cc \
 	Extras.cc Extras.h \
+	Function.h \
+	Gadget.h \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
 	IntlDefs.h \
@@ -54,9 +56,11 @@ RealTimeBattle_SOURCES = \
 	String.cc String.h \
 	Structs.h \
 	Timer.cc Timer.h \
+	Variable.cc Variable.h \
 	Various.cc Various.h \
 	Vector2D.cc Vector2D.h \
-	Wall.h 
+	Wall.h \
+	WeaponGadget.h
 
 
 EXTRA_RealTimeBattle_SOURCES = \
