@@ -593,29 +593,45 @@ void
 ControlWindow::next_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
-  replay_arena.search_forward( "G" );
+  replay_arena.search_forward( String( "G" ) );
 }
 
 void
 ControlWindow::prev_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
-  replay_arena.search_backwards( "G" );
+  replay_arena.search_backwards( String( "G" ) );
   if( replay_arena.get_current_replay_time() < 2.0 &&
       the_arena.get_game_nr() + the_arena.get_sequence_nr() > 2 )
-    replay_arena.search_backwards( "G" );
+    replay_arena.search_backwards( String( "G" ) );
 }
 
 void
 ControlWindow::next_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
+  int seq = the_arena.get_sequence_nr();
+  int sit = the_arena.get_sequences_in_tournament();
+
+  if( sit <= 1 || seq == sit )
+    return;
+
+  int new_seq = seq;
+  
+  while( new_seq == seq )
+    new_seq = str2int( get_segment
+                       ( replay_arena.search_forward( String( "G" ) ), 1, -1 ) );
 }
 
 void
 ControlWindow::prev_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
+  int seq = the_arena.get_sequence_nr();
+  int sit = the_arena.get_sequences_in_tournament();
+
+  if( sit <= 1 || seq == 1 )
+    return;
 }
 
 void
