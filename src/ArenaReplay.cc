@@ -118,7 +118,7 @@ ArenaReplay::timeout_function()
           the_gui.get_arenawindow_p()->draw_everything();      
           the_gui.get_scorewindow_p()->update_robots();
           char msg[64];
-          sprintf(msg, _("Game %d of sequence %d"), game_nr, sequence_nr);
+          snprintf(msg, 63, _("Game %d of sequence %d"), game_nr, sequence_nr);
           print_message( "RealTimeBattle", (String)msg );
         }
 #endif NO_GRAPHICS

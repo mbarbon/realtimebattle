@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iomanip.h>
 #include <stdarg.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 //#include "Gui.h"
 #include "ArenaRealTime.h"
@@ -739,8 +740,9 @@ ArenaRealTime::start_game()
   else
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
-  char msg[64];
-  sprintf(msg, _("Game %d of sequence %d begins on arena"), game_nr+1, sequence_nr);
+  char msg[128];
+  snprintf( msg, 127, _("Game %d of sequence %d begins on arena"),
+            game_nr+1, sequence_nr );
   print_message( "RealTimeBattle", String(msg) + " " + current_arena_filename );
 
   // reset some variables
