@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 0.9.8 rev 2
+<title>RealTimeBattle User Manual, version 0.9.8 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 8 June 1999
+<date> 12 June 1999
 
 <!-- <abstract> -->
 
@@ -239,6 +239,11 @@ Robot CPU time unlimited         |  Yes  |  Yes   |     No      @<hline>
 <ref id="Start new tournament window" name="Start new tournament window"> will give more
 information. 
 
+<tag>Replay tournament:</tag> <ref id="replaying" name="Replay a game">. It
+will ask you to select a <ref id="log_files" name="log file"> of the
+game you want to study.
+
+<label id="pause">
 <tag>Pause:</tag> Pauses the game, in 
 <ref id="Command line options" name="competition-mode"> the pausing will be postponed
 until the end of the current game.
@@ -249,6 +254,12 @@ until the end of the current game.
 
 <tag>Statistics:</tag> Displays the <ref id="Statistics window" name="statistics window">.
 
+<tag>Show arena window:</tag> This box can be used to show and hide the
+three windows used when a game is running, i.e., 
+the <ref id="Arena_window" name="arena window">,
+the <ref id="Score window" name="score window"> and
+the <ref id="Message window" name="message window">.
+
 <tag>Quit:</tag> Terminates the program.
 
 </descrip>
@@ -258,8 +269,9 @@ are intended to help with debugging of robots. Note that you can debug a running
 <tt>gdb</tt> the command is <tt>gdb robot-name process-number</tt>.
 
 <descrip>
-<tag>Step:</tag> In a paused game this will move one time step forward. This is very useful when
-running the robot in a debugger, since otherwise the robot will be flooded with messages.
+<tag>Step:</tag> In a <ref name="paused" id="pause"> game this will move
+one time step forward. This is very useful when running the robot in a
+debugger, since otherwise the robot will be flooded with messages.
 
 <tag>End game:</tag> This will finish the current game. It has the same effect as a
 <ref id="Timeout" name="timeout"> would have.
@@ -426,11 +438,11 @@ R: * Arenas: Circle.arena Square.arena G/S: 2 r/s: 3 Sequences: *
 
 <sect1>Log files<label id ="log_files">
 <p>
-Sometimes it can be useful to analyze a game in detail or just to store for future
-reference, in this case log files can be useful. Add the flag <tt>-l</tt>, when starting
-RealTimeBattle, with the
-filename as argument to enable this feature and with argument <tt>'-'</tt>, the log is
-printed to stdout. 
+Sometimes it can be useful to <ref name="replay" id="replaying"> a game
+and analyze it in detail or just to store for future reference, in this
+case log files can be useful. Add the flag <tt>-l</tt>, when starting
+RealTimeBattle, with the filename as argument to enable this feature and
+with argument <tt>'-'</tt>, the log is printed to stdout.
 
 The format of the log file is as follows: Each line consist of a letter, determining
 the type of information, followed by a whitespace-separated list of arguments. The
@@ -447,8 +459,34 @@ following information is given:
 <tag>Cookie:</tag> C [cookie id] [x] [y]
 <tag>Mine:</tag> M [mine id] [x] [y]
 <tag>Shot:</tag> S [shot id] [x] [y] [dx/dt] [dy/dt]
-<tag>Die:</tag> D [type of object killed] [object id] [if robot: points received]
+<tag>Die:</tag> D [type of object killed] [object id] (if robot: [points
+received] [position])
 </descrip>
+
+<sect1>Replaying<label id ="replaying">
+<p>
+You can replay a game from its <ref name="log file" id="log_files"> either
+by giving the <ref name="command line option" id="Command line options">
+<tt>'-r'</tt> or from the <ref name="control window" id="Control window">.
+Note that if the log is comming from standard input (command line option
+<tt>'-r&nbsp;-'</tt>), you cannot do much but watch the game, but otherwise
+you can influence the flow of the game:
+
+<itemize>
+<item> The slidebar at the top shows how far the current game has progressed. You
+can jump wherever you want in the game by dragging the handle.
+
+<item> Fast forward and rewind work as expected. You can alter the speed
+by changing the option 
+<ref name="fast forward factor" id="Fast forward factor">.
+
+<item> Step forward and step backward can be used to study what happens in
+detail, first should, however, the game be <ref name="paused" id="pause">.
+
+<item> With the four bottom buttons you can jump between games and
+sequences.
+</itemize>
+
 
 <sect1>Statistics files<label id ="statistics_files">
 <p>
@@ -1049,7 +1087,7 @@ The accuracy is 1/100 s if RTB was compiled with graphics (in this case
 the accuracy is one microsecond.
 
 <label id="RobotStartupTime">
-<tag>Robot startup time:</tag> Determine the time between the robot processes are executed
+<tag>Robot startup time:</tag> Determines the time between the robot processes are executed
 and the sequence begins. If robots are black and have no name, you may need to increase
 the startup time from the default of one second. This can happen if, for example, the
 robots are many, large or you are running on a slow or remote computer.
@@ -1089,6 +1127,11 @@ first three and the <ref name="control window" id="Control window">.
 <label id="ArenaScale">
 <tag>Arena scale:</tag> Overall scale of the arena. A value of 2 gives
 double sidelength, i.e., a four times larger area.
+
+<label id="Fast forward factor">
+<tag>Fast forward factor:</tag> Determines, when 
+<ref name="replaying" id="replaying">, the speed when the fast forward
+button or the rewind button is pressed.
 
 <tag>Background colour:</tag> Background colour and ...
 
