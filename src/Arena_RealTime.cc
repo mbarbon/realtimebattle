@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 //#include "Gui.h"
-#include "Arena.h"
+#include "Arena_RealTime.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
@@ -59,96 +59,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Wall.h"
 #include "Robot.h"
 
-Arena::Arena()
+Arena_RealTime::Arena_RealTime()
 {
-  state = NOT_STARTED;
-  game_mode = NORMAL_MODE;
-
-  halted = false;
-  halt_next = false;
-  paus_after_next_game = false;
-  timer = g_timer_new();
-  reset_timer();
-  
-  all_robots_in_sequence = g_list_alloc();
-  all_robots_in_tournament = g_list_alloc();
-  arena_filenames = g_list_alloc();
-  exclusion_points = g_list_alloc();
-
-  for(int i=ROBOT_T; i<=LAST_ARENAOBJECT_T; i++)
-    object_lists[i] = g_list_alloc();
-
-  max_debug_level = 5;
-  debug_level = 0;
 }
 
-Arena::~Arena()
+Arena_RealTime::~Arena_RealTime()
 {
-  //  if( filep ) delete filep;
-  state=EXITING;
-  sleep(1);
-  g_timer_destroy(timer);
-  delete_lists(true, true, true, true);
-  g_list_free(all_robots_in_sequence);
-  g_list_free(all_robots_in_tournament);
-  g_list_free(arena_filenames);
-  g_list_free(exclusion_points);
-  for(int i=ROBOT_T; i<LAST_ARENAOBJECT_T; i++)
-    g_list_free(object_lists[i]);
-
-  for(int i=0; i < sequences_remaining+sequence_nr; i++)
-    delete [] robots_in_sequence[i];
-
   if( use_log_file && LOG_FILE ) LOG_FILE.close();
 }
 
 void
-Arena::clear()
-{
-  delete_lists(true, true, true, true);
-
-  for(int i=0; i < sequences_remaining+sequence_nr; i++)
-    delete [] robots_in_sequence[i];
-
-  sequence_nr = 0;
-  sequences_remaining = 0;
-  
-  state = NOT_STARTED;
-}
-
-void 
-Arena::interrupt_tournament()
-{
-  if( state == GAME_IN_PROGRESS )
-    {
-#ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          the_gui.close_score_window();
-          the_gui.close_arena_window();
-          the_gui.close_messagewindow();
-        }
-#endif
-
-      delete_lists(true, true, false, true);
-      
-      state = FINISHED;
-    }
-}
-
-#ifndef NO_GRAPHICS
-
-void
-Arena::set_colours()
-{  
-  background_colour = make_gdk_colour(the_opts.get_l(OPTION_BACKGROUND_COLOUR));
-  foreground_colour = make_gdk_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
-}
-
-#endif
-
-void
-Arena::set_filenames(String& log_fname, const String& statistics_fname, 
+Arena_RealTime::set_filenames(String& log_fname, const String& statistics_fname, 
                      const String& tournament_fname, const String& option_fname)
 {
   if( log_fname == "")
@@ -179,32 +100,8 @@ Arena::set_filenames(String& log_fname, const String& statistics_fname,
   option_file_name = option_fname;
 }
 
-// This function takes the statistics and saves into a selected file
 void
-Arena::save_statistics_to_file(String filename)
-{
-  int mode = _IO_OUTPUT;
-  ofstream file(filename.chars(), mode);
-
-  GList * gl, * stat_gl;
-  Robot * robotp;
-
-  for(gl = g_list_next(all_robots_in_tournament); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot *)gl->data;
-      file << robotp->get_robot_name() << ": " << endl;
-      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
-        {
-          stat_t * statp = (stat_t*)(stat_gl->data);
-          file << "Seq: " << statp->sequence_nr << "  Game: " << statp->game_nr << "  Pos: " << statp->position
-               << "  Points: " << statp->points << "  Time Survived: " << statp->time_survived
-               << "  Total Points: " << statp->total_points << endl;
-        }
-    }
-}
-
-void
-Arena::search_directories( String directory, GList* dir_gl,
+Arena_RealTime::search_directories( String directory, GList* dir_gl,
                            const bool check_robots )
 {
   DIR* dir;
@@ -230,7 +127,7 @@ Arena::search_directories( String directory, GList* dir_gl,
 }
 
 void
-Arena::check_for_robots_and_arenas( String& word, GList* tour_gl,
+Arena_RealTime::check_for_robots_and_arenas( String& word, GList* tour_gl,
                                     GList* dir_gl, const bool check_robots )
 {
   bool found = false;
@@ -291,8 +188,56 @@ Arena::check_for_robots_and_arenas( String& word, GList* tour_gl,
     }
 }
 
+
+
 void
-Arena::parse_tournament_file( String& fname )
+Arena_RealTime::parse_arena_file(String& filename)
+{
+  char text[20];
+  double radie, bounce_c, hardn, thickness;
+  int vertices;
+
+  Vector2D vec1, vec2, vec0;
+  WallLine* wall_linep;
+  WallCircle* wall_circlep;
+  WallInnerCircle* wall_inner_circlep;
+
+  ifstream file(filename.chars());
+  if( !file ) Error(true, "Couldn't open arena file" + filename, "Arena_Base::parse_arena_file");
+
+  int succession = 1;
+  double scale = the_opts.get_d(OPTION_ARENA_SCALE);
+  do
+    {
+      parse_arena_line(file, scale, succession);
+
+    } while( !file.eof() );
+
+  file.close();
+
+  
+  if( use_log_file )      // copy the arena file to the log file
+    {
+      char buffer[500];
+      
+      ifstream file(filename.chars());
+      if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "Arena_Base::parse_arena_file");
+  
+      do
+        {
+          file >> ws;
+          file.get(buffer, 500, '\n');
+          if( buffer[0] != '\0' ) print_to_logfile('A', buffer);
+        } 
+      while( buffer[0] != '\0' );
+      
+    }
+
+}
+
+
+void
+Arena_RealTime::parse_tournament_file( String& fname )
 {
   GList* robotdirs;
   GList* arenadirs;
@@ -340,13 +285,13 @@ Arena::parse_tournament_file( String& fname )
           
           if(robots_p_s < 2)
               Error(true, "Can't start tournament with only " + String(robots_p_s) + " robots per sequence",
-                    "Arena::parse_tournament_file");
+                    "Arena_RealTime::parse_tournament_file");
           if(games_p_s < 1)
             Error(true, "Must have at least one game per sequence. Current value is: " + String(games_p_s),
-                  "Arena::parse_tournament_file");
+                  "Arena_RealTime::parse_tournament_file");
           if(n_o_sequences < 1)
             Error(true, "Must have at least one sequence. Current value is: " + String(n_o_sequences),
-                  "Arena::parse_tournament_file");
+                  "Arena_RealTime::parse_tournament_file");
           
           // Startup the tournament
 
@@ -417,7 +362,7 @@ Arena::parse_tournament_file( String& fname )
 }
 
 void
-Arena::print_to_logfile(const char first_letter ... )
+Arena_RealTime::print_to_logfile(const char first_letter ... )
 {
   if( !use_log_file ) return;
 
@@ -524,7 +469,7 @@ Arena::print_to_logfile(const char first_letter ... )
       break;
 
     default:
-      Error(true, "Unrecognized first letter in logfile", "Arena::print_to_logfile");
+      Error(true, "Unrecognized first letter in logfile", "Arena_RealTime::print_to_logfile");
       break;
     }
 
@@ -532,323 +477,8 @@ Arena::print_to_logfile(const char first_letter ... )
 }
 
 
-void
-Arena::parse_arena_file(String& filename)
-{
-  char text[20];
-  double radie, bounce_c, hardn, thickness;
-  int vertices;
-
-  Vector2D vec1, vec2, vec0;
-  WallLine* wall_linep;
-  WallCircle* wall_circlep;
-  WallInnerCircle* wall_inner_circlep;
-
-  ifstream file(filename.chars());
-  if( !file ) Error(true, "Couldn't open arena file" + filename, "Arena::parse_arena_file");
-
-  int succession = 1;
-  double scale = the_opts.get_d(OPTION_ARENA_SCALE);
-  do
-    {
-      file >> ws;
-      file.get(text, 20, ' ');
-      if( strcmp(text, "scale" ) == 0 )
-        {
-          if( succession != 1 ) Error(true, "Error in arenafile: 'scale' not first", "Arena::parse_arena_file");
-          succession = 2;
-          double scl;
-          file >> scl;
-          scale *= scl;
-        }
-      else if( strcmp(text, "boundary" ) == 0 )
-        {
-          if( succession > 2 ) 
-            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parse_arena_file");
-          succession = 3;
-          double b1, b2;
-          file >> b1;
-          file >> b2;
-          boundary[0] = Vector2D(scale*b1, scale*b2);
-          file >> b1;
-          file >> b2;
-          boundary[1] = Vector2D(scale*b1, scale*b2);
-          if( boundary[1][0] - boundary[0][0] <= 0 || boundary[1][1] - boundary[0][1] <= 0 ) 
-            Error(true, "Error in arenafile: 'boundary' negative", "Arena::parse_arena_file");
-        }
-      else if( strcmp(text, "exclusion_point" ) == 0 )
-        {
-          if( succession < 3 ) 
-            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parse_arena_file");
-          file >> vec1;
-          Vector2D* excl_p = new Vector2D(scale*vec1);
-          g_list_append(exclusion_points, excl_p);
-        }
-      else if( strcmp(text, "inner_circle" ) == 0 )
-        {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'inner_circle' before boundary", "Arena::parse_arena_file");
-          succession = 4;
-          file >> bounce_c;
-          file >> hardn;
-          file >> vec1;
-          file >> radie;
-          wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radie, bounce_c, hardn);
-          g_list_insert(object_lists[WALL_INNERCIRCLE_T], wall_inner_circlep, 1);
-        }
-      else if( strcmp(text, "circle" ) == 0 )
-        {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'circle' before 'boundary'", "Arena::parse_arena_file");
-          succession = 4;
-          file >> bounce_c;
-          file >> hardn;
-          file >> vec1;
-          file >> radie;
-          wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
-          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
-        }
-//       else if( strcmp(text, "arc" ) == 0 )
-//         {
-//         }
-      else if( strcmp(text, "line" ) == 0 )
-        {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'line' before 'boundary'", "Arena::parse_arena_file");
-          succession = 4;
-          file >> bounce_c;
-          file >> hardn;
-          file >> thickness; 
-          thickness *= 0.5;
-          file >> vec1;      // start_point
-          file >> vec2;      // end_point
-
-
-          if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line", "Arena::parse_arena_file");
-
-          wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
-                                    scale*thickness, bounce_c , hardn);      
-          g_list_append(object_lists[WALL_LINE_T], wall_linep);
-        }
-      else if( strcmp(text, "polygon" ) == 0 )
-        {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'polygon' before 'boundary'", "Arena::parse_arena_file");
-          succession = 4;
-          file >> bounce_c;
-          file >> hardn;
-          file >> thickness;
-          thickness *= 0.5;
-          file >> vertices;   // number of vertices
-          file >> vec1;      // first point
-          wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
-
-          for(int i=1; i<vertices; i++)
-            {
-              vec2 = vec1;
-              file >> vec1;      // next point
-
-              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line in polygon", "Arena::parse_arena_file");
-
-              wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
-                                        scale*thickness, bounce_c , hardn);      
-              g_list_append(object_lists[WALL_LINE_T], wall_linep);
-              wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-              g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
-            }
-        }
-      else if( strcmp(text, "closed_polygon" ) == 0 )
-        {
-          if( succession < 3 ) Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", "Arena::parse_arena_file");
-          succession = 4;
-          file >> bounce_c;
-          file >> hardn;
-          file >> thickness;
-          thickness *= 0.5;
-          file >> vertices;   // number of vertices
-          file >> vec1;      // first point
-          wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
-          vec0 = vec1;
-
-          for(int i=1; i<vertices; i++)
-            {
-              vec2 = vec1;
-              file >> vec1;      // next point
-
-              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Line in closed_polygon of zero length", "Arena::parse_arena_file");
-          
-              wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
-                                        scale*thickness, bounce_c , hardn);      
-              g_list_append(object_lists[WALL_LINE_T], wall_linep);
-              wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-              g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
-            }
-
-          if( length(vec0-vec1) == 0.0 ) Error(true, "Error in arenafile: Last line in closed_polygon of zero length", "Arena::parse_arena_file");
-          wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
-                                    scale*thickness, bounce_c , hardn);      
-          g_list_append(object_lists[WALL_LINE_T], wall_linep);
-        }
-      else if( text[0] != '\0' )
-        Error(true, "Incorrect arenafile: unknown keyword" + (String)text, "Arena::parse_arena_file");
-        
-    } while( text[0] != '\0' );
-
-  file.close();
-
-  if( use_log_file )      // copy the arena file to the log file
-    {
-      char buffer[500];
-      
-      ifstream file(filename.chars());
-      if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "Arena::parse_arena_file");
-  
-      do
-        {
-          file >> ws;
-          file.get(buffer, 500, '\n');
-          if( buffer[0] != '\0' ) print_to_logfile('A', buffer);
-        } 
-      while( buffer[0] != '\0' );
-      
-    }
-
-}
-
-double
-Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, 
-                             arenaobject_t& closest_shape, void*& colliding_object, const Robot* the_robot)
-{
-  double dist = infinity;
-  double d;
-  closest_shape = NOOBJECT_T;
-  GList* gl;
-
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      if( (Robot*)gl->data != the_robot )
-        {
-          d = ((Robot*)gl->data)->get_distance(pos, dir, size);
-          if( d < dist)
-            {
-              closest_shape = ROBOT_T;
-              colliding_object = gl->data;
-              dist = d;
-            }
-        }
-    }
-  for(gl = g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((WallLine*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = WALL_LINE_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-  for(gl = g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((WallCircle*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = WALL_CIRCLE_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-  for(gl = g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((WallInnerCircle*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = WALL_INNERCIRCLE_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-  for(gl = g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((Mine*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = MINE_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-  
-  for(gl = g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((Cookie*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = COOKIE_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-
-  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      d = ((Shot*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
-        {
-          closest_shape = SHOT_T;
-          colliding_object = gl->data;
-          dist = d;
-        }
-    }
-
-  return dist;
-}
-
-bool
-Arena::space_available(const Vector2D& pos, const double margin)
-{
-  GList* gl;
-
-  for(gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Robot*)gl->data)->within_distance(pos, margin) ) return false;
-
-
-  for(gl=g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((WallLine*)gl->data)->within_distance(pos, margin) ) return false;
-
-  for(gl=g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((WallCircle*)gl->data)->within_distance(pos, margin) ) return false;
-
-  for(gl=g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((WallInnerCircle*)gl->data)->within_distance(pos, margin) ) return false;
-
-
-  for(gl=g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Mine*)gl->data)->within_distance(pos, margin) ) return false;
-
-  for(gl=g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Cookie*)gl->data)->within_distance(pos, margin) ) return false;
-
-  for(gl=g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Shot*)gl->data)->within_distance(pos, margin) ) return false;
-
-  // Check if it is possible to see any exclusion_points
-  
-  Vector2D vec;
-  double dist;
-  arenaobject_t obj_t;
-  void* col_obj;
-  for(gl=g_list_next(exclusion_points); gl != NULL; gl = g_list_next(gl))
-    {
-      vec = *((Vector2D*)gl->data);
-      dist = length(vec - pos);
-      if( dist <= margin || 
-          dist <= get_shortest_distance(pos, unit(vec - pos), 0.0, obj_t, col_obj) )
-        return false;
-    }
-
-  return true;
-}
-
 Vector2D
-Arena::get_random_position()
+Arena_RealTime::get_random_position()
 {
   return Vector2D( boundary[0][0] + (boundary[1][0] - boundary[0][0])*
                    (double)rand()/(double)RAND_MAX, 
@@ -856,14 +486,8 @@ Arena::get_random_position()
                    (double)rand()/(double)RAND_MAX );
 }
 
-double 
-Arena::get_shooting_penalty() 
-{ 
-  return min( the_opts.get_d(OPTION_SHOOTING_PENALTY), 0.5 / (double)robots_left ); 
-}
-
 void
-Arena::broadcast(const message_to_robot_type msg_type ...)
+Arena_RealTime::broadcast(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
@@ -898,13 +522,13 @@ Arena::broadcast(const message_to_robot_type msg_type ...)
 }
 
 void
-Arena::quit_ordered()
+Arena_RealTime::quit_ordered()
 {
   state = EXITING;
 }
 
 gint
-Arena::timeout_function()
+Arena_RealTime::timeout_function()
 {
   if( halted ) return true;
 #ifndef NO_GRAPHICS
@@ -979,7 +603,7 @@ Arena::timeout_function()
       return false;
       
     case NO_STATE:
-      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "Arena::timeout_function");
+      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "Arena_RealTime::timeout_function");
     }
 
   if( halt_next )
@@ -991,7 +615,7 @@ Arena::timeout_function()
 }
 
 void
-Arena::update()
+Arena_RealTime::update()
 {
   print_to_logfile('T', total_time);
 
@@ -1006,28 +630,7 @@ Arena::update()
 }
 
 void
-Arena::update_timer()
-{
-  gdouble last_timer = current_timer;
-  gulong microsecs;
-  current_timer = g_timer_elapsed(timer, &microsecs);
-  gdouble timescale = 1.0;
-  if( state == GAME_IN_PROGRESS ) timescale = the_opts.get_d(OPTION_TIMESCALE);
-  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_d(OPTION_MAX_TIMESTEP) );
-  total_time += timestep;
-}
-
-void
-Arena::reset_timer()
-{
-  total_time = 0.0;
-  current_timer = 0.0;
-  g_timer_reset(timer);
-  update_timer();
-}
-
-void
-Arena::add_cookie()
+Arena_RealTime::add_cookie()
 {
   double en = the_opts.get_d(OPTION_COOKIE_MIN_ENERGY) + 
     (the_opts.get_d(OPTION_COOKIE_MAX_ENERGY) - the_opts.get_d(OPTION_COOKIE_MIN_ENERGY)) * 
@@ -1042,7 +645,7 @@ Arena::add_cookie()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena_RealTime::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
   g_list_append(object_lists[COOKIE_T], cookiep);
 
@@ -1050,7 +653,7 @@ Arena::add_cookie()
 }
 
 void
-Arena::add_mine()
+Arena_RealTime::add_mine()
 {
   double en = the_opts.get_d(OPTION_MINE_MIN_ENERGY) + 
     (the_opts.get_d(OPTION_MINE_MAX_ENERGY) - the_opts.get_d(OPTION_MINE_MIN_ENERGY)) * 
@@ -1065,7 +668,7 @@ Arena::add_mine()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for mine", "Arena::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for mine", "Arena_RealTime::timeout_function");
   Mine* minep = new Mine(pos, r, en);
   g_list_append(object_lists[MINE_T], minep);
 
@@ -1073,7 +676,7 @@ Arena::add_mine()
 }
 
 void
-Arena::check_robots()
+Arena_RealTime::check_robots()
 {
   Robot* robotp;
 
@@ -1091,28 +694,7 @@ Arena::check_robots()
 }
 
 void
-Arena::move_shots()
-{
-  GList* gl;
-  Shot* shotp;
-
-  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; )
-    {
-      shotp = (Shot*)gl->data;
-
-      if( shotp->is_alive() ) shotp->move(timestep);
-
-      gl = g_list_next(gl);
-      if( !shotp->is_alive() ) 
-        {
-          g_list_remove(object_lists[SHOT_T], shotp);
-          delete shotp;
-        }
-    }
-}
-
-void
-Arena::read_robot_messages()
+Arena_RealTime::read_robot_messages()
 {
   GList* gl;
   Robot* robotp;
@@ -1126,7 +708,7 @@ Arena::read_robot_messages()
 }
 
 void
-Arena::update_robots()
+Arena_RealTime::update_robots()
 {
   GList* gl;
   Robot* robotp;
@@ -1189,7 +771,7 @@ Arena::update_robots()
 // coulor_dist is supposed to be a subjective distance between two colours, normalized
 // to be between 0.0 (same colour) and 1.0 (furthest away).
 double
-Arena::colour_dist(const long col1, const long int col2)
+Arena_RealTime::colour_dist(const long col1, const long int col2)
 {
   double red1   = (col1 & 0x0000ff);
   double green1 = (col1 & 0x00ff00) >> 8;
@@ -1213,7 +795,7 @@ Arena::colour_dist(const long col1, const long int col2)
 }
 
 bool
-Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
+Arena_RealTime::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
 {
   double d;
   for(GList* gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl))
@@ -1232,8 +814,9 @@ Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* 
 }
 
 long int
-Arena::find_free_colour(const long int home_colour, const long int away_colour, 
-                        const Robot* robotp)
+Arena_RealTime::find_free_colour(const long int home_colour, 
+                                 const long int away_colour, 
+                                 const Robot* robotp)
 {  
   long int tmp_colour;
 
@@ -1247,29 +830,13 @@ Arena::find_free_colour(const long int home_colour, const long int away_colour,
           if( is_colour_allowed(tmp_colour, min_dist*2, robotp) ) return tmp_colour;
         }                  
     }
-   Error(true, "Impossible to find colour", "Arena::find_free_colour");
-}
-
-void 
-Arena::set_game_mode( const enum game_mode_t gm)
-{
-  game_mode = gm; 
-  if( game_mode == DEBUG_MODE )
-    {
-      if( debug_level == 0 ) debug_level = 1;
-    }
-  else
-    {
-      debug_level = 0;
-    }
+   Error(true, "Impossible to find colour", "Arena_RealTime::find_free_colour");
 }
 
 int
-Arena::set_debug_level( const int new_level)
+Arena_RealTime::set_debug_level( const int new_level)
 {
-  if( new_level > max_debug_level || new_level < 0 || new_level == debug_level ) return debug_level;
-  
-  debug_level = new_level;
+  Arena_Base::set_debug_level(new_level);
 
   if( GAME_IN_PROGRESS )
     {
@@ -1280,138 +847,7 @@ Arena::set_debug_level( const int new_level)
 }
 
 void
-Arena::paus_game_toggle()
-{
-  if( game_mode != COMPETITION_MODE )
-    {
-      halted = !halted; 
-      halt_next = false; 
-    }
-  else
-    {
-      paus_after_next_game = !paus_after_next_game;
-    }
-}
-
-void
-Arena::step_paused_game()
-{
-  if( game_mode == DEBUG_MODE && halted )
-    {
-      halt_next = true; 
-      halted = false;
-    }
-}
-
-bool
-Arena::is_game_halted()
-{
-  return( state == PAUSING_BETWEEN_GAMES || 
-          ( game_mode != COMPETITION_MODE && halted ) );
-}
-
-void
-Arena::delete_lists(const bool kill_robots, const bool del_seq_list, 
-                    const bool del_tourn_list, const bool del_arena_filename_list)
-{
-  GList* gl;
-  // clear the lists;
-  Robot* robotp;
-  for(gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; )
-    {
-      robotp = (Robot*)gl->data;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[ROBOT_T], robotp);
-    }
-  Shot* shotp;
-  for(gl=g_list_next(object_lists[SHOT_T]); gl != NULL; )
-    {
-      shotp = (Shot*)gl->data;
-      delete shotp;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[SHOT_T], shotp);
-    }
-  Mine* minep;
-  for(gl=g_list_next(object_lists[MINE_T]); gl != NULL; )
-    {
-      minep = (Mine*)(gl->data); 
-      delete minep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[MINE_T], minep);
-    }
-  Cookie* cookiep;
-  for(gl=g_list_next(object_lists[COOKIE_T]); gl != NULL; )
-    {
-      cookiep = (Cookie*)(gl->data);
-      delete cookiep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[COOKIE_T], cookiep);
-    }
-
-  WallLine* walllinep;
-  for(gl=g_list_next(object_lists[WALL_LINE_T]); gl != NULL; )
-    {
-      walllinep = (WallLine*)gl->data;
-      delete walllinep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[WALL_LINE_T], walllinep);
-    }
-  WallCircle* wallcirclep;
-  for(gl=g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; )
-    {
-      wallcirclep = (WallCircle*)gl->data;
-      delete wallcirclep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[WALL_CIRCLE_T], wallcirclep);
-    }
-  WallInnerCircle* wallinnercirclep;
-  for(gl=g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; )
-    {
-      wallinnercirclep = (WallInnerCircle*)gl->data;
-      delete wallinnercirclep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[WALL_INNERCIRCLE_T], wallinnercirclep);
-    }
-
-  Vector2D* vecp;
-  for(gl=g_list_next(exclusion_points); gl != NULL; )
-    {
-      vecp = (Vector2D*)gl->data;
-      gl=g_list_next(gl);
-      delete vecp;
-      g_list_remove(exclusion_points, vecp);
-    }
-  if( del_seq_list )
-    for(gl=g_list_next(all_robots_in_sequence); gl != NULL; )
-      {
-        robotp = (Robot*)gl->data;
-        gl=g_list_next(gl);
-        if( kill_robots ) robotp->kill_process_forcefully();
-        g_list_remove(all_robots_in_sequence, robotp);
-      }
-  if( del_tourn_list )
-    for(gl=g_list_next(all_robots_in_tournament); gl != NULL; )
-      {
-        robotp = (Robot*)gl->data;
-        gl=g_list_next(gl);
-        delete robotp;
-        g_list_remove(all_robots_in_tournament, robotp);
-      }
-  if( del_arena_filename_list )
-    {
-      String* stringp;
-      for(gl=g_list_next(arena_filenames); gl != NULL; )
-        {
-          stringp = (String*)gl->data;
-          gl=g_list_next(gl);
-          delete stringp;
-          g_list_remove(arena_filenames, stringp);
-        }
-    }
-}
-
-void
-Arena::start_game()
+Arena_RealTime::start_game()
 {
   // put the arena together
 
@@ -1431,7 +867,7 @@ Arena::start_game()
   if( (charpos = filename->find('/',0,true)) != -1 )
     current_arena_filename = get_segment(*filename, charpos+1, -1);
   else
-    Error(true, "Incomplete arena file path" + *filename, "Arena::start_game");
+    Error(true, "Incomplete arena file path" + *filename, "Arena_RealTime::start_game");
 
   // reset some variables
 
@@ -1459,7 +895,7 @@ Arena::start_game()
           found_space = space_available(pos, the_opts.get_d(OPTION_ROBOT_RADIUS)*1.2);
         }
 
-      if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena::start_game");
+      if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena_RealTime::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
       g_list_append(object_lists[ROBOT_T], gl->data);
@@ -1497,7 +933,7 @@ Arena::start_game()
 }
 
 void
-Arena::end_game()
+Arena_RealTime::end_game()
 {
   for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
     if( ((Robot*)gl->data)->get_position_this_game() == 0 )
@@ -1518,7 +954,7 @@ Arena::end_game()
 
 
 void
-Arena::start_sequence()
+Arena_RealTime::start_sequence()
 {
   games_remaining_in_sequence = games_per_sequence;
   current_arena_nr = 0;
@@ -1550,7 +986,7 @@ Arena::start_sequence()
 }
 
 void
-Arena::start_sequence_follow_up()
+Arena_RealTime::start_sequence_follow_up()
 {
   // check if the process have started correctly
   GList* gl = g_list_next(all_robots_in_sequence);
@@ -1572,7 +1008,7 @@ Arena::start_sequence_follow_up()
 }
 
 void
-Arena::end_sequence()
+Arena_RealTime::end_sequence()
 {
   // kill all robot processes
   
@@ -1590,7 +1026,7 @@ Arena::end_sequence()
 }
 
 void
-Arena::end_sequence_follow_up()
+Arena_RealTime::end_sequence_follow_up()
 {
   // check if the process have stopped, otherwise kill
   
@@ -1613,7 +1049,7 @@ Arena::end_sequence_follow_up()
 }
 
 void
-Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilename_list, 
+Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* arenafilename_list, 
                         int robots_p_game, int games_p_sequence, int n_o_sequences)
 {
   clear();
@@ -1688,7 +1124,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
             k--;
 
           if( k < 0 ) Error(true, "Problem generating list of participants, k < 0", 
-                            "Arena::start_tournament");
+                            "Arena_RealTime::start_tournament");
 
           current_sequence[k]++;
           for(j=k+1; j<robots_per_game; j++) current_sequence[j] = current_sequence[j-1]+1;
@@ -1737,9 +1173,8 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   // set random seed
 
-  gulong usecs;
-  g_timer_elapsed(timer, &usecs); 
-  srand(usecs);
+
+  srand(timer.get_random_seed());
 
   // start first sequence
 
@@ -1753,7 +1188,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 }
 
 void
-Arena::end_tournament()
+Arena_RealTime::end_tournament()
 {
   state = FINISHED;
 

@@ -17,8 +17,9 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ARENA__
-#define __ARENA__
+#ifndef __ARENA_BASE__
+#define __ARENA_BASE__
+
 
 #include <glib.h>
 #include <gdk/gdk.h>
@@ -28,12 +29,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Vector2D.h"
 #include "Messagetypes.h"
 #include "Gui.h"
-//#include "Shape.h"
-//  #include "Options.h"
-//  #include "String.h"
-//  #include "Robot.h"
 #include "Structs.h"
-//  #include "Wall.h"
+#include "Timer.h"
+
+
+class Arena_Controller;
+extern Arena_Controller the_arena_controller;
+#define the_arena (*( the_arena_controller.get_the_arena()) )
+#define realtime_arena (*( (Arena_RealTime*) (the_arena_controller.get_the_arena()) ))
+#define replay_arena   (*( (Arena_Replay*) (the_arena_controller.get_the_arena()) ))
 
 class Robot;
 class String;
@@ -41,11 +45,11 @@ class Options;
 class WallLine;
 class WallCircle;
 class WallInnerCircle;
+class Arena_RealTime;
 
 
-
-//This fixes a problem with glib, which can give warning messages about converting NULL 
-//from void* to GList* implicitly.
+//This fixes a problem with glib, which can give warning messages about converting 
+// NULL from void* to GList* implicitly.
 #undef g_list_previous
 #undef g_list_next
 #define g_list_previous(list) ((list) ? (((GList *)list)->prev) : (GList*)NULL)
@@ -54,70 +58,74 @@ class WallInnerCircle;
 static const double infinity = 1.0e10;  //approximatly ;-)
 
 extern class Options the_opts;
-extern class Arena the_arena;
+//extern class Arena_RealTime the_arena;
 #ifndef NO_GRAPHICS
 extern class Gui the_gui;
 #endif
 
 extern bool no_graphics;
 
-// --------------------------  Arena --------------------------
-class Arena 
+
+
+
+
+
+
+
+class Arena_Base
 {
 public:
 
+  Arena_Base();
+  ~Arena_Base();
+
   enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
-  Arena();
-  ~Arena();
 
-  void clear();
-  void interrupt_tournament();
 
-  double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
-                               const double size, enum arenaobject_t& closest_shape, 
-                               void*& colliding_object, const class Robot* the_robot = NULL );
+  double get_shortest_distance(const Vector2D& pos, 
+                               const Vector2D& vel, 
+                               const double size, 
+                               enum arenaobject_t& closest_shape, 
+                               void*& colliding_object, 
+                               const class Robot* the_robot = NULL );
 
   bool space_available(const Vector2D& pos, const double margin);
 
-  gint timeout_function();
-  void start_tournament(const GList* robotfilenamelist, 
-                        const GList* arenafilenamelist, // NULL terminated lists
-                        int robots_p_game, 
-                        int games_p_sequence,
-                        int number_of_sequences);   
 
-  void broadcast(enum message_to_robot_type ...);
+  void clear();
+  virtual void interrupt_tournament();
+  
+  virtual gint timeout_function() = 0;
+
+  virtual void end_game() = 0;
+
+protected: 
+  virtual void update() = 0;
+  virtual void start_game() = 0;
+  virtual void start_sequence() = 0;
+  virtual void end_sequence() = 0;
+  virtual void end_tournament() = 0;
+
+public:
+
   void set_colours();
-  long int find_free_colour(const long int home_colour, const long int away_colour, 
-                            const class Robot*);
-  void quit_ordered();
+
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
-  void save_statistics_to_file(String filename);
-  void search_directories( String directory, GList* dir_gl,
-                           const bool check_robots );
-  void check_for_robots_and_arenas( String& word, GList* tour_gl,
-                                    GList* dir_gl, const bool check_robots );
-  void parse_tournament_file( String& fname );
-  void set_filenames(String& log_fname, const String& statistics_fname, 
-                     const String& tournament_fname, const String& option_fname);
+ void save_statistics_to_file(String filename);
 
-  void print_to_logfile(const char first_letter ... );
 
-  Vector2D get_random_position();
 
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
-  GList* get_arena_filenames() { return arena_filenames; }
   String get_current_arena_filename() { return current_arena_filename; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
   int get_sequences_remaining() { return sequences_remaining; }
   int get_robots_per_game() { return robots_per_game; }
-  int get_current_arena_nr() { return current_arena_nr; }
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
@@ -130,64 +138,42 @@ public:
 
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
+
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
   enum game_mode_t get_game_mode() { return game_mode; }
   void set_game_mode( const enum game_mode_t gm);
-  int set_debug_level( const int new_level);
+
   int get_debug_level() { return debug_level; }
-  int get_max_debug_level() { return max_debug_level; }
+  virtual int set_debug_level( const int new_level);
+
   void paus_game_toggle();
   void step_paused_game();
   bool is_game_halted();
 
-  void end_game();
+protected:
 
-private:
-  void parse_arena_file(String& filename);
-  void check_initialization();
-
-  void update();
   void update_timer();
   void reset_timer();
-  void update_robots();
-  void read_robot_messages();
-  void move_shots();
-  void update_explosions();
 
-  void check_robots();
-  void add_cookie();
-  void add_mine();
+  void move_shots(); 
 
-  bool is_colour_allowed(const long int col, const double min_dist, const class Robot*);
-  double colour_dist(const long int col1, const long int col2);
-
-  void start_game();
-  void start_sequence();
-  void start_sequence_follow_up();
-  void end_sequence();
-  void end_sequence_follow_up();
-
-  void end_tournament();
-
+  void parse_arena_line(ifstream& file, double& scale, int& succession);
 
   GList* object_lists[LAST_ARENAOBJECT_T];
   
   GList* all_robots_in_tournament;
   GList* all_robots_in_sequence;
   GList* exclusion_points;
-  GList* arena_filenames;               // list of Strings
+
   String current_arena_filename;
+  GList* arena_filenames;               // list of Strings
 
   int** robots_in_sequence;
 
-  String option_file_name;
-  String statistics_file_name;
-  String tournament_file_name;
 
-  ofstream LOG_FILE;
-  
-  bool use_log_file;
+  String statistics_file_name;
+
   bool auto_start_and_end;
 
   int robot_count;
@@ -195,21 +181,18 @@ private:
   int cookie_count;
   int mine_count;
 
-  gdouble timestep;
-  gdouble total_time;
-  gdouble current_timer;
+  double timestep;
+  double total_time;
+  double current_timer;
 
-  GTimer* timer;
+  Timer timer;
   
-  gdouble next_check_time;
+  double next_check_time;
 
   int sequence_nr;
   int games_remaining_in_sequence;
   int games_per_sequence;
   int sequences_remaining;
-
-  int number_of_arenas;
-  int current_arena_nr;
 
   int number_of_robots;
   int robots_left;
@@ -217,6 +200,7 @@ private:
 
   GdkColor background_colour;
   GdkColor foreground_colour;
+
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   
@@ -229,6 +213,9 @@ private:
   bool halted;
   bool halt_next;
   bool paus_after_next_game;
+
+
 };
 
-#endif __ARENA__
+
+#endif __ARENA_BASE__
