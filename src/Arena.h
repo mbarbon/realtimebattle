@@ -45,14 +45,13 @@ class Arena
 {
 public:
 
-  Arena() {}
+  Arena( const string& filname, set<Robot*>& rbts );
   ~Arena() {}
 
   void load_arena_file( const string& filename, Gadget& hierarchy );
 
-  void setup_at_roundstart();
 
-  void add_shot(const Shot& s);
+  void add_shot(Shot* s);
   void update_shots();
 
   void collision( Shape* obj1, Shape* obj2, const double time_to_collsion ) {}
@@ -86,13 +85,22 @@ public:
 // Slow but general algorithm used by static objects
   void find_subsquares_for_shape( const Shape& s); 
 
-protected:
 
+  // cleans subsquares and removes killed objects from lists.
   void garbage_collector();
 
-  set<Shot> shots;  
+protected:
+
+  set<Shot*> shots;  
   set<Robot*> robots;
 
+  set<MovingObject*> moving_objects; // Balls
+  set<Shape*> updatable_objects;  // Explosion, etc.
+  set<Shape*> static_objects; // Walls, mines, etc.
+
+
+
+  Gadget gagdet_hierarchy;
 
   SubSquare** subsquares;  // 2-dim array of SubSquares
 
