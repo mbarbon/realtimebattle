@@ -90,7 +90,6 @@ GIMain( GuiClientInterface* _gi_p )
 
 Gui::Gui()
 {
-  arenawindow_p = NULL;
   messagewindow_p = NULL;
   optionswindow_p = NULL;
   scorewindow_p = NULL;
@@ -348,22 +347,17 @@ Gui::error( const bool fatal, const string& error_msg, const string& function_na
 void
 Gui::open_arenawindow()
 {
-  if( NULL == arenawindow_p )
-    arenawindow_p = 
-      new ArenaWindow( the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_X ),
-                       the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_Y ),
-                       the_opts.get_l( OPTION_ARENA_WINDOW_POS_X  ),
-                       the_opts.get_l( OPTION_ARENA_WINDOW_POS_Y  ) );
+  if( !is_arenawindow_up() )
+    arenawindow.create( the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_X ),
+                        the_opts.get_l( OPTION_ARENA_WINDOW_SIZE_Y ),
+                        the_opts.get_l( OPTION_ARENA_WINDOW_POS_X  ),
+                        the_opts.get_l( OPTION_ARENA_WINDOW_POS_Y  ) );
 }
 
 void
 Gui::close_arenawindow()
 {
-  if( NULL != arenawindow_p )
-    {
-      delete arenawindow_p;
-      arenawindow_p = NULL;
-    }
+  arenawindow.destroy();
 }
 
 void

@@ -25,12 +25,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "DrawingObjects.h"
 
+#include "ArenaWindow.h"
 #include "GuiRequest.h"
 #include "Messagetypes.h"
 #include "OptionHandler.h"
 #include "Structs.h"
 
-class ArenaWindow;
 class ControlWindow;
 class GuiClientInterface;
 class MessageWindow;
@@ -100,10 +100,11 @@ public:
 
   ControlWindow* get_controlwindow_p           () const { return controlwindow_p; }
 
+  // TODO: Remake all this window stuff.
   bool is_arenawindow_up                       () const
-    { return ( arenawindow_p != NULL ); }
+    { return arenawindow.is_window_shown(); }
   ArenaWindow* get_arenawindow_p               () const
-    { return arenawindow_p; }
+    { return const_cast<ArenaWindow*>(&arenawindow); }
   void open_arenawindow                        ();
   void close_arenawindow                       ();
 
@@ -180,8 +181,8 @@ private:
   GdkColor fg_gdk_colour;
   GdkColor rtb_message_gdk_colour;
 
+  ArenaWindow    arenawindow;
   ControlWindow* controlwindow_p;
-  ArenaWindow* arenawindow_p;
   MessageWindow* messagewindow_p;
   OptionsWindow* optionswindow_p;
   ScoreWindow* scorewindow_p;
