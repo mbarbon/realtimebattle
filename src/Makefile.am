@@ -42,6 +42,7 @@ RealTimeBattle_SOURCES = \
 	Function.h \
 	Gadget.h \
 	GuiEvent.h \
+	GuiEventHandler.cc GuiEventHandler.h \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
 	IntlDefs.h \
