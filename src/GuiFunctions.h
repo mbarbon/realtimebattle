@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifndef __GUIFUNCTIONS_H__
+#define __GUIFUNCTIONS_H__
+
 #include "GuiInterface.h"
 
 #ifdef __cplusplus
@@ -99,3 +102,5 @@ GIExit( int returncode )
 #ifdef __cplusplus
 }
 #endif
+
+#endif __GUIFUNCTIONS_H__
