@@ -1,6 +1,10 @@
 #include <math.h>
 
 #include "Arena.h"
+#include "gui.h"
+
+#define DEFAULT_WIDTH  600
+#define DEFAULT_HEIGHT 480
 
 Arena::Arena()
 {
@@ -12,6 +16,7 @@ Arena::Arena()
   arena_filenames = g_list_alloc();
   for(int i=ROBOT; i<EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
+  the_gui = new Gui;
 }
 
 Arena::~Arena()
@@ -160,6 +165,8 @@ Arena::timeout_function()
 {
   update_timer ();
 
+  the_gui->draw_objects( this );
+
   switch(state)
     {
     case NOT_STARTED:
@@ -193,6 +200,7 @@ Arena::update()
   //update_explosions();
   //move_shots();
   update_robots();
+  the_gui->draw_objects( this );
 }
 
 void
@@ -386,6 +394,8 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 {
   // Create robot classes and to into the list all_robots_in_tournament
 
+  the_gui->display_gui(robotfilename_list,DEFAULT_WIDTH,DEFAULT_HEIGHT);
+
   Robot* robotp;
 
   for(int i=0; robotfilename_list[i] != NULL; i++)
@@ -404,7 +414,6 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   robots_per_game = robots_p_game;
   games_per_sequence = games_p_sequence;
   start_sequence();
-    
 }
 
 void
@@ -420,10 +429,3 @@ Arena::end_tournament()
     }
   //g_list_free(all_robots_in_tournament);
 }
-
-
-
-
-
-
-

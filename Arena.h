@@ -41,8 +41,6 @@ public:
   Vector2D get_random_position();
   GList** get_object_lists() { return object_lists; }
   
-  friend class Gui;
-
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
   
@@ -98,6 +96,8 @@ private:
   double roll_friction;
   double slide_friction;
   double boundary[4];   // {left, top, rigth, bottom}
+
+  Gui* the_gui;
 };
 
 // ---------------------  ArenaObject ---------------------
@@ -315,7 +315,6 @@ private:
   double cannon_speed;
   double robot_angle;
 
-  //GdkColor colour;   colour finns i Shape !!!
   GString robot_name;
   GString robot_filename;
   GString robot_dir;
