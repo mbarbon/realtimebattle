@@ -7,6 +7,7 @@ enum message_to_robot_type
   UNKNOWN_MESSAGE_TO_ROBOT = -1,
   INITIALIZE = 0,
   GAME_STARTS,
+  GAME_FINISHES,
   EXIT_ROBOT,
   RADAR,
   INFO,
@@ -67,6 +68,7 @@ static const Message message_to_robot[20] =
 {
   {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
+  {"GameFinishes", 0, {NONE,   NONE,   NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
