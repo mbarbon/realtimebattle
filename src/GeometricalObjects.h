@@ -34,7 +34,7 @@ public:
   //       const double b_c, const double hardn);
   virtual ~Line() {}
 
-  double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
+  double get_distance(const Vector2D& pos, const Vector2D& vel, const double size) const;
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
@@ -65,7 +65,7 @@ public:
   //  Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
   virtual ~Circle() {}
 
-  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
+  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) const;
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
@@ -90,7 +90,7 @@ public:
   //  InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn);
   ~InnerCircle() {}
 
-  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
+  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) const;
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
@@ -122,7 +122,7 @@ public:
 
   ~Arc() {}
 
-  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
+  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) const;
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
@@ -147,7 +147,7 @@ protected:
   double end_angle;
 
 private:
-  bool within_angle( const double a);
+  bool within_angle( const double a) const;
 
   double mid_radiussqr;
 };

@@ -52,7 +52,7 @@ Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double
 // }
 
 inline double
-Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size) const
 {
   double det, s, t, d, t_middle;
 
@@ -127,7 +127,7 @@ Circle::Circle(const Vector2D& c, const double r, const long int col) : Shape(co
 // }
 
 inline double
-Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size) const
 {
   Vector2D y = center - pos;
   double speedsqr = lengthsqr(vel);
@@ -171,7 +171,7 @@ InnerCircle::InnerCircle(const Vector2D& c, const double r)
 // }
 
 inline double
-InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size) const
 {
   Vector2D y = center - pos;
   double speedsqr = lengthsqr(vel);
@@ -224,7 +224,7 @@ Arc::Arc(const Vector2D& c, const double r1, const double r2,
 // }
 
 inline double
-Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size) const
 {
   Vector2D d = center - pos;
   double speedsqr = lengthsqr(vel);
@@ -281,7 +281,7 @@ Arc::within_distance(const Vector2D& pos, const double size)
 
 // a, start_angle and end_angle should all be betwwen -pi and pi
 bool
-Arc::within_angle( const double a )
+Arc::within_angle( const double a ) const
 {
   if( start_angle <= end_angle )
     return ( a >= start_angle && a <= end_angle );

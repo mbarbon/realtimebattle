@@ -72,7 +72,7 @@ public:
   virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
-                              const double size) = 0;
+                              const double size) const = 0;
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
 
