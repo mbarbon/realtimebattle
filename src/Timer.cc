@@ -48,6 +48,7 @@ void
 Timer::reset()
 {
   gettimeofday(&start, NULL);
+  current_time = 0.0;
   gametime = 0.0;
   gamespeed = 1.0;
 }
@@ -55,26 +56,27 @@ Timer::reset()
 double
 Timer::update()
 {
-  timeval current_time;
-  gettimeofday(&current_time, NULL);
+  timeval current_timeval;
+  gettimeofday(&current_timeval, NULL);
 
-  if (start.tv_usec > current_time.tv_usec)
+  current_timeval.tv_usec -= start.tv_usec;
+  current_timeval.tv_sec -= start.tv_sec;
+
+  if ( current_timeval.tv_usec < 0 )
     {
-      current_time.tv_usec += 1000000;
-      current_time.tv_sec--;
+      current_timeval.tv_usec += 1000000;
+      current_timeval.tv_sec--;
     }
 
-  double elapsed;
+  double last_time = current_time;
 
-  elapsed = ((double)( current_time.tv_usec - start.tv_usec )) / 1e6;
-  elapsed += (double)( current_time.tv_sec  - start.tv_sec );
+  current_time = ( double( current_timeval.tv_usec ) / 1e6  +
+                   double( current_timeval.tv_sec ) );
 
 
-  gametime += ( elapsed - time_last_gametime_update ) * gamespeed;
+  gametime += ( current_time - last_time ) * gamespeed;
 
-  time_last_gametime_update = elapsed;
-
-  return elapsed;
+  return current_time;
 }
 
 double
@@ -101,9 +103,9 @@ Timer::set_game_speed( const double speed )
 double
 Timer::realtime2gametime( const double time )
 {
-  double current_realtime = update();
+  update();
 
-  return gametime + ( time - current_realtime ) * gamespeed;
+  return gametime + ( time - current_time ) * gamespeed;
 }
 
 double
@@ -117,7 +119,7 @@ Timer::gametime2realtime( const double gtime )
 void
 Timer::double2timeval( const double time, struct timeval& wait_time)
 {
-  double time_diff = update() - time;
+  double time_diff = time - update();
 
   if( time_diff <= 0.0 )
     {

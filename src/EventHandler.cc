@@ -122,7 +122,7 @@ EventHandler::main_loop()
           select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
         }
 
-      current_time = timer.get_realtime();
+      current_time = time_for_next_event;
 
       next_eventp->eval();      
 

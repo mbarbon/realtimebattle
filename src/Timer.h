@@ -62,12 +62,11 @@ private:
   double update();
 
   struct timeval start;
-  //struct timeval end;
 
   double gametime;
   double gamespeed;
   
-  double time_last_gametime_update;
+  double current_time;
 };
 
 #endif __TIMER__
