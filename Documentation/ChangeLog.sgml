@@ -12,6 +12,13 @@ Added sorting in the statistics. Only available with Gtk 1.1.x.
 
 It is now possible to clear the message list and view messages from one robot only.
 
+It is now possible to autostart a tournament. See docs to know how to do a tournament file.
+
+It is now possible to choose a statistics file for saving the statistics when autostarting a
+tournament.
+
+Added window positions to options.
+
 Bugfixes:
 
 An updating problem with gtk 1.1.x in statistics window was solved.
