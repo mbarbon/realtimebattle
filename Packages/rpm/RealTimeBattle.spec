@@ -6,7 +6,7 @@
 
 %define prefix  /usr
 %define name    RealTimeBattle
-%define version 1.0.2
+%define version 1.0.3
 %define release 1
 
 Summary:     RealTimeBattle, a robot programming game for Unix
