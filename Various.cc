@@ -1,6 +1,8 @@
 #include <math.h>
+#include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <stdlib.h>
+#include <iostream.h>
 
 #include "Various.h"
 #include "Error.h"
@@ -66,6 +68,31 @@ reorder_pointer_array(void** array, int size)
           temp_p = array[n1];
           array[n1] = array[n2];
           array[n2] = temp_p;
+        }
+    }
+}
+
+void
+entry_handler( GtkWidget * entry, entry_t * entry_info )
+{
+  gchar *entry_text;
+  entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
+  for(unsigned int i=0;i<strlen(entry_text);i++)
+    {
+      switch( entry_info->datatype )
+        {
+        case ENTRY_INT:
+          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') || (entry_text[i] == '-' && i == 0 )) )
+            cout << entry_text[i] << endl;;
+          break;
+        case ENTRY_DOUBLE:
+          break;
+        case ENTRY_HEX:
+          break;
+        case ENTRY_CHAR:
+          break;
+        case ENTRY_BOOL:
+          break;
         }
     }
 }
