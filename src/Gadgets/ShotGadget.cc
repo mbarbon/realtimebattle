@@ -45,6 +45,7 @@ ShotGadget::variable_def[ShotGadget::LAST_SHOTVAR] =
 };
 
 ShotGadget::ShotGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_SHOT)
 {
   init_variables( variable_def, LAST_SHOTVAR );
   // Is there any need for this to be here?

@@ -36,6 +36,7 @@ CommunicationGadget::variable_def[CommunicationGadget::LAST_COMMUNICATIONVAR] =
 };
 
 CommunicationGadget::CommunicationGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_COMMUNICATION)
 {
   init_variables( variable_def, LAST_COMMUNICATIONVAR );
   // Is there any need for this to be here?

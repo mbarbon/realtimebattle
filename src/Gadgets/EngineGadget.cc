@@ -45,6 +45,7 @@ EngineGadget::function_def[EngineGadget::LAST_ENGINEFCN] =
 };
 
 EngineGadget::EngineGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_ENGINE)
 {
   init_variables( variable_def, LAST_ENGINEVAR );
   init_functions( function_def, LAST_ENGINEFCN ); 

@@ -44,6 +44,7 @@ DefenseGadget::variable_def[DefenseGadget::LAST_DEFENSEVAR] =
 };
 
 DefenseGadget::DefenseGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_DEFENSE)
 {
   init_variables( variable_def, LAST_DEFENSEVAR );
   // Is there any need for this to be here?

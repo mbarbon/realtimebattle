@@ -23,45 +23,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <set>
 
+#include "Messagetypes.h"
+
 class Gadget;
-
-
-enum gadget_type
-{
-  NO_GDT = -1,
-
-  VARIABLE_GDT,
-  FUNCTION_GDT,
-  SCRIPT_GDT,
-
-  WALL_GDT,
-  BALL_GDT,
-
-  GEOMETRY_GDT,
-  ENVIRONMENT_GDT,
-  SCORING_GDT,
-
-  EXPLOSION_GDT,
-  WEAPON_GDT,
-  SHOT_GDT,
-  
-  DEFENSE_GDT,
-  ENGINE_GDT,
-  SENSOR_GDT,
-  COMMUNICATION_GDT,
-  EQUIPMENT_GDT,
-  ROBOTBODY_GDT,
-
-  LAST_GDT
-};
 
 
 struct GadgetInfo
 {
-  GadgetInfo(Gadget* const gp, long int id_nr, const char* nm, gadget_type tp ) 
+  GadgetInfo(Gadget* const gp, long int id_nr, const char* nm, gadget_t tp ) 
     : gadgetp(gp), id(id_nr), name(nm), type(tp) {}
 
-  GadgetInfo(const string& str ) : gadgetp(NULL), id(0), name(str), type(NO_GDT) {}
+  GadgetInfo(const string& str ) : gadgetp(NULL), id(0), name(str), type(GAD_NONE) {}
 
   ~GadgetInfo() {}
 
@@ -71,7 +43,7 @@ struct GadgetInfo
   Gadget* gadgetp;
   long int id;
   string name;
-  gadget_type type;
+  gadget_t type;
 };
   
 

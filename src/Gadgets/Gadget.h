@@ -31,8 +31,6 @@ class Function;
 struct VariableDefinition;
 struct FunctionDefinition;
 
-
-
 /*
   Gadget is a base class. The classes derives from it are used to store
   information about the characteristics of different "game" objects (like
@@ -47,16 +45,15 @@ public:
 
 
   Gadget() : 
-    info(this, 0, "", NO_GDT), 
+    info(this, 0, "", GAD_NONE), 
     variables(NULL), functions(NULL) {}
 
-  Gadget( const char* name, Gadget* const p, gadget_type type ) : 
+  Gadget( const char* name, Gadget* const p, gadget_t type ) : 
     info(this, last_id_used++, name, type), 
     parent(p), 
     variables(NULL), functions(NULL) {}
 
   ~Gadget();
-
 
   long int get_unique_id() const { return info.id; }
   const string& get_name() const { return info.name; }

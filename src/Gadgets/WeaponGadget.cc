@@ -82,7 +82,7 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
 };
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
-  : Gadget(name, p, WEAPON_GDT)
+  : Gadget(name, p, GAD_WEAPON)
 {
   init_variables(variable_def, LAST_WEAPONVAR);
   init_functions(function_def, LAST_WEAPONFCN);
@@ -119,7 +119,7 @@ WeaponGadget::eval_function( const int fcn )
 void
 WeaponGadget::shoot()
 {
-  assert( parent->get_info().type == ROBOTBODY_GDT );
+  assert( parent->get_info().type == GAD_ROBOTBODY );
   // TODO: other objects should be able to carry weapon 
 
   if( variables[AMMUNITION] < 0 )

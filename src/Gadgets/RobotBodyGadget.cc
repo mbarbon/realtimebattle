@@ -60,6 +60,7 @@ RobotBodyGadget::function_def[RobotBodyGadget::LAST_ROBOTBODYFCN] =
 };
 
 RobotBodyGadget::RobotBodyGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_ROBOTBODY)
 {
   init_variables( variable_def, LAST_ROBOTBODYVAR );
   init_functions( function_def, LAST_ROBOTBODYFCN ); 

@@ -46,6 +46,7 @@ ExplosionGadget::function_def[ExplosionGadget::LAST_EXPLOSIONFCN] =
 };
 
 ExplosionGadget::ExplosionGadget( const char* name, Gadget* const p )
+  : Gadget(name, p, GAD_EXPLOSION)
 {
   init_variables( variable_def, LAST_EXPLOSIONVAR );
   init_functions( function_def, LAST_EXPLOSIONFCN ); 

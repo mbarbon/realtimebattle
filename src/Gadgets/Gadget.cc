@@ -100,7 +100,7 @@ Gadget::eval_message(const string& msg)
       return( parent->eval_message( msg ) );
     }
 
-  gadget_type gad_type = (*si).type;
+  gadget_t gad_type = (*si).type;
   Gadget* gad = (*si).gadgetp;
 
   if( msg[pos] == '.')  
@@ -108,13 +108,13 @@ Gadget::eval_message(const string& msg)
       return( gad->eval_message(msg.substr( pos+1 ) ) );
     }
 
-  if( gad_type == FUNCTION_GDT )
+  if( gad_type == GAD_FUNCTION )
     {
       // TODO: Should check if we are allowed to eval the function
       // TODO: How should arguments be treated?
       eval_function( ((Function*)gad)->get_fcn_nr() );
     }
-  else if( gad_type == VARIABLE_GDT )
+  else if( gad_type == GAD_VARIABLE )
     {
       // Use the argument to set the value of the variable
     }
