@@ -27,7 +27,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "InformationDistributor.h"
 
+class ArenaController;
+
+extern ArenaController the_arena_controller;
+
 #define the_arena (*( the_arena_controller.get_my_arena()) )
+#define the_opts (*( the_arena_controller.get_main_opts() ))
 
 static const int max_debug_level = 5;
 
