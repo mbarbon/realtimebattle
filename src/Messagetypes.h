@@ -167,7 +167,7 @@ static const struct Message message_to_robot[25] =
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
-  {"Coordinates",3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: x, second arg: y, third arg: rotation
+  {"Coordinates",3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: x, second arg: y, third arg: angle
   {"RobotInfo",  2, {DOUBLE, INT,    NONE,   NONE}},   // first arg: Other robots energylevel, second arg: enemy - 0, teammate - 1
   {"RotationReached",1,{INT, NONE,  NONE,   NONE}},    // first arg: what has finished rotation (see Rotate below)
   {"Energy",     1, {DOUBLE, NONE,   NONE,   NONE}},   // arg: energylevel
