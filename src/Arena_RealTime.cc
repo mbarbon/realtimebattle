@@ -198,14 +198,7 @@ Arena_RealTime::check_for_robots_and_arenas( String& word,
 void
 Arena_RealTime::parse_arena_file(String& filename)
 {
-  char text[20];
-  double radie, bounce_c, hardn, thickness;
-  int vertices;
-
   Vector2D vec1, vec2, vec0;
-  WallLine* wall_linep;
-  WallCircle* wall_circlep;
-  WallInnerCircle* wall_inner_circlep;
 
   ifstream file(filename.chars());
   if( !file ) Error(true, "Couldn't open arena file" + filename, "Arena_Base::parse_arena_file");
@@ -527,7 +520,7 @@ Arena_RealTime::quit_ordered()
   state = EXITING;
 }
 
-gint
+bool
 Arena_RealTime::timeout_function()
 {
   if( halted ) return true;
@@ -549,7 +542,9 @@ Arena_RealTime::timeout_function()
         {
           if( statistics_file_name != "" )
             save_statistics_to_file( statistics_file_name );
+#ifndef NO_GRAPHICS
           gtk_main_quit();
+#endif NO_GRAPHICS
         }
       break;
       
@@ -802,13 +797,12 @@ Arena_RealTime::is_colour_allowed(const long colour, const double min_dist, cons
     {
       if(li() != robotp)
         {
-          d = colour_dist( colour, 
-                           (li())->get_rgb_colour() );
+          d = colour_dist( colour, li()->get_rgb_colour() );
           if( d < min_dist ) return false;          
         }
     }
   
-  d = colour_dist( colour, gdk2hex_colour(background_colour) );
+  d = colour_dist( colour, bg_rgb_colour );
   if( d < min_dist ) return false;
 
   return true;
@@ -832,6 +826,8 @@ Arena_RealTime::find_free_colour(const long int home_colour,
         }                  
     }
    Error(true, "Impossible to find colour", "Arena_RealTime::find_free_colour");
+
+   return 0;
 }
 
 int

@@ -26,9 +26,9 @@ class Arena_RealTime : public Arena_Base
 {
 public:
   Arena_RealTime();
-  ~Arena_RealTime();
+  virtual ~Arena_RealTime();
 
-  gint timeout_function();
+  bool timeout_function();
   void start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
                         const List<start_tournament_info_t>& arenafilename_list, 
                         const int robots_p_game, 
