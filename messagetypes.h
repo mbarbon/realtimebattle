@@ -17,6 +17,7 @@ enum message_to_robot_type
   EXIT_ROBOT,
   RADAR,
   INFO,
+  ENERGY,
   ROBOTS_LEFT,
   COLLISION,
   DEAD,
@@ -70,6 +71,7 @@ enum game_option_type
 
   ROBOT_START_ENERGY,
   ROBOT_MAX_ENERGY,
+  ROBOT_ENERGY_LEVELS,
 
   SHOT_SPEED,
   SHOT_MIN_ENERGY,
@@ -116,10 +118,12 @@ static const Message message_to_robot[20] =
   {"BinDataTo",  2, {INT,    BINDATA,NONE,   NONE}},
   {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
-  {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
+  {"Radar",      4, {DOUBLE, INT,    DOUBLE, INT}},   // first arg: distance, second arg: object_type, 
+                                                      // third arg: radar_angle, fourth arg: if robot, its energylevel
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
+  {"Energy",     1, {INT,    NONE,   NONE,   NONE}},   // arg: energylevel
   {"RobotsLeft", 1, {INT,    NONE,   NONE,   NONE}},   // arg: robots left
-  {"Collision",  3, {INT,    DOUBLE, DOUBLE, NONE}},   // first arg: object_type, second arg: change in energy, third arg: collision angle
+  {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: collision angle
   {"Dead",       0, {NONE,   NONE,   NONE,   NONE}},   // Robot died  
   {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
   {"",           0, {}}

@@ -72,6 +72,9 @@ Options::Options()
   all_double_options[OPTION_ROBOT_RADAR_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, 2.0*M_PI / 3.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0, 12, "Robot radar max rotate speed [rad/s]", NULL);
     
+  all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
+    option_info_t<long>(ENTRY_INT, 10, 1, 100, 4, "Robot energy levels", NULL);
+
   all_double_options[OPTION_SHOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, 0.1, 0.01, 1.0, 12, "Shot radius", NULL);
 
@@ -144,6 +147,7 @@ Options::broadcast_opts()
 
   the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY, get_d(OPTION_ROBOT_START_ENERGY));
   the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY, get_d(OPTION_ROBOT_MAX_ENERGY));
+  the_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS, get_l(OPTION_ROBOT_ENERGY_LEVELS));
 
   the_arena.broadcast( GAME_OPTION, SHOT_SPEED, get_d(OPTION_SHOT_SPEED));
   the_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY, get_d(OPTION_SHOT_MIN_ENERGY));

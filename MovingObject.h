@@ -42,9 +42,9 @@ enum rotation_mode_t { NORMAL_ROT, SWEEP_LEFT, SWEEP_RIGHT, ROTATE_TO_RIGHT, ROT
 struct rotation_t
 {
   rotation_t() {}
-  rotation_t(double p, double v, double l, double r, rotation_mode_t m) :
+  rotation_t(const double p, const double v, const double l, const double r, const rotation_mode_t m) :
     pos(p), vel(v), left(l), right(r), mode(m) {}
-  void set(double p, double v, double l, double r, rotation_mode_t m) 
+  void set(const double p, const double v, const double l, const double r, const rotation_mode_t m) 
     { pos=p; vel=v; left=l; right=r; mode=m; }
   double pos;
   double vel;
@@ -88,7 +88,8 @@ public:
   GList* get_statistics() { return statistics; }
   ofstream* get_outstreamp() { return outstreamp; }  
   int get_position_this_game() { return position_this_game; }
-  double get_total_points();
+  double get_total_points() { return total_points; }
+  void add_points(double pts) { points_this_game += pts; total_points += pts; }
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
   void display_energy();
@@ -129,7 +130,8 @@ private:
 
   String robot_filename;
   //String robot_dir;
-  int points;
+  double total_points;
+  double points_this_game;
   int position_this_game;
 
   ifstream* instreamp;
