@@ -32,6 +32,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string.h>
 #include "Socklib.h"
 
+void usage(int err_code)
+{
+  cout << endl
+       << "  Usage:  RTBClient Robot server " << endl
+       << endl;
+
+  exit( err_code );
+}
 
 int 
 main ( int argc, char* argv[] )
@@ -40,19 +48,35 @@ main ( int argc, char* argv[] )
   const int dbug = 1;
 
   char buffer[80];
+  char server[80];
+
+  if( argc != 3  ) usage( EXIT_FAILURE);
+
+  strncpy( server, argv[2], sizeof(server) - 1 );
+  server[80] = '\0';
 
 
-  int socket_fd = connectto("sibelius", port, dbug);
+  int socket_fd = connectto( server, port, dbug );
 
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
 
-  out_socket << argv[1] << endl; 
+  out_socket << argv[1] << endl; // send robot name;
 
+
+  // Start robot process
+
+
+
+
+  // Main loop
 
   do
     {
-      out_socket << argv[1] << " still active" << endl; 
+      cin >> buffer;
+      
+      out_socket << buffer << endl;;
+      cout << buffer << endl;
 
 //        in_socket >> ws;
 //        in_socket.clear();

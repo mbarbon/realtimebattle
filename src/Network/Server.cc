@@ -131,9 +131,9 @@ server(int socket_fd)
       exit_cleanly( SIGPIPE );
     }
 
-  if(  mkfifo( ofifo_name.c_str(), S_IWUSR | S_IRUSR ) )
+  if(  mkfifo( ofifo_name.c_str(), S_IWUSR | S_IRUSR ) != 0 )
     {
-      cerr << "Server: couldn't create " << ififo_name << ": ";
+      cerr << "Server: couldn't create " << ofifo_name << ": ";
       perror( NULL );
       ofifo_name = "";
       exit_cleanly( SIGPIPE );
@@ -143,6 +143,14 @@ server(int socket_fd)
 
   // Open the fifos for read/write
   
+  int ififo_fd = open( ififo_name.c_str(), O_RDONLY );
+
+  if( ififo_fd == -1 )
+    {
+      cerr << "Server: couldn't open " << ififo_name << ": ";
+      perror( NULL );
+      exit_cleanly( SIGPIPE );
+    }
 
   int ofifo_fd = open( ofifo_name.c_str(), O_WRONLY );
 
@@ -154,14 +162,6 @@ server(int socket_fd)
 
     }
 
-  int ififo_fd = open( ififo_name.c_str(), O_RDONLY | O_NONBLOCK);
-
-  if( ififo_fd == -1 )
-    {
-      cerr << "Server: couldn't open " << ififo_name << ": ";
-      perror( NULL );
-      exit_cleanly( SIGPIPE );
-    }
 
   ofstream ofifo_stream(ofifo_fd);
   ifstream ififo_stream(ififo_fd);
@@ -180,7 +180,7 @@ server(int socket_fd)
 
       FD_ZERO( &fifo_and_socket );
       FD_SET( socket_fd, &fifo_and_socket );
-      //      FD_SET( ififo_fd, &fifo_and_socket );
+      FD_SET( ififo_fd, &fifo_and_socket );
 
       select(FD_SETSIZE, &fifo_and_socket, NULL, NULL, &time_to_wait);
 
@@ -192,12 +192,28 @@ server(int socket_fd)
           in_socket.get(buffer, 80, '\n');
 
           cout << buffer;      
+          ofifo_stream << buffer << endl;      
           cout << "!" << flush;   
         }
-      else
-        {
-          cout << "." << flush;
+
+      if( FD_ISSET( ififo_fd, &fifo_and_socket) )
+        {      
+          ififo_stream >> ws;
+          ififo_stream.clear();
+          ififo_stream.get(buffer, 80, '\n');
+
+          if( ififo_stream.fail() )
+            {
+              cerr << "Reading ififo failed. Reopen!" << endl;
+              sleep(3);
+            }
+
+          cout << buffer;      
+          out_socket << buffer << endl;
+          cout << "%" << flush;   
         }
+      
+      cout << "." << flush;      
       
       out_socket << "Message_from_server_" << robotname << endl;
       //      sleep(1);
