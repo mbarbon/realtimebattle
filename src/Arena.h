@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #include "Wall.h"
 
-#include "ArenaObjectCollector.h"
+#include "SubSquare.h"
 
 class Vector2D;
 class Shape;
@@ -66,7 +66,7 @@ public:
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, enum object_type& closest_shape, 
                                Shape*& colliding_object, 
-                               const class Robot* the_robot = NULL ) { return 0.0;}
+                               const class Robot* the_robot = NULL ) { return 0.0; }
 
   void find_closest_object( const Vector2D& point, const Vector2D& direction, 
                             Shape* closest_shape, double distance );
@@ -83,7 +83,19 @@ protected:
   set<Shot> shots;  
   set<Robot*> robots;
 
-  ArenaObjectCollector object_collection;
+
+  SubSquare** subsquares;
+
+  
+  // number of subrectangles in each direction
+  int number_of_subsquares_x;
+  int number_of_subsquares_y;
+
+  Vector2D top_left;
+  Vector2D bottom_right;
+  
+  Vector2D size;  // bottom_right - top_left
+  Vector2D subsquare_size; // size / number_of_subsquares 
 };
 
 

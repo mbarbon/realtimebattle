@@ -17,37 +17,32 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ARENA_OBJECT_COLLECTOR__
-#define __ARENA_OBJECT_COLLECTOR__
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <set>
 
 
-// This playing arena is divided into subrectangles in order to make finding close
-// objects easier. The ArenaObjectCollector class is responsible for placing the
-// objects in the arena in the right subsquares.
+#include "SubSquare.h"
+#include "Shape.h"
 
-class Shape;
 
-class ArenaObjectCollector
+void
+SubSquare::add(const Shape* s)
 {
-public:
-
-  ArenaObjectCollector() {}
-  ~ArenaObjectCollector() {}
-  
-  void add( Shape& shape );
-  void remove( Shape& shape );
+  shapes.insert(s);
+}
 
 
-private:
-
-  
-
-  set<Shape>** objects_in_subsquare;
-  
-  
-  
-
-};
-
-
-#endif __ARENA_OBJECT_COLLECTOR__
+void
+SubSquare::clean()
+{
+  set<const Shape*>::iterator li;
+  for( li = shapes.begin(); li != shapes.end(); li++ )
+    {
+      if( ! (*li)->is_inside_subsquare(*this) )
+        shapes.erase(li);
+    }
+}
