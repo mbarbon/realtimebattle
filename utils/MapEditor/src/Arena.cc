@@ -4,24 +4,18 @@
 
 void Arena::Write()
 {
-  Gadget *O;
-  O = TheGadgets;
-  while(O != NULL)
+  for(vector<Gadget*>::iterator i = TheGadgets.begin(); i != TheGadgets.end(); i++)
     {
-      O->Print();
-      O = O->Next;
+      (*i)->Print();
     }
 }
 
 
 Arena::~Arena()
 {
-  Gadget *O;
-  while(TheGadgets)
+  for(vector<Gadget*>::iterator i = TheGadgets.begin(); i != TheGadgets.end(); i++)
     {
-      O = TheGadgets;
-      TheGadgets = TheGadgets->Next;
-      delete O;
+      delete (*i);
     }
 }
 

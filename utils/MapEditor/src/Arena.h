@@ -3,6 +3,7 @@
 
 
 #include <stdio.h>
+#include <vector>
 #include "Gadget.h"
 
 
@@ -17,7 +18,10 @@ protected:
   int Read(FILE*);
   int ReadHead(FILE*);
   void Write();
-  Gadget *TheGadgets;
+
+  vector<Gadget*> TheGadgets;
+
+  //Gadget *TheGadgets;
 };
 
 
