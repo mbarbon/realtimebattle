@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include "Gui.h"
+#include "IntlDefs.h"
 #include "ArenaController.h"
 #include "ArenaWindow.h"
 #include "MessageWindow.h"
@@ -151,8 +152,8 @@ Gui::open_starttournamentwindow()
             List<String> string_list;
             string_list.insert_last( new String( "Yes" ) );
             string_list.insert_last( new String( "No"  ) );
-            Dialog( (String)"This action will kill the current tournament.\n" +
-                    "Do you want do that?",
+            Dialog( (String)_("This action will kill the current tournament.\n") +
+                    _("Do you want do that?"),
                     string_list,
                     (DialogFunction) Gui::kill_and_start_new_tournament );
           }

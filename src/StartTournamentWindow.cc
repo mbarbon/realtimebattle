@@ -41,6 +41,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include "ArenaController.h"
+#include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "StartTournamentWindow.h"
 #include "String.h"
@@ -64,7 +65,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_set_name( window_p, "RTB StartTournament" );
 
   gtk_window_set_title( GTK_WINDOW( window_p ),
-                        "Start New Tournament" );
+                        _("Start New Tournament") );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
@@ -113,8 +114,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           dir_list  = &selected_robot_directory;
           tour_clist = robots_in_tournament_clist;
           dir_clist  = robots_in_directory_clist;
-          tour_title = new char*( "Robots in Tournament" );
-          dir_title  = new char*( "Robots in Directory" );
+          tour_title = new char*( _("Robots in Tournament") );
+          dir_title  = new char*( _("Robots in Directory") );
           robot = true;
         }
       else
@@ -123,8 +124,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           dir_list  = &selected_arena_directory;
           tour_clist = arenas_in_tournament_clist;
           dir_clist  = arenas_in_directory_clist;
-          tour_title = new char*( "Arenas in Tournament" );
-          dir_title  = new char*( "Arenas in Directory" );
+          tour_title = new char*( _("Arenas in Tournament") );
+          dir_title  = new char*( _("Arenas in Directory") );
           robot = false;
         }
 
@@ -136,9 +137,9 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       add_clist( tour_clist, hbox );
 
-      char* button_labels[] = { " Remove ", " Select All ",
-                                " Unselect All ", " Add ",
-                                " Select All ", " Unselect All " };
+      char* button_labels[] = { _(" Remove "), _(" Select All "),
+                                _(" Unselect All "), _(" Add "),
+                                _(" Select All "), _(" Unselect All ") };
 
       GtkWidget* vbox2 = NULL;
 
@@ -224,8 +225,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   // Choose Number of games per sequence, Number of robots per sequence
   // and Number of sequences
 
-  char * label_titles[] = { "Games per sequence", "Robots per sequence",
-                            "Number of sequences" };
+  char * label_titles[] = { _("Games per sequence"), _("Robots per sequence"),
+                            _("Number of sequences") };
 
   GtkWidget * hbox2 = gtk_hbox_new (FALSE, 10);
   gtk_box_pack_start (GTK_BOX (vbox), hbox2, FALSE, FALSE, 0);
@@ -282,7 +283,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       int add = 0;
       if( i == 1 ) add = 3;
 
-      button = gtk_button_new_with_label (" Min ");
+      button = gtk_button_new_with_label (_(" Min "));
 
       min_max_full_buttons_t* mmf_button;
       mmf_button = new min_max_full_buttons_t( i, MMF_MIN, this );
@@ -294,7 +295,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       if( i == 0 )
         {
-          button = gtk_button_new_with_label (" All Arenas ");
+          button = gtk_button_new_with_label (_(" All Arenas "));
           mmf_button = new min_max_full_buttons_t( i, MMF_ALL_ARENAS,
                                                    this );
           gtk_signal_connect (GTK_OBJECT (button), "clicked",
@@ -306,7 +307,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       if( i == 2 )
         {
-          button = gtk_button_new_with_label (" Full Round ");
+          button = gtk_button_new_with_label (_(" Full Round "));
           mmf_button = new min_max_full_buttons_t( i, MMF_FULL_ROUND,
                                                    this );
           gtk_signal_connect( GTK_OBJECT( button ), "clicked",
@@ -316,7 +317,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           gtk_widget_show( button );
         }
 
-      button = gtk_button_new_with_label (" Max ");
+      button = gtk_button_new_with_label (_(" Max "));
       mmf_button = new min_max_full_buttons_t( i, MMF_MAX, this );
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           (GtkSignalFunc) StartTournamentWindow::set_entry,
@@ -340,7 +341,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { " Load tournament ", " Save tournament " };
+    char * button_labels[] = { _(" Load tournament "), _(" Save tournament ") };
     for(int i=0;i<2;i++)
       {
         GtkWidget* button = gtk_button_new_with_label( button_labels[i] );
@@ -362,7 +363,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { " Start ", " Cancel " };
+    char * button_labels[] = { _(" Start "), _(" Cancel ") };
     for(int i=0;i<2;i++)
       {
         GtkWidget* button = gtk_button_new_with_label( button_labels[i] );
@@ -468,7 +469,7 @@ StartTournamentWindow::load_tournament_selected( GtkWidget* widget,
   if( stw_p->get_filesel() != NULL )
     return;
 
-  GtkWidget* fs = gtk_file_selection_new( "Choose a tournament file to load" );
+  GtkWidget* fs = gtk_file_selection_new( _("Choose a tournament file to load") );
   gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
                       (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
                       (gpointer) stw_p );
@@ -502,7 +503,7 @@ StartTournamentWindow::save_tournament_selected( GtkWidget* widget,
   if( stw_p->get_filesel() != NULL )
     return;
 
-  GtkWidget* fs = gtk_file_selection_new( "Choose a tournament file to load" );
+  GtkWidget* fs = gtk_file_selection_new( _("Choose file to save tournament into") );
   gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
                       (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
                       (gpointer) stw_p );
@@ -546,10 +547,10 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
                              StartTournamentWindow::new_tournament_from_tournament_file,
                              this, false ) && display_fail_message )
     {
-      String error_msg( "\nCouldn't parse specified tournament file." );
+      String error_msg( _("\nCouldn't parse specified tournament file.") );
       List<String> button_list;
-      button_list.insert_last( new String( " Ok " ) );
-      Dialog( "Tournament could not be loadeded." + error_msg, button_list, 
+      button_list.insert_last( new String( _(" Ok ") ) );
+      Dialog( (String)_("Tournament could not be loadeded.") + error_msg, button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
     }
 }
@@ -685,18 +686,19 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
       if( display_tour_fail_message )
         {
           if( robot_number <= 1 )
-            error_msg += "\nThere are too few robots in the tournament.";
+            error_msg += _("\nThere are too few robots in the tournament.");
           if( selected_arena_tournament.is_empty() )
-            error_msg += "\nThere are no arenas in the tournament.";
+            error_msg += _("\nThere are no arenas in the tournament.");
         }
       if( display_file_fail_message && !file )
-        error_msg += "\nCould not open file.";
+        error_msg += _("\nCould not open file.");
 
       if( error_msg != "" )
         {
           List<String> button_list;
-          button_list.insert_last( new String( " Ok " ) );
-          Dialog( "Tournament could not be saved." + error_msg, button_list, 
+          button_list.insert_last( new String( _(" Ok ") ) );
+          Dialog( (String)_("Tournament could not be saved.") + error_msg,
+                  button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
     }
@@ -822,15 +824,16 @@ StartTournamentWindow::start( GtkWidget* widget,
     {
       String error_msg( "" );
       if( robot_number <= 1 )
-        error_msg += "\nThere must be at least two robots in the tournament.";
+        error_msg += _("\nThere must be at least two robots in the tournament.");
       if( stw_p->selected_arena_tournament.is_empty() )
-        error_msg += "\nThere are no arenas in the tournament.";
+        error_msg += _("\nThere are no arenas in the tournament.");
 
       if( error_msg != "" )
         {
           List<String> button_list;
-          button_list.insert_last( new String( " Ok " ) );
-          Dialog( "Tournament could not be started." + error_msg, button_list, 
+          button_list.insert_last( new String( _(" Ok ") ) );
+          Dialog( (String)_("Tournament could not be started.") + error_msg,
+                  button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
     }

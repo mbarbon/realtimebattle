@@ -172,6 +172,9 @@
 /* Define to `long' if <sys/types.h> doesn't define.  */
 #undef off_t
 
+/* Define to the name of the distribution.  */
+#undef PACKAGE
+
 /* Define to `int' if <sys/types.h> doesn't define.  */
 #undef pid_t
 
@@ -260,6 +263,21 @@
 
 /* Define if lex declares yytext as a char * by default, not a char[].  */
 #undef YYTEXT_POINTER
+
+/* Define if your locale.h file contains LC_MESSAGES.  */
+#undef HAVE_LC_MESSAGES
+
+/* Define to 1 if NLS is requested.  */
+#undef ENABLE_NLS
+
+/* Define as 1 if you have catgets and don't want to use GNU gettext.  */
+#undef HAVE_CATGETS
+
+/* Define as 1 if you have gettext and don't want to use GNU gettext.  */
+#undef HAVE_GETTEXT
+
+/* Define as 1 if you have the stpcpy function.  */
+#undef HAVE_STPCPY
 
 
 /* Leave that blank line there!!  Autoheader needs it.

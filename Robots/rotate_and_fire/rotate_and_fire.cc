@@ -19,10 +19,23 @@
 # endif
 #endif
 
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
+
+#include "IntlDefs.h"
 #include "rotate_and_fire.h"
 
 RotateAndFire::RotateAndFire(const char* name, const char* colour)
 {
+#ifdef ENABLE_NLS
+# ifdef HAVE_LOCALE_H
+  setlocale( LC_MESSAGES, "" );
+# endif
+  bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
+  textdomain( "RealTimeBattle" );
+#endif
+
   robot_name = new char[strlen(name)];
   strcpy(robot_name, name);
 
@@ -269,7 +282,8 @@ RotateAndFire::radar_robot( const double dist, const double angle )
       brake_value = 1.0;
       brake( brake_value );
       if( debug_level >= 1 )
-        cout << "Debug Robot found and locked at distance " << dist << endl;
+        cout << "Debug "<< _("Robot found and locked at distance")
+             << " " << dist << endl;
     }
   shoot( 2 );
 }
@@ -325,11 +339,12 @@ RotateAndFire::radar_wall( const double dist, const double angle )
       brake( brake_value );
       if( debug_level >= 4 )
         {
-          cout << "Debug Acceleration: " << acceleration << endl;
-          cout << "Debug Brake: " << brake_value << endl;
+          cout << "Debug " << _("Acceleration") << ": " << acceleration << endl;
+          cout << "Debug " << _("Brake") << ": " << brake_value << endl;
         }
       if( debug_level == 5 )
-        cout << "Debug mod_angle, angle: " << mod_angle << ", " << angle << endl;
+        cout << "Debug " << _("Modular angle, Angle") << ": "
+             << mod_angle << ", " << angle << endl;
     }
 }
 
@@ -445,11 +460,11 @@ RotateAndFire::collision_shot( const double angle )
       acceleration_change_allowed = false;
       if( debug_level >= 3 )
         {
-          cout << "Debug New rotation: " << robot_rotate << endl;
-          cout << "Debug New acceleration: " << acceleration << endl;
+          cout << "Debug " << _("New rotation") << ": " << robot_rotate << endl;
+          cout << "Debug " << _("New acceleration") << ": " << acceleration << endl;
         }
       shots_hit = 0;
-      print( "Hit too many times! Flee!" );
+      print( _("Hit too many times! Flee!") );
     }
 }
 
@@ -463,14 +478,14 @@ RotateAndFire::collision_wall( const double angle )
 void
 RotateAndFire::collision_cookie( const double angle )
 {
-  print( "Cookie eaten!" );
+  print( _("Cookie eaten!") );
 }
 
 // We have collided with a mine.
 void
 RotateAndFire::collision_mine( const double angle )
 {
-  print( "Oh no! A mine" );
+  print( _("Oh no! A mine") );
 }
 
 // We have received a warning message.
@@ -483,19 +498,19 @@ RotateAndFire::warning( const int type, const char* message )
   switch( type )
     {
     case UNKNOWN_MESSAGE:
-      strcpy( full_message, "Unknown message: " );
+      strcpy( full_message, _("Unknown message: ") );
       break;
     case PROCESS_TIME_LOW:
-      strcpy( full_message, "Process time low: " );
+      strcpy( full_message, _("Process time low: ") );
       break;
     case MESSAGE_SENT_IN_ILLEGAL_STATE:
-      strcpy( full_message, "Message sent in illegal state: " );
+      strcpy( full_message, _("Message sent in illegal state: ") );
       break;
     case UNKNOWN_OPTION:
-      strcpy( full_message, "Unknown option: " );
+      strcpy( full_message, _("Unknown option: ") );
       break;
     case OBSOLETE_KEYWORD:
-      strcpy( full_message, "Obsolete Keyword: " );
+      strcpy( full_message, _("Obsolete Keyword: ") );
       break;
     }
 
@@ -519,7 +534,7 @@ RotateAndFire::game_finishes()
 void
 RotateAndFire::exit_robot()
 {
-  print( "Shutting down and leaving" );
+  print( _("Shutting down and leaving") );
   quitting = true;
 }
 
@@ -533,7 +548,7 @@ RotateAndFire::pre_checking_messages()
       robot_rotate = -robot_rotate;
       rotate( 1, robot_rotate );
       if( debug_level >= 2 )
-        cout << "Debug New robot_rotate: " << robot_rotate << endl;
+        cout << "Debug " << _("New") << " robot_rotate : " << robot_rotate << endl;
     }
 }
 
@@ -617,7 +632,7 @@ RotateAndFire::check_messages( )
                 radar_mine( dist, angle );
                 break;
               default:
-                cout << "Print Unknown Object seen!" << endl;
+                cout << "Print" << _("Unknown Object seen!") << endl;
                 break;
               }
           }
@@ -685,7 +700,7 @@ RotateAndFire::check_messages( )
                 collision_mine( angle );
                 break;
               default:
-                cout << "Print Collided with Unknown Object!" << endl;
+                cout << "Print " << _("Collided with Unknown Object!") << endl;
                 break;
               }
           }

@@ -54,6 +54,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
+#include "IntlDefs.h"
 #include "Extras.h"
 #include "Various.h"
 #include "String.h"
@@ -114,25 +115,26 @@ ArenaBase::set_state( const state_t st )
           infotext = "RealTimeBattle";
           break;
         case STARTING_ROBOTS:
-          infotext = "RTB  *Starting robots*";
+          infotext = "RTB  " + (String)_("*Starting robots*");
           break;
         case SHUTTING_DOWN_ROBOTS:
-          infotext = "RTB  *Shutting down robots*";
+          infotext = "RTB  " + (String)_("*Shutting down robots*");
           break;
         case BEFORE_GAME_START:
         case GAME_IN_PROGRESS:
-          infotext = "RealTimeBattle  *Running*";
-          if( pause_after_next_game ) infotext = "RTB  *Pausing after game*";
+          infotext = "RealTimeBattle  " + (String)_("*Running*");
+          if( pause_after_next_game )
+            infotext = "RTB  " + (String)_("*Pausing after game*");
           break;
         case PAUSING_BETWEEN_GAMES:
         case PAUSED:
-          infotext = "RealTimeBattle  *Paused*";
+          infotext = "RealTimeBattle  " + (String)_("*Paused*");
           break;
         case EXITING:
-          infotext = "RealTimeBattle  *Exiting*";
+          infotext = "RealTimeBattle  " + (String)_("*Exiting*");
           break;
         case FINISHED:
-          infotext = "RealTimeBattle  *Finished*";
+          infotext = "RealTimeBattle  " + (String)_("*Finished*");
           break;
           
         default:

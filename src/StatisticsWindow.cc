@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "StatisticsWindow.h"
+#include "IntlDefs.h"
 #include "Gui.h"
 #include "ArenaController.h"
 #include "String.h"
@@ -42,7 +43,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Statistics" );
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), "Statistics" );
+  gtk_window_set_title( GTK_WINDOW( window_p ), _("Statistics") );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
@@ -79,17 +80,18 @@ StatisticsWindow::StatisticsWindow( const int default_width,
     struct button_t { String label; GtkSignalFunc func; gpointer data; };
 
     struct button_t buttons[] = {
-      { (String)" Close ", (GtkSignalFunc) StatisticsWindow::exit,
+      { (String)_(" Close "), (GtkSignalFunc) StatisticsWindow::exit,
         (gpointer) this },
-      { (String)" Save Statistics ", (GtkSignalFunc) StatisticsWindow::save,
+      { (String)_(" Save Statistics "), (GtkSignalFunc) StatisticsWindow::save,
         (gpointer) this },
-      { (String)" Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)_(" Total "), (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_TOTAL, this ) },
-      { (String)" Sequence Total ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)_(" Sequence Total "), (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_SEQUENCE, this ) },
-      { (String)" Game ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)" " + (String)_("Game") + (String)" ",
+        (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_GAME, this ) },
-      { (String)" Robot ", (GtkSignalFunc) StatisticsWindow::change_table_type,
+      { (String)_(" Robot "), (GtkSignalFunc) StatisticsWindow::change_table_type,
         (gpointer) new change_type_data_t( STAT_TYPE_ROBOT, this ) } };
 
     GtkWidget* button_w;
@@ -223,7 +225,8 @@ StatisticsWindow::StatisticsWindow( const int default_width,
   gtk_widget_show( scrolled_win );
 #endif
 
-  char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
+  char * titles[7] = { "",_("  Name"), _("Position"), _("Points"),
+                       _("Games "), _("Survival Time"), _("Total Points") };
   clist = gtk_clist_new_with_titles(7, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ), GTK_SELECTION_BROWSE );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
@@ -302,7 +305,7 @@ StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
     return;
 
   GtkWidget* fs =
-    gtk_file_selection_new( "Choose a statistics file to save" );
+    gtk_file_selection_new( _("Choose a statistics file to save") );
   gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
                       (GtkSignalFunc) StatisticsWindow::destroy_filesel,
                       (gpointer) sw_p );
@@ -353,7 +356,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_clist_set_column_visibility( GTK_CLIST( clist ),4, TRUE );
 #else
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, "Games " );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, _("Games ") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 45 );
 #endif
         }
@@ -369,7 +372,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
       if(sw_type == STAT_TYPE_ROBOT && info_p->type != STAT_TYPE_ROBOT)
         {
           gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Name" );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Name") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 120 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
@@ -379,8 +382,8 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
         }
       if(sw_type != STAT_TYPE_ROBOT && info_p->type == STAT_TYPE_ROBOT)
         {
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "Seq  " );
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Game  " );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, _("Seq  ") );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Game  ") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 40 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 45 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
@@ -475,10 +478,10 @@ StatisticsWindow::make_title_button()
   switch( type )
     {
     case STAT_TYPE_TOTAL:
-      title = " Grand Total ";
+      title = _(" Grand Total ");
       break;
     case STAT_TYPE_SEQUENCE:
-      title = (String) " Sequence " + String( looking_at_nr );
+      title = (String) _(" Sequence ") + String( looking_at_nr );
       break;
     case STAT_TYPE_GAME:
       {
@@ -490,8 +493,8 @@ StatisticsWindow::make_title_button()
             game = gps;
             sequence--;
           }
-        title = (String) " Sequence: " + String( sequence ) +
-          "  Game: " + String( game );
+        title = (String) _(" Sequence: ") + String( sequence ) + "  " +
+          _("Game") + ": " + String( game );
       }
       break;
     case STAT_TYPE_ROBOT:

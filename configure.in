@@ -31,12 +31,19 @@ AC_SUBST(RTB_VERSION)
 VERSION=$RTB_VERSION
 PACKAGE=RealTimeBattle
 
+AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
+AC_SUBST(PACKAGE)
+AC_SUBST(VERSION)
 
+# Languages
+
+ALL_LINGUAS="sv"
 
 # Directories
 
 AC_SUBST(RTB_DIR)
+AC_SUBST(RTB_LOCALEDIR)
 
 ROBOTDIR=['${RTB_DIR}/Robots']
 ARENADIR=['${RTB_DIR}/Arenas']
@@ -57,6 +64,7 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AC_ISC_POSIX
 AC_PROG_INSTALL
 
 AC_PREFIX_DEFAULT(/usr)
@@ -130,6 +138,15 @@ AC_ARG_WITH(rtb_dir,
 
 RTB_DIR=$with_rtb_dir
 
+# Internationalization
+AM_GNU_GETTEXT
+AC_ARG_WITH(nls_localedir, 
+[  --with-nls-localedir=[path]
+                          Data directory for NLS, parent of locale 
+                          [DATADIR/locale]],,
+   with_nls_localedir=['${datadir}/locale'])
+
+RTB_LOCALEDIR=$with_nls_localedir
 
 # graphics / GTK
 
@@ -181,4 +198,5 @@ AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
 
 # Finished !
 
-AC_OUTPUT(Arenas/Makefile Documentation/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile Robots/Makefile Makefile)
+AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile Robots/Makefile po/Makefile.in Makefile],
+			[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

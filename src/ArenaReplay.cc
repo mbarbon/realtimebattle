@@ -27,6 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaReplay.h"
 #include "ArenaController.h"
+#include "IntlDefs.h"
 #include "Various.h"
 #include "Options.h"
 #include "Extras.h"
@@ -116,8 +117,8 @@ ArenaReplay::timeout_function()
           the_gui.get_arenawindow_p()->draw_everything();      
           the_gui.get_scorewindow_p()->add_robots();
           print_message
-            ( "RealTimeBattle", (String)"Game " + String( game_nr )
-              + " of sequence " + String( sequence_nr ) );
+            ( "RealTimeBattle", (String)_("Game") + " " + String( game_nr )
+              + (String)_(" of sequence ") + String( sequence_nr ) );
         }
 #endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );

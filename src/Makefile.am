@@ -13,10 +13,13 @@ endif
 if ENABLE_CCMALLOC
 CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
 CXXFLAGS += $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
+CXXFLAGS += -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 else
 CCMALLOC_O =
 CXXFLAGS += $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
+CXXFLAGS += -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 endif
+
 
 if ENABLE_PROF
 CXXFLAGS += -pg
@@ -36,8 +39,8 @@ GRAPHICS_O = \
 	StartTournamentWindow.o Structs.o
 endif
 
-RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(CCMALLOC_O) $(GTK_LIBS)
-RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O)
+RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(INTLLIBS) $(CCMALLOC_O) $(GTK_LIBS) 
+RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O) $(INTLOBJS)
 RealTimeBattle_SOURCES = \
 	ArenaBase.cc ArenaBase.h \
 	ArenaController.cc ArenaController.h \

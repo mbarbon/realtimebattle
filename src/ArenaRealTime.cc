@@ -37,6 +37,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaWindow.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
+#include "IntlDefs.h"
 #include "Extras.h"
 #include "Various.h"
 #include "String.h"
@@ -739,8 +740,8 @@ ArenaRealTime::start_game()
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
   print_message
-    ( "RealTimeBattle", (String)"Game " + String( game_nr + 1 )
-      + " of sequence " + String( sequence_nr ) + " begins on arena " +
+    ( "RealTimeBattle", (String)_("Game") + " " + String( game_nr + 1 )
+      + _(" of sequence ") + String( sequence_nr ) + _(" begins on arena ") +
       current_arena_filename );
 
   // reset some variables

@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream.h>
 
 #include "OptionsWindow.h"
+#include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
 #include "ArenaWindow.h"
@@ -46,7 +47,7 @@ OptionsWindow::OptionsWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Options" );
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), "Options" );
+  gtk_window_set_title( GTK_WINDOW( window_p ), _("Options") );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
@@ -72,9 +73,9 @@ OptionsWindow::OptionsWindow( const int default_width,
   gtk_box_pack_start( GTK_BOX( vbox ), notebook, TRUE, TRUE, 0 );
   gtk_widget_show( notebook );
 
-  char* page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot",
-                                   "Extras", "Time", "Window sizes",
-                                   "Misc" };
+  const char* page_titles[LAST_PAGE] = { _("Environment"), _("Robot"), _("Shot"),
+                                         _("Extras"), _("Time"), _("Window sizes"),
+                                         _("Misc") };
 
   option_info_t<double>* double_opts = the_opts.get_all_double_options();
   option_info_t<long>* long_opts = the_opts.get_all_long_options();
@@ -131,11 +132,11 @@ OptionsWindow::OptionsWindow( const int default_width,
               ( double_opts[opt].max_letters_in_entry );
 
             struct button_t buttons[] = {
-              { (String)" Min ", true, (GtkSignalFunc) OptionsWindow::double_min,
+              { (String)_(" Min "), true, (GtkSignalFunc) OptionsWindow::double_min,
                 (gpointer) &double_opts[opt] },
-              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::double_def,
+              { (String)_(" Def "), true, (GtkSignalFunc) OptionsWindow::double_def,
                 (gpointer) &double_opts[opt] },
-              { (String)" Max ", true, (GtkSignalFunc) OptionsWindow::double_max,
+              { (String)_(" Max "), true, (GtkSignalFunc) OptionsWindow::double_max,
                 (gpointer) &double_opts[opt] } };
 
             add_option_to_notebook( description_table,
@@ -168,11 +169,11 @@ OptionsWindow::OptionsWindow( const int default_width,
               ( long_opts[opt].max_letters_in_entry );
 
             struct button_t buttons[] = {
-              { (String)" Min ", true, (GtkSignalFunc) OptionsWindow::long_min,
+              { (String)_(" Min "), true, (GtkSignalFunc) OptionsWindow::long_min,
                 (gpointer) &long_opts[opt] },
-              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::long_def,
+              { (String)_(" Def "), true, (GtkSignalFunc) OptionsWindow::long_def,
                 (gpointer) &long_opts[opt] },
-              { (String)" Max ", true, (GtkSignalFunc) OptionsWindow::long_max,
+              { (String)_(" Max "), true, (GtkSignalFunc) OptionsWindow::long_max,
                 (gpointer) &long_opts[opt] } };
 
             add_option_to_notebook( description_table,
@@ -195,13 +196,13 @@ OptionsWindow::OptionsWindow( const int default_width,
 
             struct button_t buttons[] = {
               { (String)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL },
-              { (String)" Def ", true, (GtkSignalFunc) OptionsWindow::string_def,
+              { (String)_(" Def "), true, (GtkSignalFunc) OptionsWindow::string_def,
                 (gpointer) &string_opts[opt] },
               { (String)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL } };
 
             add_option_to_notebook( description_table,
                                     entry_table, button_table,
-                                    row, string_opts[opt].label,
+                                    row, string_opts[opt].translated_label,
                                     string_opts[opt].entry,
                                     string_opts[opt].value,
                                     info, buttons );
@@ -221,7 +222,7 @@ OptionsWindow::OptionsWindow( const int default_width,
       if( i == PAGE_SIZE_OF_WINDOWS )
         {
           GtkWidget* grab_button = gtk_button_new_with_label
-            ( " Grab sizes and positions from present windows " );
+            ( _(" Grab sizes and positions from present windows ") );
           gtk_signal_connect( GTK_OBJECT( grab_button ), "clicked",
                               (GtkSignalFunc) OptionsWindow::grab_windows, this );
           gtk_box_pack_start( GTK_BOX( page_vbox ), grab_button, FALSE, FALSE, 0 );
@@ -230,6 +231,7 @@ OptionsWindow::OptionsWindow( const int default_width,
 #endif
 
       GtkWidget* label = gtk_label_new( page_titles[i] );
+      gtk_widget_show( label );
       gtk_notebook_append_page( GTK_NOTEBOOK( notebook ),
                                 page_vbox, label );
     }
@@ -241,19 +243,19 @@ OptionsWindow::OptionsWindow( const int default_width,
   gtk_widget_show( hbox );
 
   struct button_t buttons[] = {
-    { (String)" Default ", true, (GtkSignalFunc) OptionsWindow::default_opts,
+    { (String)_(" Default "), true, (GtkSignalFunc) OptionsWindow::default_opts,
       (gpointer) this },
-    { (String)" Load options ", true, (GtkSignalFunc) OptionsWindow::load,
+    { (String)_(" Load options "), true, (GtkSignalFunc) OptionsWindow::load,
       (gpointer) this },
-    { (String)" Save options ", true, (GtkSignalFunc) OptionsWindow::save,
+    { (String)_(" Save options "), true, (GtkSignalFunc) OptionsWindow::save,
       (gpointer) this },
-    { (String)" Save as default ", true, (GtkSignalFunc) OptionsWindow::save_def,
+    { (String)_(" Save as default "), true, (GtkSignalFunc) OptionsWindow::save_def,
       (gpointer) this },
-    { (String)" Apply ", true, (GtkSignalFunc) OptionsWindow::apply,
+    { (String)_(" Apply "), true, (GtkSignalFunc) OptionsWindow::apply,
       (gpointer) this },
-    { (String)" Ok ", true, (GtkSignalFunc) OptionsWindow::ok,
+    { (String)_(" Ok "), true, (GtkSignalFunc) OptionsWindow::ok,
       (gpointer) this },
-    { (String)" Cancel ", true, (GtkSignalFunc) OptionsWindow::cancel,
+    { (String)_(" Cancel "), true, (GtkSignalFunc) OptionsWindow::cancel,
       (gpointer) this } };
 
   for( int i=0; i<7; i++ )
@@ -420,7 +422,7 @@ OptionsWindow::load( GtkWidget* widget,
   if( optionswindow_p->get_filesel() == NULL )
     {
       GtkWidget* fs =
-        gtk_file_selection_new( "Choose an options file to load" );
+        gtk_file_selection_new( _("Choose an options file to load") );
       gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
                           (GtkSignalFunc) OptionsWindow::destroy_filesel,
                           (gpointer) optionswindow_p );
@@ -444,7 +446,7 @@ OptionsWindow::save( GtkWidget* widget,
   if( optionswindow_p->get_filesel() == NULL )
     {
       GtkWidget* fs =
-        gtk_file_selection_new( "Choose an options file to save" );
+        gtk_file_selection_new( _("Choose an options file to save") );
       gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
                           (GtkSignalFunc) OptionsWindow::destroy_filesel,
                           (gpointer) optionswindow_p );

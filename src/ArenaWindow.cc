@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ArenaWindow.h"
+#include "IntlDefs.h"
 #include "ArenaBase.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
@@ -67,8 +68,6 @@ ArenaWindow::ArenaWindow( const int default_width,
                       (GtkSignalFunc) ArenaWindow::hide_window,
                       (gpointer) this );
 
-  gtk_widget_realize( window_p );
-
   // Main box
 
   GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
@@ -80,9 +79,12 @@ ArenaWindow::ArenaWindow( const int default_width,
   struct button_t { String label; GtkSignalFunc func; };
 
   struct button_t buttons[] = {
-    { (String)" No Zoom [0] " , (GtkSignalFunc) ArenaWindow::no_zoom  },
-    { (String)" Zoom In [+] " , (GtkSignalFunc) ArenaWindow::zoom_in  },
-    { (String)" Zoom Out [-] ", (GtkSignalFunc) ArenaWindow::zoom_out } };
+    { (String)_(" No Zoom ") + (String)"[0] ",
+      (GtkSignalFunc) ArenaWindow::no_zoom  },
+    { (String)_(" Zoom In ") + (String)"[+] ",
+      (GtkSignalFunc) ArenaWindow::zoom_in  },
+    { (String)_(" Zoom Out ") + (String)"[-] ",
+      (GtkSignalFunc) ArenaWindow::zoom_out } };
 
   GtkWidget* button_table = gtk_table_new( 1, 3, TRUE );
   gtk_box_pack_start( GTK_BOX( vbox ), button_table, FALSE, FALSE, 0 );
@@ -152,7 +154,7 @@ ArenaWindow::~ArenaWindow()
 void
 ArenaWindow::set_window_title()
 {
-  String title = "Arena   " +
+  String title = (String)_("Arena") + "   " +
     the_arena.get_current_arena_filename();
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }

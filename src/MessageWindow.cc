@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "MessageWindow.h"
+#include "IntlDefs.h"
 #include "ScoreWindow.h"
 #include "ControlWindow.h"
 #include "Gui.h"
@@ -78,11 +79,11 @@ MessageWindow::MessageWindow( const int default_width,
 
   struct button_t { String label; GtkSignalFunc func; };
   struct button_t buttons[] = {
-    { (String)" Clear all messages ", 
+    { (String)_(" Clear all messages "), 
       (GtkSignalFunc) MessageWindow::clear_clist },
-    { (String)" Show only marked robot ", 
+    { (String)_(" Show only marked robot "), 
       (GtkSignalFunc) MessageWindow::show_one_robot },
-    { (String)" Show all ",
+    { (String)_(" Show all "),
       (GtkSignalFunc) MessageWindow::show_all } };
   for(int i = 0;i < 3; i++)
     {
@@ -110,7 +111,7 @@ MessageWindow::MessageWindow( const int default_width,
   gtk_widget_show( scrolled_win );
 #endif
 
-  char* titles[2] = { "Robot", "Message" };
+  char* titles[2] = { _(" Robot "), _(" Message ") };
   clist = gtk_clist_new_with_titles( 2, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ),
                                 GTK_SELECTION_BROWSE );
@@ -140,7 +141,7 @@ MessageWindow::MessageWindow( const int default_width,
   gtk_widget_show( clist );
 
   if( window_shown = ( controlwindow_p->is_messagewindow_checked() ) )
-    gtk_widget_show( window_p );
+    gtk_widget_show_now( window_p );
 }
 
 MessageWindow::~MessageWindow()
@@ -151,11 +152,11 @@ MessageWindow::~MessageWindow()
 void
 MessageWindow::set_window_title()
 {
-  String title( "Messages" );
+  String title = (String)_("Messages");
   if( viewed_robot != NULL )
     title += "  -  " + viewed_robot->get_robot_name();
   else
-    title += "  -  All ";
+    title += "  -  " + (String)_(" All ");
 
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }
@@ -253,7 +254,7 @@ MessageWindow::show_window( GtkWidget* widget,
 {
   if( !messagewindow_p->is_window_shown() )
     {
-      gtk_widget_show( messagewindow_p->get_window_p() );
+      gtk_widget_show_now( messagewindow_p->get_window_p() );
       messagewindow_p->set_window_shown( true );
     }
 }

@@ -157,17 +157,18 @@ struct option_info_t
   option_info_t() {}
   option_info_t(const entry_datatype_t d, const pages_in_options_t p,
                 const T v, const T mn, const T mx, const int l,
-                const bool bo, const bool lo, const String& s ) :
+                const bool bo, const bool lo, const String& s,
+                const String& t ) :
     datatype(d), page(p), value(v), default_value(v), min_value(mn),
     max_value(mx), max_letters_in_entry(l), broadcast_option(bo),
-    log_option(lo), label(s) {}
+    log_option(lo), label(s), translated_label(t) {}
 
   option_info_t& operator=(const option_info_t& n) { 
     datatype=n.datatype; page=n.page; value=n.value; 
     default_value=n.default_value; min_value=n.min_value;
     max_value=n.max_value; max_letters_in_entry=n.max_letters_in_entry;
     broadcast_option=n.broadcast_option; log_option=n.log_option;
-    label=n.label;
+    label=n.label;translated_label=n.translated_label;
 #ifndef NO_GRAPHICS
     entry=n.entry; 
 #endif NO_GRAPHICS
@@ -183,6 +184,7 @@ struct option_info_t
   bool broadcast_option;
   bool log_option;
   String label;
+  String translated_label;
 #ifndef NO_GRAPHICS
   GtkWidget * entry;
 #endif

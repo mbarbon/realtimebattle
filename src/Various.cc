@@ -53,6 +53,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream.h>
 
 #include "Various.h"
+#include "IntlDefs.h"
 #include "String.h"
 #include "Options.h"
 #include "Structs.h"
@@ -67,7 +68,8 @@ extern bool no_graphics;
 void
 Error(const bool fatal, const String& error_msg, const String& function_name)
 {
-  cerr << "RealTimeBattle: Error in " << function_name << ": " << error_msg << endl;
+  cerr << "RealTimeBattle: " << _("Error in") << " "
+       << function_name << ": " << error_msg << endl;
   //  perror("RealTimeBattle: errno message");
 
   if( fatal == true )

@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ControlWindow.h"
+#include "IntlDefs.h"
 #include "ArenaWindow.h"
 #include "MessageWindow.h"
 #include "ScoreWindow.h" 
@@ -74,19 +75,19 @@ ControlWindow::ControlWindow( const int default_width,
   struct button_t { String label; GtkSignalFunc func; int pack; };
 
   struct button_t buttons[] = {
-    { (String)" New Tournament ", 
+    { (String)_(" New Tournament "), 
       (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
-    { (String)" Replay Tournament ", 
+    { (String)_(" Replay Tournament "), 
       (GtkSignalFunc) ControlWindow::replay_tournament , TRUE  },
-    { (String)" Pause ",
+    { (String)_(" Pause "),
       (GtkSignalFunc) ControlWindow::pause             , TRUE  },
-    { (String)" End ",
+    { (String)_(" End "),
       (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
-    { (String)" Options ",
+    { (String)_(" Options "),
       (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
-    { (String)" Statistics ",
+    { (String)_(" Statistics "),
       (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
-    { (String)"         Quit         ",
+    { (String)_("         Quit         "),
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
   GtkWidget* button_hbox[3] = { NULL,NULL,NULL };
@@ -112,11 +113,11 @@ ControlWindow::ControlWindow( const int default_width,
     }
 
   struct button_t menu_items_data[] = {
-    { (String)"Show arena window",
+    { (String)_("Show arena window"),
       (GtkSignalFunc) ControlWindow::arena_window_toggle, TRUE  },
-    { (String)"Show message window",
+    { (String)_("Show message window"),
       (GtkSignalFunc) ControlWindow::message_window_toggle, TRUE  },
-    { (String)"Show score window",
+    { (String)_("Show score window"),
       (GtkSignalFunc) ControlWindow::score_window_toggle, TRUE  } };
   
 
@@ -198,11 +199,11 @@ ControlWindow::display_debug_widgets()
 
   struct button_t { String label; GtkSignalFunc func; int pack; };
   struct button_t debug_buttons[] = {
-    { (String)" Step ", 
+    { (String)_(" Step "), 
       (GtkSignalFunc) ControlWindow::step      , TRUE  },
-    { (String)" End Game ", 
+    { (String)_(" End Game "), 
       (GtkSignalFunc) ControlWindow::end_game  , TRUE  },
-    { (String)" Kill Marked Robot ", 
+    { (String)_(" Kill Marked Robot "), 
       (GtkSignalFunc) ControlWindow::kill_robot, TRUE  } };
 
   GtkWidget* button_hbox = NULL;
@@ -230,7 +231,7 @@ ControlWindow::display_debug_widgets()
                       FALSE, FALSE, 0);
   gtk_widget_show( button_hbox );
 
-  GtkWidget* label = gtk_label_new( " Debug Level: " );
+  GtkWidget* label = gtk_label_new( _(" Debug Level: ") );
   gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
   gtk_widget_show( label );
 
@@ -331,27 +332,27 @@ ControlWindow::display_replay_widgets()
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::fast_forward_pressed,
       (GtkSignalFunc) ControlWindow::fast_forward_released },
-    { NULL, (String)" Step forward ", 
+    { NULL, (String)_(" Step forward "), 
       (GtkSignalFunc) ControlWindow::step_forward,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (String)" Step backward ", 
+    { NULL, (String)_(" Step backward "), 
       (GtkSignalFunc) ControlWindow::step_backward,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (String)" Next Game ", 
+    { NULL, (String)_(" Next Game "), 
       (GtkSignalFunc) ControlWindow::next_game,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (String)" Prev Game ", 
+    { NULL, (String)_(" Prev Game "), 
       (GtkSignalFunc) ControlWindow::prev_game,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (String)" Next Seq ", 
+    { NULL, (String)_(" Next Seq "), 
       (GtkSignalFunc) ControlWindow::next_seq,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (String)" Prev Seq ", 
+    { NULL, (String)_(" Prev Seq "), 
       (GtkSignalFunc) ControlWindow::prev_seq,
       (GtkSignalFunc) ControlWindow::dummy,
       (GtkSignalFunc) ControlWindow::dummy } };
@@ -511,10 +512,10 @@ ControlWindow::replay_tournament( GtkWidget* widget,
         the_arena.get_state() != FINISHED ) )
     {
       List<String> string_list;
-      string_list.insert_last( new String( "Yes" ) );
-      string_list.insert_last( new String( "No"  ) );
-      Dialog( (String)"This action will kill the current tournament.\n" +
-              "Do you want do that?",
+      string_list.insert_last( new String( _("Yes") ) );
+      string_list.insert_last( new String( _("No")  ) );
+      Dialog( (String)_("This action will kill the current tournament.\n") +
+              _("Do you want do that?"),
               string_list,
               (DialogFunction) ControlWindow::kill_and_open_filesel );
     }
@@ -527,7 +528,7 @@ ControlWindow::open_replay_filesel()
 {
   if( filesel == NULL )
     {
-      filesel = gtk_file_selection_new( "Choose a log file to replay" );
+      filesel = gtk_file_selection_new( _("Choose a log file to replay") );
       gtk_signal_connect( GTK_OBJECT( filesel ), "destroy",
                           (GtkSignalFunc) ControlWindow::destroy_filesel,
                           (gpointer) this );
@@ -660,9 +661,10 @@ ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
         the_arena.get_state() != FINISHED )
       {
         List<String> string_list;
-        string_list.insert_last( new String( "Yes" ) );
-        string_list.insert_last( new String( "No"  ) );
-        Dialog( "This action will kill the current tournament.\nDo you want do that?",
+        string_list.insert_last( new String( _("Yes") ) );
+        string_list.insert_last( new String( _("No")  ) );
+        Dialog( (String)_("This action will kill the current tournament.\n") +
+                _("Do you want do that?"),
                 string_list, (DialogFunction) ControlWindow::end_tournament );
       }
 }

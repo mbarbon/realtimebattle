@@ -48,6 +48,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "getopt.h"
 #endif
 
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
+
 #include <iostream.h>
 
 #ifdef FLOATINGPOINT_H
@@ -58,11 +62,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ControlWindow.h"
 #endif NO_GRAPHICS
 
-//#include "Gui.h"
-//#include "MovingObject.h"
-
+#include "IntlDefs.h"
 #include "Options.h"
-//#include "Vector2D.h"
 #include "ArenaRealTime.h"
 #include "ArenaReplay.h"
 #include "Various.h"
@@ -87,36 +88,36 @@ void
 print_help_message()
 {
   cout << endl;
-  cout << " Usage: RealTimeBattle [options] " << endl << endl;
-  cout << " Options:" << endl;
-  cout << "    --debug_mode,                -d   debug mode" << endl;
-  cout << "    --debug_level [0-5],         -D   sets the initial debug level. implies -d" << endl;
-  cout << "    --normal_mode,               -n   normal mode (default)" << endl;
-  cout << "    --competition_mode,          -c   competition mode" << endl ;
+  cout << _(" Usage: RealTimeBattle [options] ") << endl << endl;
+  cout << _(" Options:") << endl;
+  cout << _("    --debug_mode,                -d   debug mode") << endl;
+  cout << _("    --debug_level [0-5],         -D   sets the initial debug level. implies -d") << endl;
+  cout << _("    --normal_mode,               -n   normal mode (default)") << endl;
+  cout << _("    --competition_mode,          -c   competition mode") << endl ;
   cout << endl;
-  cout << "    --no_graphics,               -g   no graphics will be displayed" << endl ;
-  cout << "    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)"  << endl;
+  cout << _("    --no_graphics,               -g   no graphics will be displayed") << endl ;
+  cout << _("    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)")  << endl;
   cout << endl;
-  cout << "    --log_file [file],           -l   make log file, if 'file' is '-'" << endl;
-  cout << "                                      the log is sent to STDOUT" << endl;
+  cout << _("    --log_file [file],           -l   make log file, if 'file' is '-'") << endl;
+  cout << _("                                      the log is sent to STDOUT") << endl;
   cout << endl;
-  cout << "    --tournament_file [file],    -t   specify a tournament file to" << endl;
-  cout << "                                      autostart a tournament" << endl;
+  cout << _("    --tournament_file [file],    -t   specify a tournament file to") << endl;
+  cout << _("                                      autostart a tournament") << endl;
   cout << endl;
-  cout << "    --statistics_file [file],    -s   file to print the statistics to" << endl;
-  cout << "                                       when autostarting" << endl;
+  cout << _("    --statistics_file [file],    -s   file to print the statistics to") << endl;
+  cout << _("                                       when autostarting") << endl;
   cout << endl;
-  cout << "    --message_file [file],       -m   redirect messages to 'file'." << endl;
-  cout << "                                      '-' as 'file' is equivalent to STDOUT." << endl;
-  cout << "                                      If both log and messages are send" << endl;
-  cout << "                                      to STDOUT, '-m' will be ignored" << endl;
+  cout << _("    --message_file [file],       -m   redirect messages to 'file'.") << endl;
+  cout << _("                                      '-' as 'file' is equivalent to STDOUT.") << endl;
+  cout << _("                                      If both log and messages are send") << endl;
+  cout << _("                                      to STDOUT, '-m' will be ignored") << endl;
   cout << endl;
-  cout << "    --replay [file]              -r   a log file to replay." << endl;
-  cout << "                                      if '-' is specified as file," << endl;
-  cout << "                                      input is taken from STDIN" << endl;
+  cout << _("    --replay [file]              -r   a log file to replay.") << endl;
+  cout << _("                                      if '-' is specified as file,") << endl;
+  cout << _("                                      input is taken from STDIN") << endl;
   cout << endl;
-  cout << "    --help,                      -h   prints this message" << endl;
-  cout << "    --version,                   -v   prints the version number" << endl;
+  cout << _("    --help,                      -h   prints this message") << endl;
+  cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
 }
 
@@ -369,7 +370,15 @@ main ( int argc, char* argv[] )
 
 #ifndef NO_GRAPHICS
   gtk_init (&argc, &argv);
+
+  //  gtk_set_locale();
 #endif NO_GRAPHICS
+
+#ifdef HAVE_LOCALE_H
+  setlocale( LC_MESSAGES, "" );
+#endif
+  bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
+  textdomain( "RealTimeBattle" );
 
   parse_command_line(argc, argv);
 

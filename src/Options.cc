@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 
 #include "Options.h"
+#include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
 #include "OptionsWindow.h"
@@ -45,290 +46,334 @@ Options::Options()
 
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,
-                          false, true, "Gravitational Constant" );
+                          false, true, "Gravitational Constant",
+                          _("Gravitational Constant") );
 
   all_double_options[OPTION_AIR_RESISTANCE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.005, 0.0, 1.0, 12,
-                          false, true, "Air resistance" );
+                          false, true, "Air resistance", _("Air resistance") );
 
   all_double_options[OPTION_ROLL_FRICTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.002, 0.0, 1.0, 12,
-                          false, true, "Roll friction" );
+                          false, true, "Roll friction", _("Roll friction") );
 
   all_double_options[OPTION_SLIDE_FRICTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,
-                          false, true, "Slide/brake friction" );
+                          false, true, "Slide/brake friction",
+                          _("Slide/brake friction") );
 
   all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,
-                          true, true, "Robot max acceleration" );
+                          true, true, "Robot max acceleration",
+                          _("Robot max acceleration") );
 
   all_double_options[OPTION_ROBOT_MIN_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, -0.5, -10.0, 0.0, 12,
-                          true, true, "Robot min acceleration" );
+                          true, true, "Robot min acceleration",
+                          _("Robot min acceleration") );
     
   all_double_options[OPTION_ROBOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.1, 10.0, 12, 
-                          false, true, "Robot radius" );
+                          false, true, "Robot radius", _("Robot radius") );
 
   all_double_options[OPTION_ROBOT_MASS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 1.0, 0.01, 100.0, 12,
-                          false, true, "Robot mass" );
+                          false, true, "Robot mass", _("Robot mass") );
 
   all_double_options[OPTION_ROBOT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12,
-                          false, true, "Robot bounce coefficient" );
+                          false, true, "Robot bounce coefficient",
+                          _("Robot bounce coefficient") );
 
   all_double_options[OPTION_ROBOT_HARDNESS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12,
-                          false, true, "Robot hardness coefficient" );
+                          false, true, "Robot hardness coefficient",
+                          _("Robot hardness coefficient") );
 
   all_double_options[OPTION_ROBOT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12,
-                          false, true, "Robot protection coefficient" );
+                          false, true, "Robot protection coefficient",
+                          _("Robot protection coefficient") );
 
   all_double_options[OPTION_ROBOT_FRONTSIZE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, M_PI/3.0, 0.0, M_PI*2.0, 12,
-                          false, true, "Robot frontsize [radians]" );
+                          false, true, "Robot frontsize [radians]", 
+                          _("Robot frontsize [radians]") );
 
   all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12,
-                          false, true, "Robot front bounce coefficient" );
+                          false, true, "Robot front bounce coefficient",
+                          _("Robot front bounce coefficient") );
 
   all_double_options[OPTION_ROBOT_FRONT_HARDNESS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.9, 0.0, 1.0, 12,
-                          false, true, "Robot front hardness coefficient" );
+                          false, true, "Robot front hardness coefficient",
+                          _("Robot front hardness coefficient") );
 
   all_double_options[OPTION_ROBOT_FRONT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.9, 0.0, 1.0, 12,
-                          false, true, "Robot front protection coefficient" );
+                          false, true, "Robot front protection coefficient",
+                          _("Robot front protection coefficient") );
 
   all_double_options[OPTION_ROBOT_START_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 100.0, 0.01, 10000.0, 12,
-                          true, true, "Robot start energy" );
+                          true, true, "Robot start energy",
+                          _("Robot start energy") );
 
   all_double_options[OPTION_ROBOT_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 120.0, 0.01, 10000.0, 12,
-                          true, true, "Robot max energy" );
+                          true, true, "Robot max energy",
+                          _("Robot max energy") );
 
   all_double_options[OPTION_ROBOT_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 8.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot max rotate speed [rad/s]" );
+                          true, true, "Robot max rotate speed [rad/s]",
+                          _("Robot max rotate speed [rad/s]") );
 
   all_double_options[OPTION_ROBOT_CANNON_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 4.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot cannon max rotate speed [rad/s]" );
+                          true, true, "Robot cannon max rotate speed [rad/s]",
+                          _("Robot cannon max rotate speed [rad/s]") );
 
   all_double_options[OPTION_ROBOT_RADAR_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 3.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot radar max rotate speed [rad/s]" );
+                          true, true, "Robot radar max rotate speed [rad/s]",
+                          _("Robot radar max rotate speed [rad/s]") );
 
   all_double_options[OPTION_CHECK_INTERVAL] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 1000000, 12,
-                          false, false, "Process check interval" );
+                          false, false, "Process check interval",
+                          _("Process check interval") );
     
   all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
     option_info_t<long>(ENTRY_INT, PAGE_ROBOT, 10, 1, 100, 4,
-                        true, true, "Robot energy levels" );
+                        true, true, "Robot energy levels", _("Robot energy levels") );
 
   all_double_options[OPTION_SHOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.1, 0.01, 1.0, 12,
-                          false, true, "Shot radius" );
+                          false, true, "Shot radius", _("Shot radius") );
 
   all_double_options[OPTION_SHOT_SPEED] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.1, 100.0, 12,
-                          true, true, "Shot speed" );
+                          true, true, "Shot speed", _("Shot speed") );
 
   all_double_options[OPTION_SHOOTING_PENALTY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.075, 0.0, 1.0, 12,
-                          false, true, "Shooting penalty (times shot energy)" );
+                          false, true, "Shooting penalty (times shot energy)",
+                          _("Shooting penalty (times shot energy)") );
 
   all_double_options[OPTION_SHOT_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.5, 0.0, 100.0, 12,
-                          true, true, "Shot min energy" );
+                          true, true, "Shot min energy", _("Shot min energy") );
 
   all_double_options[OPTION_SHOT_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 30.0, 0.0, 100000000.0, 12,
-                          true, true, "Shot max energy" );
+                          true, true, "Shot max energy", _("Shot max energy") );
 
   all_double_options[OPTION_SHOT_ENERGY_INCREASE_SPEED] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.0, 100000000.0, 12,
-                          true, true, "Shot energy increase speed [energy/s]" );
+                          true, true, "Shot energy increase speed [energy/s]",
+                          _("Shot energy increase speed [energy/s]") );
 
   all_long_options[OPTION_BACKGROUND_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0xfaf0e6, 0x000000, 0xffffff, 6,
-                        false, false, "Background colour" );
+                        false, false, "Background colour", _("Background colour") );
 
   all_long_options[OPTION_FOREGROUND_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x000000, 0x000000, 0xffffff, 6,
-                        false, false, "Foreground colour" );
+                        false, false, "Foreground colour", _("Foreground colour") );
 
   all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x1111ee, 0x000000, 0xffffff, 6,
-                        false, false, "Colour for RTB messages" );
+                        false, false, "Colour for RTB messages",
+                        _("Colour for RTB messages") );
 
   all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
-                          false, true, "Cookie max energy" );
+                          false, true, "Cookie max energy", _("Cookie max energy") );
 
   all_double_options[OPTION_COOKIE_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 10.0, 0.0, 100000000.0, 12,
-                          false, true, "Cookie min energy" );
+                          false, true, "Cookie min energy", _("Cookie min energy") );
 
   all_double_options[OPTION_COOKIE_FREQUENCY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.03, 0.0, 100000000.0, 12,
-                          false, true, "Cookie frequency [cookies per second]" );
+                          false, true, "Cookie frequency [cookies per second]",
+                          _("Cookie frequency [cookies per second]") );
 
   all_double_options[OPTION_COOKIE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12,
-                          false, true, "Cookie radius" );
+                          false, true, "Cookie radius", _("Cookie radius") );
 
   all_long_options[OPTION_COOKIE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_EXTRAS, 0x35d715, 0x000000, 0xffffff, 6,
-                        false, false, "Cookie colour" );
+                        false, false, "Cookie colour", _("Cookie colour") );
 
   all_double_options[OPTION_MINE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 25.0, 0.0, 100000000.0, 12,
-                          false, true, "Mine max energy" );
+                          false, true, "Mine max energy", _("Mine max energy") );
 
   all_double_options[OPTION_MINE_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
-                          false, true, "Mine min energy" );
+                          false, true, "Mine min energy", _("Mine min energy") );
 
   all_double_options[OPTION_MINE_FREQUENCY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.06, 0.0, 100000000.0, 12,
-                          false, true, "Mine frequency [mines per second]" );
+                          false, true, "Mine frequency [mines per second]",
+                          _("Mine frequency [mines per second]") );
 
   all_double_options[OPTION_MINE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12,
-                          false, true, "Mine radius" );
+                          false, true, "Mine radius", _("Mine radius") );
 
   all_long_options[OPTION_MINE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_EXTRAS, 0xff0000, 0x000000, 0xffffff, 6,
-                        false, false, "Mine colour" );
+                        false, false, "Mine colour", _("Mine colour") );
 
   all_double_options[OPTION_ARENA_SCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12,
-                          false, true, "Arena scale" );
+                          false, true, "Arena scale", _("Arena scale") );
 
   all_double_options[OPTION_FAST_FORWARD_FACTOR] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 5.0, 0.001, 1000, 12,
-                          false, false, "Fast forward factor" );
+                          false, false, "Fast forward factor",
+                          _("Fast forward factor") );
 
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12,
-                          false, true, "Timeout [s]" );
+                          false, true, "Timeout [s]", _("Timeout [s]") );
 
   all_double_options[OPTION_MAX_TIMESTEP] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.1, 0.001, 1.0, 12,
-                          false, false, "Max timestep" );
+                          false, false, "Max timestep", _("Max timestep") );
 
   all_double_options[OPTION_TIMESCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 100.0, 12,
-                          false, false, "Timescale" );
+                          false, false, "Timescale", _("Timescale") );
 
   all_double_options[OPTION_UPDATE_INTERVAL] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.050, 0.010, 1.0, 12,
-                          false, false, "Update interval [s]" );
+                          false, false, "Update interval [s]",
+                          _("Update interval [s]") );
 
   all_double_options[OPTION_ROBOT_STARTUP_TIME] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.050, 1000000.0, 12,
-                          false, false, "Robot startup time [s]" );
+                          false, false, "Robot startup time [s]",
+                          _("Robot startup time [s]") );
 
   all_double_options[OPTION_CPU_START_LIMIT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 5.0, 0.01, 100000000.0, 12,
-                          false, false, "Start CPU time [s]" );
+                          false, false, "Start CPU time [s]", _("Start CPU time [s]") );
 
   all_double_options[OPTION_CPU_EXTRA] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 2.5, 0.01, 100000000.0, 12,
-                          false, false, "Extra CPU time [s]" );
+                          false, false, "Extra CPU time [s]", _("Extra CPU time [s]") );
 
   all_double_options[OPTION_CPU_PERIOD] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 60.0, 1.0, 100000000.0, 12,
-                          false, false, "Extra CPU period [s]" );
+                          false, false, "Extra CPU period [s]",
+                          _("Extra CPU period [s]") );
 
   all_double_options[OPTION_CPU_WARNING_PERCENT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.9, 0.1, 1.0, 12,
-                          false, false, "CPU time warning percentage" );
+                          false, false, "CPU time warning percentage",
+                          _("CPU time warning percentage") );
 
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
-                          false, false, "Robot search path" );
+                          false, false, "Robot search path", _("Robot search path") );
 
   all_string_options[OPTION_ARENA_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
-                          false, false, "Arena search path" );
+                          false, false, "Arena search path", _("Arena search path") );
 
   all_string_options[OPTION_TMP_RTB_DIR] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "/tmp/rtb", "", "", 1000,
-                          false, false, "Directory for temporary files" );
+                          false, false, "Directory for temporary files",
+                          _("Directory for temporary files") );
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 185, 10000, 6,
-                        false, false, "Initial Arena window width" );
+                        false, false, "Initial Arena window width",
+                        _("Initial Arena window width") );
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 120, 10000, 6,
-                        false, false, "Initial Arena window height" );
+                        false, false, "Initial Arena window height",
+                        _("Initial Arena window height") );
 
   all_long_options[OPTION_ARENA_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Arena window x position" );
+                        false, false, "Initial Arena window x position",
+                        _("Initial Arena window x position") );
 
   all_long_options[OPTION_ARENA_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Arena window y position" );
+                        false, false, "Initial Arena window y position",
+                        _("Initial Arena window y position") );
 
   all_long_options[OPTION_CONTROL_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Control window x position" );
+                        false, false, "Initial Control window x position",
+                        _("Initial Control window x position") );
 
   all_long_options[OPTION_CONTROL_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Control window y position" );
+                        false, false, "Initial Control window y position",
+                        _("Initial Control window y position") );
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 300, 10000, 6,
-                        false, false, "Initial Message window width" );
+                        false, false, "Initial Message window width",
+                        _("Initial Message window width") );
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 110, 10000, 6,
-                        false, false, "Initial Message window height" );
+                        false, false, "Initial Message window height",
+                        _("Initial Message window height") );
 
   all_long_options[OPTION_MESSAGE_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Message window x position" );
+                        false, false, "Initial Message window x position",
+                        _("Initial Message window x position") );
 
   all_long_options[OPTION_MESSAGE_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Message window y position" );
+                        false, false, "Initial Message window y position",
+                        _("Initial Message window y position") );
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 175, 10000, 6,
-                        false, false, "Initial Score window width" );
+                        false, false, "Initial Score window width",
+                        _("Initial Score window width") );
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 80, 10000, 6,
-                        false, false, "Initial Score window height" );
+                        false, false, "Initial Score window height",
+                        _("Initial Score window height") );
 
   all_long_options[OPTION_SCORE_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Score window x position" );
+                        false, false, "Initial Score window x position",
+                        _("Initial Score window x position") );
 
   all_long_options[OPTION_SCORE_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Score window y position" );
+                        false, false, "Initial Score window y position",
+                        _("Initial Score window y position") );
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 320, 10000, 6,
-                        false, false, "Initial Statistics window width" );
+                        false, false, "Initial Statistics window width",
+                        _("Initial Statistics window width") );
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 130, 10000, 6,
-                        false, false, "Initial Statistics window height" );
+                        false, false, "Initial Statistics window height",
+                        _("Initial Statistics window height") );
 
 #ifndef NO_GRAPHICS
   optionswindow_p = NULL;

@@ -1,7 +1,7 @@
-SUBDIRS = Arenas Robots Documentation src
+SUBDIRS = intl po Arenas Robots Documentation src 
 
 rtbstddocsdir = $(DOCS_DIR)
-rtbstddocs_DATA = BUGS FAQ TODO README INSTALL ChangeLog
+rtbstddocs_DATA = ABOUT-NLS BUGS FAQ TODO README INSTALL ChangeLog
 
 rtbextradir = $(RTB_DIR)
 rtbextra_DATA = RealTimeBattle.xpm tournament.txt

@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ScoreWindow.h"
+#include "IntlDefs.h"
 #include "ControlWindow.h"
 #include "ArenaController.h"
 #include "Robot.h"
@@ -71,8 +72,8 @@ ScoreWindow::ScoreWindow( const int default_width,
   gtk_widget_show ( scrolled_win );
 #endif
 
-  char * titles[6] = { "", "Name", "Energy ", "Place ",
-                       "Last ", "Score  " };
+  char * titles[6] = { "", _("Name"), _("Energy "), _("Place "),
+                       _("Last "), _("Score  ") };
   clist = gtk_clist_new_with_titles( 6, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ), GTK_SELECTION_BROWSE );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
@@ -116,7 +117,7 @@ ScoreWindow::ScoreWindow( const int default_width,
   gtk_widget_show( clist );
 
   if( window_shown = ( controlwindow_p->is_scorewindow_checked() ) )
-    gtk_widget_show( window_p );
+    gtk_widget_show_now( window_p );
 
   selected_robot = NULL;
 }
@@ -137,14 +138,14 @@ void
 ScoreWindow::set_window_title()
 {
   String title = (String)
-    "Score  " + 
-    " Seq: " + String( the_arena.get_sequence_nr() ) + 
+    (String)_("Score") + "  " + 
+    (String)_(" Seq: ") + String( the_arena.get_sequence_nr() ) + 
     " (" + String( the_arena.get_sequences_in_tournament() ) +
 
-    ")  Game: " + String( the_arena.get_game_nr() ) +
+    ")  " + (String)_("Game") + ": " + String( the_arena.get_game_nr() ) +
     " (" + String( the_arena.get_games_per_sequence() ) +
 
-    ")  Time: " + String( (int)the_arena.get_total_time() );
+    ")  " + (String)_("Time") + ": " + String( (int)the_arena.get_total_time() );
 
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }
@@ -182,7 +183,7 @@ ScoreWindow::show_window( GtkWidget* widget,
 {
   if( !scorewindow_p->is_window_shown() )
     {
-      gtk_widget_show( scorewindow_p->get_window_p() );
+      gtk_widget_show_now( scorewindow_p->get_window_p() );
       scorewindow_p->set_window_shown( true );
     }
 }
