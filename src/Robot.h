@@ -72,6 +72,10 @@ public:
   void end_process();
   void delete_pipes();
   void kill_process_forcefully();
+  bool use_fifo_instead_of_process() { return fifo_instead_of_process; }
+
+  void open_fifos();
+
   void live();
   void die();
 
@@ -159,6 +163,9 @@ private:
   class String robot_filename;        // Filename with path  
   class String robot_plain_filename;  // Filename without path
 
+  class String ififo_name;
+  class String ofifo_name;
+
   bool colour_given;
   bool name_given;
   
@@ -173,6 +180,8 @@ private:
   double cpu_next_limit;
   double cpu_warning_limit;
   double cpu_timeout;
+
+  bool fifo_instead_of_process;
 
   ifstream* instreamp;
   ofstream* outstreamp;

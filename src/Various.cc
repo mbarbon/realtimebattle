@@ -229,11 +229,34 @@ split_colonseparated_dirs(String& dirs, List<String>& str_list)
 
 bool
 check_if_filename_is_robot( String& fname )
-{
+{ 
   struct stat filestat;
-  if( 0 == stat( fname.chars(), &filestat ) )
-    if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
-      return true;
+  if( stat( fname.chars(), &filestat ) != 0 ) 
+    return false;
+
+
+  // Check if file is a regular file that can be executed and ends with .robot
+  if( S_ISREG( filestat.st_mode) && 
+      (filestat.st_mode & S_IXOTH) &&
+      ( String(".robot") == get_segment(fname, -6, -1) ) )
+    return true;
+
+    
+  // Check if file is a input fifo ending with .ififo
+  if( String(".ififo") == get_segment(fname, -6, -1) &&
+      S_ISFIFO( filestat.st_mode) && 
+      ( filestat.st_mode & ( S_IRUSR | S_IRGRP | S_IROTH) ) )
+    {
+
+      // Check the output fifo as well
+      String ofifo_name = get_segment(fname, 0, -7) + ".ofifo";
+
+      if( 0 == stat( fname.chars(), &filestat ) &&
+          S_ISFIFO( filestat.st_mode) && 
+          ( filestat.st_mode & ( S_IWUSR | S_IWGRP | S_IWOTH) ) )
+        return true;
+
+    }
 
   return false;
 }

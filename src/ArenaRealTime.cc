@@ -885,10 +885,15 @@ ArenaRealTime::start_sequence()
   // execute robot processes
 
 
+  Robot* robotp;
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      li()->start_process();
+      robotp = li();
+      if( robotp->use_fifo_instead_of_process() )
+        robotp->open_fifos();
+      else
+        robotp->start_process();
     }
   
   // wait a second before checking
@@ -909,7 +914,8 @@ ArenaRealTime::start_sequence_follow_up()
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
       robotp = li();
-      if( !(robotp->is_process_running()) ) 
+      if( !(robotp->use_fifo_instead_of_process()) &&
+          !(robotp->is_process_running()) ) 
         {
           all_robots_in_sequence.remove(li);
           robots_left--;

@@ -78,6 +78,18 @@ Robot::Robot(const String& filename)
   else
     robot_plain_filename = get_segment(robot_filename, nr+1, -1);
 
+
+  fifo_instead_of_process = false;
+
+  if( String(".ififo") == get_segment(robot_filename, -6, -1) )
+    {
+      ififo_name = robot_filename;
+      ofifo_name = get_segment(ififo_name, 0, -7) + ".ofifo";
+      fifo_instead_of_process = true;
+    }
+
+
+
   plain_robot_name = "";
   robot_name = "";
   robot_name_uniqueness_number = 0;
@@ -214,7 +226,8 @@ Robot::start_process()
           if( robotp != this ) robotp->delete_pipes();
         }
 
-      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
+      //      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
+      if( false )
         {
           struct rlimit res_limit;
 
@@ -374,6 +387,28 @@ Robot::kill_process_forcefully()
   kill(pid, SIGKILL);
   delete_pipes();
   process_running = false;
+}
+
+void
+Robot::open_fifos()
+{
+   // Open the fifos for read/write
+
+  int ififo_fd, ofifo_fd;
+  
+  ififo_fd = open( ififo_name.chars(), O_RDONLY | O_NONBLOCK);
+
+  if( ififo_fd == -1 )
+    Error(true, "Couldn't open " + ififo_name, "Robot::open_fifos");  
+
+
+  ofifo_fd = open( ofifo_name.chars(), O_WRONLY | O_NONBLOCK);
+
+  if( ofifo_fd == -1 )
+    Error(true, "Couldn't open " + ofifo_name, "Robot::open_fifos");  
+
+  outstreamp = new ofstream(ofifo_fd);
+  instreamp = new ifstream(ififo_fd);
 }
 
 void
@@ -1312,10 +1347,9 @@ Robot::get_messages()
                        ( center, dir, shot_radius*1.00001, 
                          cl_shape, col_obj, this))    >   radius+1.5*shot_radius )
                     {
-                      //cerr << "Shot has space available after all?" <<  endl;
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
                       cerr << "col_shape: " << cl_shape << endl; 
-                      Error(true, "Shot has space available after all?", "Robot::get_messages");                  
+                      Error(false, "Shot has space available after all?", "Robot::get_messages");                  
                     }
                   switch(cl_shape)
                     {
