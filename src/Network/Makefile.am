@@ -7,4 +7,4 @@ libRTBNetwork_a_SOURCES = \
 			NetConnection.cc \
 			Packets.cc
 
-SUBDIRS = Clients Server metaserver
+SUBDIRS = . Clients Server metaserver

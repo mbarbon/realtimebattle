@@ -1,6 +1,6 @@
-SUBDIRS = Gadgets Network Gui
+SUBDIRS = . Gadgets Network
 
-bin_PROGRAMS = RealTimeBattle
+noinst_LIBRARIES = libRTB.a
 include_HEADERS = Messagetypes.h
 
 rtbheaderdir = $(RTB_DIR)
@@ -26,12 +26,12 @@ CCMALLOC_O =
 endif
 
 #Note the gui-lib should be taken via configure
-RealTimeBattle_LDFLAGS = -export-dynamic
-RealTimeBattle_LDADD = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
-	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) $(THREAD_LIBS)
-RealTimeBattle_DEPENDENCIES = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
-	$(GETOPT_O) $(INTLDEPS) $(GUI_OBJS)
-RealTimeBattle_SOURCES = \
+#RealTimeBattle_LDFLAGS = -export-dynamic
+#RealTimeBattle_LDADD = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
+#	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) $(THREAD_LIBS)
+#RealTimeBattle_DEPENDENCIES = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
+#	$(GETOPT_O) $(INTLDEPS) $(GUI_OBJS)
+libRTB_a_SOURCES = \
 	Arena.cc Arena.h \
 	ArenaController.cc ArenaController.h \
 	Event.h \
@@ -69,6 +69,6 @@ RealTimeBattle_SOURCES = \
 	Wall.h
 
 
-EXTRA_RealTimeBattle_SOURCES = \
-	getopt.c getopt.h
+#EXTRA_RealTimeBattle_SOURCES = \
+#	getopt.c getopt.h
 
