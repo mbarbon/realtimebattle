@@ -9,7 +9,7 @@ INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src \
 
 
 libRTB_Gadgets_a_SOURCES = \
-	AllGadgets.h \
+	AllGadgets.cc AllGadgets.h \
 	ArenaGadget.h \
 	CommunicationGadget.cc CommunicationGadget.h \
 	DefenseGadget.cc DefenseGadget.h \
