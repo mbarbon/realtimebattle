@@ -375,9 +375,9 @@ main ( int argc, char* argv[] )
 #endif
 
 #ifndef NO_GRAPHICS
-  gtk_init (&argc, &argv);
+  gtk_set_locale();
 
-  //  gtk_set_locale();
+  gtk_init (&argc, &argv);
 #endif NO_GRAPHICS
 
 #ifdef HAVE_LOCALE_H
