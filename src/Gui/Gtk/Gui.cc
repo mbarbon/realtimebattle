@@ -29,8 +29,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "GuiInterface.h"
 #include "IntlDefs.h"
-#include "ArenaController.h"
-#include "Wall.h"
 #include "ArenaWindow.h"
 #include "MessageWindow.h"
 #include "ScoreWindow.h"
@@ -39,9 +37,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StartTournamentWindow.h"
 #include "Dialog.h"
 #include "DrawingObjects.h"
-#include "List.h"
 #include "OptionHandler.h"
 #include "GuiVarious.h"
+#include "InfoClasses.h"
 
 class Gui* gui_p;
 
@@ -95,6 +93,8 @@ Gui::Gui()
 int
 Gui::main_loop( GuiInterface* _gi_p )
 {
+  guiinterface_p = _gi_p;
+
   set_colours();
   controlwindow_p = 
     new ControlWindow( -1, -1,
@@ -114,8 +114,19 @@ Gui::main_loop( GuiInterface* _gi_p )
 int
 Gui::timeout_function()
 {
+  get_information();
   //  update_lists();
   return true;
+}
+
+void
+Gui::get_information()
+{
+  const InfoBase* info_p;
+  while( NULL != ( info_p = guiinterface_p->get_information() ) )
+    {
+      // Get Information
+    }
 }
 
 void

@@ -34,7 +34,7 @@ class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
-class Robot;
+class GuiInterface;
 
 #define the_gui (*(gui_p))
 
@@ -46,51 +46,59 @@ public:
 
   int main_loop                                ( GuiInterface* );
   int timeout_function                         ();
+  void get_information                         ();
   void update_lists                            ();
   void set_colours                             ();
 
   list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
-  list<DrawingRobot>* get_robots_in_tournament () { return &robots_in_tournament; }
+
+  const int get_number_of_matches              () const { return number_of_matches; }
+  const int get_games_per_match                () const { return games_per_match; }
+  const int get_match_nr                       () const { return match_nr; }
+  const int get_game_nr                        () const { return game_nr; }
+
+  const double get_match_time                  () const { return match_time; }
 
   GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
   GdkColor* get_rtb_message_gdk_colour_p       () { return &rtb_message_gdk_colour; }
 
-  long int get_bg_rgb_colour                   () { return bg_rgb_colour; }
-  long int get_fg_rgb_colour                   () { return fg_rgb_colour; }
-  long int get_rtb_message_rgb_colour          () { return rtb_message_rgb_colour; }
+  long int get_bg_rgb_colour                   () const { return bg_rgb_colour; }
+  long int get_fg_rgb_colour                   () const { return fg_rgb_colour; }
+  long int get_rtb_message_rgb_colour          () const 
+  { return rtb_message_rgb_colour; }
 
-  bool is_arenawindow_up                       ()
+  bool is_arenawindow_up                       () const
     { return ( arenawindow_p != NULL ); }
-  ArenaWindow* get_arenawindow_p               ()
+  ArenaWindow* get_arenawindow_p               () const
     { return arenawindow_p; }
   void open_arenawindow                        ();
   void close_arenawindow                       ();
 
-  bool is_messagewindow_up                     ()
+  bool is_messagewindow_up                     () const
     { return ( messagewindow_p != NULL ); }
-  MessageWindow* get_messagewindow_p           ()
+  MessageWindow* get_messagewindow_p           () const
     { return messagewindow_p; }
   void open_messagewindow                      ();
   void close_messagewindow                     ();
 
-  bool is_scorewindow_up                       ()
+  bool is_scorewindow_up                       () const
     { return ( scorewindow_p != NULL ); }
-  ScoreWindow* get_scorewindow_p               ()
+  ScoreWindow* get_scorewindow_p               () const
     { return scorewindow_p; }
   void open_scorewindow                        ();
   void close_scorewindow                       ();
 
-  bool is_statisticswindow_up                  ()
+  bool is_statisticswindow_up                  () const
     { return ( statisticswindow_p != NULL ); }
-  StatisticsWindow* get_statisticswindow_p     ()
+  StatisticsWindow* get_statisticswindow_p     () const
     { return statisticswindow_p; }
   void open_statisticswindow                   ();
   void close_statisticswindow                  ();
 
-  bool is_starttournamentwindow_up             ()
+  bool is_starttournamentwindow_up             () const
     { return ( starttournamentwindow_p != NULL ); }
-  StartTournamentWindow* get_starttournament_p ()
+  StartTournamentWindow* get_starttournament_p () const
     { return starttournamentwindow_p; }
   static void kill_and_start_new_tournament    ( int result );
   void open_starttournamentwindow              ();
@@ -100,8 +108,16 @@ public:
 
 private:
 
+  GuiInterface* guiinterface_p;
+
   list<DrawingShape*> drawing_objects_lists[LAST_OBJECT_TYPE];
-  list<DrawingRobot> robots_in_tournament;
+
+  double match_time;
+
+  int number_of_matches;
+  int games_per_match;
+  int match_nr;
+  int game_nr;
 
   long int bg_rgb_colour;
   long int fg_rgb_colour;
