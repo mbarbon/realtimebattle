@@ -229,6 +229,15 @@ check_if_filename_is_arena( String& fname )
   return false;
 }
 
+void
+create_tmp_rtb_dir()
+{
+  String dirname = "/tmp/rtb";
+  struct stat filestat;
+  if( 0 != stat( dirname.chars(), &filestat ) ) 
+    mkdir( dirname.chars(), S_IRWXU | S_IRWXG | S_IRWXO );
+}
+
 #ifndef NO_GRAPHICS
 
 void

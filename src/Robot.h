@@ -118,7 +118,6 @@ private:
   
   bool get_default_non_blocking_state();
   void set_non_blocking_state(const bool use_non_blocking);
-  void create_tmp_rtb_dir();
 
   bool alive;
   bool process_running;

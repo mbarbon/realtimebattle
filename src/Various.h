@@ -68,6 +68,8 @@ void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );
 
+void create_tmp_rtb_dir();
+
 #ifndef NO_GRAPHICS
 
 void entry_handler( GtkWidget * entry, entry_t * entry_info );

@@ -1476,16 +1476,6 @@ Robot::set_non_blocking_state(const bool non_bl)
   start_process();
 }
 
-void
-Robot::create_tmp_rtb_dir()
-{
-  String dirname = "/tmp/rtb";
-  struct stat filestat;
-  if( 0 != stat( dirname.chars(), &filestat ) ) 
-    mkdir( dirname.chars(), S_IRWXU | S_IRWXG | S_IRWXO );
-}
-
-
 
 
 //  void
