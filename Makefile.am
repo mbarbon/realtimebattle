@@ -41,7 +41,7 @@ tar-website:
 	cd HTML && $(MAKE) -fMakefile.rtb tar-website
 
 website_download: docs bz2_dist
-	cd HTML && $(MAKE) -fMakefile.rtb website_download
+	cd HTML && $(MAKE) -fMakefile.rtb website_download VERSION=$(VERSION)
 
 website_all: html_clean website website_download
 
