@@ -189,7 +189,6 @@ if SGML2TXT
 	@if [ -f $< ]; then \
 		echo "sgml2txt --filter -D table=char -c latin $<"; \
 		sgml2txt --filter -D table=char -c latin $<; \
-		echo "$< : $@"; \
 		echo "mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@"; \
 		mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@; \
 #		echo "mv $(subst .sgml,.txt,$<) $@"; \
