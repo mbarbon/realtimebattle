@@ -194,6 +194,14 @@ ArenaWindow::draw_everything()
 {
   if( window_shown )
     {
+
+      if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
+          ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
+        {
+          drawing_area_scale_changed();
+          return;
+        }
+      
       List<Shape>* object_lists;
 
       object_lists = the_arena.get_object_lists();
@@ -226,7 +234,10 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
 
       if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
           ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
-        drawing_area_scale_changed();
+        {
+          drawing_area_scale_changed();
+          return;
+        }
 
       ListIterator<Shape> li;
       for( object_lists[SHOT].first(li); li.ok(); li++ )
