@@ -39,6 +39,7 @@ RealTimeBattle_SOURCES = \
 	Extras.cc Extras.h \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
+	GuiRequest.cc GuiRequest.h \
 	InfoClasses.h \
 	InformationDistributor.cc InformationDistributor.h \
 	IntlDefs.h \
