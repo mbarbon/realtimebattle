@@ -137,6 +137,11 @@ private:
 
   GdkColormap * colormap;
 
+  int * selected_items_in_robot_tournament;
+  int * selected_items_in_robot_directory;
+  int * selected_items_in_arena_tournament;
+  int * selected_items_in_arena_directory;
+
   int zoomfactor;
   Vector2D boundary[2];
 
