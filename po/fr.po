@@ -654,7 +654,7 @@ msgstr ""
 "    --message_file [fichier]     -m   redirige les messages vers 'fichier'.\n"
 "                                      Avec '-' pour 'fichier', redirection vers STDOUT.\n"
 "                                      Si le log et les messages sont envoyés\n"
-"                                      vers STDOUT, '-m' sera ignoré\n"
+"                                      vers STDOUT, '-m' sera ignoré"
 
 #: src/RealTimeBattle.cc:115
 msgid ""
