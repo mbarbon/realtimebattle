@@ -10,7 +10,7 @@ AM_CONFIG_HEADER(config.h)
 
 RTB_MAJOR_VERSION=1
 RTB_MINOR_VERSION=0
-RTB_MICRO_VERSION=0
+RTB_MICRO_VERSION=1
 RTB_EXTRA_VERSION=
 RTB_RPM_RELEASE=1
 
@@ -219,5 +219,5 @@ AC_CHECK_LIB(xpg4, setlocale)
 
 # Finished !
 
-AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile po/Makefile.in Makefile],
+AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile po/Makefile.in Packages/Makefile Packages/rpm/Makefile Packages/debian/Makefile Packages/freebsd/Makefile Makefile],
 			[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
