@@ -228,7 +228,6 @@ AC_OUTPUT([
         Robots/rotate_and_fire/Makefile
         Robots/empty/Makefile
         src/Makefile
-        src/Network/Makefile
         po/Makefile.in
         Packages/Makefile
         Packages/rpm/Makefile
@@ -236,3 +235,4 @@ AC_OUTPUT([
         Packages/freebsd/Makefile
         Makefile],
         [sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+
