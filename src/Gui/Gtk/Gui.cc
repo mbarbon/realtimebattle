@@ -225,9 +225,6 @@ Gui::main_loop( GuiClientInterface* _gi_p )
   timeout_tag = gtk_timeout_add( (unsigned int) interval,
                                  GtkFunction(Gui::update_function), (gpointer) NULL );
 
-  // Temporary!
-  open_messagewindow();
-
   gtk_main();
 
   return gui_returncode;
