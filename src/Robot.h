@@ -115,6 +115,9 @@ private:
   //  void save_data(const bool bin, const bool rewrite);
   //  void load_data(const bool bin);
   
+  bool get_default_non_blocking_state();
+  void set_non_blocking_state(const bool use_non_blocking);
+  void create_tmp_rtb_dir();
 
   bool alive;
   bool process_running;
@@ -144,10 +147,12 @@ private:
   List<stat_t> statistics;
 
   int robot_name_uniqueness_number;
-  class String plain_robot_name;
-  class String robot_name;
+  class String plain_robot_name;      // Name given by robot
+  class String robot_name;            // plain_robot_name + uniqueness number
 
-  class String robot_filename;
+  class String robot_filename;        // Filename with path  
+  class String robot_plain_filename;  // Filename without path
+
   //class String robot_dir;
   double total_points;
   double points_this_game;
@@ -165,6 +170,8 @@ private:
   pid_t pid;    
 
   ListIterator<stat_t> current_game_stats;
+
+  bool use_non_blocking;
 
   int row_in_score_clist;
 

@@ -69,6 +69,13 @@ Robot::Robot(const String& filename)
   velocity = Vector2D(0.0, 0.0);
   acceleration = 0.0;
   robot_filename = filename;
+  
+  int nr;
+  if( ( nr = robot_filename.find( '/', 0, true) ) == -1 )
+    robot_plain_filename = robot_filename;
+  else
+    robot_plain_filename = get_segment(robot_filename, nr+1, -1);
+
   plain_robot_name = "";
   robot_name = "";
   robot_name_uniqueness_number = 0;
@@ -93,6 +100,8 @@ Robot::Robot(const String& filename)
   pipes[1] = -1;
   pid = -1;
   last_drawn_robot_center = Vector2D(infinity,infinity);
+
+  use_non_blocking = get_default_non_blocking_state();
 }
 
 // Constructor used by ArenaReplay. No process needed.
@@ -147,24 +156,27 @@ Robot::start_process()
       close(pipe_in[0]);
 
       // Make the pipes non-blocking
-      int pd_flags;
-      if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
-        Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
-              "Robot::start_process, child");
-      pd_flags |= O_NONBLOCK;
-      if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
-        Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
-              "Robot::start_process, child");
 
-      // Should the robots outputpipe be NON_BLOCKING ?
-
-      if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
-        Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
-              "Robot::start_process, child");
-      pd_flags |= O_NONBLOCK;
-      if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
-        Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
-              "Robot::start_process, child");
+      if( use_non_blocking )
+        {
+          int pd_flags;
+          if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
+            Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
+                  "Robot::start_process, child");
+          pd_flags |= O_NONBLOCK;
+          if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
+            Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
+                  "Robot::start_process, child");
+          
+          
+          if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
+            Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
+                  "Robot::start_process, child");
+          pd_flags |= O_NONBLOCK;
+          if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
+            Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
+                  "Robot::start_process, child");
+        }
       
       // Check file attributes
 
@@ -358,6 +370,7 @@ void
 Robot::kill_process_forcefully()
 {
   kill(pid, SIGKILL);
+  delete_pipes();
   process_running = false;
 }
 
@@ -968,8 +981,12 @@ Robot::get_messages()
                   if( val > 2 ) val = 2;
                   send_rotation_reached = val;
                   break;
+
                 case USE_NON_BLOCKING:
+                  *instreamp >> val;
+                  set_non_blocking_state( val );                  
                   break;
+
                 default:
                   send_message(WARNING, UNKNOWN_OPTION, msg_name);
                   break;
@@ -1380,6 +1397,61 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
   
   return true;
 }
+
+bool
+Robot::get_default_non_blocking_state()
+{
+  String filename = "/tmp/rtb/" + robot_plain_filename;
+  
+  int fd;
+  if( ( fd = open(filename.chars(), O_RDONLY) ) != -1 )
+    {
+      close(fd);
+      return false;
+    }
+  
+  return true;
+}
+
+// If non_blocking is _not_ used, a file, /tmp/.rtb/"robotname", is created.
+//
+void
+Robot::set_non_blocking_state(const bool non_bl)
+{
+  if( non_bl == use_non_blocking ) return;
+
+  String filename = "/tmp/rtb/" + robot_plain_filename;
+
+  create_tmp_rtb_dir();
+
+  if( non_bl )
+    remove( filename.chars() );
+  else
+    {
+      int fd = open(filename.chars(), O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
+      if( fd != -1 )  close( fd );
+    }
+  
+ 
+  use_non_blocking = non_bl;
+
+  //  restart_process
+
+  kill_process_forcefully();
+  start_process();
+}
+
+void
+Robot::create_tmp_rtb_dir()
+{
+  String dirname = "/tmp/rtb";
+  struct stat filestat;
+  if( 0 != stat( dirname.chars(), &filestat ) ) 
+    mkdir( dirname.chars(), S_IRWXU | S_IRWXG | S_IRWXO );
+}
+
+
+
 
 //  void
 //  Robot::save_data(const bool binary, const bool append)
