@@ -363,12 +363,15 @@ void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
   rotate( 6, -robot_rotate );
-  if( dist < 2 )
+
+  if( dist < 2 && acceleration != 0.0 )
     {
       acceleration = 0.0;
       accelerate( acceleration );
       brake_value = 1.0;
       brake( brake_value );
+      if( debug_level >= 1 )
+        cout << "Debug Robot found and locked at distance " << dist << endl;
     }
   shoot( 2 );
 }
@@ -390,9 +393,9 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 
   double old_acc = acceleration;
 
-  double mod_angle = fmod( angle, 2 * pi ) - pi;
+  double mod_angle = fmod( angle, 2 * pi );
 
-  if( mod_angle > -pi / 3 && mod_angle < pi / 3 )
+  if( mod_angle > 2 * pi / 3 && mod_angle < 4 * pi / 3 )
     {
       if( dist < 1.0 )
         {
@@ -410,6 +413,11 @@ RotateAndFire::radar_wall( const double dist, const double angle )
     {
       accelerate( acceleration );
       brake( brake_value );
+      if( debug_level >= 4 )
+        {
+          cout << "Debug Acceleration: " << acceleration << endl;
+          cout << "Debug Brake: " << brake_value << endl;
+        }
     }
 }
 
@@ -498,6 +506,8 @@ RotateAndFire::collision_shot( const double angle )
 {
   shots_hit++;
   last_shot_hit_time = current_time;
+  if( debug_level == 5 )
+    cout << "Debug Number of shots hit " << shots_hit << endl;
 
   if( shots_hit > 5 )
     {
@@ -509,6 +519,11 @@ RotateAndFire::collision_shot( const double angle )
       acceleration = robot_max_acceleration;
       accelerate( acceleration );
       acceleration_change_allowed = false;
+      if( debug_level >= 3 )
+        {
+          cout << "Debug New rotation: " << robot_rotate << endl;
+          cout << "Debug New acceleration: " << acceleration << endl;
+        }
       shots_hit = 0;
       print( "Hit too many times! Flee!" );
     }
@@ -593,6 +608,8 @@ RotateAndFire::pre_checking_messages()
     {
       robot_rotate = -robot_rotate;
       rotate( 1, robot_rotate );
+      if( debug_level >= 2 )
+        cout << "Debug New robot_rotate: " << robot_rotate << endl;
     }
 }
 
