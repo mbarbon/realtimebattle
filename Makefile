@@ -24,7 +24,7 @@ libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
 
-all: RealTimeBattle robots  ETAGS
+all: RealTimeBattle robots
 
 RealTimeBattle: $(objects)
 	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
