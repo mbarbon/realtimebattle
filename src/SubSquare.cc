@@ -42,7 +42,7 @@ SubSquare::clean()
   set<const Shape*>::iterator li;
   for( li = shapes.begin(); li != shapes.end(); li++ )
     {
-      if( ! (*li)->is_inside_subsquare(*this) )
+      if( ! (*li)->is_still_inside_subsquare(*this) )
         shapes.erase(li);
     }
 }
