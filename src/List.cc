@@ -4,6 +4,7 @@
 //  #endif
 
 #include <iostream.h>
+#include <stdarg.h>
 #include "List.h"
 //#include "Various.h"
 #include "String.h"
@@ -14,6 +15,19 @@ template <class T>
 List<T>::List(bool resp)
   : list_head(new ListNode<T>), responsible_for_deletion(resp)
 {
+}
+
+template <class T>
+List<T>::List(const int antal, const bool resp, ... )
+  : list_head(new ListNode<T>), responsible_for_deletion(resp)
+{
+  va_list args;
+  va_start(args, resp);
+
+  for( int i=0; i<antal ; i++ )
+    List<T>::insert_last( new T(va_arg( args, T )) );
+
+  va_end(args);
 }
 
 template <class T>
