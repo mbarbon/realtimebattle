@@ -87,7 +87,14 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     break;
                   }
                 case GAD_EXPLOSION: 
-                  break;
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    ExplosionGadget* gadget =
+                      new ExplosionGadget( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = (Gadget*)gadget;
+                    break;
+                  }
                 case GAD_DEFENSE: 
                   break;
                 case GAD_ENGINE: 
