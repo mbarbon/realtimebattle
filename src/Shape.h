@@ -21,7 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __SHAPE__
 
 class Vector2D;
-
+class SubSquare;
 //  #ifndef NO_GRAPHICS
 //  # include <gdk/gdktypes.h>
 //  #endif
@@ -76,6 +76,8 @@ public:
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
 
+  virtual bool is_inside_subsquare( const SubSquare& ss ) const = 0;
+  virtual void find_subsquares() const = 0 ;
 
   // Returns true if object if killed by the collision
   //  virtual bool collided( const Shape* colliding_object ) = 0;
