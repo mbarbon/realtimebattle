@@ -118,6 +118,9 @@ Gui::initialize_gtk_options()
 
   // ---------- Size of Windows ----------
 
+  // TODO: There's something very strange with the Optin (occurs only in Gui)
+  //       Newly created Option-objects does not contain the values they should.
+
   all_options["Arena window xsize"] = (Option*) new
     LongOption( GROUP_SIZE_OF_WINDOWS, 350, 185, 10000, false, false,
                 _("Initial Arena window width") );
