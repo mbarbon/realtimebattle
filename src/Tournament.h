@@ -34,9 +34,9 @@ public:
   Tournament() {}
   ~Tournament() {}
 
-private:
+  void prepare_for_new_match();
 
-  typedef 
+private:
 
   int round_nr;
   int rounds_per_match;
@@ -56,8 +56,14 @@ private:
 
 class Match
 {
+  Match() {}
+  ~Match() {}
 
-  friend class Tournament;
+  //  friend class Tournament;
+
+  void start_new_match();
+  void end_match();
+
 
 private:
   
@@ -67,6 +73,42 @@ private:
   int* robot_ids;
 }
 
+class PrepareForNewMatchEvent : public Event
+{
+public:
+  PrepareForNewMatchEvent( const double time, Tournament* t) 
+    : Event(time), my_tournament(t) {}
+
+  void eval() const { my_tournament->prepare_for_new_match(); }
+
+protected:
+  Tournament* my_tournament;
+};
+
+
+class StartNewMatchEvent : public Event
+{
+public:
+  StartNewMatchEvent( const double time, Match* m) 
+    : Event(time), my_match(m) {}
+
+  void eval() const { my_match->start_new_match(); }
+
+protected:
+  Match* my_match;
+};
+
+class EndMatchEvent : public Event
+{
+public:
+  EndMatchEvent( const double time, Match* m) 
+    : Event(time), my_match(m) {}
+
+  void eval() const { my_match->end_match(); }
+
+protected:
+  Match* my_match;
+};
 
 
 #endif __TOURNAMENT__
