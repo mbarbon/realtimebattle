@@ -22,7 +22,7 @@ public:
   void setup_control_window();
   void setup_score_window();
   void setup_message_window();
-  void setup_arena_window( Vector2D bound[] );
+  void setup_arena_window( const Vector2D bound[] );
   void setup_statistics_window();
 
   void close_control_window();
@@ -33,20 +33,21 @@ public:
 
   void quit_event();
 
-  void print_to_message_output( char * from_robot, char * text, GdkColor colour);
+  void print_to_message_output( char * from_robot, char * text, GdkColor& colour);
   void draw_objects();
 
   double get_zoom();
-  int change_to_pixels_x(double input);
-  int change_to_pixels_y(double input);
+  int change_to_pixels_x(const double input);
+  int change_to_pixels_y(const double input);
 
-  void draw_circle( Vector2D center, double radius, GdkColor colour, bool filled );
-  void draw_line( Vector2D start, Vector2D end, GdkColor colour );
-  void draw_line( Vector2D start, Vector2D end, double length, double thickness, GdkColor colour );
-  void draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled );
+  void draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled );
+  void draw_line( const Vector2D& start, const Vector2D& end, GdkColor& colour );
+  void draw_line( const Vector2D& start, const Vector2D& end, const double length, 
+                  const double thickness, GdkColor& colour );
+  void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
-  GdkColor get_background_color() { return background_colour; }
   bool get_statistics_up() { return statistics_up; }
+  Arena* get_the_arena() { return the_arena; }
 
 private:
   void clear_area();
@@ -64,10 +65,8 @@ private:
   GtkWidget * statistics_window;
 
   GdkColormap * colormap;
-  GdkColor background_colour;
 
   double zoomfactor;
-
   Vector2D boundary[2];
 
   class Arena * the_arena;

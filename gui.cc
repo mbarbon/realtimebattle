@@ -45,7 +45,7 @@ Gui::get_zoom()
 }
 
 int
-Gui::change_to_pixels_x(double input)
+Gui::change_to_pixels_x(const double input)
 {
   double res;
   res = (input-boundary[0][0])*get_zoom();
@@ -53,7 +53,7 @@ Gui::change_to_pixels_x(double input)
 }
 
 int
-Gui::change_to_pixels_y(double input)
+Gui::change_to_pixels_y(const double input)
 {
   double res;
   res = (input-boundary[0][1])*get_zoom();
@@ -61,7 +61,7 @@ Gui::change_to_pixels_y(double input)
 }
 
 void
-Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor colour )
+Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor& colour )
 {
   GString * rname;
   rname = g_string_new(from_robot);
@@ -98,7 +98,7 @@ Gui::draw_objects()
 }
 
 void
-Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
+Gui::draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled )
 {
   GdkGC * colour_gc;
 
@@ -116,7 +116,7 @@ Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
 }
 
 void
-Gui::draw_line( Vector2D start, Vector2D end, GdkColor colour )
+Gui::draw_line(const Vector2D& start, const Vector2D& end, GdkColor& colour )
 {
   GdkGC * colour_gc;
 
@@ -132,7 +132,8 @@ Gui::draw_line( Vector2D start, Vector2D end, GdkColor colour )
 }
 
 void
-Gui::draw_line( Vector2D start, Vector2D direction, double length, double thickness , GdkColor colour )
+Gui::draw_line( const Vector2D& start, const Vector2D& direction, const double length, 
+                const double thickness , GdkColor& colour )
 {
   GdkGC * colour_gc;
   GdkPoint g_points[4];
@@ -165,7 +166,7 @@ Gui::clear_area()
   GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, &background_colour );
+  gdk_gc_set_foreground( colour_gc, the_arena->get_background_colour_p() );
 
   gdk_draw_rectangle (drawing_area->window,
                       colour_gc,
@@ -176,11 +177,11 @@ Gui::clear_area()
 }
 
 void
-Gui::draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled )
+Gui::draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled )
 {
   GdkGC * colour_gc;
 
-  gdk_color_alloc (colormap, &background_colour);
+  gdk_color_alloc (colormap, the_arena->get_background_colour_p());
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
@@ -491,7 +492,7 @@ Gui::setup_message_window()
 }
 
 void
-Gui::setup_arena_window( Vector2D bound[] )
+Gui::setup_arena_window( const Vector2D bound[] )
 {
   boundary[0] = bound[0];
   boundary[1] = bound[1];
@@ -524,12 +525,7 @@ Gui::setup_arena_window( Vector2D bound[] )
 
   // Background Colour 
 
-  colormap = gdk_window_get_colormap (drawing_area->window);
-  background_colour.red = 64255;
-  background_colour.green = 61695;
-  background_colour.blue = 59135;
-  gdk_color_alloc (colormap, &background_colour);
-  gdk_window_set_background (drawing_area->window, &background_colour);
+  gdk_window_set_background (drawing_area->window, the_arena->get_background_colour_p());
   gdk_window_clear (drawing_area->window);
 
   clear_area();
