@@ -81,6 +81,28 @@ AC_EGREP_HEADER(RLIMIT_NPROC, sys/resource.h, AC_DEFINE(HAVE_RLIMIT_NPROC))
 AC_PATH_PROG(install_info, install-info, no, $PATH:/sbin:/usr/sbin/:/usr/local/sbin)
 INSTALL_INFO=$install_info
 
+# Search fot sgml-tools
+
+AC_CHECK_PROG(sgml2html, sgml2html, yes, no)
+AM_CONDITIONAL(SGML2HTML, test x$sgml2html = xyes)
+
+AC_CHECK_PROG(sgml2latex, sgml2latex, yes, no)
+AM_CONDITIONAL(SGML2LATEX, test x$sgml2latex = xyes)
+
+AC_CHECK_PROG(sgml2info, sgml2info, yes, no)
+AM_CONDITIONAL(SGML2INFO, test x$sgml2info = xyes)
+
+AC_CHECK_PROG(sgml2txt, sgml2txt, yes, no)
+AM_CONDITIONAL(SGML2TXT, test x$sgml2txt = xyes)
+
+AC_CHECK_PROG(sgml2lyx, sgml2lyx, yes, no)
+AM_CONDITIONAL(SGML2LYX, test x$sgml2lyx = xyes)
+
+AC_CHECK_PROG(sgml2rtf, sgml2rtf, yes, no)
+AM_CONDITIONAL(SGML2RTF, test x$sgml2rtf = xyes)
+
+
+
 
 #  debug
 
