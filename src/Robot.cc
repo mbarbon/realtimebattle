@@ -1502,7 +1502,7 @@ Robot::draw_radar_and_cannon()
   the_gui.get_arenawindow_p()->
     draw_line( center,
                angle2vec(robot_angle.pos),
-               radius * 0.9 - 1.0 / scale,
+               radius * 0.9 - 2.0 / scale,
                *(the_gui.get_fg_gdk_colour_p()) );
 }
 
