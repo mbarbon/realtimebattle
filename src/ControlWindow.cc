@@ -78,80 +78,81 @@ ControlWindow::ControlWindow( const int default_width,
       (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
     { (String)" Replay Tournament ", 
       (GtkSignalFunc) ControlWindow::replay_tournament , TRUE  },
-    { (String)" Options ",
-      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
-    { (String)" Statistics ",
-      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
     { (String)" Pause ",
       (GtkSignalFunc) ControlWindow::pause             , TRUE  },
     { (String)" End ",
       (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
+    { (String)" Options ",
+      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
+    { (String)" Statistics ",
+      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
     { (String)"         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
-  GtkWidget* button_hbox = NULL;
+  GtkWidget* button_hbox[3] = { NULL,NULL,NULL };
+  int hbox_index = -1;
   for(int i = 0;i < 7; i++)
     {
-      if( i == 0 || i == 2 || i == 6 )
+      if( i == 0 || i == 4 || i == 6 )
         {
-          button_hbox = gtk_hbox_new( FALSE, 10 );
-          gtk_box_pack_start( GTK_BOX( vbox ), button_hbox,
+          hbox_index++;
+          button_hbox[hbox_index] = gtk_hbox_new( FALSE, 10 );
+          gtk_box_pack_start( GTK_BOX( vbox ), button_hbox[hbox_index],
                               FALSE, FALSE, 0);
-          gtk_widget_show( button_hbox );
+          gtk_widget_show( button_hbox[hbox_index] );
         }
       GtkWidget* button =
         gtk_button_new_with_label( buttons[i].label.chars() );
       gtk_signal_connect( GTK_OBJECT( button ), "clicked",
                           (GtkSignalFunc) buttons[i].func,
                           (gpointer) this );
-      gtk_box_pack_start( GTK_BOX( button_hbox ), button,
+      gtk_box_pack_start( GTK_BOX( button_hbox[hbox_index] ), button,
                           TRUE, buttons[i].pack , 0 );
       gtk_widget_show( button );
     }
 
-  GtkWidget* vsep = gtk_vseparator_new();
-  gtk_box_pack_start( GTK_BOX (window_hbox), vsep, FALSE, FALSE, 0 );
-  gtk_widget_show( vsep );
-
-  GtkWidget* win_control_vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_hbox ), win_control_vbox );
-  gtk_widget_show( win_control_vbox );
-
-  struct button_t check_buttons[] = {
-    { (String)" Show arena window ",
+  struct button_t menu_items_data[] = {
+    { (String)"Show arena window",
       (GtkSignalFunc) ControlWindow::arena_window_toggle, TRUE  },
-    { (String)" Show message window ",
+    { (String)"Show message window",
       (GtkSignalFunc) ControlWindow::message_window_toggle, TRUE  },
-    { (String)" Show score window ",
+    { (String)"Show score window",
       (GtkSignalFunc) ControlWindow::score_window_toggle, TRUE  } };
   
+
+  GtkWidget* omenu = gtk_option_menu_new();
+  GtkWidget* menu = gtk_menu_new();
   for( int i = 0;i < 3; i++ )
     {
-      GtkWidget* checkbutton =
-        gtk_check_button_new_with_label( check_buttons[i].label.chars() );
-      gtk_box_pack_start( GTK_BOX( win_control_vbox ), checkbutton, TRUE, TRUE, 0 );
-      gtk_signal_connect( GTK_OBJECT( checkbutton ), "toggled",
-                          check_buttons[i].func, (gpointer) this );
+      GtkWidget* menu_item =
+        gtk_check_menu_item_new_with_label( menu_items_data[i].label.chars() );
+      gtk_signal_connect( GTK_OBJECT( menu_item ), "toggled",
+                          menu_items_data[i].func, (gpointer) this );
+      gtk_menu_append (GTK_MENU (menu), menu_item);
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), TRUE );
+      gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
 #else
-      gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), TRUE );
+      gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
 #endif
-      gtk_widget_show( checkbutton );
+      gtk_widget_show( menu_item );
 
       switch( i )
         {
         case 0:
-          show_arena_checkbutton = checkbutton;
+          show_arena_menu_item = menu_item;
           break;
         case 1:
-          show_message_checkbutton = checkbutton;
+          show_message_menu_item = menu_item;
           break;
         case 2:
-          show_score_checkbutton = checkbutton;
+          show_score_menu_item = menu_item;
           break;
         }
     }
+
+  gtk_box_pack_start( GTK_BOX( button_hbox[1] ), omenu, TRUE, TRUE, 0 );
+  gtk_option_menu_set_menu( GTK_OPTION_MENU( omenu ), menu );
+  gtk_widget_show( omenu );
 
   gtk_widget_show( window_p );
   vseparator = NULL;
@@ -277,7 +278,8 @@ ControlWindow::display_replay_widgets()
     gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
   gtk_widget_set_usize( GTK_WIDGET( time_control ), 150, 30 );
   gtk_range_set_update_policy( GTK_RANGE( time_control ), GTK_UPDATE_DELAYED );
-  gtk_scale_set_digits( GTK_SCALE( time_control ), 1 );
+  gtk_scale_set_value_pos( GTK_SCALE( time_control ), GTK_POS_TOP);
+  gtk_scale_set_digits( GTK_SCALE( time_control ), 0 );
   gtk_scale_set_draw_value( GTK_SCALE( time_control ), TRUE );
   gtk_box_pack_start( GTK_BOX( hbox ), time_control, TRUE, TRUE, 0 );
   gtk_widget_show( time_control );
@@ -561,7 +563,7 @@ void
 ControlWindow::arena_window_toggle( GtkWidget* widget,
                                     class ControlWindow* cw_p )
 {
-  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
   if( the_gui.is_arenawindow_up() )
     {
@@ -579,14 +581,14 @@ ControlWindow::arena_window_toggle( GtkWidget* widget,
 bool
 ControlWindow::is_arenawindow_checked()
 {
-  return GTK_TOGGLE_BUTTON( show_arena_checkbutton )->active;
+  return GTK_CHECK_MENU_ITEM( show_arena_menu_item )->active;
 }
 
 void
 ControlWindow::message_window_toggle( GtkWidget* widget,
                                       class ControlWindow* cw_p )
 {
-  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
   if( the_gui.is_messagewindow_up() )
     {
@@ -604,14 +606,14 @@ ControlWindow::message_window_toggle( GtkWidget* widget,
 bool
 ControlWindow::is_messagewindow_checked()
 {
-  return GTK_TOGGLE_BUTTON( show_message_checkbutton )->active;
+  return GTK_CHECK_MENU_ITEM( show_message_menu_item )->active;
 }
 
 void
 ControlWindow::score_window_toggle( GtkWidget* widget,
                                     class ControlWindow* cw_p )
 {
-  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
   if( the_gui.is_scorewindow_up() )
     {
@@ -629,7 +631,7 @@ ControlWindow::score_window_toggle( GtkWidget* widget,
 bool
 ControlWindow::is_scorewindow_checked()
 {
-  return GTK_TOGGLE_BUTTON( show_score_checkbutton )->active;
+  return GTK_CHECK_MENU_ITEM( show_score_menu_item )->active;
 }
 
 void

@@ -121,9 +121,9 @@ public:
   bool is_messagewindow_checked    ();
   bool is_scorewindow_checked      ();
 
-  GtkWidget* get_show_arena_checkbutton() { return show_arena_checkbutton; }
-  GtkWidget* get_show_message_checkbutton() { return show_message_checkbutton; }
-  GtkWidget* get_show_score_checkbutton() { return show_score_checkbutton; }
+  GtkWidget* get_show_arena_menu_item() { return show_arena_menu_item; }
+  GtkWidget* get_show_message_menu_item() { return show_message_menu_item; }
+  GtkWidget* get_show_score_menu_item() { return show_score_menu_item; }
 
   void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
 
@@ -140,9 +140,9 @@ private:
   GtkWidget* vseparator;
   GtkWidget* extra_vbox;
 
-  GtkWidget* show_arena_checkbutton;
-  GtkWidget* show_message_checkbutton;
-  GtkWidget* show_score_checkbutton;
+  GtkWidget* show_arena_menu_item;
+  GtkWidget* show_message_menu_item;
+  GtkWidget* show_score_menu_item;
 
   GtkWidget* time_control;
   GtkAdjustment* current_replay_time_adjustment;

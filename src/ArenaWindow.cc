@@ -169,11 +169,11 @@ ArenaWindow::hide_window( GtkWidget* widget, GdkEvent* event,
       arenawindow_p->set_window_shown( false );
       if( controlwindow_p->is_arenawindow_checked() )
         {
-          GtkWidget* checkbutton = controlwindow_p->get_show_arena_checkbutton();
+          GtkWidget* menu_item = controlwindow_p->get_show_arena_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
 #else
-          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
 #endif
         }
     }
