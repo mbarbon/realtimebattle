@@ -45,6 +45,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Options::Options()
 {
+#ifdef HAVE_LOCALE_H
+  setlocale( LC_MESSAGES, "" );
+#endif
+  bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
+  textdomain( "RealTimeBattle" );
+
   // Entries are: entry_datatype, page in option, 
   //              default value, max value, min value, 
   //              max letters in entry,
