@@ -49,9 +49,7 @@ isn't necessary if you don't need to compile the documentation.
 Before the actual compiliation can be started you need to create the
 configure script:
 <verb>
-% aclocal
-% automake
-% autoconf</verb>
+% autogen.sh</verb>
 
 If everything goes well, you should be able to compile as usual now.
 
