@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <typeinfo>
 
 #include "Gui.h"
+#include "GuiInterface.h"
 #include "IntlDefs.h"
 #include "ArenaController.h"
 #include "Wall.h"
@@ -73,10 +74,10 @@ GIInit( int argc, char** argv )
 }
 //TODO: How do we get the_opts?
 int
-GIMain( ArenaController* _the_arenacontroller_p )
+GIMain( GuiInterface* _gi_p )
 {
-  int returncode = the_gui.main_loop( _the_arenacontroller_p );
-  //  _the_arenacontroller_p->Quit(); //TODO: How do we tell that RTB should Quit?
+  int returncode = the_gui.main_loop( _gi_p );
+  //  _gi_p->quit(); //TODO: How do we tell that RTB should Quit?
   return returncode;
 }
 
@@ -90,7 +91,7 @@ Gui::Gui()
 }
 
 int
-Gui::main_loop( ArenaController* _the_arenacontroller_p )
+Gui::main_loop( GuiInterface* _gi_p )
 {
   set_colours();
   controlwindow_p = 

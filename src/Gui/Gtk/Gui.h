@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Messagetypes.h"
 #include "DrawingObjects.h"
 
-class ArenaController;
+class GuiInterface;
 class ArenaWindow;
 class MessageWindow;
 class ScoreWindow;
@@ -45,7 +45,7 @@ public:
   Gui();
   ~Gui() {}
 
-  int main_loop                                ( ArenaController* );
+  int main_loop                                ( GuiInterface* );
   int timeout_function                         ();
   void update_lists                            ();
   void set_colours                             ();
