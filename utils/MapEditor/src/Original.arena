@@ -34,6 +34,7 @@ Define Weapon Cannon
    EndDefine
 
    Shot                     $Cannonball
+   Shot                     $Cannonball2
 
    AutoFire                 false
    ReloadTime                0.5
