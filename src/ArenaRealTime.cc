@@ -70,20 +70,25 @@ ArenaRealTime::ArenaRealTime()
 ArenaRealTime::~ArenaRealTime()
 {
   if( use_log_file && LOG_FILE ) LOG_FILE.close();
+  if( use_message_file && message_file ) message_file.close();
 }
 
 void
-ArenaRealTime::set_filenames(String& log_fname, const String& statistics_fname, 
-                     const String& tournament_fname, const String& option_fname)
+ArenaRealTime::set_filenames( String& log_fname, const String& statistics_fname, 
+                              const String& tournament_fname,
+                              String& message_fname, const String& option_fname )
 {
-  if( log_fname == "")
+  bool log_stdout = false;
+
+  if( log_fname == "" )
     {
       use_log_file = false;
     }
-  else if( log_fname == "-" )  // use stdout as log_file
+  else if( log_fname == "-" || log_fname == "STDOUT" )  // use stdout as log_file
     {
       LOG_FILE.attach(STDOUT_FILENO);
       use_log_file = true;
+      log_stdout = true;
     }
   else
     {
@@ -91,11 +96,41 @@ ArenaRealTime::set_filenames(String& log_fname, const String& statistics_fname,
       use_log_file = true;
       if( !LOG_FILE )
         {
-          cerr << "RealTimeBattle: Error: Couldn't open log file. Contuing without log file" << endl;
+          Error( false, "Couldn't open log file. Contuing without log file",
+                 "ArenaRealTime::set_filenames" );
           use_log_file = false;
         }
     }
   
+  if( message_fname == "" )
+    {
+      use_message_file = false;
+    }
+  else if( message_fname == "-" || message_fname == "STDOUT" )
+    {
+      if( !log_stdout )
+        {
+          use_message_file = true;
+          message_file.attach( STDOUT_FILENO );
+        }
+      else
+        {
+          use_message_file = false;
+        }
+    }
+  else
+    {
+      use_message_file = true;
+      message_file.open( message_fname.chars(), ios::out, 0600 );
+      if( !message_file )
+        {
+          Error( false, "Couldn't open message file. Message file disabled",
+                 "ArenaRealTime::set_filenames" );
+          use_message_file = false;
+        }
+      
+    }
+
   statistics_file_name = statistics_fname;
 
   tournament_file_name = tournament_fname;
@@ -471,6 +506,13 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
   LOG_FILE << endl;
 }
 
+void
+ArenaRealTime::print_to_messagefile( class Robot* robot_p,
+                                     const String& text )
+{
+  if( use_message_file )
+    message_file << robot_p->get_robot_name() << ": " << text << endl;
+}
 
 Vector2D
 ArenaRealTime::get_random_position()
@@ -1076,7 +1118,8 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      the_gui.open_messagewindow();
+      if( use_message_file )
+        the_gui.open_messagewindow();
       the_gui.open_arenawindow();
       the_gui.open_scorewindow();
     }
@@ -1212,7 +1255,8 @@ ArenaRealTime::end_tournament()
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      the_gui.close_messagewindow();
+      if( use_message_file )
+        the_gui.close_messagewindow();
       the_gui.close_scorewindow();
       the_gui.close_arenawindow();
     }

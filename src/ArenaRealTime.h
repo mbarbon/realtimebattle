@@ -51,11 +51,14 @@ public:
   void parse_tournament_file( String& fname );
   void parse_arena_file(String& filename);
   
-  void set_filenames(String& log_fname, const String& statistics_fname, 
-                     const String& tournament_fname, const String& option_fname);  
+  void set_filenames( String& log_fname, const String& statistics_fname, 
+                      const String& tournament_fname, String& message_fname,
+                      const String& option_fname );  
 
-  void print_to_logfile(const char first_letter ... );
+  void print_to_logfile( const char first_letter ... );
+  void print_to_messagefile( class Robot* robot_p, const String& text );
   
+  bool get_use_message_file() { return use_message_file; }
   Vector2D get_random_position();
   List<String> get_arena_filenames() { return arena_filenames; }
   int get_current_arena_nr() { return current_arena_nr; }
@@ -99,6 +102,9 @@ private:
   
   ofstream LOG_FILE;
   bool use_log_file;
+
+  ofstream message_file;
+  bool use_message_file;
 
   int number_of_arenas;
   int current_arena_nr;

@@ -1042,9 +1042,10 @@ Robot::get_messages()
             instreamp->get(text, 80, '\n');
             realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
-            if( !no_graphics )
+            if( !no_graphics && !realtime_arena.get_use_message_file() )
                 the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
+            realtime_arena.print_to_messagefile( this, text );
           }
           break;
         case DEBUG:
@@ -1052,9 +1053,11 @@ Robot::get_messages()
             instreamp->get(text, 80, '\n');
             realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
-            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE && !no_graphics)
+            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE &&
+                !no_graphics && !realtime_arena.get_use_message_file() )
               the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
+            realtime_arena.print_to_messagefile( this, text );
           }
           break;
         case SHOOT:

@@ -77,21 +77,26 @@ print_help_message()
 {
   cout << endl;
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
-  cout << " Options: --debug_mode,              -d   debug mode" << endl;
-  cout << "          --normal_mode,             -n   normal mode (default)" << endl;
-  cout << "          --competition_mode,        -c   competition mode" << endl ;
-  cout << "          --no_graphics,             -g   no graphics will be displayed" << endl ;
-  cout << "          --option_file [file],      -o   selects option-file " << endl;
-  cout << "                                          (default: $HOME/.rtbrc)"  << endl;
-  cout << "          --log_file [file],         -l   make log file, if 'file' is '-'" << endl;
-  cout << "                                          the log is send to STDOUT" << endl;
-  cout << "          --tournament_file [file],  -t   specify a tournament file to" << endl;
-  cout << "                                          autostart a tournament" << endl;
-  cout << "          --statistics_file [file],  -s   file to print the statistics to" << endl;
-  cout << "                                          when autostarting" << endl;
+  cout << " Options:" << endl;
+  cout << "    --debug_mode,              -d   debug mode" << endl;
+  cout << "    --normal_mode,             -n   normal mode (default)" << endl;
+  cout << "    --competition_mode,        -c   competition mode" << endl ;
+  cout << "    --no_graphics,             -g   no graphics will be displayed" << endl ;
+  cout << "    --option_file [file],      -o   selects option-file (default: $HOME/.rtbrc)"  << endl;
+  cout << "    --log_file [file],         -l   make log file, if 'file' is '-'" << endl;
+  cout << "                                    the log is send to STDOUT" << endl;
+  cout << "    --tournament_file [file],  -t   specify a tournament file to" << endl;
+  cout << "                                    autostart a tournament" << endl;
+  cout << "    --statistics_file [file],  -s   file to print the statistics to" << endl;
+  cout << "                                    when autostarting" << endl;
+  cout << "    --message_file [file],     -m   redirect messages to this file" << endl;
+  cout << "                                    '-' as 'file' is equivalent to STDOUT" << endl;
+  cout << "                                    If both log file and message file is" << endl;
+  cout << "                                    specified as STDOUT, only the log file will" << endl;
+  cout << "                                    be recognized." << endl;
   cout << endl;
-  cout << "          --help,                    -h   prints this message" << endl;
-  cout << "          --version,                 -v   prints the version number" << endl;
+  cout << "    --help,                    -h   prints this message" << endl;
+  cout << "    --version,                 -v   prints the version number" << endl;
   cout << endl;
 }
 
@@ -157,6 +162,7 @@ parse_command_line(int argc, char **argv)
   String statistics_file("");
   String log_file("");
   String tournament_file("");
+  String message_file("");
 
   static struct option long_options[] =
   {
@@ -172,6 +178,7 @@ parse_command_line(int argc, char **argv)
     {"log_file", 1, 0, 0},
     {"statistics_file", 1, 0, 0},
     {"tournament_file", 1, 0, 0},
+    {"message_file", 1, 0, 0},
 
     {"no_graphics", 0, &graphics_flag, false},
 
@@ -182,7 +189,7 @@ parse_command_line(int argc, char **argv)
     {
       int option_index = 0;
      
-      c = getopt_long (argc, argv, "dncvho:l:s:t:g", long_options, &option_index);
+      c = getopt_long (argc, argv, "dncvho:l:s:t:m:g", long_options, &option_index);
 
       /* Detect the end of the options. */
       if (c == -1)
@@ -210,8 +217,12 @@ parse_command_line(int argc, char **argv)
             case 8:
               tournament_file = (String)optarg;
               break;
+            case 9:
+              message_file = (String)optarg;
+              break;
             default:
-              cerr << "Bad error in parse_command_line, this shouldn't happen" << endl;
+              Error( true, "Bad error, this shouldn't happen",
+                     "RealTimeBattle.cc:parse_command_line" );
               exit( EXIT_FAILURE );
             }
           break;
@@ -253,6 +264,10 @@ parse_command_line(int argc, char **argv)
           tournament_file = (String)optarg;
           break;
 
+        case 'm':
+          message_file = (String)optarg;
+          break;
+
         case 'g':
           graphics_flag = false;
           break;
@@ -287,7 +302,8 @@ parse_command_line(int argc, char **argv)
 
   the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
   no_graphics = !graphics_flag;
-  realtime_arena.set_filenames(log_file, statistics_file, tournament_file, option_file);
+  realtime_arena.set_filenames(log_file, statistics_file, tournament_file,
+                               message_file, option_file);
 }
 
 
