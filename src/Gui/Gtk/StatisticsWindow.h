@@ -24,8 +24,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
-
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
@@ -120,7 +118,5 @@ private:
   stat_types type;
   int looking_at_nr;
 };
-
-#endif NO_GRAPHICS
 
 #endif __STATISTICS_WINDOW__

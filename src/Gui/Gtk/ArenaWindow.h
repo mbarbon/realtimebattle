@@ -24,8 +24,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
-
 #include "Vector2D.h"
 
 struct _GtkWidget;
@@ -137,7 +135,5 @@ ArenaWindow::boundary2pixel_y( const double y )
   return (int)( ( the_gui.get_arena_boundary()[1][1] - y ) * 
                 drawing_area_scale + 0.5 );
 }
-
-#endif NO_GRAPHICS
 
 #endif __ARENA_WINDOW__

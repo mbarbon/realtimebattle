@@ -20,8 +20,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __GUI__
 #define __GUI__
 
-#ifndef NO_GRAPHICS
-
 #include <gtk/gtk.h>
 #include <list>
 
@@ -171,7 +169,5 @@ private:
   StatisticsWindow* statisticswindow_p;
   StartTournamentWindow* starttournamentwindow_p;
 };
-
-#endif NO_GRAPHICS
 
 #endif __GUI__
