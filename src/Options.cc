@@ -654,4 +654,4 @@ Options::close_optionswindow()
     }
 }
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 

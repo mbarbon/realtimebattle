@@ -62,5 +62,5 @@ public:
   //  arenaobject_t get_arenaobject_t() { return MINE; }
 };
 
-#endif __EXTRAS__
+#endif // __EXTRAS__ 
 

@@ -59,4 +59,4 @@ public: // global names etc.
   bool auto_start_and_end;
 };
 
-#endif __ARENA_CONTROLLER__
+#endif // __ARENA_CONTROLLER__ 

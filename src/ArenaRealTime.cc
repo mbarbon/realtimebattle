@@ -392,7 +392,7 @@ ArenaRealTime::timeout_function()
 {
 #ifndef NO_GRAPHICS
       int old_total = (int)total_time;
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
   if( state != PAUSED )
     {

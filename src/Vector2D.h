@@ -101,4 +101,4 @@ lengthsqr(const Vector2D& vec)
           vec.vector[1]*vec.vector[1] );
 }
 
-#endif __VECTOR2D__
+#endif // __VECTOR 2D__

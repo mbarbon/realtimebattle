@@ -42,4 +42,4 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # define bindtextdomain(dom,dir) (dom)
 #endif
 
-#endif __INTLDEFS__
+#endif // __INTLDEFS__ 

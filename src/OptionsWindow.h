@@ -117,6 +117,6 @@ private:
   GtkWidget* filesel;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __OPTIONS_WINDOW__
+#endif // __OPTIONS_WINDOW__ 

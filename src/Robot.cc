@@ -1337,7 +1337,7 @@ Robot::get_messages()
                   the_gui.get_arenawindow_p()->
                     draw_line(start + center, direction, 1.0, gdk_colour);
                 }
-#endif NO_GRAPHICS              
+#endif // NO_GRAPHICS               
             }
           break;
 
@@ -1360,7 +1360,7 @@ Robot::get_messages()
                   the_gui.get_arenawindow_p()->
                     draw_circle(c, r, gdk_colour, false);
                 }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
             }         
           break;          
 
@@ -1785,4 +1785,4 @@ Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
   stat_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
 }
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 

@@ -59,6 +59,6 @@ Shape::set_colour(const GdkColor& colour)
   rgb_colour = gdk2hex_colour( colour );
 }
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 

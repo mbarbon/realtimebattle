@@ -46,4 +46,4 @@ private:
   double energy;
 };
 
-#endif __SHOT__
+#endif // __SHOT__ 

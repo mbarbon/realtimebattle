@@ -174,4 +174,4 @@ private:
 
 
 
-#endif __GEOMETRICAL_OBJECTS__
+#endif // __GEOMETRICAL_OBJECTS__ 

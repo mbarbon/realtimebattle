@@ -150,6 +150,6 @@ private:
   displayed_t displayed;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __CONTROL_WINDOW__
+#endif // __CONTROL_WINDOW__ 

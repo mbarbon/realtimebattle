@@ -183,6 +183,6 @@ private:
   bool tournament_started_flag;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __START_TOURNAMENT_WINDOW__
+#endif // __START_TOURNAMENT_WINDOW__ 

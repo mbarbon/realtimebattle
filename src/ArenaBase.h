@@ -27,14 +27,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef NO_GRAPHICS
 #include <glib.h>
 #include <gdk/gdk.h>
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #include <iostream.h>
 #include <fstream.h>
 
 #ifndef NO_GRAPHICS
 #include "Gui.h"
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #include "Vector2D.h"
 #include "Messagetypes.h"
@@ -210,4 +210,4 @@ protected:
 };
 
 
-#endif __ARENA_BASE__
+#endif // __ARENA_BASE__ 

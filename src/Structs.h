@@ -88,6 +88,6 @@ struct pixmap_t
   GdkBitmap* bitmap;
 };
     
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __STRUCTS__
+#endif // __STRUCTS__ 

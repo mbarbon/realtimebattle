@@ -138,6 +138,6 @@ ArenaWindow::boundary2pixel_y( const double y )
                 drawing_area_scale + 0.5 );
 }
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __ARENA_WINDOW__
+#endif // __ARENA_WINDOW__ 

@@ -101,6 +101,6 @@ private:
   StartTournamentWindow* starttournamentwindow_p;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __GUI__
+#endif // __GUI__ 

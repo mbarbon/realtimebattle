@@ -60,7 +60,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 #include "ControlWindow.h"
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #include "IntlDefs.h"
 #include "Options.h"
@@ -138,7 +138,7 @@ update_function(gpointer data)
 
   return res;
 }
-#else NO_GRAPHICS
+#else // NO_GRAPHICS
 void
 update_function(const long int interval_usec)
 {
@@ -158,7 +158,7 @@ update_function(const long int interval_usec)
   while( res );
 
 }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 RETSIGTYPE
 sig_handler (int signum)
@@ -370,7 +370,7 @@ parse_command_line(int argc, char **argv)
   if( the_arena_controller.auto_start_and_end == false 
 #ifndef NO_GRAPHICS      
       && no_graphics
-#endif NO_GRAPHICS     
+#endif // NO_GRAPHICS      
       )
     {
       cerr << "No graphics and no tournament file gives me nothing to do. Leaving ..." << endl;
@@ -394,7 +394,7 @@ main ( int argc, char* argv[] )
 #endif
 
   gtk_init (&argc, &argv);
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #ifdef HAVE_LOCALE_H
   setlocale( LC_MESSAGES, "" );
@@ -436,11 +436,11 @@ main ( int argc, char* argv[] )
 
   gtk_main();
 
-#else !NO_GRAPHICS
+#else // !NO_GRAPHICS
   
   update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
   
-#endif !NO_GRAPHICS
+#endif // !NO_GRAPHICS
 
   return EXIT_SUCCESS;
 }

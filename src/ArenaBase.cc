@@ -68,7 +68,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "ControlWindow.h"
 # include "MessageWindow.h"
 extern class ControlWindow* controlwindow_p;
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 ArenaBase::ArenaBase()
 {
@@ -144,7 +144,7 @@ ArenaBase::set_state( const state_t st )
       
       controlwindow_p->set_window_title( infotext );
     }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 }
 
 void 

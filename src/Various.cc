@@ -27,7 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef NO_GRAPHICS
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #include <sys/stat.h>
 #if HAVE_DIRENT_H
@@ -62,7 +62,7 @@ extern class Options the_opts;
 #ifndef NO_GRAPHICS
 # include "ControlWindow.h"
 extern class ControlWindow* controlwindow_p;
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 extern bool no_graphics;
 
 void
@@ -89,7 +89,7 @@ Quit(const bool success)
     if( !no_graphics )
       delete controlwindow_p;
   }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
   if( !success )
     exit(EXIT_FAILURE);  
@@ -171,7 +171,7 @@ gdk2hex_colour(const GdkColor& col)
             ((col.green & 0xff) << 8) |
             ((col.red & 0xff) << 16) );
 }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 void
 read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs)
@@ -725,4 +725,4 @@ string_case_insensitive_compare(GtkCList *clist, gconstpointer ptr1, gconstpoint
 }
 #endif
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 

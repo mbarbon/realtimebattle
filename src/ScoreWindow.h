@@ -76,6 +76,6 @@ private:
   Robot* selected_robot;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __SCORE_WINDOW__
+#endif // __SCORE_WINDOW__ 

@@ -91,7 +91,7 @@ ArenaReplay::timeout_function()
       {
 #ifndef NO_GRAPHICS
         int old_total = (int)current_replay_time;
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
         parse_this_interval();
 
@@ -121,7 +121,7 @@ ArenaReplay::timeout_function()
           snprintf(msg, 63, _("Game %d of sequence %d"), game_nr, sequence_nr);
           print_message( "RealTimeBattle", (String)msg );
         }
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
       set_state( GAME_IN_PROGRESS );
       break;
 
@@ -208,7 +208,7 @@ ArenaReplay::parse_this_time_index()
 #ifndef NO_GRAPHICS
         if( !no_graphics )
           the_gui.get_arenawindow_p()->draw_moving_objects( true );
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
   // check if robots have died and set their points
   if( robots_killed_this_round != 0 )

@@ -268,7 +268,7 @@ InnerCircle::draw_shape(bool erase)
 }
 
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 // ------- Arc -----------
 

@@ -104,4 +104,4 @@ protected:
   int id;
 };
 
-#endif __SHAPE__
+#endif // __SHAPE__ 

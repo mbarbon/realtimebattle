@@ -138,4 +138,4 @@ protected:
   int send_robot_coordinates;
 };
 
-#endif __ROTATE_AND_FIRE__
+#endif // __ROTATE_AND_FIRE__

@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <glib.h>
 # include <gdk/gdktypes.h>
 # include <gtk/gtkwidget.h>
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
 #include "List.h"
 
@@ -98,9 +98,9 @@ gint float_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint string_case_sensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint string_case_insensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 #endif
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __VARIOUS__
+#endif // __VARIOUS__ 
 
 
 

@@ -81,4 +81,4 @@ private:
   bool window_shown;
 };
 
-#endif __MESSAGE_WINDOW__
+#endif // __MESSAGE_WINDOW__ 

@@ -40,4 +40,4 @@ protected:
   
 };
 
-#endif __MOVING_OBJECT__
+#endif // __MOVING_OBJECT__ 

@@ -61,6 +61,6 @@ private:
   GtkWidget* window_p;
 };
 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
 
-#endif __DIALOG__
+#endif // __DIALOG__ 

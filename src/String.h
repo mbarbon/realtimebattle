@@ -83,4 +83,4 @@ private:
   class Range {};
 };
 
-#endif __STRING__
+#endif // __STRING__ 

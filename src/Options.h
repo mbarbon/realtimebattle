@@ -176,7 +176,7 @@ struct option_info_t
     label=n.label;translated_label=n.translated_label;
 #ifndef NO_GRAPHICS
     entry=n.entry; 
-#endif NO_GRAPHICS
+#endif // NO_GRAPHICS 
     return *this; }
 
   entry_datatype_t datatype;
@@ -257,4 +257,4 @@ private:
   OptionsWindow* optionswindow_p;
 #endif
 };
-#endif __OPTIONS__
+#endif // __OPTIONS__ 
