@@ -504,6 +504,11 @@ Gui::setup_start_tournament_window()
 
       GtkWidget * entry = gtk_entry_new_with_max_length(4);
       gtk_entry_set_text( GTK_ENTRY( entry ), "0");
+
+      entry_t * info;
+      info = new entry_t( ENTRY_INT, 0.0, 10000.0 );
+      gtk_signal_connect(GTK_OBJECT(entry), "changed",
+                         GTK_SIGNAL_FUNC(entry_handler), info);
       gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
       gtk_widget_set_usize(entry, 36,18);
       gtk_widget_show(entry);
