@@ -399,7 +399,6 @@ public:
   void display_place();
   void display_last();
   void display_score();
-  void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc );
   void draw_radar_and_cannon( Gui& the_gui );
 
 private:
@@ -437,11 +436,6 @@ private:
   ifstream* instreamp;
   ofstream* outstreamp;
   pid_t pid;    
-
-  GtkWidget* widget_energy;
-  GtkWidget* widget_place;
-  GtkWidget* widget_last;
-  GtkWidget* widget_score;
 };
 
 // ---------------------  Shot : MovingObject  ---------------------

@@ -52,7 +52,9 @@ public:
                   const double thickness, GdkColor& colour );
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
+  int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
+  GtkWidget * get_score_clist() { return score_clist; }
   Arena* get_the_arena() { return the_arena; }
 
 private:
@@ -63,6 +65,8 @@ private:
   GtkWidget * message_output;
   GtkWidget * drawing_area;
   GtkWidget * da_scrolled_window;
+
+  GtkWidget * score_clist;
 
   GtkWidget * control_window;
   GtkWidget * score_window;

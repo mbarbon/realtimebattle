@@ -492,7 +492,9 @@ Robot::display_energy()
 
   ss << (int)energy;
   ss >> str_energy;
-  gtk_entry_set_text (GTK_ENTRY (widget_energy), str_energy);
+  gtk_clist_set_text(GTK_CLIST(the_arena->get_the_gui()->get_score_clist()),
+                     the_arena->get_the_gui()->get_robot_nr( this, the_arena->get_all_robots_in_sequence()),
+                     2, str_energy);
 }
 
 void
@@ -504,7 +506,9 @@ Robot::display_place()
   ss << position_this_game;
   ss >> str_place;
 
-  gtk_entry_set_text (GTK_ENTRY (widget_place), str_place);
+  gtk_clist_set_text(GTK_CLIST(the_arena->get_the_gui()->get_score_clist()),
+                     the_arena->get_the_gui()->get_robot_nr(this, the_arena->get_all_robots_in_sequence()),
+                     3, str_place);
 }
 
 void
@@ -518,7 +522,9 @@ Robot::display_last()
       ss << get_last_position();
       ss >> str_last;
 
-      gtk_entry_set_text (GTK_ENTRY (widget_last), str_last);
+      gtk_clist_set_text(GTK_CLIST(the_arena->get_the_gui()->get_score_clist()),
+                         the_arena->get_the_gui()->get_robot_nr(this, the_arena->get_all_robots_in_sequence()),
+                         4, str_last);
     }
 }
 
@@ -531,16 +537,9 @@ Robot::display_score()
   ss << get_total_points();
   ss >> str_score;
 
-  gtk_entry_set_text (GTK_ENTRY (widget_score), str_score);
-}
-
-void
-Robot::set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc )
-{
-  widget_energy = en;
-  widget_place = pl;
-  widget_last = la;
-  widget_score = sc;
+  gtk_clist_set_text(GTK_CLIST(the_arena->get_the_gui()->get_score_clist()),
+                     the_arena->get_the_gui()->get_robot_nr(this, the_arena->get_all_robots_in_sequence()),
+                     5, str_score);
 }
 
 void

@@ -242,6 +242,23 @@ Gui::quit_event()
   gtk_main_quit();
 }
 
+int
+Gui::get_robot_nr( void * robotp, GList * robot_list )
+{
+  GList * gl;
+  Robot * robotp_gl;
+
+  int i=0;
+  for(gl=g_list_next(robot_list); gl != NULL; gl = g_list_next(gl))
+    {
+      robotp_gl = (Robot *)gl->data;
+      if(robotp_gl == (Robot *)robotp)
+        return i;
+      i++;
+    }
+  return -1;
+}
+
 void
 Gui::setup_control_window()
 {
@@ -331,13 +348,6 @@ void
 Gui::setup_score_window()
 {
   int robot_number=0;
-  GtkWidget * name_table, * energy_table, * place_table, * last_table, * score_table;
-  GtkWidget * scr_vbox, * robothbox;
-  GtkWidget * label;
-  GtkWidget * widget_energy;
-  GtkWidget * widget_place;
-  GtkWidget * widget_last;
-  GtkWidget * widget_score;
 
   GList** object_lists;
   GList* gl;
@@ -349,135 +359,55 @@ Gui::setup_score_window()
 
   // Window 
 
+  char * titles[6] = { "", "Name", "Energy ", "Place ", "Last ", "Score  " };
+
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (score_window), "RealTimeBattle Score");
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
 
-  // VBox in Scrolled Window 
+  score_clist = gtk_clist_new_with_titles( 6, titles);
+  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
+  gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 80);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 3, 38);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 4, 35);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 5, 50);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 0, GTK_JUSTIFY_CENTER);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 1, GTK_JUSTIFY_LEFT);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 2, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 3, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 4, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(score_clist, 335, 300);
+  gtk_container_add (GTK_CONTAINER (score_window), score_clist);
+  gtk_widget_show(score_clist);
 
-  scr_vbox = gtk_vbox_new (FALSE, 10);
-  gtk_container_border_width (GTK_CONTAINER (scr_vbox), 10);
-  gtk_container_add (GTK_CONTAINER (score_window), scr_vbox);
-  gtk_widget_show (scr_vbox);
-
-  // Robot Tables 
-
-  robothbox = gtk_hbox_new (FALSE, 10);
-  gtk_container_add (GTK_CONTAINER (scr_vbox), robothbox);
-  gtk_widget_show (robothbox);  
-
-  name_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), name_table, FALSE, FALSE, 0);
-
-  energy_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), energy_table, FALSE, FALSE, 0);
-
-  place_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), place_table, FALSE, FALSE, 0);
-
-  last_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), last_table, FALSE, FALSE, 0);
-
-  score_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), score_table, FALSE, FALSE, 0);
-
-  // Labels
-
-  label = gtk_label_new( "Name" );
-  gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Energy");
-  gtk_table_attach_defaults (GTK_TABLE(energy_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Place");
-  gtk_table_attach_defaults (GTK_TABLE(place_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Last");
-  gtk_table_attach_defaults (GTK_TABLE(last_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Score");
-  gtk_table_attach_defaults (GTK_TABLE(score_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  // Robots 
-
-  int i = 0;
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
-      strstream ss;
-      char str[10];
-
       robotp = (Robot*)(gl->data);
 
-      // Name Label
+      char * list[5];
 
-      label = gtk_label_new (robotp->get_robotname() );
-      gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, i + 1, i + 2);
-      gtk_widget_show (label);
+      for(int j=0;j<5;j++)
+        list[j] = new char[30];
 
-      // Energy widget
+      int row = gtk_clist_append(GTK_CLIST(score_clist), list);
+      gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena->get_foreground_colour_p());
+      gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena->get_background_colour_p());
 
-      widget_energy = gtk_entry_new_with_max_length(3);
-      ss << (int)(robotp->get_energy());
-      ss >> str;
-      gtk_entry_set_text (GTK_ENTRY (widget_energy), str );
-      gtk_entry_set_editable(GTK_ENTRY(widget_energy),FALSE);
-      gtk_widget_set_usize(widget_energy, 30,25);
-      gtk_table_attach_defaults (GTK_TABLE(energy_table), widget_energy, 0, 1, i + 1, i + 2);
-      gtk_widget_show (widget_energy);
-
-      // Place widget
-
-      widget_place = gtk_entry_new_with_max_length(2);
-      gtk_entry_set_text (GTK_ENTRY (widget_place), "");
-      gtk_entry_set_editable(GTK_ENTRY(widget_place),FALSE);
-      gtk_widget_set_usize(widget_place, 24,25);
-      gtk_table_attach_defaults (GTK_TABLE(place_table), widget_place, 0, 1, i + 1, i + 2);
-      gtk_widget_show (widget_place);
-
-      // Prev Place widget
-
-      widget_last = gtk_entry_new_with_max_length(2);
-      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
+      //      gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, colour_bitmap
+      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robotname());
+      robotp->display_energy();
+      gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
       robotp->display_last();
-      gtk_entry_set_editable(GTK_ENTRY(widget_last),FALSE);
-      gtk_widget_set_usize(widget_last, 24,25);
-      gtk_table_attach_defaults (GTK_TABLE(last_table), widget_last, 0, 1, i + 1, i + 2);
-      gtk_widget_show (widget_last);
-
-      // Score widget
-
-      widget_score = gtk_entry_new_with_max_length(4);
-      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
       robotp->display_score();
-      gtk_entry_set_editable(GTK_ENTRY(widget_score),FALSE);
-      gtk_widget_set_usize(widget_score, 72, 25);
-      gtk_table_attach_defaults (GTK_TABLE(score_table), widget_score, 0, 1, i + 1, i + 2);
-      gtk_widget_show (widget_score);
-
-      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
-      i++;
     }
-
-  // Set spacings and show tables
-
-  gtk_table_set_row_spacings (GTK_TABLE(name_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(energy_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(place_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(last_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(score_table), 5);
-  gtk_widget_show (name_table);
-  gtk_widget_show (energy_table);
-  gtk_widget_show (place_table);
-  gtk_widget_show (last_table);
-  gtk_widget_show (score_table);
-
   gtk_widget_show (score_window);
 }
 
@@ -611,7 +541,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
 void
 Gui::setup_statistics_window()
 {
-  GtkWidget * vbox, * hbox;
+  GtkWidget * vbox;
   GtkWidget * button_table;
   GtkWidget * button;
 
@@ -669,15 +599,8 @@ Gui::setup_statistics_window()
   gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
   gtk_widget_show (button_table);
 
-  hbox = gtk_hbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (vbox), hbox);
-  gtk_widget_show (hbox);
-
-  GtkWidget * name_table;
-  GtkWidget * pos_table;
-  GtkWidget * points_table;
-  GtkWidget * time_table;
-  GtkWidget * total_table;  
+  GtkWidget * clist;
+  char * titles[5] = { "Name", "Position", "Points", "Survival Time", "Total Points" };
 
   GList* gl, * stat_gl;
   Robot* robotp;
@@ -686,114 +609,66 @@ Gui::setup_statistics_window()
   for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
-  name_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), name_table, FALSE, FALSE, 0);
-
-  pos_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), pos_table, FALSE, FALSE, 0);
-
-  points_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), points_table, FALSE, FALSE, 0);
-
-  time_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), time_table, FALSE, FALSE, 0);
-
-  total_table = gtk_table_new (robot_number + 1, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), total_table, FALSE, FALSE, 0);
-
-  GtkWidget * label;  
-
-  label = gtk_label_new( "Name" );
-  gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new( "Position" );
-  gtk_table_attach_defaults (GTK_TABLE(pos_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new( "Points" );
-  gtk_table_attach_defaults (GTK_TABLE(points_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new( "Time Survived" );
-  gtk_table_attach_defaults (GTK_TABLE(time_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new( "Total Points" );
-  gtk_table_attach_defaults (GTK_TABLE(total_table), label, 0, 1, 0, 1);
-  gtk_widget_show (label);
+  clist = gtk_clist_new_with_titles( 5, titles);
+  gtk_clist_set_selection_mode (GTK_CLIST(clist), GTK_SELECTION_BROWSE);
+  gtk_clist_set_border(GTK_CLIST(clist), GTK_SHADOW_NONE);
+  gtk_clist_set_column_width (GTK_CLIST(clist), 0, 80);
+  gtk_clist_set_column_width (GTK_CLIST(clist), 1, 45);
+  gtk_clist_set_column_width (GTK_CLIST(clist), 2, 35);
+  gtk_clist_set_column_width (GTK_CLIST(clist), 3, 75);
+  gtk_clist_set_column_width (GTK_CLIST(clist), 4, 65);
+  gtk_clist_set_column_justification(GTK_CLIST(clist), 0, GTK_JUSTIFY_LEFT);
+  gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(clist), 2, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(clist), 3, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(clist), 4, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_policy(GTK_CLIST(clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(clist, 340,400);
+  gtk_box_pack_start (GTK_BOX (vbox), clist, TRUE, TRUE, 0);
+  gtk_widget_show(clist);
 
   int i=0;
   for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
     {
-      GtkWidget * pos_widget;
-      GtkWidget * points_widget;
-      GtkWidget * time_widget;
-      GtkWidget * total_widget;
-      robotp = (Robot*)(gl->data);
-      stat_t* statp = NULL;
-
-      label = gtk_label_new (robotp->get_robotname() );
-      gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, i + 1, i + 2);
-      gtk_widget_show (label);
+      robotp = (Robot *)gl->data;
+      stat_t * statp = NULL;
 
       for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
         statp = (stat_t*)(stat_gl->data);
 
       if( statp != NULL )
         {
-          strstream ss1,ss2,ss3,ss4;
+          strstream ss0,ss1,ss2,ss3,ss4;
 
-          char str[25];
-          pos_widget = gtk_entry_new_with_max_length(3);
+          char * list[5];
+
+          ss0 << robotp->get_robotname();
+          list[0] = new char[30];
+          ss0 >> list[0];
+
           ss1 << statp->position;
-          ss1 >> str;
-          gtk_entry_set_text (GTK_ENTRY (pos_widget), str );
-          gtk_entry_set_editable(GTK_ENTRY(pos_widget),FALSE);
-          gtk_widget_set_usize(pos_widget, 30,25);
-          gtk_table_attach_defaults (GTK_TABLE(pos_table), pos_widget, 0, 1, i + 1, i + 2);
-          gtk_widget_show (pos_widget);
+          list[1] = new char[30];
+          ss1 >> list[1];
 
-          points_widget = gtk_entry_new_with_max_length(5);
           ss2 << statp->points;
-          ss2 >> str;
-          gtk_entry_set_text (GTK_ENTRY (points_widget), str );
-          gtk_entry_set_editable(GTK_ENTRY(points_widget),FALSE);
-          gtk_widget_set_usize(points_widget, 60,25);
-          gtk_table_attach_defaults (GTK_TABLE(points_table), points_widget, 0, 1, i + 1, i + 2);
-          gtk_widget_show (points_widget);
+          list[2] = new char[30];
+          ss2 >> list[2];
 
-          time_widget = gtk_entry_new_with_max_length(10);
           ss3 << setiosflags(ios::fixed) << setprecision(2) << statp->time_survived;
-          ss3 >> str;
-          gtk_entry_set_text (GTK_ENTRY (time_widget), str );
-          gtk_entry_set_editable(GTK_ENTRY(time_widget),FALSE);
-          gtk_widget_set_usize(time_widget, 100,25);
-          gtk_table_attach_defaults (GTK_TABLE(time_table), time_widget, 0, 1, i + 1, i + 2);
-          gtk_widget_show (time_widget);
+          list[3] = new char[30];
+          ss3 >> list[3];
 
-          total_widget = gtk_entry_new_with_max_length(10);
           ss4 << statp->total_points;
-          ss4 >> str;
-          gtk_entry_set_text (GTK_ENTRY (total_widget), str );
-          gtk_entry_set_editable(GTK_ENTRY(total_widget),FALSE);
-          gtk_widget_set_usize(total_widget, 60,25);
-          gtk_table_attach_defaults (GTK_TABLE(total_table), total_widget, 0, 1, i + 1, i + 2);
-          gtk_widget_show (total_widget);
+          list[4] = new char[30];
+          ss4 >> list[4];
+
+          int row = gtk_clist_append(GTK_CLIST(clist), list);
+          gtk_clist_set_foreground(GTK_CLIST(clist), row, the_arena->get_foreground_colour_p());
+          gtk_clist_set_background(GTK_CLIST(clist), row, the_arena->get_background_colour_p());
         }
       i++;
     }  
-
-  gtk_table_set_row_spacings (GTK_TABLE(name_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(pos_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(points_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(time_table), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(total_table), 5);
-  gtk_widget_show (name_table);
-  gtk_widget_show (pos_table);
-  gtk_widget_show (points_table);
-  gtk_widget_show (time_table);
-  gtk_widget_show (total_table);
 
   gtk_widget_show(statistics_window);
   statistics_up = true;
