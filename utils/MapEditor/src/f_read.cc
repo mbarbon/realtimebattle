@@ -26,7 +26,6 @@ void Spaces()
 void SkipUnknownObject(FILE* fp)
 {
   int NbDefine = 1;
-  Spaces();
   //  cout<<"Unknown object at line "<<line_no<<"... skip it\n";
   while(read_line(fp)>0)
     {
@@ -70,10 +69,11 @@ int Arena::Read(FILE *fp)
   char GadgetName[50];
   char Value[50];
   int num_object = 0;
+  int NbSkiped = 0;
 
+  NbSpace++;
   while (read_line(fp) > 0) 
     {
-      printf("%s", buf);
       if(strncmp(buf, "Define ", 7))
 	{
 	  printf("Invalid format at line %d.\n", line_no);
@@ -83,9 +83,6 @@ int Arena::Read(FILE *fp)
 	  printf("Incorrect definition at line %d.\n", line_no);
 	  return (num_object != 0? 0: -1);     // ok if any objects have been read 
 	}
-
-      NbSpace++;
-
       if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) /* != NULL */ )
 	{
 	  GadgetDef->theGadget->Read(fp);
@@ -95,10 +92,12 @@ int Arena::Read(FILE *fp)
       else
 	{
 	  SkipUnknownObject(fp);
+	  NbSkiped++;
 	}
-      NbSpace--;
     }
+  NbSpace--;
   printf("There were %d objects in this file...\n", num_object);
+  printf("There were %d unidentified objects...\n", NbSkiped);
 }
 
 int Arena::ReadHead(FILE *fp)
@@ -121,12 +120,12 @@ int Arena::ReadHead(FILE *fp)
 int WallGadget::Read(FILE *fp)
 {
   int n;
+  Spaces(); cout<<"Reading a Wall\n";
 
   while(read_line(fp)>0)
     {
       if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
 	{
-	  
 	  if(!strcmp(type, "InfoString"))
 	    {
 	      info_string = read_info_string(fp);
@@ -145,7 +144,7 @@ int WallGadget::Read(FILE *fp)
 
 int ExplosionGadget::Read(FILE *fp)
 {
-  cout<<"Reading a Explosion\n";
+  Spaces(); cout<<"Reading a Explosion\n";
   int n;
   int NbDefine = 0;
   while(read_line(fp)>0)
@@ -158,22 +157,20 @@ int ExplosionGadget::Read(FILE *fp)
 	    }
 	  else if(!strcmp(type, "Define"))
 	    {
+	      SkipUnknownObject(fp);
 	    }
-	  
-	  //Skip a couple of things...
-	  if(!strcmp(type, "Define"))     //There could be an other definition in it...
-	    NbDefine++;
-	  if(!strcmp(type, "EndDefine"))  //This is the end of a definition
-	    NbDefine--;              
-	  
-	  if(NbDefine < 0)                       //This is the end of the unknown object
-	    break;
+	  else if(!strcmp(type, "EndDefine"))
+	    {
+	      break;
+	    }
 	}
     }
 }
 int  WeaponGadget::Read(FILE *fp)
 {
-  cout<<"Reading a WeaponGadget\n";
+  Spaces();
+  cout<<"Reading a Weapon\n";
+  NbSpace++;
   int n;
   int NbDefine = 0;
   int NbUnknown = 0;
@@ -220,9 +217,18 @@ int  WeaponGadget::Read(FILE *fp)
 	      sscanf(buf, "%*s %s", type);
 	      if(type[0] == '$')
 		{
-		  cout<<"Create a Shot of type "<<&type[1]<<endl;
-		  //GadgetDef = findGadgetDefinitionFor(&type[1], this);
-		  //shot = copy(GadgetDef->theGadget);
+		  Spaces(); cout<<"Create a Shot of type "<<&type[1]<<endl;
+		  GadgetDef = findGadgetDefinitionFor(&type[1], this);
+		  Spaces();
+		  if(GadgetDef)
+		    {
+		      cout<<&type[1]<<" is a known definition\n";
+		    }
+		  else
+		    {
+		      cout<<"I don't know what "<<&type[1]<<" is...\n";
+		    }
+		  //shot = copy(*(GadgetDef->theGadget));
 		  //TODO : Make a copy of the definition in the Shot gadget of the weapon...
 		}
 	    }
@@ -238,8 +244,7 @@ int  WeaponGadget::Read(FILE *fp)
 		}
 	      if(i < LAST_WEAPONVAR)
 		{
-		  Spaces();
-		  cout<<variable_def[i].name<<" is a ";
+		  Spaces(); cout<<variable_def[i].name<<" is a ";
 		  switch(variable_def[i].type)
 		    {
 		    case BOOL_V:
@@ -264,11 +269,13 @@ int  WeaponGadget::Read(FILE *fp)
     }
   Spaces();
   cout<<NbUnknown<<" unknown values\n";
+  NbSpace--;
 }
 
 int  ShotGadget::Read(FILE *fp)
 {
-  cout<<"Reading a shot gadget\n";
+  Spaces(); cout<<"Reading a shot gadget\n";
+  NbSpace++;
   int n;
   int NbDefine = 0;
   while(read_line(fp)>0)
@@ -280,17 +287,27 @@ int  ShotGadget::Read(FILE *fp)
 	    {
 	      info_string = read_info_string(fp);
 	    }
-	  
-	  //Skip a couple of things...
-	  if(!strcmp(type, "Define"))     //There could be an other definition in it...
+	  else if(!strcmp(type, "Define"))
+	    {
+	      SkipUnknownObject(fp);
+	    }
+	  else if(!strcmp(type, "EndDefine"))
+	    {
+	      break;
+	    }
+	  /*
+	    //Skip a couple of things...
+	    if(!strcmp(type, "Define"))     //There could be an other definition in it...
 	    NbDefine++;
-	  if(!strcmp(type, "EndDefine"))  //This is the end of a definition
+	    if(!strcmp(type, "EndDefine"))  //This is the end of a definition
 	    NbDefine--;              
-	  
-	  if(NbDefine < 0)                       //This is the end of the unknown object
+	    
+	    if(NbDefine < 0)                       //This is the end of the unknown object
 	    break;
+	  */
 	}
     }
+  NbSpace--;
 }
 
 
@@ -351,8 +368,7 @@ string read_info_string(FILE *fp)
     }
   else
     {
-      Spaces();
-      cout<<"  info : "<<Start<<" --> "<<End<<endl;
+      //cout<<"  info : "<<Start<<" --> "<<End<<endl;
     }
   To_return = string(tmp, Start+3, End-(Start+3));
 
