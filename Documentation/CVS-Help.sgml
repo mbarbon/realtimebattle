@@ -35,10 +35,18 @@ Note that <tt>automake</tt> needs the file
 <url name="gtk.m4" url="http://www.lysator.liu.se/realtimebattle/Download/gtk.m4">
 , which isn't installed by default on some systems (e.g. FreeBSD).
 
-<tag>Languages</tag>
+<tag>Internationalization</tag>
 <p>
 
-* Useful information on how to get gettext etc. work *
+To be able to create the *.gmo files you need to have <tt>gettext</tt>,
+preferably <tt>gettext 0.10.35</tt> or later (see 
+<url name="www.gnu.org" url="www.gnu.org"> to download).
+<p>
+
+If you don't want any other language than english, you don't need to
+install <tt>gettext</tt>, but you have to configure using
+<verb>
+% configure --disable-nls</verb>
 
 </descrip>
 </notes>
