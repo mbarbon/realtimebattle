@@ -130,6 +130,7 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_signal_connect( GTK_OBJECT( menu_item ), "toggled",
                           menu_items_data[i].func, (gpointer) this );
       gtk_menu_append (GTK_MENU (menu), menu_item);
+      gtk_check_menu_item_set_show_toggle( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
       gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
 #else
