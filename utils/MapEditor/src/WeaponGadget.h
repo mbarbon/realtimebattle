@@ -18,7 +18,7 @@ class WeaponGadget : public Gadget
   WeaponGadget( const char*, Gadget* const);
   Gadget* NewInstance( const char* Name, Gadget* const p ) 
     { 
-      cout<<"Creating a new Weapon\n"; 
+      //cout<<"Creating a new Weapon\n"; 
       return new WeaponGadget(Name, p); 
     };
    int Read(FILE*);
@@ -35,6 +35,10 @@ class WeaponGadget : public Gadget
     //COLOUR, PRICE, MASS, 
     LAST_WEAPONVAR
   };
+
+  
+
+  const vector<GadgetDefinition*> gadget_def;
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
@@ -55,7 +59,7 @@ class WeaponGadget : public Gadget
 
   bool movable;
 
-  
+  void Print();
 
   ShotGadget* shot;
 

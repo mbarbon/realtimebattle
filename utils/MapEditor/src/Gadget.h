@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include <iostream.h>
+#include <vector>
 
 #include "GadgetSet.h"
 
@@ -19,15 +20,15 @@ public:
   Gadget() : 
     info(this, 0, ""),
     parent(NULL)
-    /*variables(NULL), functions(NULL)*/  
+    //variables(NULL), functions(NULL)  
     {}
 
   Gadget( const char* Name, Gadget* const p ) : 
     info(this, last_id_used++, Name),
     parent(p)
-    /*variables(NULL), functions(NULL)*/
+    //variables(NULL), functions(NULL)
     {
-      cout<<"NbGadgets : "<<last_id_used<<endl;
+      //cout<<"NbGadgets : "<<last_id_used<<endl;
     }
 
   static int last_id_used;
@@ -67,7 +68,6 @@ public:
   //GadgetSet my_gadgets;
   Variable* variables;
   //Function* functions;
-
 };
 
 class ExplosionGadget : public Gadget

@@ -13,7 +13,7 @@ class ShotGadget : public Gadget
   ShotGadget(const char* Name, Gadget* const p);
   Gadget* NewInstance( const char* Name, Gadget* const p) 
   { 
-    cout<<"Creating a new ShotGadget\n"; 
+    //cout<<"Creating a new ShotGadget\n"; 
     return new ShotGadget(Name, p); 
   };
   int Read(FILE*);

@@ -91,6 +91,13 @@ WeaponGadget::eval_function( const int fcn )
     }
 }
 
+void 
+WeaponGadget::Print()
+{
+  cout<<"A WeaponGadget\n";
+}
+
+
 void
 WeaponGadget::shoot()
 {  
