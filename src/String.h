@@ -32,6 +32,8 @@ void remove_initial_whitespace( string& );
 
 vector<string>& split_string( const string& str , vector<string>& strlist,
                               const string& separators = " \n\t\v\r\f" );
+vector<string>&
+special_split_string( const string& input_str, vector<string>& strlist );
 
 string spaced_string( const char* );
 

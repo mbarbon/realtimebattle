@@ -135,7 +135,6 @@ private:
                                         const string& top_file_path = "",
                                         const bool included = false ) const;
   const bool sufficient_arena_version ( vector<string>& wordlist ) const;
-  vector<string>& special_split_string( const string&, vector<string>& ) const;
 };
 
 

@@ -30,7 +30,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <algorithm>
 
+#include "IntlDefs.h"
 #include "String.h"
 
 bool
@@ -94,6 +96,78 @@ split_string( const string& str, vector<string>& strlist, const string& separato
     }
   return strlist;
 }
+
+// Splits the strings into whitespace separated words. Special strings (e.g. strings
+// separated by ") is taken as ONE word, this is translated if surrounded by _( )
+// TODO: Enable use of backslash-sequences other than \\,\n,\t (if needed).
+vector<string>&
+special_split_string( const string& input_str, vector<string>& strlist )
+{
+  string str( input_str );
+  if( (count( str.begin(), str.end(), '"' ) % 2) != 0 )
+    {
+      str += "\"";
+      cerr << "Arena::special_split_string: input_str contains unterminated strings."
+           << endl;
+    }
+  string::size_type pos = 0;
+  string::size_type beg_pos = 0;
+  // Note: It is somewhat ugly with two min in a row!
+  while( (pos = min( min( str.find( '"', beg_pos ),
+                          str.find( "_(\"", beg_pos ) ),
+                     str.find( ';', beg_pos ) )) != string::npos )
+    {
+      bool translatable = false;
+      vector<string> tmp_list;
+      split_string( str.substr( beg_pos, pos - beg_pos ), tmp_list );
+      strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
+      if( str[pos] == '"' )
+        {
+          translatable = false;
+          beg_pos = pos + 1;
+        }
+      else if( str[pos] == ';' )
+        return strlist;
+      else
+        {
+          translatable = true;
+          beg_pos = pos + 3;
+        }
+      string::size_type temp_pos = beg_pos;
+      string::size_type end_pos = str.find( '"', beg_pos );
+      string temp_string = str.substr( beg_pos, end_pos - beg_pos );
+      if( str.substr( end_pos, 2 ) == "\")" && translatable )
+        beg_pos = end_pos + 2;
+      else
+        {
+          translatable = false;
+          beg_pos = end_pos + 1;
+        }
+      string::size_type backslash_pos = 0;
+      while( (backslash_pos = temp_string.find( '\\', temp_pos)) != string::npos )
+        {
+          if( temp_string.substr( backslash_pos, 2 ) == "\\n" )
+            temp_string.replace( backslash_pos, 2, "\n" );
+          if( temp_string.substr( backslash_pos, 2 ) == "\\t" )
+            temp_string.replace( backslash_pos, 2, "\t" );
+          if( temp_string.substr( backslash_pos, 2 ) == "\\\\" )
+            temp_string.replace( backslash_pos, 2, "\\" );
+          temp_pos = backslash_pos;
+        }
+      // Note: Should maybe add this to specify that this is a string.
+      //      temp_string = "\"" + temp_string + "\"";
+      if( translatable )
+        strlist.push_back( _( temp_string.c_str() ) );
+      else
+        strlist.push_back( temp_string );
+    }
+
+  vector<string> tmp_list;
+  split_string( str.substr( beg_pos, string::npos ), tmp_list );
+  strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
+  return strlist;
+}
+
 
 string
 spaced_string( const char* ch )
