@@ -30,6 +30,8 @@ The window for starting tournaments now remembers a tournament and the next time
 tournament is to be played, the participating robots and arenas of the last tournament
 is shown.
 
+It is now possible to load and save tournaments in the start tournament window.
+
 New game option: <tt>Robot startup time</tt>, the time between the
 launching the robot processes and the beginning of the game.
 
