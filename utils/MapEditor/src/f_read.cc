@@ -170,6 +170,9 @@ int  WeaponGadget::Read(FILE *fp)
 	    {
 	      
 	    }
+	  else if(!strcmp(type, "Function"))
+	    {
+	    }
 	  else
 	    {
 	      int i;
