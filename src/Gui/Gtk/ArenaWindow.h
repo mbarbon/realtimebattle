@@ -62,8 +62,8 @@ private:
 
   ArenaDisplay* the_display;
 
-  static const int arenawindow_min_width  = 185;
-  static const int arenawindow_min_height = 120;
+  static const int arenawindow_min_width  ;
+  static const int arenawindow_min_height ;
 };
 
 #endif // RTB_GTKGUI__ARENA_WINDOW__

@@ -25,6 +25,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaWindow.h"
 #include "IntlDefs.h"
 
+const int ArenaWindow::arenawindow_min_height = 120;
+const int ArenaWindow::arenawindow_min_width  = 185;
+
 ArenaWindow::ArenaWindow()
 {
 }
