@@ -33,7 +33,7 @@ gui.o: gui.c gui.h
 robotarena.o: robotarena.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robotarena.cc $(gtkincludedirs)
 
-Arena.o: Arena.cc Arena.h
+Arena.o: Arena.cc Arena.h messagetypes.h
 	g++ $(cxxoptions) -c Arena.cc $(gtkincludedirs)
 
 
