@@ -172,6 +172,9 @@ ArenaReplay::start_tournament()
     }
 #endif
 
+  if( !log_from_stdin )
+    make_statistics_from_file();
+
   set_state( BEFORE_GAME_START );
 }
   
@@ -570,6 +573,7 @@ ArenaReplay::search_forward( const List<String>& search_strings )
 
   while( !log_file.eof() && !found )
     {
+      log_file >> ws;
       log_file.get( buffer, 400, '\n' );
 
       for( search_strings.first(li); li.ok(); li++ )
@@ -658,15 +662,18 @@ ArenaReplay::make_statistics_from_file()
   int pos_this_game, object_id;
   char c;
   streampos strpos;
+  streampos old_pos;
 
-  strpos = log_file.tellg();
+  old_pos = strpos = log_file.tellg();
   String buffer = search_forward( str_list );
 
-  while( !log_file.eof() )
+  do
     {
-      if( !buffer.empty() )
+      if( !buffer.is_empty() )
         {
-          log_file.seekg(strpos);
+          cout << log_file.tellg() << " " << strpos << endl;
+          log_file.seekg(strpos); // Note that strpos can't be zero!
+          cout << log_file.tellg() << endl;
           switch( buffer[0] )
             {
             case 'D':
@@ -704,7 +711,11 @@ ArenaReplay::make_statistics_from_file()
               break;
 
             case 'H':
-              if( game_position_in_log != NULL ) return;
+              if( game_position_in_log != NULL )
+                {
+                  log_file.seekg( old_pos ); // Note that old_pos can't be zero!
+                  return;
+                }
               
               log_file >> games_per_sequence >> robots_per_game 
                        >> sequences_in_tournament >> number_of_robots;
@@ -723,7 +734,9 @@ ArenaReplay::make_statistics_from_file()
 
       strpos = log_file.tellg();
       buffer = search_forward( str_list );
-    }
+    } while( !log_file.eof() );
+
+  log_file.seekg( old_pos );  // Note that old_pos can't be zero!
 }
 
 void
@@ -737,16 +750,16 @@ ArenaReplay::get_time_positions_in_game()
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
 
-
-  streampos strpos = log_file.tellg();
+  streampos strpos;
+  streampos old_pos;
+  old_pos = strpos = log_file.tellg();
   String buffer = search_forward( letter_list );
-
 
   while( !log_file.eof() )
     {
-      if( !buffer.empty() )
+      if( !buffer.is_empty() )
         {
-          log_file.seekg(strpos);
+          log_file.seekg(strpos); // Note that strpos can't be zero!
           switch( buffer[0] )
             {
             case 'T':
@@ -764,6 +777,7 @@ ArenaReplay::get_time_positions_in_game()
             case 'G':
             case 'H':
               last_time_info = time_pos_index - 1;
+              log_file.seekg( old_pos );  // Note that old_pos can't be zero!
               return;
               break;
           
@@ -777,4 +791,6 @@ ArenaReplay::get_time_positions_in_game()
       strpos = log_file.tellg();
       buffer = search_forward( letter_list );
     }
+
+  log_file.seekg( old_pos ); // Note that old_pos can't be zero!
 }
