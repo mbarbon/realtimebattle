@@ -1,5 +1,17 @@
 #include <math.h>
-#include "Arena.h"
+#include "Shape.h"
+#include "Various.h"
+//#include "Arena.h"
+
+Shape::Shape()
+{
+  colour = make_gdk_colour( the_opts.get_l(OPTION_FOREGROUND_COLOUR) ); 
+}
+
+Shape::Shape(long col)
+{
+  colour = make_gdk_colour( col );
+}
 
 Line::Line()
 {
@@ -21,16 +33,16 @@ Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double
   last_drawn_thickness = thickness = th;
 }
 
-Line::Line(const Vector2D& sp, const Vector2D& d, const double len, 
-           const double th, const double b_c, const double hardn)
-{
-  last_drawn_start_point = start_point = sp;
-  last_drawn_direction = direction = d;
-  last_drawn_length = length = len;
-  last_drawn_thickness = thickness = th;
-  bounce_coeff = b_c;
-  hardness_coeff = hardn;
-}
+// Line::Line(const Vector2D& sp, const Vector2D& d, const double len, 
+//            const double th, const double b_c, const double hardn)
+// {
+//   last_drawn_start_point = start_point = sp;
+//   last_drawn_direction = direction = d;
+//   last_drawn_length = length = len;
+//   last_drawn_thickness = thickness = th;
+//   bounce_coeff = b_c;
+//   hardness_coeff = hardn;
+// }
 
 inline double
 Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
@@ -95,13 +107,13 @@ Circle::Circle(const Vector2D& c, const double r)
   last_drawn_radius = radius = r;
 }
 
-Circle::Circle(const Vector2D& c, const double r, const double b_c, const double hardn)
-{
-  last_drawn_center = center = c;
-  last_drawn_radius = radius = r;
-  bounce_coeff = b_c;
-  hardness_coeff = hardn;
-}
+// Circle::Circle(const Vector2D& c, const double r, const double b_c, const double hardn)
+// {
+//   last_drawn_center = center = c;
+//   last_drawn_radius = radius = r;
+//   bounce_coeff = b_c;
+//   hardness_coeff = hardn;
+// }
 
 inline double
 Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
@@ -151,13 +163,13 @@ InnerCircle::InnerCircle(const Vector2D& c, const double r)
   last_drawn_radius = radius = r;
 }
 
-InnerCircle::InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn)
-{
-  last_drawn_center = center = c;
-  last_drawn_radius = radius = r;
-  bounce_coeff = b_c;
-  hardness_coeff = hardn;
-}
+// InnerCircle::InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn)
+// {
+//   last_drawn_center = center = c;
+//   last_drawn_radius = radius = r;
+//   bounce_coeff = b_c;
+//   hardness_coeff = hardn;
+// }
 
 inline double
 InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
