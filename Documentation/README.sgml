@@ -2,7 +2,7 @@
 
 <notes>
 <title></title>
-RealTimeBattle
+README
 
 <p>
 RealTimeBattle is a programming game for Unix, in which robots
@@ -11,7 +11,7 @@ the enemies, using the radar to examine the environment and the cannon
 to shoot.
 
 RealTimeBattle is open source software, distributed under the General
-Public License (GPL).
+Public License (GPL). Read more about this license in the file <tt>COPYING</tt>.
 
 For info on installation, read the file <tt>INSTALL</tt>.
 
@@ -23,29 +23,34 @@ found in the user manual in the subdirectory <tt>Documentation</tt>.
 There are two mailing-lists for RealTimeBattle. One for announcements and
 the other for discussions.
 
-The announcement-list is called
-<url name="realtimebattle-announce" url="mailto:realtimebattle-announce@lysator.liu.se">.
+The announcement-list is called <newline>
+<url name="realtimebattle-announce"
+url="realtimebattle-announce@lists.sourceforge.net">.
 It is a moderated low traffic list where only posts of general interest to
 RealTimeBattle users get through. Here will, for example, new releases and
 competitions be announced.
 
-To subscribe or unsubscribe, send an email to <newline>
-<tt>realtimebattle-announce-request@lysator.liu.se</tt>
-with 'subscribe' or 'unsubscribe' on the 'Subject'-line. If you want more information
-you can send an email with subject 'help'.
+To subscribe, unsubscribe or set your preferences, go to <newline>
+<url name="the web interface"
+url="http://lists.sourceforge.net/mailman/listinfo/realtimebattle-announce">.
+There is also an email-based interface, for help send an email to <newline>
+<url name="realtimebattle-announce-request@lists.sourceforge.net"
+url="mailto:realtimebattle-announce-request@lists.sourceforge.net">
+with just the word 'help' in the subject or body.
 
 The discussion-list is called <newline>
-<url name="realtimebattle-d"
-url="mailto:realtimebattle-d@lysator.liu.se">.
+<url name="realtimebattle-discussion"
+url="mailto:realtimebattle-discussion@lists.sourceforge.net">.
 
 Here can anything related to RealTimeBattle be discussed. It is not moderated.
 
-To subscribe or unsubscribe, send an email to <newline>
-<tt>realtimebattle-d-request@lysator.liu.se</tt> with 'subscribe' or 'unsubscribe' on
-the 'Subject'-line. If you want more information you can send an email with 
-subject 'help'.
-
-
+To subscribe, unsubscribe or set your preferences, go to <newline>
+<url name="the web interface"
+url="http://lists.sourceforge.net/mailman/listinfo/realtimebattle-discussion">.
+There is also an email-based interface, for help send an email to <newline>
+<url name="realtimebattle-discussion-request@lists.sourceforge.net"
+url="mailto:realtimebattle-discussion-request@lists.sourceforge.net">
+with just the word 'help' in the subject or body.
 
 If you encounter a bug or some problem of any sort, please look in the
 files <tt>BUGS</tt>, <tt>TODO</tt> and <tt>FAQ</tt> in this directory,
