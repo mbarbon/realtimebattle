@@ -22,28 +22,35 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "MovingObject.h"
 
+#include "Gadgets/ShotGadget.h"
+#include "Gadgets/ExplosionGadget.h"
+
 
 class Shot : public MovingObject
 {
 public:
   Shot(const Vector2D& c, const Vector2D& velocity, 
-       const double energy, const int shot_id = -1); 
+       const double energy, ShotGadget& sg, const int shot_id = -1); 
   ~Shot() {}
 
   void move(const double timestep);
   void move_no_check(const double timestep);
-  void die();
-  bool is_alive() { return alive; }
-  double get_energy() { return energy; }
 
-  friend void shot_collision(Shot* shot1p, Shot* shot2p);
-  friend void shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en);
+  // TODO: Should be removed
+  bool is_alive() { return true; }
 
-  //  arenaobject_t get_arenaobject_t() { return SHOT; }
+
+
+  bool collided( const Shape* colliding_object );
+
+  friend bool operator<(const Shot& a, const Shot& b) 
+    { return a.my_shotgadget.get_unique_id() < b.my_shotgadget.get_unique_id(); }
 
 private:
   bool alive;
-  double energy;
+
+
+  ShotGadget my_shotgadget;
 };
 
 #endif __SHOT__

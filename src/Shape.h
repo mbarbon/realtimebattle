@@ -76,6 +76,11 @@ public:
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
 
+
+  // Returns true if object if killed by the collision
+  //  virtual bool collided( const Shape* colliding_object ) = 0;
+
+
   int get_id() { return id; }
   long int get_rgb_colour() { return rgb_colour; }
 

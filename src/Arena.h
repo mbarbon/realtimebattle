@@ -21,12 +21,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __ARENA__
 
 #include <string>
+#include <set>
 
 #include "Event.h"
+#include "Shot.h"
+#include "Robot.h"
+#include "Wall.h"
 
 class Vector2D;
 class Shape;
 class Gadget;
+class Shot;
+class Robot;
 
 // The Arena class is string all geometric information of the current 
 // arena. It can determine the closest object and find objects in given 
@@ -43,11 +49,23 @@ public:
 
   void setup_at_roundstart();
 
+  void add_shot(const Shot& s);
   void update_shots();
 
+  void collision( Shape* obj1, Shape* obj2, const double time_to_collsion ) {}
 
-private:
-  
+  set<Robot*>* get_robot_set() { return &robots; }
+
+
+  void print_to_logfile( const char first_letter ... ) {}
+
+
+
+  double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
+                               const double size, enum object_type& closest_shape, 
+                               Shape*& colliding_object, 
+                               const class Robot* the_robot = NULL ) {}
+
   void find_closest_object( const Vector2D& point, const Vector2D& direction, 
                             Shape* closest_shape, double distance );
   
@@ -57,7 +75,26 @@ private:
   
   double get_heat_in_direction( const Vector2D& point, const Vector2D& direction );
 
+
+protected:
+
+  set<Shot> shots;  
+  set<Robot*> robots;
+
+
+  // The arena is divided into subsquares, so that not all objects must be
+  // check to closest objects, etc.
+
+  set<Shape>** objects_in_subsquare;
+
+
+
 };
+
+
+
+
+
 
 class ShotUpdateEvent : public Event
 {

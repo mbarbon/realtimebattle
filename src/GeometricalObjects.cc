@@ -26,9 +26,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GeometricalObjects.h"
 #include "Various.h"
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
+#include "Arena.h"
 
-extern const double infinity;
+
 
 Line::Line()
 {
@@ -67,7 +67,7 @@ Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
   det = 1.0 / vedge(direction, vel);  
   t_middle = vedge(direction, y) * det;
 
-  if( t_middle < 0 ) return infinity;
+  if( t_middle < 0 ) return DBL_MAX;
 
   d = size + thickness;
   if( det > 0 )
@@ -80,8 +80,8 @@ Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
       t = (vedge(direction, y) + d) * det;
       s = (vedge(vel,y) + d * dot(vel, direction)) * det;
     }
-  if( s < 0 || s > length ) return infinity;
-  if( t < 0 && ((d=-dot(y, direction)) < 0.0 || d > length ) ) return infinity;
+  if( s < 0 || s > length ) return DBL_MAX;
+  if( t < 0 && ((d=-dot(y, direction)) < 0.0 || d > length ) ) return DBL_MAX;
 
   return max(t, 0.0);
 }
@@ -140,7 +140,7 @@ Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size
   double dt = dot(vel, y);
   double r = size+radius;
   double c = dt*dt + speedsqr * (r*r - lengthsqr(y));
-  if( c < 0.0 || dt <= 0.0) return infinity;
+  if( c < 0.0 || dt <= 0.0) return DBL_MAX;
   return max( (dt - sqrt(c))/speedsqr, 0.0);
 }
 
@@ -181,7 +181,7 @@ InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double
 {
   Vector2D y = center - pos;
   double speedsqr = lengthsqr(vel);
-  if( speedsqr == 0.0 ) return infinity;
+  if( speedsqr == 0.0 ) return DBL_MAX;
   double dt = dot(vel, y);
   double c = dt*dt + speedsqr*((size-radius)*(size-radius) - lengthsqr(y));
   return max( (dt + sqrt(c))/speedsqr, 0.0 );
@@ -234,7 +234,7 @@ Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
 {
   Vector2D d = center - pos;
   double speedsqr = lengthsqr(vel);
-  if( speedsqr == 0.0 ) return infinity;
+  if( speedsqr == 0.0 ) return DBL_MAX;
 
   double c, r, t;
   double dt = dot(vel, d);
@@ -245,7 +245,7 @@ Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
   
       r = size + outer_radius;
       c = dt*dt + speedsqr * (r*r - lengthsqr(d));
-      if( c < 0.0 || dt <= 0.0) return infinity;
+      if( c < 0.0 || dt <= 0.0) return DBL_MAX;
       t = max( (dt - sqrt(c))/speedsqr, 0);
 
       if( within_angle( vec2angle( vel * t - d ) ) )
@@ -262,12 +262,12 @@ Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
   r = size - inner_radius;
   
   c = dt*dt + speedsqr*( r*r - lengthsqr(d) );
-  if( c < 0.0 ) return infinity;  // Can happen if object outside circle
+  if( c < 0.0 ) return DBL_MAX;  // Can happen if object outside circle
   
   t =  max( (dt + sqrt(c))/speedsqr, 0 );
   
   if( !within_angle( vec2angle( vel * t - d  ) ) )
-    return infinity;
+    return DBL_MAX;
 
 
   return t;

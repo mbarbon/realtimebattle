@@ -45,8 +45,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Robot.h"
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
-#include "ArenaReplay.h"
+#include "Arena.h"
 #include "Various.h"
 #include "OptionHandler.h"
 #include "Wall.h"
@@ -88,7 +87,7 @@ Robot::Robot(const string& filename)
   
   has_competed = false;
 
-  id = the_arena.increase_robot_count();
+  id = 0;//the_arena.increase_robot_count();
 
 //    instreamp = NULL;
 //    outstreamp = NULL;
@@ -161,62 +160,62 @@ void
 
 Robot::set_stats(const int robots_killed_same_time, const bool timeout)
 {
-  dead_but_stats_not_set = false;
+//    dead_but_stats_not_set = false;
 
-  int adjust = robots_killed_same_time - 1;
-  if( timeout ) adjust *= 2;
+//    int adjust = robots_killed_same_time - 1;
+//    if( timeout ) adjust *= 2;
 
-  position_this_game = the_arena.get_robots_left() + 1;
+//    position_this_game = the_arena.get_robots_left() + 1;
 
-  double points = the_arena.get_robots_per_game() - the_arena.get_robots_left() -
-    ((double)adjust) * 0.5;
+//    double points = the_arena.get_robots_per_game() - the_arena.get_robots_left() -
+//      ((double)adjust) * 0.5;
 
-  time_survived_in_sequence += the_arena.get_total_time();
+//    time_survived_in_sequence += the_arena.get_total_time();
 
-  send_message(DEAD);
-  process->send_signal();
+//    send_message(DEAD);
+//    process->send_signal();
 
-  realtime_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
+//    the_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
 
-  statistics.push_back( stat_t
-                        ( the_arena.get_sequence_nr(),
-                          the_arena.get_game_nr(),
-                          position_this_game,
-                          points,   
-                          the_arena.get_total_time(),
-                          get_total_points() + points ) );
+//    statistics.push_back( stat_t
+//                          ( the_arena.get_sequence_nr(),
+//                            the_arena.get_game_nr(),
+//                            position_this_game,
+//                            points,   
+//                            the_arena.get_total_time(),
+//                            get_total_points() + points ) );
 
-//  #ifndef NO_GRAPHICS
-//    if( !no_graphics ) display_score();
-//  #endif
-}
+//  //  #ifndef NO_GRAPHICS
+//  //    if( !no_graphics ) display_score();
+//  //  #endif
+//  }
 
-// Version of set_stats used by ArenaReplay
-//
-void
-Robot::set_stats(const double pnts, const int pos, const double time_survived, 
-                 const bool make_stats)
-{
-  position_this_game = pos;
-  time_survived_in_sequence += time_survived;
+//  // Version of set_stats used by ArenaReplay
+//  //
+//  void
+//  Robot::set_stats(const double pnts, const int pos, const double time_survived, 
+//                   const bool make_stats)
+//  {
+//    position_this_game = pos;
+//    time_survived_in_sequence += time_survived;
 
-  if( make_stats )
-    {
-      list<stat_t>::reverse_iterator li;
-      li = statistics.rbegin();
-      double total_points = ( statistics.empty() ?  0.0 : (*li).total_points );
+//    if( make_stats )
+//      {
+//        list<stat_t>::reverse_iterator li;
+//        li = statistics.rbegin();
+//        double total_points = ( statistics.empty() ?  0.0 : (*li).total_points );
 
-      statistics.push_back( stat_t
-                            ( the_arena.get_sequence_nr(),
-                              the_arena.get_game_nr(),
-                              pos,
-                              pnts,
-                              time_survived,
-                              total_points + pnts ) );
-    }
-//  #ifndef NO_GRAPHICS
-//    if( !no_graphics && !make_stats ) display_score();
-//  #endif
+//        statistics.push_back( stat_t
+//                              ( the_arena.get_sequence_nr(),
+//                                the_arena.get_game_nr(),
+//                                pos,
+//                                pnts,
+//                                time_survived,
+//                                total_points + pnts ) );
+//      }
+//  //  #ifndef NO_GRAPHICS
+//  //    if( !no_graphics && !make_stats ) display_score();
+//  //  #endif
 }
 
 void
@@ -230,65 +229,65 @@ Robot::set_angles( double robot_a, const double cannon_a, const double radar_a)
 void
 Robot::check_name_uniqueness()
 {
-  int first_avail = 0;
+//    int first_avail = 0;
 
-  robot_name = plain_robot_name;
+//    robot_name = plain_robot_name;
   
-  vector<Robot>::iterator li;
-  for( li = the_arena.get_all_robots_in_tournament()->begin();
-       li != the_arena.get_all_robots_in_tournament()->end(); li++ )
-    {
-      if( &(*li) != this && plain_robot_name == (*li).plain_robot_name )
-        {
-          if( (*li).robot_name_uniqueness_number == 0 )
-            {
-              (*li).robot_name_uniqueness_number = 1;
-              (*li).robot_name += "(1)";
-            }
+//    vector<Robot>::iterator li;
+//    for( li = the_arena.get_all_robots_in_tournament()->begin();
+//         li != the_arena.get_all_robots_in_tournament()->end(); li++ )
+//      {
+//        if( &(*li) != this && plain_robot_name == (*li).plain_robot_name )
+//          {
+//            if( (*li).robot_name_uniqueness_number == 0 )
+//              {
+//                (*li).robot_name_uniqueness_number = 1;
+//                (*li).robot_name += "(1)";
+//              }
 
-          first_avail = max( (*li).robot_name_uniqueness_number + 1, first_avail );
+//            first_avail = max( (*li).robot_name_uniqueness_number + 1, first_avail );
 
-          if( robot_name_uniqueness_number == (*li).robot_name_uniqueness_number 
-              || robot_name_uniqueness_number == 0 )
-            robot_name_uniqueness_number = first_avail;
-        }
-    }
+//            if( robot_name_uniqueness_number == (*li).robot_name_uniqueness_number 
+//                || robot_name_uniqueness_number == 0 )
+//              robot_name_uniqueness_number = first_avail;
+//          }
+//      }
 
-  if( robot_name_uniqueness_number > 0 )
-    robot_name += ('(' + int2string(robot_name_uniqueness_number) + ')');
+//    if( robot_name_uniqueness_number > 0 )
+//      robot_name += ('(' + int2string(robot_name_uniqueness_number) + ')');
 }
 
 double
 Robot::get_total_points()
 {
-  list<stat_t>::reverse_iterator li;
-  double total_pnts;
+//    list<stat_t>::reverse_iterator li;
+//    double total_pnts;
 
-  if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
-    {
-      li = statistics.rbegin();
+//    if( the_arena_controller.is_realtime() || the_arena.is_log_from_stdin() ) 
+//      {
+//        li = statistics.rbegin();
 
-      total_pnts = ( statistics.empty() ?  0.0 : (*li).total_points );
+//        total_pnts = ( statistics.empty() ?  0.0 : (*li).total_points );
 
-      if( is_alive() )
-        total_pnts += the_arena.get_robots_per_game() - the_arena.get_robots_left();
+//        if( is_alive() )
+//          total_pnts += the_arena.get_robots_per_game() - the_arena.get_robots_left();
         
 
-    }
-  else     // Replaying
-    {
-      list<stat_t>::const_iterator li = get_current_game_stats();
+//      }
+//    else     // Replaying
+//      {
+//        list<stat_t>::const_iterator li = get_current_game_stats();
 
-      if( is_alive() )
-        {          
-          total_pnts = (*li).total_points - (*li).points + 
-            the_arena.get_robots_per_game() - the_arena.get_robots_left();
-        }
-      else // if robot dead
-        total_pnts = (*li).total_points;
-    }
+//        if( is_alive() )
+//          {          
+//            total_pnts = (*li).total_points - (*li).points + 
+//              the_arena.get_robots_per_game() - the_arena.get_robots_left();
+//          }
+//        else // if robot dead
+//          total_pnts = (*li).total_points;
+//      }
 
-  return total_pnts;
+//    return total_pnts;
 } 
 
 
@@ -296,54 +295,54 @@ Robot::get_total_points()
 int
 Robot::get_last_position()
 {
-  list<stat_t>::const_iterator li;
+//    list<stat_t>::const_iterator li;
 
-  if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
-    {
+//    if( the_arena_controller.is_realtime() || the_arena.is_log_from_stdin() ) 
+//      {
       
-      li = statistics.end(); //points to one after the last element
+//        li = statistics.end(); //points to one after the last element
 
-      if( li == statistics.begin() ) return 0;
-      li--;
+//        if( li == statistics.begin() ) return 0;
+//        li--;
 
-      if( (*li).game_nr < the_arena.get_game_nr() )
-        return (*li).position;
-    }      
-  else
-    {
-      li = get_current_game_stats();
-    }
+//        if( (*li).game_nr < the_arena.get_game_nr() )
+//          return (*li).position;
+//      }      
+//    else
+//      {
+//        li = get_current_game_stats();
+//      }
      
-  if( li == statistics.begin() ) return 0;
-  li--;
+//    if( li == statistics.begin() ) return 0;
+//    li--;
   
-  if( (*li).sequence_nr == the_arena.get_sequence_nr() )
-    return (*li).position;
+//    if( (*li).sequence_nr == the_arena.get_sequence_nr() )
+//      return (*li).position;
 
-  return 0;
+//    return 0;
 }
 
 list<stat_t>::const_iterator
 Robot::get_current_game_stats()
 {
-  if( !(current_game_stats == statistics.end()) ||
-      (*current_game_stats).sequence_nr != the_arena.get_sequence_nr() ||
-      (*current_game_stats).game_nr != the_arena.get_game_nr() )
-    {
-      list<stat_t>::const_iterator li;
-      for( li = statistics.begin(); li != statistics.end(); li++ )
-        {
-          if( (*li).sequence_nr == the_arena.get_sequence_nr() &&
-              (*li).game_nr == the_arena.get_game_nr() )
-            {
-              current_game_stats = li;
-              return current_game_stats;
-            }          
-        }
-      Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
-    }
+//    if( !(current_game_stats == statistics.end()) ||
+//        (*current_game_stats).sequence_nr != the_arena.get_sequence_nr() ||
+//        (*current_game_stats).game_nr != the_arena.get_game_nr() )
+//      {
+//        list<stat_t>::const_iterator li;
+//        for( li = statistics.begin(); li != statistics.end(); li++ )
+//          {
+//            if( (*li).sequence_nr == the_arena.get_sequence_nr() &&
+//                (*li).game_nr == the_arena.get_game_nr() )
+//              {
+//                current_game_stats = li;
+//                return current_game_stats;
+//              }          
+//          }
+//        Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
+//      }
 
-  return current_game_stats;
+//    return current_game_stats;
 }
 
 
@@ -355,7 +354,7 @@ Robot::update_rotation(rotation_t& angle, const double timestep)
 
   if( angle.pos >= angle.right && angle.mode == ROTATE_TO_RIGHT )
     {
-      angle.set_rot( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
+      angle.set_rot( angle.right, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
       if( send_rotation_reached >= 1 ) rot_reached = true;
     }
 
@@ -367,7 +366,7 @@ Robot::update_rotation(rotation_t& angle, const double timestep)
   
   if( angle.pos <= angle.left && angle.mode == ROTATE_TO_LEFT )
     {      
-      angle.set_rot( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
+      angle.set_rot( angle.left, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
       if( send_rotation_reached >= 1 ) rot_reached = true;
     }
 
@@ -406,7 +405,7 @@ Robot::update_radar_and_cannon(const double timestep)
       double en = ((Robot*)col_obj)->get_energy();
       send_message(ROBOT_INFO, rint( en / lvls ) * lvls, 0);
     }
-  send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
+  send_message(INFO, /*the_arena.get_total_time()*/0.0, length(velocity), cannon_angle.pos); 
 }
 
 
@@ -449,9 +448,9 @@ void
 Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
   center = pos;
-  robot_angle.set_rot (angle, 0.0, -infinity, infinity, NORMAL_ROT);
-  cannon_angle.set_rot(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
-  radar_angle.set_rot (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
+  robot_angle.set_rot (angle, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
+  cannon_angle.set_rot(0.0,   0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
+  radar_angle.set_rot (0.0,   0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
   shot_energy = 0.0;
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
@@ -465,24 +464,24 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
 void
 Robot::set_values_at_process_start_up()
 {
-  time_survived_in_sequence = 0.0;
+//    time_survived_in_sequence = 0.0;
 
-  if( statistics.empty() )       // first sequence !
-    {
-      send_message(INITIALIZE, 1);  
-      colour_given = false;
-      name_given = false;
-    }
-  else        // not first sequence !
-    {
-      send_message(INITIALIZE, 0);
-      send_message(YOUR_NAME, robot_name.c_str());
-      int long col = rgb_colour;
-      int long newcol = realtime_arena.find_free_colour(col, col, this);
-      if( col != newcol ) set_colour( newcol );
-      // TODO: probably free color!
-      send_message(YOUR_COLOUR, newcol);
-    } 
+//    if( statistics.empty() )       // first sequence !
+//      {
+//        send_message(INITIALIZE, 1);  
+//        colour_given = false;
+//        name_given = false;
+//      }
+//    else        // not first sequence !
+//      {
+//        send_message(INITIALIZE, 0);
+//        send_message(YOUR_NAME, robot_name.c_str());
+//        int long col = rgb_colour;
+//        int long newcol = the_arena.find_free_colour(col, col, this);
+//        if( col != newcol ) set_colour( newcol );
+//        // TODO: probably free color!
+//        send_message(YOUR_COLOUR, newcol);
+//      } 
 }
 
 void
@@ -510,7 +509,7 @@ Robot::move(const double timestep)
   move(timestep, 1, timestep / 50.0);
 
   if( is_alive() )
-    realtime_arena.print_to_logfile('R', id, center[0], center[1],
+    the_arena.print_to_logfile('R', id, center[0], center[1],
                                     robot_angle.pos, cannon_angle.pos, 
                                     radar_angle.pos, energy);
 
@@ -640,466 +639,467 @@ Robot::send_message(const message_to_robot_type msg_type ...)
 void
 Robot::get_messages()
 {
-  char buffer[81];
-  char text[161];
-  char msg_name[81];
-  message_from_robot_type msg_t;
+//    char buffer[81];
+//    char text[161];
+//    char msg_name[81];
+//    message_from_robot_type msg_t;
 
-  ifstream* pin = process->get_instreamp();
+//    ifstream* pin = process->get_instreamp();
 
-  *pin >> ws;
-  pin->clear();
-  pin->peek();
-  while( !pin->eof() )
-    {
-      *pin >> msg_name;
-      msg_t = name2msg_from_robot_type(msg_name);
-      //      cerr << "Got message: " << msg_name << endl;
+//    *pin >> ws;
+//    pin->clear();
+//    pin->peek();
+//    while( !pin->eof() )
+//      {
+//        *pin >> msg_name;
+//        msg_t = name2msg_from_robot_type(msg_name);
+//        //      cerr << "Got message: " << msg_name << endl;
 
-      *pin >> ws;
+//        *pin >> ws;
 
-      switch(msg_t)
-        {
-        case UNKNOWN_MESSAGE_FROM_ROBOT:
-          //cout << "Server: Warning sent for message: " << msg_name << endl;
-          send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
-          pin->get(buffer, 80, '\n');
-          break;
-        case ROBOT_OPTION:
-          if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-            {
-              int opt_nr, val;
-              *pin >> opt_nr;
-              switch(opt_nr)
-                {
-                case SEND_SIGNAL:
-                  *pin >> val;
-                  process->set_signal_to_send( val==true, SIGUSR1 );
-                  break;
-                case SIGNAL:
-                  *pin >> val;
-                  if( val > 0 && val < NSIG )
-                    {
-                      process->set_signal_to_send( true, val );
-                    }
-                  else
-                    {                      
-                      if( val >= NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
-                      process->set_signal_to_send( false, 0 );
-                    }
-                  break;
+//        switch(msg_t)
+//          {
+//          case UNKNOWN_MESSAGE_FROM_ROBOT:
+//            //cout << "Server: Warning sent for message: " << msg_name << endl;
+//            send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
+//            pin->get(buffer, 80, '\n');
+//            break;
+//          case ROBOT_OPTION:
+//            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+//              {
+//                int opt_nr, val;
+//                *pin >> opt_nr;
+//                switch(opt_nr)
+//                  {
+//                  case SEND_SIGNAL:
+//                    *pin >> val;
+//                    process->set_signal_to_send( val==true, SIGUSR1 );
+//                    break;
+//                  case SIGNAL:
+//                    *pin >> val;
+//                    if( val > 0 && val < NSIG )
+//                      {
+//                        process->set_signal_to_send( true, val );
+//                      }
+//                    else
+//                      {                      
+//                        if( val >= NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
+//                        process->set_signal_to_send( false, 0 );
+//                      }
+//                    break;
 
-                case SEND_ROTATION_REACHED:
-                  *pin >> val;
-                  if( val < 0 ) val = 0;
-                  if( val > 2 ) val = 2;
-                  send_rotation_reached = val;
-                  break;
+//                  case SEND_ROTATION_REACHED:
+//                    *pin >> val;
+//                    if( val < 0 ) val = 0;
+//                    if( val > 2 ) val = 2;
+//                    send_rotation_reached = val;
+//                    break;
 
-                case USE_NON_BLOCKING:
-                  *pin >> val;
-                  process->set_non_blocking_state( val );                  
-                  break;
+//                  case USE_NON_BLOCKING:
+//                    *pin >> val;
+//                    process->set_non_blocking_state( val );                  
+//                    break;
 
-                default:
-                  send_message(WARNING, UNKNOWN_OPTION, msg_name);
-                  break;
-                }
-            }
-          break;
-        case NAME:
-          if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-            {
-              pin->get(text, 80, '\n');
-              plain_robot_name = text;
-              check_name_uniqueness();
-              name_given = true;
-            }
-          break;
-        case COLOUR:
-          if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-            {
-              long home_colour, away_colour;
+//                  default:
+//                    send_message(WARNING, UNKNOWN_OPTION, msg_name);
+//                    break;
+//                  }
+//              }
+//            break;
+//          case NAME:
+//            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+//              {
+//                pin->get(text, 80, '\n');
+//                plain_robot_name = text;
+//                check_name_uniqueness();
+//                name_given = true;
+//              }
+//            break;
+//          case COLOUR:
+//            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+//              {
+//                long home_colour, away_colour;
               
-              *pin >> hex >> home_colour >> away_colour >> dec;
+//                *pin >> hex >> home_colour >> away_colour >> dec;
               
-              // TODO: check if colour is already allocated! 
-              set_colour( realtime_arena.find_free_colour(home_colour, away_colour, this) );
-              colour_given = true;
-            }
-          break;
-        case ROTATE:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            { 
-              int bits;
-              double rot_speed;
-              *pin >> bits >> rot_speed;
+//                // TODO: check if colour is already allocated! 
+//                set_colour( the_arena.find_free_colour(home_colour, away_colour, this) );
+//                colour_given = true;
+//              }
+//            break;
+//          case ROTATE:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              { 
+//                int bits;
+//                double rot_speed;
+//                *pin >> bits >> rot_speed;
               
-              double rot_sign = sgn(rot_speed);
-              rot_speed = fabs(rot_speed);
-              if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
-              rot_speed *= rot_sign;
+//                double rot_sign = sgn(rot_speed);
+//                rot_speed = fabs(rot_speed);
+//                if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+//                rot_speed *= rot_sign;
 
-              if( bits & 1 ) 
-                robot_angle.set_rot( robot_angle.pos, rot_speed,
-                                     -infinity, infinity, NORMAL_ROT );
-              if( bits & 2 ) 
-                cannon_angle.set_rot( cannon_angle.pos, rot_speed,  
-                                      -infinity, infinity, NORMAL_ROT );
-              if( bits & 4 )
-                radar_angle.set_rot( radar_angle.pos, rot_speed,
-                                     -infinity, infinity, NORMAL_ROT );
-            }
-          break;
+//                if( bits & 1 ) 
+//                  robot_angle.set_rot( robot_angle.pos, rot_speed,
+//                                       -infinity, infinity, NORMAL_ROT );
+//                if( bits & 2 ) 
+//                  cannon_angle.set_rot( cannon_angle.pos, rot_speed,  
+//                                        -infinity, infinity, NORMAL_ROT );
+//                if( bits & 4 )
+//                  radar_angle.set_rot( radar_angle.pos, rot_speed,
+//                                       -infinity, infinity, NORMAL_ROT );
+//              }
+//            break;
 
-        case ROTATE_TO:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              int bits;
-              double rot_speed, rot_end_angle, rot_amount;
-              *pin >> bits >> rot_speed >> rot_end_angle;
-              rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
+//          case ROTATE_TO:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                int bits;
+//                double rot_speed, rot_end_angle, rot_amount;
+//                *pin >> bits >> rot_speed >> rot_end_angle;
+//                rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
 
-              rot_speed = fabs(rot_speed);
-              if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+//                rot_speed = fabs(rot_speed);
+//                if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
 
-              if( bits & 2 )
-                {
-                  cannon_angle.pos -= rint( (cannon_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
-                  rot_amount = rot_end_angle - cannon_angle.pos;
-                  if( rot_amount > 0 )
-                    cannon_angle.set_rot( cannon_angle.pos, rot_speed, 
-                                          -infinity, cannon_angle.pos + rot_amount, 
-                                          ROTATE_TO_RIGHT );
-                  else
-                    cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
-                                          cannon_angle.pos + rot_amount, infinity, 
-                                          ROTATE_TO_LEFT );
-                }
-              if( bits & 4 )
-                {
-                  radar_angle.pos -= rint( (radar_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
-                  rot_amount = rot_end_angle - radar_angle.pos;
-                  if( rot_amount > 0 )
-                    radar_angle.set_rot( radar_angle.pos, rot_speed,
-                                         -infinity, radar_angle.pos + rot_amount, 
-                                         ROTATE_TO_RIGHT );
-                  else
-                    radar_angle.set_rot( radar_angle.pos, -rot_speed,
-                                         radar_angle.pos + rot_amount, infinity, 
-                                         ROTATE_TO_LEFT );
-                }            
-            }
-          break;
+//                if( bits & 2 )
+//                  {
+//                    cannon_angle.pos -= rint( (cannon_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
+//                    rot_amount = rot_end_angle - cannon_angle.pos;
+//                    if( rot_amount > 0 )
+//                      cannon_angle.set_rot( cannon_angle.pos, rot_speed, 
+//                                            -infinity, cannon_angle.pos + rot_amount, 
+//                                            ROTATE_TO_RIGHT );
+//                    else
+//                      cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
+//                                            cannon_angle.pos + rot_amount, infinity, 
+//                                            ROTATE_TO_LEFT );
+//                  }
+//                if( bits & 4 )
+//                  {
+//                    radar_angle.pos -= rint( (radar_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
+//                    rot_amount = rot_end_angle - radar_angle.pos;
+//                    if( rot_amount > 0 )
+//                      radar_angle.set_rot( radar_angle.pos, rot_speed,
+//                                           -infinity, radar_angle.pos + rot_amount, 
+//                                           ROTATE_TO_RIGHT );
+//                    else
+//                      radar_angle.set_rot( radar_angle.pos, -rot_speed,
+//                                           radar_angle.pos + rot_amount, infinity, 
+//                                           ROTATE_TO_LEFT );
+//                  }            
+//              }
+//            break;
 
-        case ROTATE_AMOUNT:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              int bits;
-              double rot_speed, rot_amount;
-              *pin >> bits >> rot_speed >> rot_amount;
+//          case ROTATE_AMOUNT:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                int bits;
+//                double rot_speed, rot_amount;
+//                *pin >> bits >> rot_speed >> rot_amount;
 
-              rot_speed = fabs(rot_speed);
-              if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+//                rot_speed = fabs(rot_speed);
+//                if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
 
-              if( bits & 1 )
-                {
-                  if( rot_amount > 0 )
-                    robot_angle.set_rot( robot_angle.pos, rot_speed,
-                                         -infinity, robot_angle.pos + rot_amount, 
-                                         ROTATE_TO_RIGHT );
-                  else
-                    robot_angle.set_rot( robot_angle.pos, -rot_speed,
-                                         robot_angle.pos + rot_amount, infinity, 
-                                         ROTATE_TO_LEFT );
-                }
-              if( bits & 2 )
-                {
-                  if( rot_amount > 0 )
-                    cannon_angle.set_rot( cannon_angle.pos, rot_speed,
-                                          -infinity, cannon_angle.pos + rot_amount, 
-                                          ROTATE_TO_RIGHT );
-                  else
-                    cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
-                                          cannon_angle.pos + rot_amount, infinity, 
-                                          ROTATE_TO_LEFT );
-                }
-              if( bits & 4 )
-                {
-                  if( rot_amount > 0 )
-                    radar_angle.set_rot( radar_angle.pos, rot_speed,
-                                         -infinity, radar_angle.pos + rot_amount, 
-                                         ROTATE_TO_RIGHT );
-                  else
-                    radar_angle.set_rot( radar_angle.pos, -rot_speed,
-                                         radar_angle.pos + rot_amount, infinity, 
-                                         ROTATE_TO_LEFT );
-                }
-            }
-          break;
-        case SWEEP:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              int bits;
-              double rot_speed, sweep_left, sweep_right;
-              *pin >> bits >> rot_speed >> sweep_left >> sweep_right;
-              sweep_left = max(min(sweep_left, infinity), -infinity);
-              sweep_right = max(min(sweep_right, infinity), -infinity);
-              rotation_mode_t rot_dir;
-              rot_dir = ( rot_speed < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+//                if( bits & 1 )
+//                  {
+//                    if( rot_amount > 0 )
+//                      robot_angle.set_rot( robot_angle.pos, rot_speed,
+//                                           -infinity, robot_angle.pos + rot_amount, 
+//                                           ROTATE_TO_RIGHT );
+//                    else
+//                      robot_angle.set_rot( robot_angle.pos, -rot_speed,
+//                                           robot_angle.pos + rot_amount, infinity, 
+//                                           ROTATE_TO_LEFT );
+//                  }
+//                if( bits & 2 )
+//                  {
+//                    if( rot_amount > 0 )
+//                      cannon_angle.set_rot( cannon_angle.pos, rot_speed,
+//                                            -infinity, cannon_angle.pos + rot_amount, 
+//                                            ROTATE_TO_RIGHT );
+//                    else
+//                      cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
+//                                            cannon_angle.pos + rot_amount, infinity, 
+//                                            ROTATE_TO_LEFT );
+//                  }
+//                if( bits & 4 )
+//                  {
+//                    if( rot_amount > 0 )
+//                      radar_angle.set_rot( radar_angle.pos, rot_speed,
+//                                           -infinity, radar_angle.pos + rot_amount, 
+//                                           ROTATE_TO_RIGHT );
+//                    else
+//                      radar_angle.set_rot( radar_angle.pos, -rot_speed,
+//                                           radar_angle.pos + rot_amount, infinity, 
+//                                           ROTATE_TO_LEFT );
+//                  }
+//              }
+//            break;
+//          case SWEEP:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                int bits;
+//                double rot_speed, sweep_left, sweep_right;
+//                *pin >> bits >> rot_speed >> sweep_left >> sweep_right;
+//                sweep_left = max(min(sweep_left, infinity), -infinity);
+//                sweep_right = max(min(sweep_right, infinity), -infinity);
+//                rotation_mode_t rot_dir;
+//                rot_dir = ( rot_speed < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
 
-              if( bits & 2 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-              if( bits & 4 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+//                if( bits & 2 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+//                if( bits & 4 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
             
-              if( bits & 2 )
-                {
-                  cannon_angle.pos -= rint( (cannon_angle.pos - 0.5*(sweep_left+sweep_right)) / 
-                                            (2.0*M_PI) ) * 2.0 * M_PI;
-                  if( fabs(cannon_angle.vel) > 1e-10 ) 
-                    rot_dir = ( cannon_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+//                if( bits & 2 )
+//                  {
+//                    cannon_angle.pos -= rint( (cannon_angle.pos - 0.5*(sweep_left+sweep_right)) / 
+//                                              (2.0*M_PI) ) * 2.0 * M_PI;
+//                    if( fabs(cannon_angle.vel) > 1e-10 ) 
+//                      rot_dir = ( cannon_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
                   
-                  if( cannon_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
-                  if( cannon_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
+//                    if( cannon_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
+//                    if( cannon_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
 
-                  double cannon_speed = rot_speed;
-                  if( rot_dir == SWEEP_LEFT ) cannon_speed = -rot_speed;    
-                  cannon_angle.set_rot( cannon_angle.pos, cannon_speed, 
-                                        sweep_left, sweep_right, rot_dir );
-                }
-              if( bits & 4 )
-                {
-                  radar_angle.pos -= rint( (radar_angle.pos - 0.5*(sweep_left+sweep_right)) / 
-                                           (2.0*M_PI) ) * 2.0 * M_PI;
-                  if( fabs(radar_angle.vel) > 1e-10 ) 
-                    rot_dir = ( radar_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+//                    double cannon_speed = rot_speed;
+//                    if( rot_dir == SWEEP_LEFT ) cannon_speed = -rot_speed;    
+//                    cannon_angle.set_rot( cannon_angle.pos, cannon_speed, 
+//                                          sweep_left, sweep_right, rot_dir );
+//                  }
+//                if( bits & 4 )
+//                  {
+//                    radar_angle.pos -= rint( (radar_angle.pos - 0.5*(sweep_left+sweep_right)) / 
+//                                             (2.0*M_PI) ) * 2.0 * M_PI;
+//                    if( fabs(radar_angle.vel) > 1e-10 ) 
+//                      rot_dir = ( radar_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
                   
-                  if( radar_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
-                  if( radar_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
+//                    if( radar_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
+//                    if( radar_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
                 
-                  double radar_speed = rot_speed;
-                  if( rot_dir == SWEEP_LEFT ) radar_speed = -rot_speed;    
-                  radar_angle.set_rot( radar_angle.pos, radar_speed,
-                                       sweep_left, sweep_right, rot_dir );
-                }
-            }
-          break;
-        case PRINT:
-          {
-            pin->get(text, 160, '\n');
-            realtime_arena.print_to_logfile('P', id, text);
-            the_arena.print_message( robot_name, text );
-          }
-          break;
-
-        case DEBUG:
-          {
-            pin->get(text, 160, '\n');
-            if( realtime_arena.get_game_mode() == DEBUG_MODE )
-              {
-                realtime_arena.print_to_logfile('P', id, text);
-                the_arena.print_message( robot_name, text );
-              }
-          }
-          break;
-
-        case DEBUG_LINE:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              if( !the_arena.is_max_debug_level() )
-                {
-                  send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
-                               message_from_robot[msg_t].msg);
-                }
-//  #ifndef NO_GRAPHICS
-//                else if( !no_graphics )
-//                  {
-//                    double a1, d1, a2, d2;
-//                    *pin >> a1 >> d1 >> a2 >> d2;
-                  
-//                    Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
-//                    Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
-                  
-//                    the_gui.get_arenawindow_p()->
-//                      draw_line(start + center, direction, 1.0, gdk_colour);
+//                    double radar_speed = rot_speed;
+//                    if( rot_dir == SWEEP_LEFT ) radar_speed = -rot_speed;    
+//                    radar_angle.set_rot( radar_angle.pos, radar_speed,
+//                                         sweep_left, sweep_right, rot_dir );
 //                  }
-//  #endif NO_GRAPHICS              
-            }
-          break;
+//              }
+//            break;
+//          case PRINT:
+//            {
+//              pin->get(text, 160, '\n');
+//              the_arena.print_to_logfile('P', id, text);
+//              the_arena.print_message( robot_name, text );
+//            }
+//            break;
 
-        case DEBUG_CIRCLE:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              if( !the_arena.is_max_debug_level() )
-                {
-                  send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
-                               message_from_robot[msg_t].msg);
-                }
-//  #ifndef NO_GRAPHICS
-//                else if( !no_graphics )
+//          case DEBUG:
+//            {
+//              pin->get(text, 160, '\n');
+//              if( the_arena.get_game_mode() == DEBUG_MODE )
+//                {
+//                  the_arena.print_to_logfile('P', id, text);
+//                  the_arena.print_message( robot_name, text );
+//                }
+//            }
+//            break;
+
+//          case DEBUG_LINE:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                if( !the_arena.is_max_debug_level() )
 //                  {
-//                    double a, d, r;
-//                    *pin >> a >> d >> r;
-
-//                    Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
-
-//                    the_gui.get_arenawindow_p()->
-//                      draw_circle(c, r, gdk_colour, false);
+//                    send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
+//                                 message_from_robot[msg_t].msg);
 //                  }
-//  #endif NO_GRAPHICS
-            }         
-          break;          
+//  //  #ifndef NO_GRAPHICS
+//  //                else if( !no_graphics )
+//  //                  {
+//  //                    double a1, d1, a2, d2;
+//  //                    *pin >> a1 >> d1 >> a2 >> d2;
+                  
+//  //                    Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
+//  //                    Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
+                  
+//  //                    the_gui.get_arenawindow_p()->
+//  //                      draw_line(start + center, direction, 1.0, gdk_colour);
+//  //                  }
+//  //  #endif NO_GRAPHICS              
+//              }
+//            break;
 
-        case SHOOT:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              double en;
-              *pin >> en;
-              en = min(en, shot_energy);
-              if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
-              shot_energy -= en;
+//          case DEBUG_CIRCLE:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                if( !the_arena.is_max_debug_level() )
+//                  {
+//                    send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
+//                                 message_from_robot[msg_t].msg);
+//                  }
+//  //  #ifndef NO_GRAPHICS
+//  //                else if( !no_graphics )
+//  //                  {
+//  //                    double a, d, r;
+//  //                    *pin >> a >> d >> r;
+
+//  //                    Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
+
+//  //                    the_gui.get_arenawindow_p()->
+//  //                      draw_circle(c, r, gdk_colour, false);
+//  //                  }
+//  //  #endif NO_GRAPHICS
+//              }         
+//            break;          
+
+//          case SHOOT:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                double en;
+//                *pin >> en;
+//                en = min(en, shot_energy);
+//                if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
+//                shot_energy -= en;
               
-              Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
-              double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
-              Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
-              Vector2D shot_vel = velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED);
+//                Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
+//                double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
+//                Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
+//                Vector2D shot_vel = velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED);
 
-              if( realtime_arena.space_available( shot_center, shot_radius*1.00001 ) )
-                {
-                  Shot* shotp = new Shot( shot_center, shot_vel, en );
-                  realtime_arena.get_object_lists()[SHOT].insert_last( shotp );
+//                if( the_arena.space_available( shot_center, shot_radius*1.00001 ) )
+//                  {
+//                    Shot* shotp = new Shot( shot_center, shot_vel, 
+//                                            current_weapon.get_shotgadget(), en );
+//                    the_arena.get_object_lists()[SHOT].insert_last( shotp );
 
-                  realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
-                                                  shot_vel[0], shot_vel[1]);
-                }
-              else  // No space for shot, direct hit!!
-                { 
-                  Shape* col_obj;
-                  object_type cl_shape;
-                  double dist;
-                  if( (dist = realtime_arena.get_shortest_distance
-                       ( center, dir, shot_radius*1.00001, 
-                         cl_shape, col_obj, this))    >   radius+1.5*shot_radius )
-                    {
-                      //cerr << "Shot has space available after all?" <<  endl;
-                      cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
-                      cerr << "col_shape: " << cl_shape << endl; 
-                      Error(true, "Shot has space available after all?", "Robot::get_messages");                  
-                    }
-                  switch(cl_shape)
-                    {
-                    case WALL:
-                      break;
-                    case ROBOT:
-                      {
-                        Robot* robotp = (Robot*)col_obj;
-                        robotp->change_energy(-en);
-                        robotp->send_message(COLLISION, SHOT, 
-                                             vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
-                      }
-                      break;
-                    case SHOT:
-                      shot_collision((Shot*)col_obj, shot_vel, en);
-                      break;
-                    case COOKIE:
-                      {
-                        Cookie* cookiep =(Cookie*)col_obj;
-                        cookiep->die();
-                        the_arena.get_object_lists()[COOKIE].remove( cookiep );
-                      }
-                      break;
-                    case MINE:
-                      {
-                        Mine* minep =(Mine*)col_obj;
-                        minep->die();
-                        the_arena.get_object_lists()[MINE].remove( minep );
-                      }
-                      break;
-                    default:
-                      Error(true, "Shot on unknown object", "Robot::get_messages");
-                    }
-                }
-              change_energy(-en * realtime_arena.get_shooting_penalty() );
-            }
-          break;
-        case ACCELERATE:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              double acc;
-              *pin >> acc;
-              acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
-              acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
-              acceleration = acc * angle2vec(robot_angle.pos);
-            }
-          break;
-        case BREAK:  // Included only for compatibility reasons
-          send_message(WARNING, OBSOLETE_KEYWORD, msg_name);
-        case BRAKE:
-          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-            {
-              double brk;
-              *pin >> brk;
-              brk = max( brk, 0.0);
-              brk = min( brk, 1.0);
-              brake_percent = brk;
-            } 
-          break;
-	case TEAMWORK:
-	  if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-	    {
-	      pin->get(text, 2, '\n');
-              if(!strcmp(text, 'OK'))
-	        set_teamworking(true);
-              else
-	        set_teamworking(false);
-	    }
-	  break;
-	case SEND:  // Only for teamwork
-	  {
-	  }
-	  break;
+//                    the_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
+//                                                    shot_vel[0], shot_vel[1]);
+//                  }
+//                else  // No space for shot, direct hit!!
+//                  { 
+//                    Shape* col_obj;
+//                    object_type cl_shape;
+//                    double dist;
+//                    if( (dist = the_arena.get_shortest_distance
+//                         ( center, dir, shot_radius*1.00001, 
+//                           cl_shape, col_obj, this))    >   radius+1.5*shot_radius )
+//                      {
+//                        //cerr << "Shot has space available after all?" <<  endl;
+//                        cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
+//                        cerr << "col_shape: " << cl_shape << endl; 
+//                        Error(true, "Shot has space available after all?", "Robot::get_messages");                  
+//                      }
+//                    switch(cl_shape)
+//                      {
+//                      case WALL:
+//                        break;
+//                      case ROBOT:
+//                        {
+//                          Robot* robotp = (Robot*)col_obj;
+//                          robotp->change_energy(-en);
+//                          robotp->send_message(COLLISION, SHOT, 
+//                                               vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
+//                        }
+//                        break;
+//                      case SHOT:
+//                        shot_collision((Shot*)col_obj, shot_vel, en);
+//                        break;
+//                      case COOKIE:
+//                        {
+//                          Cookie* cookiep =(Cookie*)col_obj;
+//                          cookiep->die();
+//                          the_arena.get_object_lists()[COOKIE].remove( cookiep );
+//                        }
+//                        break;
+//                      case MINE:
+//                        {
+//                          Mine* minep =(Mine*)col_obj;
+//                          minep->die();
+//                          the_arena.get_object_lists()[MINE].remove( minep );
+//                        }
+//                        break;
+//                      default:
+//                        Error(true, "Shot on unknown object", "Robot::get_messages");
+//                      }
+//                  }
+//                change_energy(-en * the_arena.get_shooting_penalty() );
+//              }
+//            break;
+//          case ACCELERATE:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                double acc;
+//                *pin >> acc;
+//                acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
+//                acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
+//                acceleration = acc * angle2vec(robot_angle.pos);
+//              }
+//            break;
+//          case BREAK:  // Included only for compatibility reasons
+//            send_message(WARNING, OBSOLETE_KEYWORD, msg_name);
+//          case BRAKE:
+//            if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//              {
+//                double brk;
+//                *pin >> brk;
+//                brk = max( brk, 0.0);
+//                brk = min( brk, 1.0);
+//                brake_percent = brk;
+//              } 
+//            break;
+//  	case TEAMWORK:
+//  	  if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+//  	    {
+//  	      pin->get(text, 2, '\n');
+//                if(!strcmp(text, 'OK'))
+//  	        set_teamworking(true);
+//                else
+//  	        set_teamworking(false);
+//  	    }
+//  	  break;
+//  	case SEND:  // Only for teamwork
+//  	  {
+//  	  }
+//  	  break;
 	  
-          //          case LOAD_DATA:
-          //            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-          //              {
-          //                bool bin;
-          //                *pin >> bin;
-          //                load_data(bin);
-          //              }
-          //            break;
-          //          case SAVE_DATA_FINISHED:
-          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-          //              {
-          //                send_message(EXIT_ROBOT);
-          //                send_signal();
-          //              }
-          //            break;
-          //          case BIN_DATA_FROM:
-          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-          //              {
-          //                save_data(true, has_saved);
-          //                has_saved = true;
-          //              }
-          //            break;
-          //          case ASCII_DATA_FROM:
-          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-          //              {
-          //                save_data(false, has_saved);
-          //                has_saved = true;
-          //              }
-          //            break;
-        default:
-          Error(true, "Message_type not implemented, " + (string)msg_name, "Robot::get_messages");
-        }
+//            //          case LOAD_DATA:
+//            //            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+//            //              {
+//            //                bool bin;
+//            //                *pin >> bin;
+//            //                load_data(bin);
+//            //              }
+//            //            break;
+//            //          case SAVE_DATA_FINISHED:
+//            //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//            //              {
+//            //                send_message(EXIT_ROBOT);
+//            //                send_signal();
+//            //              }
+//            //            break;
+//            //          case BIN_DATA_FROM:
+//            //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//            //              {
+//            //                save_data(true, has_saved);
+//            //                has_saved = true;
+//            //              }
+//            //            break;
+//            //          case ASCII_DATA_FROM:
+//            //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+//            //              {
+//            //                save_data(false, has_saved);
+//            //                has_saved = true;
+//            //              }
+//            //            break;
+//          default:
+//            Error(true, "Message_type not implemented, " + (string)msg_name, "Robot::get_messages");
+//          }
 
-      *pin >> ws;
-      pin->clear();
-      pin->peek();
-    }
+//        *pin >> ws;
+//        pin->clear();
+//        pin->peek();
+//    }
 }
 
 message_from_robot_type
@@ -1116,19 +1116,19 @@ Robot::name2msg_from_robot_type(char* msg_name)
 bool
 Robot::check_state_for_message(const message_from_robot_type msg_t, const state_t state1, const state_t state2)
 {
-  if( the_arena.get_state() != state1 && the_arena.get_state() != state2 )
-    {
-      //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
+//    if( the_arena.get_state() != state1 && the_arena.get_state() != state2 )
+//      {
+//        //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
 
-      if( the_arena.get_state() != BEFORE_GAME_START )
-        send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, 
-                     message_from_robot[msg_t].msg);
-      char buffer[80];
-      process->get_instreamp()->get(buffer, 80, '\n');
-      return false;
-    }
+//        if( the_arena.get_state() != BEFORE_GAME_START )
+//          send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, 
+//                       message_from_robot[msg_t].msg);
+//        char buffer[80];
+//        process->get_instreamp()->get(buffer, 80, '\n');
+//        return false;
+//      }
   
-  return true;
+//    return true;
 }
 
 //  bool

@@ -62,15 +62,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "IntlDefs.h"
 //#include "OptionHandler.h"
-#include "ArenaRealTime.h"
-#include "ArenaReplay.h"
+
+#include "Arena.h"
 #include "Various.h"
 #include "ArenaController.h"
 #include "EventHandler.h"
 
 #include "GuiInterface.h"
 
-#include "Gadget.h"
+#include "Gadgets/Gadget.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1

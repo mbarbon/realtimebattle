@@ -26,11 +26,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <typeinfo>
 
 #include "Arena.h"
-#include "AllGadgets.h"
+#include "Gadgets/AllGadgets.h"
 #include "Vector2D.h"
 #include "String.h"
 #include "Messagetypes.h"
 #include "Various.h"
+#include "Shot.h"
+#include "Robot.h"
+
+void
+Arena::add_shot(const Shot& s)
+{
+  if(  shots.insert(s).second == false )
+    Error(true, "Couldn't add element", "Arena::add_shot");
+}
 
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )

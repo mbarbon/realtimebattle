@@ -26,7 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Extras.h"
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
+#include "Arena.h"
 #include "OptionHandler.h"
 
 Extras::Extras(const Vector2D& c, const double r, const double e, const long int col)
@@ -44,7 +44,7 @@ Cookie::Cookie(const Vector2D& c, const double e, const int c_id = -1)
            the_opts.get_l(OPTION_COOKIE_COLOUR))
 { 
   if( c_id == -1 )
-    id = the_arena.increase_cookie_count();
+    id = 0;//the_arena.increase_cookie_count();
   else
     id = c_id;
 
@@ -56,7 +56,7 @@ Mine::Mine(const Vector2D& c, const double e, const int m_id = -1)
            the_opts.get_l(OPTION_MINE_COLOUR))
 { 
   if( m_id == -1 )
-    id = the_arena.increase_mine_count();
+    id = 0;//the_arena.increase_mine_count();
   else
     id = m_id;
 
@@ -75,5 +75,5 @@ Extras::die()
 //  #endif
 
    if( the_arena_controller.is_realtime() )
-     realtime_arena.print_to_logfile( 'D', (int)log_file_char, id );
+     the_arena.print_to_logfile( 'D', (int)log_file_char, id );
 }

@@ -27,9 +27,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "InformationDistributor.h"
 
-#define the_arena (*( the_arena_controller.get_the_arena()) )
+#define the_arena (*( the_arena_controller.get_my_arena()) )
 
 static const int max_debug_level = 5;
+
 
 class GuiInterface;
 
@@ -44,14 +45,15 @@ public:
 
   void quit_gui( GuiInterface* gui_p, bool exit_program );
   
+  void start_arena();
   void close_arena();
 
-  void start_realtime_arena();
-  void start_replay_arena();
 
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
-  Arena* get_the_arena() { return my_arena; }
+
+  Arena* get_my_arena() { return my_arena; }
+
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 

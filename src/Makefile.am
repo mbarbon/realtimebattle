@@ -1,4 +1,4 @@
-SUBDIRS = Gui Gadgets Network
+SUBDIRS = Gadgets Network
 
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
@@ -35,10 +35,7 @@ RealTimeBattle_DEPENDENCIES = $(top_srcdir)/src/Gadgets/libRTB_Gadgets.a \
 	$(GETOPT_O) $(INTLOBJS) $(GUI_OBJS)
 RealTimeBattle_SOURCES = \
 	Arena.cc Arena.h \
-	ArenaBase.cc ArenaBase.h \
 	ArenaController.cc ArenaController.h \
-	ArenaRealTime.cc ArenaRealTime.h \
-	ArenaReplay.h ArenaReplay.cc \
 	Event.h \
 	EventHandler.h EventHandler.cc \
 	Extras.cc Extras.h \

@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "RollingObject.h"
 #include "Robot.h"
 #include "OptionHandler.h"
-#include "ArenaBase.h"
+//#include "ArenaBase.h"
 #include "ArenaController.h"
 
 RollingObject::RollingObject()

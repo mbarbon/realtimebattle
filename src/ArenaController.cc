@@ -34,8 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
-#include "ArenaReplay.h"
+#include "Arena.h"
 #include "OptionHandler.h"
 #include "IntlDefs.h"
 #include "GuiInterface.h"
@@ -93,9 +92,9 @@ ArenaController::init( int argc, char** argv )
     (*li)->startup();
 
   if( tournament_filename != "" )
-    start_realtime_arena();
+    start_arena();
   else if( replay_filename != "" )
-    start_replay_arena();
+    start_arena(); // TODO: start replaying: How?
 
   return EXIT_SUCCESS; // TODO: what should be returned here?
 }
@@ -474,25 +473,13 @@ ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
 }
 
 void
-ArenaController::start_realtime_arena()
+ArenaController::start_arena()
 {
   if( started ) close_arena();
 
-  my_arena = new ArenaRealTime();
+  my_arena = new Arena();
   
   started = true;
-  realtime = true;
-}
-
-void
-ArenaController::start_replay_arena()
-{
-  if( started ) close_arena();
-
-  my_arena = new ArenaReplay();
-  
-  started = true;
-  realtime = false;
 }
 
 void

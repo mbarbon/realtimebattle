@@ -46,7 +46,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Messagetypes.h"
 #include "Structs.h"
 #include "Robot.h"
-#include "ArenaBase.h"
+//#include "ArenaBase.h"
 #include "ArenaController.h"
 #include "OptionHandler.h"
 #include "String.h"
@@ -161,9 +161,9 @@ Process::start(const enum game_mode_t mode)
       
       Robot* robotp;
 
-      list<Robot*>::iterator li;
-      for( li = the_arena.get_all_robots_in_sequence()->begin();
-           li != the_arena.get_all_robots_in_sequence()->end(); li++ )
+      set<Robot*>::iterator li;
+      for( li = the_arena.get_robot_set()->begin();
+           li != the_arena.get_robot_set()->end(); li++ )
         {
           robotp = (*li);
           if( robotp != my_robot ) robotp->get_process()->delete_pipes();
@@ -258,9 +258,12 @@ Process::is_process_running()
   return process_running;
 }
 
+
+// TODO: redo this cpu useage checking !!
 void
 Process::check()
 {
+  /*
   string procfilename = "/proc/" + int2string(pid) + "/stat";
 
   if( is_process_running() )
@@ -320,6 +323,7 @@ Process::check()
           cpu_warning_limit = cpu_next_limit;
         }
     }
+  */
 }
 
 

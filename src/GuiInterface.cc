@@ -26,7 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "GuiInterface.h"
-#include "ArenaBase.h"
+//#include "ArenaBase.h"
 #include "ArenaController.h"
 #include "Various.h"
 #include "InformationDistributor.h"
@@ -105,7 +105,7 @@ int
 GuiInterface::get_game_nr()
 {
   pthread_mutex_lock( mutex_p );
-  int res = the_arena.get_game_nr();
+  int res = 0;//the_arena.get_game_nr();
   pthread_mutex_unlock( mutex_p );
   return res;
 }

@@ -35,7 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "OptionHandler.h"
 #include "Option.h"
-#include "ArenaRealTime.h"
+#include "Arena.h"
 #include "ArenaController.h"
 #include "String.h"
 
@@ -83,33 +83,35 @@ OptionHandler::initialize_groups()
 void
 OptionHandler::broadcast_opts()
 {
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_MAX_ROTATE,
-                            get_d(OPTION_ROBOT_MAX_ROTATE) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_CANNON_MAX_ROTATE,
-                            get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_RADAR_MAX_ROTATE,
-                            get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_MAX_ACCELERATION,
-                            get_d(OPTION_ROBOT_MAX_ACCELERATION) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_MIN_ACCELERATION,
-                            get_d(OPTION_ROBOT_MIN_ACCELERATION) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY,
-                            get_d(OPTION_ROBOT_START_ENERGY) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY,
-                            get_d(OPTION_ROBOT_MAX_ENERGY) );
-  realtime_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS,
-                            (double)get_l(OPTION_ROBOT_ENERGY_LEVELS) );
-  realtime_arena.broadcast( GAME_OPTION, SHOT_SPEED,
-                            get_d(OPTION_SHOT_SPEED ));
-  realtime_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY,
-                            get_d(OPTION_SHOT_MIN_ENERGY ));
-  realtime_arena.broadcast( GAME_OPTION, SHOT_MAX_ENERGY,
-                            get_d(OPTION_SHOT_MAX_ENERGY) );
-  realtime_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED,
-                            get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
-  realtime_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT) );
-  realtime_arena.broadcast( GAME_OPTION, DEBUG_LEVEL,
-                            (double)the_arena.get_debug_level() );  
+  /*
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ROTATE,
+                       get_d(OPTION_ROBOT_MAX_ROTATE) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_CANNON_MAX_ROTATE,
+                       get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_RADAR_MAX_ROTATE,
+                       get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ACCELERATION,
+                       get_d(OPTION_ROBOT_MAX_ACCELERATION) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_MIN_ACCELERATION,
+                       get_d(OPTION_ROBOT_MIN_ACCELERATION) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY,
+                       get_d(OPTION_ROBOT_START_ENERGY) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY,
+                       get_d(OPTION_ROBOT_MAX_ENERGY) );
+  the_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS,
+                       (double)get_l(OPTION_ROBOT_ENERGY_LEVELS) );
+  the_arena.broadcast( GAME_OPTION, SHOT_SPEED,
+                       get_d(OPTION_SHOT_SPEED ));
+  the_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY,
+                       get_d(OPTION_SHOT_MIN_ENERGY ));
+  the_arena.broadcast( GAME_OPTION, SHOT_MAX_ENERGY,
+                       get_d(OPTION_SHOT_MAX_ENERGY) );
+  the_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED,
+                       get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
+  the_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT) );
+  the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL,
+                       (double)the_arena.get_debug_level() );  
+  */
 }
 
 void
@@ -119,22 +121,22 @@ OptionHandler::log_all_options()
     if( all_long_options[i].log() )
       {
         if( all_long_options[i].is_value_hexadecimal() )
-          realtime_arena.print_to_logfile
+          the_arena.print_to_logfile
             ( 'O', (int)'H', (all_long_options[i].get_rc_label() + ":").c_str(),
               all_long_options[i]() );
         else
-          realtime_arena.print_to_logfile
+          the_arena.print_to_logfile
             ( 'O', (int)'L', (all_long_options[i].get_rc_label() + ":").c_str(),
               all_long_options[i]() );
       }
   for( int i = 0; i < number_of_double_options; i++ )
     if( all_double_options[i].log() )
-      realtime_arena.print_to_logfile
+      the_arena.print_to_logfile
         ( 'O', (int)'D', (all_double_options[i].get_rc_label() + ":").c_str(),
           all_double_options[i]() );
   for( int i = 0; i < number_of_string_options; i++ )
     if( all_string_options[i].log() )
-      realtime_arena.print_to_logfile
+      the_arena.print_to_logfile
         ( 'O', (int)'S', (all_string_options[i].get_rc_label() + ":").c_str(),
           all_string_options[i]().c_str() );
 }
