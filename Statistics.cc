@@ -1,4 +1,3 @@
-#include <strstream.h>
 #include <iostream.h>
 #include <iomanip.h>
 #include <math.h>
@@ -67,6 +66,10 @@ void
 Gui::change_stat_type( stat_table_t type )
 {
   gtk_clist_freeze(GTK_CLIST(stat_clist));
+  if(type == STAT_TABLE_TOTAL || type == STAT_TABLE_SEQUENCE)
+    gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 80);
+  else
+    gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 0);
   if(stat_table_type == STAT_TABLE_ROBOT && type != STAT_TABLE_ROBOT)
     {
       gtk_clist_set_column_title(GTK_CLIST(stat_clist), 0, "");
@@ -150,10 +153,8 @@ Gui::change_statistics( int change, bool absolut_change )
 }
 
 void
-Gui::add_new_row( void * rp, void * sp )
+Gui::add_new_row( void * rp, void * sp, int games_played )
 {
-  strstream ss0,ss2,ss3,ss4,ss5,ss6,ss7;
-
   Robot * robotp = (Robot *)rp;
   stat_t * statp = (stat_t *)sp;
   char * list[8];
@@ -167,7 +168,6 @@ Gui::add_new_row( void * rp, void * sp )
   int row = gtk_clist_append(GTK_CLIST(stat_clist), list);
   gtk_clist_set_foreground(GTK_CLIST(stat_clist), row, the_arena.get_foreground_colour_p());
   gtk_clist_set_background(GTK_CLIST(stat_clist), row, the_arena.get_background_colour_p());
-  char str[30];
 
   if(stat_table_type == STAT_TABLE_GAME ||
      stat_table_type == STAT_TABLE_SEQUENCE ||
@@ -187,34 +187,29 @@ Gui::add_new_row( void * rp, void * sp )
 
   if(stat_table_type == STAT_TABLE_ROBOT)
     {
-      ss2 << statp->sequence_nr;
-      ss2 >> str;
-      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 0, str);
-
-      ss3 << statp->game_nr;
-      ss3 >> str;
-      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, str);
+      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 0, String(statp->sequence_nr).non_const_chars());
+      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, String(statp->game_nr).non_const_chars());
     }
 
-  ss4 << statp->position;
-  ss4 >> str;
-  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 2, str);
+  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 2, String(statp->position).non_const_chars());
 
+  String str;
   if(stat_table_type == STAT_TABLE_SEQUENCE ||
      stat_table_type == STAT_TABLE_TOTAL)
-    ss5 << setiosflags(ios::fixed) << setprecision(2) << statp->points;
+    str = String(statp->points, 2, STRING_FIXED_FORM);
   else
-    ss5 << statp->points;
-  ss5 >> str;
-  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 3, str);
+    str = String(statp->points);
 
-  ss6 << setiosflags(ios::fixed) << setprecision(2) << statp->time_survived;
-  ss6 >> str;
-  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 4, str);
+  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 3, str.non_const_chars());
 
-  ss7 << statp->total_points;
-  ss7 >> str;
-  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 5, str);
+  if( stat_table_type == STAT_TABLE_TOTAL ||
+      stat_table_type == STAT_TABLE_SEQUENCE )
+      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 4, String(games_played).non_const_chars());
+  else
+      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 4, String("").non_const_chars());
+
+  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 5, String(statp->time_survived, 2, STRING_FIXED_FORM).non_const_chars());
+  gtk_clist_set_text(GTK_CLIST(stat_clist), row, 6, String(statp->total_points).non_const_chars());
 }
 
 void
@@ -277,7 +272,7 @@ Gui::add_the_statistics_to_clist()
                 average_stat.position = position[robot_nr];
                 average_stat.points /= number_of_stat_found;
                 average_stat.time_survived /= number_of_stat_found;
-                add_new_row( robotp, &average_stat );
+                add_new_row( robotp, &average_stat, number_of_stat_found );
               }
 
             
@@ -342,7 +337,7 @@ Gui::add_the_statistics_to_clist()
                 average_stat.position = position[robot_nr];
                 average_stat.points /= number_of_stat_found;
                 average_stat.time_survived /= number_of_stat_found;
-                add_new_row( robotp, &average_stat );
+                add_new_row( robotp, &average_stat, number_of_stat_found );
               }
           }
         break;
@@ -366,7 +361,7 @@ Gui::add_the_statistics_to_clist()
               {
                 statp = (stat_t*)(stat_gl->data);
                 if(statp->sequence_nr == looking_at_sequence && statp->game_nr == looking_at_game)
-                  add_new_row( robotp, statp );
+                  add_new_row( robotp, statp, -1 );
               }
           }
         break;
@@ -383,7 +378,7 @@ Gui::add_the_statistics_to_clist()
               for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
                 {
                   statp = (stat_t*)(stat_gl->data);
-                  add_new_row( robotp, statp );
+                  add_new_row( robotp, statp, -1 );
                 }
           }
         break;
@@ -437,21 +432,13 @@ Gui::stat_make_title_button()
       break;
     case STAT_TABLE_SEQUENCE:
       {
-        strstream ss;
-        char str[50];
-        GtkWidget * label;
-        ss << "Sequence: " << stat_looking_at_nr << endl;
-        ss.getline(str,50,'\n');
-        label = gtk_label_new(str);
+        GtkWidget * label = gtk_label_new(String("Sequence: " + String(stat_looking_at_nr)).chars());
         gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, TRUE, 0);
         gtk_widget_show( label );
       }
       break;
     case STAT_TABLE_GAME:
       {
-        strstream ss;
-        char str[50];
-
         int looking_at_game = stat_looking_at_nr % the_arena.get_games_per_sequence();
         int looking_at_sequence = (stat_looking_at_nr / the_arena.get_games_per_sequence()) + 1;
         if( looking_at_game == 0 )
@@ -460,10 +447,7 @@ Gui::stat_make_title_button()
             looking_at_sequence--;
           }
 
-        GtkWidget * label;
-        ss << "Sequence: " << looking_at_sequence << "  Game: " << looking_at_game << endl;
-        ss.getline(str,50,'\n');
-        label = gtk_label_new(str);
+        GtkWidget * label = gtk_label_new(String("Sequence: " + String(looking_at_sequence) + "  Game: " + String(looking_at_game)).chars());
         gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, TRUE, 0);
         gtk_widget_show( label );
         break;
@@ -655,25 +639,27 @@ Gui::setup_statistics_window()
         }
     }
 
-  char * titles[6] = { "","Name", "Position", "Points", "Survival Time", "Total Points" };
-  stat_clist = gtk_clist_new_with_titles(6, titles);
+  char * titles[7] = { "","Name", "Position", "Points", "Games Played", "Survival Time", "Total Points" };
+  stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
   gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 80);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 3, 35);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 4, 75);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 5, 65);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 4, 0);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 5, 75);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 6, 65);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 0, GTK_JUSTIFY_CENTER);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 1, GTK_JUSTIFY_LEFT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 2, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 3, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 4, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 5, GTK_JUSTIFY_RIGHT);
+  gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 6, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_policy(GTK_CLIST(stat_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(stat_clist, 380,350);
+  gtk_widget_set_usize(stat_clist, 475,350);
   gtk_box_pack_start (GTK_BOX (vbox), stat_clist, TRUE, TRUE, 0);
   gtk_widget_show(stat_clist);
 
