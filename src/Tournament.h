@@ -76,11 +76,12 @@ private:
 
   int round_nr;
   int rounds_per_match;
-  int match_nr;
-  int number_of_matches;
 
   int total_number_of_robots;
   int robots_per_match;
+
+  int match_nr;
+  int number_of_matches;
 
   
   vector<Match> the_matches;
@@ -89,7 +90,7 @@ private:
   vector<ArenaGadget> the_arenagadgets;
   
 };
-
+/*
 class PrepareForNewMatchEvent : public Event
 {
 public:
@@ -126,6 +127,6 @@ public:
 protected:
   Match* my_match;
 };
-
+*/
 
 #endif __TOURNAMENT__
