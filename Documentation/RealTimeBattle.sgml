@@ -357,7 +357,7 @@ robot velocity and is increasing with speed.
 
 There are three ways to affect the robot motion, 
 <ref name="acceleration" id="Accelerate">, 
-<ref name="rotation" id="Rotate"> and <ref name="breaking" id="Break">.
+<ref name="rotation" id="Rotate"> and <ref name="braking" id="Brake">.
 
 The acceleration is used to increases the robots speed in the direction the robot faces; you cannot
 control the speed directly, acceleration is the only way to get the robot moving. 
@@ -366,8 +366,8 @@ By rotating the robot you can make it turn. Note that rotation does not directly
 direction of motion, only the direction the robot is facing. The sliding friction, together with
 acceleration, will eventually carry out the actual turning of the robot.
 
-Breaking will increase the roll friction up to a maximal value. This is when the wheel are locked
-and the robot is sliding instead of rolling. Don't forget to release the break when you want to
+Braking will increase the roll friction up to a maximal value. This is when the wheel are locked
+and the robot is sliding instead of rolling. Don't forget to release the brake when you want to
 speed up again.
 
 <sect1>Energy<label id="Energy">
@@ -708,8 +708,8 @@ available for the robot itself) in a sweep mode.
 <tag>Accelerate [value (double)]</tag> Set the robot acceleration.
 Value is bounded by <ref id="RobotMaxAcceleration" name="Robot max/min acceleration">.
 
-<label id="Break">
-<tag>Break [portion (double)]</tag> Set the break. Full break (portion
+<label id="Brake">
+<tag>Brake [portion (double)]</tag> Set the brake. Full brake (portion
 = 1.0) means that the friction in the robot direction is equal to
 <ref id="SlideFriction" name="Slide friction">.
 
@@ -760,11 +760,11 @@ the friction, thereby slowing robots down.
 
 <label id="RollFriction">
 <tag>Roll friction:</tag> The friction in the direction of the robot
-if not breaking.
+if not braking.
 
 <label id="SlideFriction">
 <tag>Slide friction:</tag> The friction orthogonal to the robot
-direction. Also the maximum friction if breaking.
+direction. Also the maximum friction if braking.
 
 </descrip>
 
