@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 1.0.0 rev 1
+<title>RealTimeBattle User Manual, version 1.0.3 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
-<date> 15 January 2000
+<date> 19 February 2000
 
 <!-- <abstract> -->
 
@@ -312,8 +312,8 @@ start.
 In order for the program to find the robots and arenas you have set two options
 <ref name="Robot search path" id="Robot search path"> and
 <ref name="Arena search path" id="Arena search path">.
-The subdirectories <tt>Robots</tt> and <tt>Arenas</tt> in the directory 
-<tt>INSTALLDIR</tt> (default: <tt>/usr/games/RealTimeBattle</tt>), specified at compile-time in the
+The subdirectories <tt>Robots</tt> and <tt>Arenas</tt> in the rtb installl
+directory (default: <tt>/usr/local/games/RealTimeBattle</tt>), specified at compile-time in the
 main Makefile, are always searched, regardless of the 
 options, but if you create a new directory, or if you installed RealTimeBattle in some other
 directory, you need to set these options.
@@ -423,7 +423,7 @@ Example: <tt>Robot: empty.robot</tt>
 
 <tag>Full path to the file:</tag> This takes the given file
 
-Example: <tt>Arena: /usr/Games/RealTimeBattle/Arenas/Circle.arena</tt>
+Example: <tt>Arena: /usr/local/games/RealTimeBattle/Arenas/Circle.arena</tt>
 
 <tag>All files in path:</tag> This searches the whole path and takes all files found.
 
@@ -431,7 +431,7 @@ Example: <tt>Arena: *</tt>
 
 <tag>One specific directory:</tag> This searches the specified directory and takes all files found. 
 
-Example: <tt>Robot: /usr/Games/RealTimeBattle/Robots/*</tt>
+Example: <tt>Robot: /usr/local/games/RealTimeBattle/Robots/*</tt>
 
 </descrip>
 
@@ -1224,10 +1224,13 @@ system might complain (how many depends on the system).
 
 <label id="Robot search path">
 <tag>Robot search path:</tag> This is a colon-separated list of directories which will be searched
-for robots when a <ref name="new tournament" id="Start new tournament window"> is started.
+for robots when a <ref name="new tournament" id="Start new tournament
+window"> is started. The subdirectory <tt>Robots</tt> in the rtb install
+directory (default: <tt>/usr/local/games/RealTimeBattle</tt>) is always searched.
 
 <label id="Arena search path">
-<tag>Arena search path:</tag> Same as above, but for arena files instead of robots.
+<tag>Arena search path:</tag> Same as above, but for arena files instead
+of robots. Here the subdirectory is <tt>Arenas</tt>.
 
 </descrip>
 
