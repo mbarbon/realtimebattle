@@ -120,6 +120,7 @@ MessageWindow::MessageWindow( const int default_width,
                                       GTK_JUSTIFY_LEFT );
   gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
                                       GTK_JUSTIFY_LEFT );
+  gtk_clist_column_titles_passive( GTK_CLIST( clist ) );
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
@@ -175,15 +176,24 @@ MessageWindow::add_message( const String& name_of_messager,
   
       int row = 0;
       gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+
       GdkColor* fg_colour = NULL;
       if( name_of_messager == "RealTimeBattle" )
         fg_colour = the_gui.get_rtb_message_gdk_colour_p();
       else
         fg_colour = the_gui.get_fg_gdk_colour_p();
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      GtkStyle* clist_row_style = gtk_style_new();
+      clist_row_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
+      clist_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+      clist_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+      clist_row_style->fg[GTK_STATE_NORMAL] = *fg_colour;
+      clist_row_style->fg[GTK_STATE_SELECTED] = *fg_colour;
+      gtk_clist_set_row_style( GTK_CLIST( clist ), row, clist_row_style );
+#else
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
                                 fg_colour );
-#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
       gtk_clist_set_background( GTK_CLIST( clist ), row,
                                 the_gui.get_bg_gdk_colour_p() );
 #endif
