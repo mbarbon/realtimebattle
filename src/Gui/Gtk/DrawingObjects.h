@@ -22,23 +22,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <gdk/gdktypes.h>
 #include <list>
-
-// structure of Drawingshape classes:
-//
-//             ----------------
-//        -----| DrawingShape |-----------
-//        |    ----------------          |
-//        |            |                 |
-//        |            |                 |
-//  -------------  -----------------     ----------------------
-//  |DrawingLine|  | DrawingCircle |     | DrawingInnerCircle |
-//  -------------  -----------------     ----------------------
-//
-
-// DrawingRobot is separate
+#include <string>
 
 #include "Vector2D.h"
 #include "GuiStructs.h"
+#include "Structs.h"
+
+struct _GtkCList;
+typedef struct _GtkCList GtkCList;
 
 class Shape;
 class Robot;
@@ -211,13 +202,14 @@ public:
 
   void draw_shape             ( const bool erase );
 
+  const string& get_name      () const { return name; }
   int get_row_in_score_clist  () const { return row_in_score_clist; }
   void get_score_pixmap       ( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
   void get_stat_pixmap        ( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
   void set_row_in_score_clist ( const int row ) { row_in_score_clist = row; }
   void reset_last_displayed   ();
-  void display_score          ();
+  void display_score          ( GtkCList* clist );
 
   void set_robot_angle        ( const double ang )  { robot_angle        = ang; }
   void set_energy             ( const int en )      { energy             = en;  }
@@ -226,6 +218,7 @@ public:
   void set_score              ( const long int sc ) { score              = sc;  }
 
 private:
+  string name;
 
   int row_in_score_clist;
 
@@ -243,6 +236,8 @@ private:
   int last_displayed_place;
   int last_displayed_last_place;
   long int last_displayed_score;
+
+  list<stat_t> statistics;
 
   pixmap_t score_pixmap;
   pixmap_t stat_pixmap;
