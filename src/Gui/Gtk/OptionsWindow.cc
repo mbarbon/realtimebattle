@@ -22,8 +22,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "OptionsWindow.h"
 #include "IntlDefs.h"
-#include "Arena.h"
-#include "ArenaController.h"
 #include "ArenaWindow.h"
 #include "ControlWindow.h"
 #include "MessageWindow.h"
@@ -34,8 +32,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "String.h"
 
-extern class Gui* gui_p;
-extern class ControlWindow* controlwindow_p;
 
 OptionsWindow::OptionsWindow( const int default_width,
                               const int default_height,
@@ -553,7 +549,7 @@ OptionsWindow::grab_windows( GtkWidget* widget,
 //      }
 //    {
 //      int xpos, ypos;
-//      gdk_window_get_root_origin( controlwindow_p->get_window_p()->window,
+//      gdk_window_get_root_origin( the_controlwindow.get_window_p()->window,
 //                                  &xpos, &ypos );
 
 //      long_opts[OPTION_CONTROL_WINDOW_POS_X].value = xpos;

@@ -29,8 +29,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiVarious.h"
 #include "String.h"
 
-extern class Gui* gui_p;
-extern class ControlWindow* controlwindow_p;
 
 MessageWindow::MessageWindow( const int default_width,
                               const int default_height,
@@ -172,7 +170,7 @@ MessageWindow::MessageWindow( const int default_width,
   robot_message_row_style->fg[GTK_STATE_SELECTED] = *( the_gui.get_fg_gdk_colour_p() );
 #endif
 
-  if( window_shown = ( controlwindow_p->is_messagewindow_checked() ) )
+  if( window_shown = ( the_controlwindow.is_messagewindow_checked() ) )
     gtk_widget_show_now( window_p );
 }
 
@@ -275,9 +273,9 @@ MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
     {
       gtk_widget_hide( messagewindow_p->get_window_p() );
       messagewindow_p->set_window_shown( false );
-      if( controlwindow_p->is_messagewindow_checked() )
+      if( the_controlwindow.is_messagewindow_checked() )
         {
-          GtkWidget* menu_item = controlwindow_p->get_show_message_menu_item();
+          GtkWidget* menu_item = the_controlwindow.get_show_message_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #else
