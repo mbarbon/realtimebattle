@@ -4,8 +4,8 @@ CXX = g++
 endif
 
 
-targets:=$(shell ls -d1 --color=never */ | grep -v CVS | sed -e "s/\//.robot/")
-clean_targets:=$(shell ls -d1 --color=never */ | grep -v CVS | sed -e "s/\//.clean/")
+targets:=$(shell ls -dF1 --color=never */ | grep -v CVS | sed -e "s/[/][/]*/.robot/")
+clean_targets:=$(shell ls -dF1 --color=never */ | grep -v CVS | sed -e "s/[/][/]*/.clean/")
 
 # if the above doesn't work, uncomment the lines below (and comment the lines above).
 #
