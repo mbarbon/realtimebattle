@@ -24,8 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "Gadgets/ArenaGadget.h"
-#include "Event.h"
-#include "Various.h"
+//#include "Event.h"
+//#include "Various.h"
 
 class Robot;
 class ArenaGadget;
@@ -39,8 +39,8 @@ public:
 
   //  friend class Tournament;
 
-  void start_new_match();
-  void end_match();
+  void start_new_match() {}
+  void end_match() {}
 
 
 private:
@@ -104,43 +104,5 @@ private:
   bool load_succeeded;
 
 };
-/*
-class PrepareForNewMatchEvent : public Event
-{
-public:
-  PrepareForNewMatchEvent( const double time, Tournament* t) 
-    : Event(time), my_tournament(t) {}
-
-  void eval() const { my_tournament->prepare_for_new_match(); }
-
-protected:
-  Tournament* my_tournament;
-};
-
-
-class StartNewMatchEvent : public Event
-{
-public:
-  StartNewMatchEvent( const double time, Match* m) 
-    : Event(time), my_match(m) {}
-
-  void eval() const { my_match->start_new_match(); }
-
-protected:
-  Match* my_match;
-};
-
-class EndMatchEvent : public Event
-{
-public:
-  EndMatchEvent( const double time, Match* m) 
-    : Event(time), my_match(m) {}
-
-  void eval() const { my_match->end_match(); }
-
-protected:
-  Match* my_match;
-};
-*/
 
 #endif __TOURNAMENT__

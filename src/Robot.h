@@ -32,10 +32,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Rotation.h"
 #include "RollingObject.h"
-#include "Process.h"
+#include "Structs.h"
 
 class Vector2D;
-
+class Process;
+class RobotBodyGadget;
 
 class Robot : public RollingObject
 {
@@ -96,6 +97,8 @@ private:
                                const enum state_t state2 = NO_STATE);
 
   class Process* process;
+
+  class RobotBodyGadget* body;
 
   int  send_rotation_reached;
 

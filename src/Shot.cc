@@ -25,8 +25,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "ArenaController.h"
 #include "Arena.h"
-//#include "ArenaWindow.h"
-#include "Extras.h"
 #include "Various.h"
 #include "OptionHandler.h"
 

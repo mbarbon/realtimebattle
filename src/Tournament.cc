@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gadgets/ArenaGadget.h"
 #include "Structs.h"
 #include "String.h"
+#include "Various.h"
 
 Tournament::Tournament(const int rounds_p_match,
                        const int robots_p_match,

@@ -20,7 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __OPTION__
 #define __OPTION__
 
-#include "Various.h"
+//#include "Various.h"
 #include <string>
 
 enum option_value_t
