@@ -6,7 +6,16 @@
 #define GDK_VARV 23040     // 64 * 360 degrees
 
 void
-delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
+statistics_button_callback(GtkWidget *widget, gpointer guip)
+{
+  if(((Gui *)guip)->get_statistics_up() == false)
+    ((Gui *)guip)->setup_statistics_window();
+  else
+    ((Gui *)guip)->close_statistics_window();
+}
+
+void
+delete_event(GtkWidget *widget, gpointer guip)
 {
   ((Gui *)guip)->quit_event();
 }
@@ -14,6 +23,7 @@ delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
 Gui::Gui(Arena * arenap)
 {
   the_arena = arenap;
+  statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
 }
@@ -169,7 +179,8 @@ Gui::draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled 
 void
 Gui::quit_event()
 {
-  the_arena->quit_ordered();
+  delete the_arena;
+  gtk_main_quit();
 }
 
 void
@@ -182,9 +193,9 @@ Gui::setup_control_window()
   // Window 
 
   control_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control Window");
+  gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control");
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
-                      GTK_SIGNAL_FUNC (delete_event), this);
+                      GTK_SIGNAL_FUNC (delete_event), (gpointer) this);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
 
   vbox = gtk_vbox_new (FALSE, 10);
@@ -223,8 +234,8 @@ Gui::setup_control_window()
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Statistics");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (callback), (gpointer) "Statistics");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this );
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 5, 10, 1, 2);
   gtk_widget_show (button);
 
@@ -249,7 +260,7 @@ Gui::setup_control_window()
 
   button = gtk_button_new_with_label ("Quit");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (delete_event), this);
+                      GTK_SIGNAL_FUNC (delete_event), (gpointer) this);
   gtk_table_attach_defaults (GTK_TABLE(bottomtable), button, 1, 3, 0, 1);
   gtk_widget_show (button);
   gtk_widget_show (bottomtable);
@@ -261,11 +272,12 @@ void
 Gui::setup_score_window()
 {
   int robot_number=0;
-  GtkWidget * rltable, * rhtable;
-  GtkWidget * hbox, * scr_vbox, * robothbox;
+  GtkWidget * name_table, * energy_table, * place_table, * last_table, * score_table;
+  GtkWidget * scr_vbox, * robothbox;
   GtkWidget * label;
   GtkWidget * widget_energy;
   GtkWidget * widget_place;
+  GtkWidget * widget_last;
   GtkWidget * widget_score;
 
   GList** object_lists;
@@ -279,7 +291,7 @@ Gui::setup_score_window()
   // Window 
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (score_window), "RealTimeBattle Score Window");
+  gtk_window_set_title (GTK_WINDOW (score_window), "RealTimeBattle Score");
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
@@ -297,11 +309,42 @@ Gui::setup_score_window()
   gtk_container_add (GTK_CONTAINER (scr_vbox), robothbox);
   gtk_widget_show (robothbox);  
 
-  rltable = gtk_table_new (robot_number, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), rltable, FALSE, FALSE, 0);
+  name_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (robothbox), name_table, FALSE, FALSE, 0);
 
-  rhtable = gtk_table_new (robot_number, 1, TRUE);
-  gtk_box_pack_start (GTK_BOX (robothbox), rhtable, FALSE, FALSE, 0);
+  energy_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (robothbox), energy_table, FALSE, FALSE, 0);
+
+  place_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (robothbox), place_table, FALSE, FALSE, 0);
+
+  last_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (robothbox), last_table, FALSE, FALSE, 0);
+
+  score_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (robothbox), score_table, FALSE, FALSE, 0);
+
+  // Labels
+
+  label = gtk_label_new( "Name" );
+  gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new ("Energy");
+  gtk_table_attach_defaults (GTK_TABLE(energy_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new ("Place");
+  gtk_table_attach_defaults (GTK_TABLE(place_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new ("Last");
+  gtk_table_attach_defaults (GTK_TABLE(last_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new ("Score");
+  gtk_table_attach_defaults (GTK_TABLE(score_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
 
   // Robots 
 
@@ -313,59 +356,66 @@ Gui::setup_score_window()
 
       robotp = (Robot*)(gl->data);
 
-      hbox = gtk_hbox_new (FALSE, 10);
-      gtk_table_attach_defaults (GTK_TABLE(rhtable), hbox, 0, 1, i, i + 1);
-      gtk_widget_show (hbox);
-
-      // Robot Buttons 
+      // Name Label
 
       label = gtk_label_new (robotp->get_robotname() );
-      gtk_table_attach_defaults (GTK_TABLE(rltable), label, 0, 1, i, i + 1);
+      gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, i + 1, i + 2);
       gtk_widget_show (label);
 
-      label = gtk_label_new ("Energy");
-      gtk_container_add (GTK_CONTAINER (hbox), label);
-      gtk_widget_show (label);
+      // Energy widget
 
       widget_energy = gtk_entry_new_with_max_length(3);
-      ss << robotp->get_energy();
+      ss << (int)(robotp->get_energy());
       ss >> str;
       gtk_entry_set_text (GTK_ENTRY (widget_energy), str );
       gtk_entry_set_editable(GTK_ENTRY(widget_energy),FALSE);
       gtk_widget_set_usize(widget_energy, 30,25);
-      gtk_container_add (GTK_CONTAINER (hbox), widget_energy);
+      gtk_table_attach_defaults (GTK_TABLE(energy_table), widget_energy, 0, 1, i + 1, i + 2);
       gtk_widget_show (widget_energy);
 
-      label = gtk_label_new ("Place");
-      gtk_container_add (GTK_CONTAINER (hbox), label);
-      gtk_widget_show (label);
+      // Place widget
 
       widget_place = gtk_entry_new_with_max_length(2);
       gtk_entry_set_text (GTK_ENTRY (widget_place), "");
       gtk_entry_set_editable(GTK_ENTRY(widget_place),FALSE);
       gtk_widget_set_usize(widget_place, 24,25);
-      gtk_container_add (GTK_CONTAINER (hbox), widget_place);
+      gtk_table_attach_defaults (GTK_TABLE(place_table), widget_place, 0, 1, i + 1, i + 2);
       gtk_widget_show (widget_place);
 
-      label = gtk_label_new ("Score");
-      gtk_container_add (GTK_CONTAINER (hbox), label);
-      gtk_widget_show (label);
+      // Prev Place widget
+
+      widget_last = gtk_entry_new_with_max_length(2);
+      gtk_entry_set_text (GTK_ENTRY (widget_last), "");
+      gtk_entry_set_editable(GTK_ENTRY(widget_last),FALSE);
+      gtk_widget_set_usize(widget_last, 24,25);
+      gtk_table_attach_defaults (GTK_TABLE(last_table), widget_last, 0, 1, i + 1, i + 2);
+      gtk_widget_show (widget_last);
+
+      // Score widget
 
       widget_score = gtk_entry_new_with_max_length(4);
       gtk_entry_set_text (GTK_ENTRY (widget_score), "");
       gtk_entry_set_editable(GTK_ENTRY(widget_score),FALSE);
       gtk_widget_set_usize(widget_score, 36,25);
-      gtk_container_add (GTK_CONTAINER (hbox), widget_score);
+      gtk_table_attach_defaults (GTK_TABLE(score_table), widget_score, 0, 1, i + 1, i + 2);
       gtk_widget_show (widget_score);
 
-      robotp->set_gtk_widgets( widget_energy, widget_place, widget_score );
+      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
       i++;
     }
 
-  gtk_table_set_row_spacings (GTK_TABLE(rhtable), 5);
-  gtk_table_set_row_spacings (GTK_TABLE(rltable), 5);
-  gtk_widget_show (rhtable);
-  gtk_widget_show (rltable);
+  // Set spacings and show tables
+
+  gtk_table_set_row_spacings (GTK_TABLE(name_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(energy_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(place_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(last_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(score_table), 5);
+  gtk_widget_show (name_table);
+  gtk_widget_show (energy_table);
+  gtk_widget_show (place_table);
+  gtk_widget_show (last_table);
+  gtk_widget_show (score_table);
 
   gtk_widget_show (score_window);
 }
@@ -380,7 +430,7 @@ Gui::setup_message_window()
   // Window 
 
   message_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (message_window), "RealTimeBattle Message Window");
+  gtk_window_set_title (GTK_WINDOW (message_window), "RealTimeBattle Messages");
   gtk_signal_connect (GTK_OBJECT (message_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(message_window));
   gtk_container_border_width (GTK_CONTAINER (message_window), 12);
@@ -406,7 +456,7 @@ Gui::setup_message_window()
   gtk_table_attach (GTK_TABLE (messagetable), message_output, 0, 1, 0, 1,
                     GTK_EXPAND | GTK_SHRINK | GTK_FILL,
                     GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
-  gtk_widget_set_usize(message_output, 250,100);
+  gtk_widget_set_usize(message_output, 250,90);
   gtk_widget_show(message_output);
 
   // Message VScrollBar 
@@ -431,7 +481,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   // Window 
 
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena Window");
+  gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena");
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
@@ -470,6 +520,19 @@ Gui::setup_arena_window( Vector2D bound[] )
 }
 
 void
+Gui::setup_statistics_window()
+{
+  statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
+  gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
+  gtk_container_border_width (GTK_CONTAINER (statistics_window), 12);  
+
+  gtk_widget_show(statistics_window);
+  statistics_up = true;
+}
+
+void
 Gui::close_control_window()
 {
   gtk_widget_destroy ( control_window );
@@ -491,4 +554,11 @@ void
 Gui::close_arena_window()
 {
   gtk_widget_destroy ( arena_window );
+}
+
+void
+Gui::close_statistics_window()
+{
+  statistics_up = false;
+  gtk_widget_destroy ( statistics_window );
 }

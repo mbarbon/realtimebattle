@@ -10,7 +10,8 @@
 
 #define ZOOMFACTOR 20
 
-void delete_event( GtkWidget * widget, GdkEvent * event, gpointer data );
+void statistics_button_callback(GtkWidget *widget, gpointer guip);
+void delete_event( GtkWidget * widget, gpointer guip );
 
 class Gui
 {
@@ -22,11 +23,14 @@ public:
   void setup_score_window();
   void setup_message_window();
   void setup_arena_window( Vector2D bound[] );
+  void setup_statistics_window();
 
   void close_control_window();
   void close_score_window();
   void close_message_window();
   void close_arena_window();
+  void close_statistics_window();
+
   void quit_event();
 
   void print_to_message_output( char * from_robot, char * text, GdkColor colour);
@@ -41,9 +45,12 @@ public:
   void draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled );
 
   GdkColor get_background_color() { return background_colour; }
+  bool get_statistics_up() { return statistics_up; }
 
 private:
   void clear_area();
+
+  bool statistics_up;
 
   GtkWidget * message_output;
   GtkWidget * drawing_area;
@@ -53,6 +60,7 @@ private:
   GtkWidget * score_window;
   GtkWidget * message_window;
   GtkWidget * arena_window;
+  GtkWidget * statistics_window;
 
   GdkColormap * colormap;
   GdkColor background_colour;
