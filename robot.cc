@@ -10,17 +10,9 @@
 #include "messagetypes.h"
 //#include "pipesetup.h"
 
-#define ROBOT_CODE_LENGTH 11
-
-#define ROBOT_FF_TO_ADD   ".to"
-#define ROBOT_FF_FROM_ADD ".from"
-
 #define MESSAGE_MAX_BUFFER_LENGTH 400
 
-#define DONOT_WAIT_FOR_MESSAGE 0
-#define WAIT_FOR_MESSAGE 1
-
-Robot::Robot(const char * rfn)
+RobotOld::RobotOld(const char * rfn)
 {
   char * temp,* robotdir;
   char temp2[401];
@@ -97,14 +89,14 @@ Robot::Robot(const char * rfn)
   delete[] temp;
 }
 
-Robot::~Robot()
+RobotOld::~RobotOld()
 {
   delete[] robotname;
   delete[] robotfilename;
   delete[] robotfilename_without_path;
 }
 
-char * Robot::int_to_str( char * strnumber, int number )
+char * RobotOld::int_to_str( char * strnumber, int number )
 {
   char tempstrnumber[20];
   int remainder,tempnumber=number;
@@ -121,7 +113,7 @@ char * Robot::int_to_str( char * strnumber, int number )
   return(strnumber);
 }
 
-char * Robot::get_robotname( char * name )
+char * RobotOld::get_robotname( char * name )
 {
   strcpy( name,robotname );
   return( name );
@@ -129,7 +121,7 @@ char * Robot::get_robotname( char * name )
 
 // Message functions
 
-char * Robot::get_message( char * readbuffer )
+char * RobotOld::get_message( char * readbuffer )
 {
   int len_read;
   len_read = read(pipe_from[0],readbuffer,MESSAGE_MAX_BUFFER_LENGTH - 1);
@@ -137,7 +129,7 @@ char * Robot::get_message( char * readbuffer )
   return(readbuffer);
 }
 
-void Robot::send_message( const char * message )
+void RobotOld::send_message( const char * message )
 {
   write(pipe_to[1],message,strlen(message));
 }

@@ -7,11 +7,11 @@
 #define FIFO_TO_ROBOT_FILE_ADD   ".to"
 #define FIFO_FROM_ROBOT_FILE_ADD ".from"
 
-class Robot
+class RobotOld
 {
 public:
-  Robot(const char *);
-  ~Robot();
+  RobotOld(const char *);
+  ~RobotOld();
   char * get_message( char * readbuffer );
   void send_message( const char * message );
   char * int_to_str( char * strnumber, int number );
