@@ -65,12 +65,21 @@ ArenaController::ArenaController()
 ArenaController::~ArenaController()
 {
   if( started ) close_arena();
+
+  list<GuiInterface>::iterator li;
+  for( li = gui_list.begin(); li != gui_list.end(); li++ )
+    (*li).shutdown();
 }
 
 int
 ArenaController::init( int argc, char** argv )
 {
   parse_command_line( argc, argv );
+
+  // Startup all guis
+  list<GuiInterface>::iterator li;
+  for( li = gui_list.begin(); li != gui_list.end(); li++ )
+    (*li).startup();
 
   if( tournament_filename != "" )
     start_realtime_arena();
@@ -327,4 +336,12 @@ ArenaController::print_help_message()
   cout << _("    --help,                      -h   prints this message") << endl;
   cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
+
+  list<GuiInterface>::const_iterator li;
+  for( li = gui_list.begin(); li != gui_list.end(); li++ )
+    {
+      cout << endl;
+      cout << _(" Options for gui ") << (*li).Name() << ":" << endl;
+      cout << (*li).UsageMessage() << endl;
+    }
 }
