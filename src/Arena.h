@@ -99,7 +99,10 @@ public:
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
   enum game_mode_t get_game_mode() { return game_mode; }
-  void set_game_mode( const enum game_mode_t gm) { game_mode = gm; } 
+  void set_game_mode( const enum game_mode_t gm);
+  int set_debug_level( const int new_level);
+  int get_debug_level() { return debug_level; }
+  int get_max_debug_level() { return max_debug_level; }
   void paus_game_toggle();
   void step_paused_game();
   bool is_game_halted();
@@ -172,6 +175,9 @@ private:
   game_mode_t game_mode;
   
   bool use_proc;
+
+  int debug_level;
+  int max_debug_level;
 
   bool halted;
   bool halt_next;

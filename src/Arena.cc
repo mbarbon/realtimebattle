@@ -54,6 +54,9 @@ Arena::Arena()
 
   for(int i=ROBOT; i<=EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
+
+  max_debug_level = 5;
+  debug_level = 0;
 }
 
 Arena::~Arena()
@@ -736,6 +739,35 @@ Arena::find_free_colour(const long home_colour, const long away_colour, const Ro
         }                  
     }
    throw Error("Impossible to find colour", "Arena::find_free_colour");
+}
+
+void 
+Arena::set_game_mode( const enum game_mode_t gm)
+{
+  game_mode = gm; 
+  if( game_mode == DEBUG_MODE )
+    {
+      if( debug_level == 0 ) debug_level = 1;
+    }
+  else
+    {
+      debug_level = 0;
+    }
+}
+
+int
+Arena::set_debug_level( const int new_level)
+{
+  if( new_level > max_debug_level || new_level < 0 || new_level == debug_level ) return debug_level;
+  
+  debug_level = new_level;
+
+  if( GAME_IN_PROGRESS )
+    {
+      broadcast(GAME_OPTION, DEBUG_LEVEL, debug_level);
+    }
+
+  return debug_level;
 }
 
 void

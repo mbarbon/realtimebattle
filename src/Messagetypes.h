@@ -103,7 +103,9 @@ enum game_option_type
   SHOT_MAX_ENERGY,
   SHOT_ENERGY_INCREASE_SPEED,
 
-  TIMEOUT
+  TIMEOUT,
+
+  DEBUG_LEVEL
 };
 
 enum robot_option_type
