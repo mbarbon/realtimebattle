@@ -1623,10 +1623,12 @@ Robot::display_score()
 
   if( last_displayed_place != position_this_game )
     {
+      String str;
+      if( position_this_game != 0 ) str = String(position_this_game);
       last_displayed_place = position_this_game;
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist,
-                         3, String(position_this_game).non_const_chars());
+                         3, str.non_const_chars());
     }
 
   p = get_last_position();
