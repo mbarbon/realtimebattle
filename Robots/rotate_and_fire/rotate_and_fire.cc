@@ -395,7 +395,7 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 
   double mod_angle = fmod( angle, 2 * pi );
 
-  if( mod_angle > 2 * pi / 3 && mod_angle < 4 * pi / 3 )
+  if( mod_angle < 1 * pi / 3 || mod_angle > 5 * pi / 3 )
     {
       if( dist < 1.0 )
         {
@@ -418,6 +418,8 @@ RotateAndFire::radar_wall( const double dist, const double angle )
           cout << "Debug Acceleration: " << acceleration << endl;
           cout << "Debug Brake: " << brake_value << endl;
         }
+      if( debug_level == 5 )
+        cout << "Debug mod_angle, angle: " << mod_angle << ", " << angle << endl;
     }
 }
 
