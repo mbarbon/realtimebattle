@@ -141,7 +141,7 @@ OptionsWindow::OptionsWindow( const int default_width,
 
             add_option_to_notebook( description_table,
                                     entry_table, button_table,
-                                    row, double_opts[opt].label,
+                                    row, double_opts[opt].translated_label,
                                     double_opts[opt].entry,
                                     String( double_opts[opt].value ),
                                     info, buttons );
@@ -178,7 +178,7 @@ OptionsWindow::OptionsWindow( const int default_width,
 
             add_option_to_notebook( description_table,
                                     entry_table, button_table,
-                                    row, long_opts[opt].label,
+                                    row, long_opts[opt].translated_label,
                                     long_opts[opt].entry,
                                     entry_text, info, buttons );
 
