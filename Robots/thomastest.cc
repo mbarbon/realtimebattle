@@ -52,8 +52,13 @@ check_messages(int sig)
       switch(msg_t)
         {
         case INITIALIZE:
-          cout << "Name Thomas" << endl;
-          cout << "Colour dede11 de5500" << endl;
+          int init;
+          cin >> init ;
+          if (init == 1)
+            {
+              cout << "Name Thomas" << endl;
+              cout << "Colour dede11 de5500" << endl;
+            }
           break;
         case GAME_STARTS:
           //          cout << "Rotate 1 " << robot_rotate << endl;
