@@ -91,7 +91,7 @@ ArenaReplay::timeout_function()
         parse_this_interval();
 
 #ifndef NO_GRAPHICS
-        if((int)current_replay_time > old_total && !no_graphics)
+        if((int)current_replay_time - old_total != 0 && !no_graphics)
           {
             the_gui.get_scorewindow_p()->set_window_title();
             if( !log_from_stdin )
@@ -976,7 +976,8 @@ ArenaReplay::get_time_positions_in_game()
             log_file >> shot_id >> x >> y >> dx >> dy;
             object_positions_in_log.insert_last
               ( new object_pos_info_t( SHOT, shot_id, Vector2D( x,y ),
-                                       cur_time, cur_time, Vector2D( dx,dy ) ) );
+                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ),
+                                       Vector2D( dx,dy ) ) );
           }
           break;
 
@@ -987,7 +988,7 @@ ArenaReplay::get_time_positions_in_game()
             log_file >> mine_id >> x >> y;
             object_positions_in_log.insert_last
               ( new object_pos_info_t( MINE, mine_id, Vector2D( x,y ),
-                                       cur_time, cur_time ) );
+                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
           }
           break;
         case 'C':
@@ -998,7 +999,7 @@ ArenaReplay::get_time_positions_in_game()
             
             object_positions_in_log.insert_last
               ( new object_pos_info_t( COOKIE, cookie_id, Vector2D( x,y ),
-                                       cur_time, cur_time ) );
+                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
           }
           break;
 
