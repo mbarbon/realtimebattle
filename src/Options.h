@@ -156,6 +156,7 @@ struct option_info_t
   GtkWidget * entry;
 };
 
+#ifndef NO_GRAPHICS
 void options_window_requested(GtkWidget* widget, gpointer data);
 void apply_options_requested(GtkWidget* widget, gpointer data);
 void ok_options_requested(GtkWidget* widget, gpointer data);
@@ -175,6 +176,8 @@ void long_options_max_callback( GtkWidget * widget, option_info_t<long> * option
 void long_options_def_callback( GtkWidget * widget, option_info_t<long> * option );
 void string_options_def_callback( GtkWidget * widget, option_info_t<String> * option );
 
+#endif
+
 class Options
 {
 public:
@@ -188,11 +191,15 @@ public:
   //  inline bool get_b( option_bool_t option ) { return all_bool_options[option].value; }
 
   void broadcast_opts();
+
+#ifndef NO_GRAPHICS
+  void set_all_options_from_gui();
   void setup_options_window();
   void close_options_window();
   void update_all_gtk_entries();
   void revert_all_options_to_default();
-  void set_all_options_from_gui();
+#endif
+
   void save_all_options_to_file(String filename, const bool as_default);
   void get_options_from_rtbrc();
   void read_options_file(String file_string, const bool as_default);

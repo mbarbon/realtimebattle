@@ -22,15 +22,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Gui.h"
 #include "Options.h"
-//#include "Arena.h"
 
-// void
-// Options::set_options()
-// {
-// }
 
 extern class Arena the_arena;
+#ifndef NO_GRAPHICS
 extern class Gui the_gui;
+#endif
 
 Options::Options()
 {
@@ -193,10 +190,10 @@ Options::Options()
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena window height", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 294, 50, 10000, 6, "Initial Message window width", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Message window width", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 110, 25, 10000, 6, "Initial Message window height", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 25, 10000, 6, "Initial Message window height", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Score window width", NULL);
@@ -236,6 +233,8 @@ Options::broadcast_opts()
 
   the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, the_arena.get_debug_level());  
 }
+
+#ifndef NO_GRAPHICS
 
 void
 Options::set_all_options_from_gui()
@@ -283,6 +282,8 @@ Options::set_all_options_from_gui()
       the_arena.set_colours();
     }
 }
+
+#endif NO_GRAPHICS
 
 void
 Options::get_options_from_rtbrc()
@@ -378,8 +379,7 @@ Options::save_all_options_to_file(String filename, const bool as_default)
       filename = String(home_dir) + "/.rtbrc";
     }
 
-  int mode = _IO_OUTPUT;
-  ofstream file(filename.chars(), mode);
+  ofstream file(filename.chars(), ios::out);
 
   if( !file )
     {
@@ -387,7 +387,10 @@ Options::save_all_options_to_file(String filename, const bool as_default)
       return;
     }
 
-  set_all_options_from_gui();
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    set_all_options_from_gui();
+#endif
 
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
     file << all_double_options[i].label << ": " << all_double_options[i].value << endl;
@@ -404,6 +407,20 @@ Options::save_all_options_to_file(String filename, const bool as_default)
     file << all_string_options[i].label << ": " << all_string_options[i].value << endl;
 }
 
+#ifndef NO_GRAPHICS
+
+void
+Options::revert_all_options_to_default()
+{
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    all_double_options[i].value = all_double_options[i].default_value;
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    all_long_options[i].value = all_long_options[i].default_value;
+  for(int i=0;i<LAST_STRING_OPTION;i++)
+    all_string_options[i].value = all_string_options[i].default_value;
+  update_all_gtk_entries();
+}
+
 void
 Options::update_all_gtk_entries()
 {
@@ -418,18 +435,6 @@ Options::update_all_gtk_entries()
     }
   for(int i=0;i<LAST_STRING_OPTION;i++)
     gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
-}
-
-void
-Options::revert_all_options_to_default()
-{
-  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-    all_double_options[i].value = all_double_options[i].default_value;
-  for(int i=0;i<LAST_LONG_OPTION;i++)
-    all_long_options[i].value = all_long_options[i].default_value;
-  for(int i=0;i<LAST_STRING_OPTION;i++)
-    all_string_options[i].value = all_string_options[i].default_value;
-  update_all_gtk_entries();
 }
 
 void
@@ -833,3 +838,6 @@ string_options_def_callback( GtkWidget * widget, option_info_t<String> * option 
 {
   gtk_entry_set_text( GTK_ENTRY( option->entry ), option->default_value.chars() );
 }
+
+
+#endif NO_GRAPHICS

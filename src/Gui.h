@@ -27,6 +27,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include "Arena.h"
 #include "String.h"
 
+struct start_tournament_glist_info_t
+{
+  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
+    row(r), selected(s), filename(fn), directory(dir) {}
+  int row;
+  bool selected;
+  String filename;
+  String directory;
+};
+
+#ifndef NO_GRAPHICS
+
 typedef void (*QuestionFunction)(bool);
 
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
@@ -60,16 +72,6 @@ enum start_tournament_button_t
   START_TORUNAMENT_ADD = 3,
   START_TORUNAMENT_SELECT_ALL_DIRECTORY = 4,
   START_TORUNAMENT_UNSELECT_ALL_DIRECTORY = 5
-};
-
-struct start_tournament_glist_info_t
-{
-  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
-    row(r), selected(s), filename(fn), directory(dir) {}
-  int row;
-  bool selected;
-  String filename;
-  String directory;
 };
 
 void question_yes_callback                            ( GtkWidget* widget, QuestionFunction function_name );
@@ -256,4 +258,6 @@ private:
   int stat_looking_at_nr;
 };
 
-#endif
+#endif NO_GRAPHICS
+
+#endif __GUI__

@@ -26,7 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Shape::Shape()
 {
-  colour = make_gdk_colour( the_opts.get_l(OPTION_FOREGROUND_COLOUR) ); 
+  colour = make_gdk_colour( the_opts.get_l(OPTION_FOREGROUND_COLOUR) );
 }
 
 Shape::Shape(long col)
@@ -112,6 +112,7 @@ Line::within_distance(const Vector2D& pos, const double size)
           (-dot(y,direction) >= 0 && -dot(y,direction) <= length));
 }
 
+#ifndef NO_GRAPHICS
 void
 Line::draw_shape(bool erase)
 {
@@ -124,6 +125,8 @@ Line::draw_shape(bool erase)
   last_drawn_thickness = thickness;
   the_gui.draw_line(start_point,direction,length,thickness,colour);
 }
+
+#endif
 
 Circle::Circle()
 {
@@ -171,6 +174,8 @@ Circle::get_normal(const Vector2D& pos)
   return unit(pos - center);
 }
 
+#ifndef NO_GRAPHICS
+
 void
 Circle::draw_shape(bool erase)
 {
@@ -181,6 +186,8 @@ Circle::draw_shape(bool erase)
   last_drawn_radius = radius;
   the_gui.draw_circle(center,radius,colour,true);
 }
+
+#endif
 
 InnerCircle::InnerCircle()
 {
@@ -227,6 +234,8 @@ InnerCircle::get_normal(const Vector2D& pos)
   return unit(center - pos);
 }
 
+#ifndef NO_GRAPHICS
+
 void
 InnerCircle::draw_shape(bool erase)
 {
@@ -240,3 +249,5 @@ InnerCircle::draw_shape(bool erase)
                          colour, true);
   the_gui.draw_circle(center,radius,*(the_arena.get_background_colour_p()),true);
 }
+
+#endif

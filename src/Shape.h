@@ -39,8 +39,10 @@ public:
                               const double size) = 0;
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
+
+#ifndef NO_GRAPHICS
   virtual void draw_shape(bool erase) = 0;
-  //virtual void get_args(istream&) = 0;
+#endif
 
   GdkColor get_colour() { return colour; }
 
@@ -63,7 +65,10 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
+
+#ifndef NO_GRAPHICS
   void draw_shape(bool erase);
+#endif
 
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
@@ -95,7 +100,10 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
+
+#ifndef NO_GRAPHICS
   void draw_shape(bool erase);
+#endif
   
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -123,8 +131,11 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
+
+#ifndef NO_GRAPHICS
   void draw_shape(bool erase);
-  
+#endif
+
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
   //void add_to_center(const Vector2D& diff) { center += diff; }

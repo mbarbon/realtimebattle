@@ -59,6 +59,24 @@ binomial(const int n, const int k)
     return INT_MAX;
 }
 
+void 
+reorder_pointer_array(void** array, int size)
+{
+  int n1, n2;
+  void* temp_p;
+  for(int i=0; i<size*5; i++)
+    {
+      n1 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
+      n2 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
+      if( n1 != n2 )
+        {
+          temp_p = array[n1];
+          array[n1] = array[n2];
+          array[n2] = temp_p;
+        }
+    }
+}
+
 GdkColor
 make_gdk_colour(const long col)
 {
@@ -82,23 +100,8 @@ gdk2hex_colour(const GdkColor& col)
             ((col.green & 0xff) << 8) |
             ((col.red & 0xff) << 16) );
 }
-void 
-reorder_pointer_array(void** array, int size)
-{
-  int n1, n2;
-  void* temp_p;
-  for(int i=0; i<size*5; i++)
-    {
-      n1 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
-      n2 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
-      if( n1 != n2 )
-        {
-          temp_p = array[n1];
-          array[n1] = array[n2];
-          array[n2] = temp_p;
-        }
-    }
-}
+
+#ifndef NO_GRAPHICS
 
 void
 entry_handler( GtkWidget * entry, entry_t * entry_info )
@@ -321,3 +324,5 @@ string_case_insensitive_compare(GtkCList *clist, gconstpointer ptr1, gconstpoint
   return strcasecmp (text1, text2);
 }
 #endif
+
+#endif NO_GRAPHICS

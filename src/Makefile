@@ -15,6 +15,10 @@ ifdef DEBUG
 OPTIMIZEFLAGS = -g -Wall
 endif
 
+ifdef NO_GRAPHICS
+CXXFLAGS += -DNO_GRAPHICS
+endif
+
 CPPFLAGS = $(gtkincludedirs)
 
 ifndef RPM_OPT_FLAGS
@@ -28,8 +32,15 @@ endif
 gtkincludedirs = `$(gtk_dir)gtk-config --cflags`
 libs = `$(gtk_dir)gtk-config --libs`
 
-objects = Vector2D.o Gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
+objects = Vector2D.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Various.o String.o
+
+ifndef NO_GRAPHICS
+objects += Gui.o Statistics.o StartTournament.o
+endif
+
 stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
+
+
 
 target: RealTimeBattle
 
