@@ -24,7 +24,10 @@ endif
 RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O)
 RealTimeBattle_SOURCES = \
-	Arena.cc Arena.h \
+	Arena_Base.cc Arena_Base.h \
+	Arena_RealTime.cc Arena_RealTime.h \
+	Arena_Replay.h Arena_Replay.cc \
+	Arena_Controller.cc Arena_Controller.h \
 	Extras.cc Extras.h \
 	Gui.h \
 	Messagetypes.h \
@@ -39,6 +42,7 @@ RealTimeBattle_SOURCES = \
 	Robot.cc Robot.h \
 	Shot.cc Shot.h \
 	Structs.h \
+	Timer.cc Timer.h \
 	Wall.h 
 
 
