@@ -23,6 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <list>
 #include <string>
+#include <algorithm>
+#include <functional>
 
 #include "Gui.h"
 #include "ArenaWindow.h"
@@ -233,17 +235,17 @@ ArenaWindow::draw_everything()
 
       // Must begin with innercircles (they are destructive)
       for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
-        {
-          list<DrawingShape*>::iterator li = object_lists[obj_type].begin();
-          for( ; li != object_lists[obj_type].end(); li++ )
+        for_each( object_lists[obj_type].begin(), object_lists[obj_type].end(),
+                  bind2nd( mem_fun1( &DrawingShape::draw_shape ), false ) );
+//            list<DrawingShape*>::iterator li = object_lists[obj_type].begin();
+//            for( ; li != object_lists[obj_type].end(); li++ )
 //              {
 //                if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
 //                       !( (Extras*)((*li)->get_shape()))->is_alive() ) )
 //                  {
-                  (*li)->draw_shape( false );
+//                    (*li)->draw_shape( false );
 //                  }
 //              }
-        }
 
       draw_moving_objects( false );
     }
@@ -263,14 +265,22 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
           return;
         }
 
-      list<DrawingShape*>::iterator li;
-      for( li = object_lists[SHOT].begin(); li != object_lists[SHOT].end(); li++ )
-//          if( ((Shot*)((*li)->get_shape()))->is_alive() )
-          (*li)->draw_shape( clear_objects_first );
+      for_each( object_lists[SHOT].begin(), object_lists[SHOT].end(),
+                bind2nd( mem_fun1( &DrawingShape::draw_shape ),
+                         clear_objects_first ) );
 
-      for( li = object_lists[ROBOT].begin(); li != object_lists[SHOT].end(); li++ )
+      for_each( object_lists[ROBOT].begin(), object_lists[ROBOT].end(),
+                bind2nd( mem_fun1( &DrawingShape::draw_shape ),
+                         clear_objects_first ) );
+
+//        list<DrawingShape*>::iterator li;
+//        for( li = object_lists[SHOT].begin(); li != object_lists[SHOT].end(); li++ )
+//          if( ((Shot*)((*li)->get_shape()))->is_alive() )
+//            (*li)->draw_shape( clear_objects_first );
+
+//        for( li = object_lists[ROBOT].begin(); li != object_lists[SHOT].end(); li++ )
 //          if( ((Robot*)((*li)->get_shape()))->is_alive() )
-          (*li)->draw_shape( clear_objects_first );
+//            (*li)->draw_shape( clear_objects_first );
     }
 }
 
