@@ -740,7 +740,7 @@ ArenaRealTime::start_game()
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
-  string filename = arena_filenames[current_arena_nr];
+  string filename = arena_filenames[current_arena_nr - 1];
 
   print_to_logfile('G', sequence_nr, game_nr + 1);
 
@@ -877,7 +877,7 @@ ArenaRealTime::start_sequence()
   for(int i=0; i<robots_per_game; i++)
     {
       all_robots_in_sequence.
-        push_back( &all_robots_in_tournament[ robots_in_sequence[sequence_nr][i] ]);
+        push_back( &all_robots_in_tournament[ robots_in_sequence[sequence_nr][i] - 1]);
     }
 
   // execute robot processes
