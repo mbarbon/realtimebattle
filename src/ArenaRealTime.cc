@@ -245,7 +245,8 @@ ArenaRealTime::parse_tournament_file( String& fname )
 
   ifstream file(fname.chars());
   if( !file )
-    return; // Don't know yet what to do when it isn't possible to find the tournament file
+    Error( true, "Can't open specified tournament file.",
+           "ArenaRealTime::parse_tournament_file" );
 
   int games_p_s = 1;
   int robots_p_s = 2;
