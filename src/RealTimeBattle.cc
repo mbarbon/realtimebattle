@@ -154,10 +154,6 @@ main ( int argc, char* argv[] )
   //  parse_command_line(argc, argv);
 
 
-  signal(SIGCHLD, sig_handler);
-  signal(SIGPIPE, sig_handler);
-  signal(SIGFPE, sigfpe_handler);
-  
   the_eventhandler.main_loop();
 
   pthread_mutex_destroy( &the_mutex );
@@ -172,22 +168,34 @@ main( int argc, char* argv[] )
 {
   my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
 
+  cout<<"Server succesfully initialized\n";
+
+  signal(SIGCHLD, sig_handler);
+  signal(SIGPIPE, sig_handler);
+  signal(SIGFPE, sigfpe_handler);
+
   signal(SIGALRM, exit_cleanly);
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
 
-
-  Event* new_event = new CheckSocketEvent(0.0, 0.001, &my_socketserver );
+  //NOTE : This should be in my_socketserver.init function
+  Event* new_event = new CheckSocketEvent(0.1, &my_socketserver );
   the_eventhandler.insert_RT_event(new_event);
 
   //cout<<"Welcome on RealTimeBattle 2.0.0 server(in development)\n";
   //cout<<"Enjoy the game\n";
 
+
+  pthread_mutex_init( &the_mutex, NULL );
+
   the_arena_controller.init(argc, argv);
+  cout<<"Arena Controller succesfully initialized\n";
 
   the_eventhandler.main_loop();
 
+  pthread_mutex_destroy( &the_mutex );
+
   my_socketserver.close_socket();
   quit();
-  return 0;
+  return EXIT_SUCCESS;
 }

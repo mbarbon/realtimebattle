@@ -48,6 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "InformationDistributor.h"
 #include "EventRT.h"
 #include "EventHandler.h"
+#include "ServerSocket.h"
 
 extern EventHandler the_eventhandler;
 
@@ -55,7 +56,7 @@ extern EventHandler the_eventhandler;
 // ArenaController constructor
 ArenaController::ArenaController()
 {
-  //  started = false;
+  started = false;
 
   option_filename = "";
   statistics_filename = "";
@@ -71,43 +72,30 @@ ArenaController::ArenaController()
 
 ArenaController::~ArenaController()
 {
-  //  if( started ) close_arena();
+  //if( started ) close_arena();
 
-  // exit_all_guis();
+  exit_all_guis();
 
-  // delete main_opts;
+  delete main_opts;
 }
 
 void
 ArenaController::exit_all_guis()
 {
-  cout << "gui_list.size() " << gui_list.size() << endl;
-  /*
-    list<GuiServerInterface*>::iterator li;
-    for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    {
-    distributor.make_reader_quit( (*li)->get_reader_id() );
-    (*li)->shutdown();
-    delete ((GuiInterface*)*li);
-    }
-    gui_list.clear();
-  */
+  distributor.make_reader_quit( (gui_p)->get_reader_id() );
+  (gui_p)->shutdown();
+  delete ((GuiInterface*)gui_p);
 }
 
 const bool
 ArenaController::exit_gui( unsigned int gui_id )
 {
-  /*
-  list<GuiServerInterface*>::iterator li;
-  for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    if( (*li)->operator==( gui_id ) )
-      {
-        (*li)->shutdown();
-        delete *li;
-        gui_list.erase( li );
-        return true;
-      }
-  */
+  if( (gui_p)->operator==( gui_id ) )
+    {
+      (gui_p)->shutdown();
+      delete gui_p;
+      return true;
+    }
   return false;
 }
 
@@ -116,13 +104,14 @@ ArenaController::init( int argc, char** argv )
 {
   initialize_options();
 
+  cout<<"Command line parsing\n";
   parse_command_line( argc, argv );
 
   // Startup all guis 
-  //list<GuiServerInterface*>::iterator li;
-  //for( li = gui_list.begin(); li != gui_list.end(); li++ )
-  //  (*li)->startup();
+  cout<<"Starting gui\n";
+  (gui_p)->startup();
 
+  cout<<"done\n";
   // TODO: Find a good place to add initialize information to the gui.
   OptionDefinitionInfo* od_info_p =
     new OptionDefinitionInfo( main_opts->get_section_name(),
@@ -398,12 +387,17 @@ ArenaController::initialize_options()
 void
 ArenaController::create_gui( const char* gui_name, int argc, char* argv[] )
 {
-  GuiServerInterface* gui_p = ((GuiServerInterface*)
-                               new GuiInterface( gui_name, next_gui_id,
-                                                 argc, argv ));
+
+  cout << "Creating GUI "<<gui_name<<endl;
+
+  gui_p = ((GuiServerInterface*)
+	   new GuiInterface( gui_name, next_gui_id,
+			     argc, argv ));
   next_gui_id++;
+
+  cout<<"Add it to the handler\n";
   the_eventhandler.insert_RT_event( new CheckGUIEvent( 0.0, 0.1, gui_p ) );
-  gui_list.push_back( gui_p );
+  //  gui_list.push_back( gui_p );
 }
 
 void
@@ -454,7 +448,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           // If this option set a flag, do nothing else now.
           if( long_options[option_index].flag != 0 )
             break;
-          
+
           switch( option_index )
             {
             case 3:
@@ -483,6 +477,7 @@ ArenaController::parse_command_line( int argc, char** argv )
             case 12:
               create_gui( optarg, argc, argv );
               break;
+
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
                      "ArenaController.cc::parse_command_line" );
@@ -545,9 +540,9 @@ ArenaController::parse_command_line( int argc, char** argv )
           create_gui( optarg, argc, argv );
           break;
 
-        default:
-          print_help_message();
-          exit( EXIT_FAILURE );
+	  //default:
+          //print_help_message();
+          //exit( EXIT_FAILURE );
         }
     }
 
@@ -626,11 +621,9 @@ ArenaController::print_help_message()
   cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
 
-  list<GuiServerInterface*>::const_iterator li;
-  for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    {
-      cout << endl;
-      cout << " " << _("Commandline options for gui") << " '" << (*li)->Name() << "':" << endl;
-      cout << (*li)->UsageMessage() << endl;
-    }
+  //NOTE : When this function is called, no gui is loaded !!!
+  cout << endl;
+  cout << " " << _("Commandline options for gui") << " '" << (gui_p)->Name() << "':" << endl;
+  cout << (gui_p)->UsageMessage() << endl;
+  
 }

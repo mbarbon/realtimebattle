@@ -36,9 +36,12 @@ extern pthread_mutex_t the_mutex;
 
 GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
 {
+  //Try to load all the functions from the library specified by --use_gui option
   
   plain_name = name;
   library_name = "libRTBGui_" + name + ".so";
+
+  cout<<"Loading "<<library_name<<" for Gui\n";
 
   dl_handle = dlopen( library_name.c_str(), DLOPEN_POLICY );
   if( dl_handle == NULL )
@@ -50,14 +53,21 @@ GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
   func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
   func_Main = (int (*)( GuiClientInterface* ))load_symbol( "GIMain" );
   func_Main_pre = (void* (*)( void* ))load_symbol( "GIMain_pre" );
+
+  func_handle_agreement = (int (*) (Packet*))load_symbol( "GIhandle_agreement_packet" );
+
   unique_id = (unsigned int*)load_symbol( "GI_unique_id" );
 
-  if(!(*func_Init)( argc, argv ))
-    Error( true, "Couldn't initialize gui " + name,
+  char* error = dlerror();
+
+  if( error )
+    Error( true, "Couldn't initialize gui " + name + " (" + error + ")",
              "GuiInterface::GuiInterface" );
 
-  information_reader_id = the_arena_controller.get_distributor()->add_reader();
+  func_Init(argc, argv);
   
+  information_reader_id = the_arena_controller.get_distributor()->add_reader();
+  cout<<"Gui loaded\n";
 }
 
 // Loads a symbol into memory.
@@ -70,7 +80,8 @@ GuiInterface::load_symbol( const string& symname )
   symbol = dlsym( dl_handle, symname.c_str() );
   if( (error = dlerror()) != NULL )
     {
-      symbol = dlsym( dl_handle, ("_" + symname).c_str() );
+      //symbol = dlsym( dl_handle, ("_"+ symname).c_str() );
+      symbol = dlsym( dl_handle, symname.c_str() );
       if( (error = dlerror()) != NULL )
           Error( true, "Failed to find " + symname + " for gui " + plain_name +
                  ": " + string(error), "GuiInterface::load_symbol" );
@@ -80,14 +91,14 @@ GuiInterface::load_symbol( const string& symname )
 
 GuiInterface::~GuiInterface()
 {
-  //dlclose( dl_handle );
+  dlclose( dl_handle );
   //TODO: thread should be joined or whatever is appropriate
 }
 
 void
 GuiInterface::startup()
 {
-  //pthread_create(&thread, NULL, func_Main_pre, (void*)this);
+  pthread_create(&thread, NULL, func_Main_pre, (void*)this);
 }
 
 void
@@ -127,3 +138,9 @@ GuiInterface::process_all_requests()
     }
 }
 
+int 
+GuiInterface::handle_agreement_packet          ( TournamentCommitChangePacket* p )
+{ 
+  //TODO : Check if I get an acknoledgement from all the other servers on the network
+  return ((*func_handle_agreement)( p )); 
+}

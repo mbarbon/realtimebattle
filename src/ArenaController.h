@@ -53,8 +53,11 @@ public:
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
 
-  //  bool is_started() { return started; }
+  bool is_started() { return started; }
   bool is_realtime() { return realtime; }
+
+  GuiServerInterface* the_gui() 
+    { return gui_p; }
 
 private:
   
@@ -63,12 +66,14 @@ private:
 
   void create_gui( const char*, int, char** );
 
-  //  bool started;
+  bool started;
   bool realtime;
 
-  list<GuiServerInterface*> gui_list; 
+  // REMOVE : list<GuiServerInterface*> gui_list; 
+  GuiServerInterface* gui_p;
 
-  // Mutex for locking processes.
+  // TODO : Mutex for locking processes.
+
 
   OptionHandler* main_opts;
   InformationDistributor distributor;
