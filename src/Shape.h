@@ -80,6 +80,9 @@ public:
   virtual bool is_inside_subsquare( const SubSquare& ss ) const = 0;
   bool is_still_inside_subsquare( const SubSquare& ss ) const { return !killed; }
 
+
+  bool is_killed() const { return killed; }
+
   // Returns true if object if killed by the collision
   //  virtual bool collided( const Shape* colliding_object ) = 0;
 
@@ -102,7 +105,6 @@ protected:
   int id;
 
   bool killed;
-  bool removable;  // could be removed by the garbage_collector?
 };
 
 #endif __SHAPE__
