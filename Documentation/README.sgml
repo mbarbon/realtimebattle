@@ -18,6 +18,8 @@ For info on installation, read the file <tt>INSTALL</tt>.
 More information on usage, construction of robots and more can be
 found in the user manual in the subdirectory <tt>Documentation</tt>.
 
+
+
 There are two mailing-lists for RealTimeBattle. One for announcements and
 the other for discussions.
 
@@ -27,20 +29,23 @@ It is a moderated low traffic list where only posts of general interest to
 RealTimeBattle users get through. Here will, for example, new releases and
 competitions be announced.
 
-To subscribe or unsubscribe, send an email to <url
-name="realtimebattle-announce-request@lysator.liu.se" url="mailto:realtimebattle-announce-request@lysator.liu.se"> with 'subscribe' or
-'unsubscribe' on the 'Subject'-line. If you want more information you can
-send an email with subject 'help'.
-
-The discussion-list is called <url name="realtimebattle-d"
-url="mailto:realtimebattle-d@lysator.liu.se">.
-Here can anything related to RealTimeBattle be discussed. It is not moderated.
-
-To subscribe or unsubscribe, send an email to <url
-name="realtimebattle-d-request@lysator.liu.se"
-url="mailto:realtimebattle-d-request@lysator.liu.se">.
+To subscribe or unsubscribe, send an email to <newline>
+<tt>realtimebattle-announce-request@lysator.liu.se</tt>
 with 'subscribe' or 'unsubscribe' on the 'Subject'-line. If you want more information
 you can send an email with subject 'help'.
+
+The discussion-list is called <newline>
+<url name="realtimebattle-d"
+url="mailto:realtimebattle-d@lysator.liu.se">.
+
+Here can anything related to RealTimeBattle be discussed. It is not moderated.
+
+To subscribe or unsubscribe, send an email to <newline>
+<tt>realtimebattle-d-request@lysator.liu.se</tt> with 'subscribe' or 'unsubscribe' on
+the 'Subject'-line. If you want more information you can send an email with 
+subject 'help'.
+
+
 
 If you encounter a bug or some problem of any sort, please look in the
 files <tt>BUGS</tt>, <tt>TODO</tt> and <tt>FAQ</tt> in this directory,
