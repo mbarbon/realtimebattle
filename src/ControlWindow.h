@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 
+class String;
+
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 typedef void* gpointer;
@@ -41,7 +43,7 @@ public:
                                      const int default_y_pos  = -1 );
   ~ControlWindow                   ();
 
-  void set_window_title            ( const bool halted );
+  void set_window_title            ( const String& text );
   GtkWidget* get_window_p          () { return window_p; }
   GtkWidget* get_debug_level_label () { return debug_level_label; }
 

@@ -41,7 +41,7 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_set_name( window_p, "RTB Control" );
   gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
 
-  set_window_title( false );
+  set_window_title( "RealTimeBattle" );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
@@ -235,24 +235,22 @@ ControlWindow::~ControlWindow()
 }
 
 void
-ControlWindow::set_window_title( const bool halted )
+ControlWindow::set_window_title( const String& text)
 {
-  String title( "RealTimeBattle Control" );
-  if( halted ) title += "  *PAUSED*";
+  String title = text;
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }
 
 void
 ControlWindow::quit_rtb( GtkWidget* widget, gpointer data )
 {
-  gtk_main_quit();
+  Quit();
 }
 
 void
 ControlWindow::pause( GtkWidget* widget, class ControlWindow* controlwindow_p )
 {
   the_arena.pause_game_toggle();
-  controlwindow_p->set_window_title( the_arena.is_game_halted() );
 }
 
 void
@@ -272,7 +270,8 @@ ControlWindow::end_game( GtkWidget* widget, gpointer data )
 void
 ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 {
-  if(the_arena.get_state() == GAME_IN_PROGRESS)
+  if(the_arena.get_state() == GAME_IN_PROGRESS || 
+     the_arena.get_state() == PAUSED )
     {
       Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
       if( robotp != NULL )
