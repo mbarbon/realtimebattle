@@ -43,7 +43,7 @@ note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO
 # Targets to generate the files if the sgml source exists, otherwise nothing happens 
 
 %.html: %.sgml
-	@if [ -f RealTimeBattle.sgml ]; then \
+	@if [ -f $< ]; then \
 		echo "sgml2html --split=0 -c latin $<"; \
 		sgml2html --split=0 -c latin $<; \
 	elif [ ! -f $@ ]; then \
@@ -52,62 +52,73 @@ note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO
 
 RealTimeBattle.html: RealTimeBattle.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2html --imagebuttons -c latin $<"; \
-		sgml2html --imagebuttons -c latin $<; \
+		echo "sgml2html --imagebuttons -D table=real -c latin $<"; \
+		sgml2html --imagebuttons -D table=real -c latin $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.dvi: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2latex  -p $(PAPER_SIZE) -c latin -v -o dvi $<"; \
-		sgml2latex  -p $(PAPER_SIZE) -c latin -v -o dvi $<; \
+		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o dvi $<"; \
+		sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o dvi $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.ps: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2latex  -p $(PAPER_SIZE) -c latin -v -o ps $<"; \
-		sgml2latex  -p $(PAPER_SIZE) -c latin -v -o ps $<; \
+		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o ps $<"; \
+		sgml2latex  -p $(PAPER_SIZE)  -D table=real -c latin -v -o ps $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.info: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2info -c latin $<"; \
-		sgml2info -c latin $<; \
+		echo "sgml2info  -D table=char -c latin $<"; \
+		sgml2info  -D table=char -c latin $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.rtf: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2rtf -c latin $<"; \
-		sgml2rtf -c latin $<; \
+		echo "sgml2rtf -D table=real -c latin $<"; \
+		sgml2rtf  -D table=real -c latin $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.lyx: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2lyx -c latin $<"; \
-		sgml2lyx -c latin $<; \
+		echo "sgml2lyx -D table=real -c latin $<"; \
+		sgml2lyx  -D table=real -c latin $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
 %.txt: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2txt -f -c latin $<"; \
-		sgml2txt -f -c latin $<; \
+		echo "sgml2txt --filter -D table=char -c latin $<"; \
+		sgml2txt --filter -D table=char -c latin $<; \
+#		echo "lynx -dump -nolist $< > $@"; \
+#		lynx -dump -nolist $< > $@; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
-../%: %.txt
-	cp $< $@ 
+../%: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2txt --filter -D table=char -c latin $<"; \
+		sgml2txt --filter -D table=char -c latin $<; \
+#		echo "lynx -dump -nolist $< > $@"; \
+#		lynx -dump -nolist $< > $@; \
+		echo "mv $(subst .sgml,.txt,$<) $@"; \
+		mv $(subst .sgml,.txt,$<) $@; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
 
 #Just to allow for non-existing .sgml-file
 %.sgml: 
