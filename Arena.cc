@@ -660,9 +660,9 @@ Arena::start_game()
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
-  GString* filename = (GString*)g_list_nth(arena_filenames, current_arena_nr)->data;
-  ifstream file(filename->str);
-  if( !file ) throw Error("Couldn't open file", filename->str, "Arena::Arena");
+  String* filename = (String*)g_list_nth(arena_filenames, current_arena_nr)->data;
+  ifstream file(filename->chars());
+  if( !file ) throw Error("Couldn't open file", *filename, "Arena::Arena");
 
   parse_file(file);
 
@@ -832,6 +832,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
   number_of_robots = 0;
   Robot* robotp;
   start_tournament_glist_info_t* infop;
+  String* stringp;
 
   GList* gl;
   for(gl = g_list_next(robotfilename_list); gl != NULL; gl = g_list_next(gl))
@@ -847,8 +848,8 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   for(gl = g_list_next(arenafilename_list); gl != NULL; gl = g_list_next(gl))
     {
-      infop = (start_tournament_glist_info_t*)gl->data;
-      g_list_append(arena_filenames, g_string_new(infop->filename.chars()));
+      stringp = new String(((start_tournament_glist_info_t*)gl->data)->filename);
+      g_list_append(arena_filenames, stringp);
       number_of_arenas++;
     }
 

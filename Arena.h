@@ -103,7 +103,7 @@ private:
   GList* all_robots_in_tournament;
   GList* all_robots_in_sequence;
   GList* exclusion_points;
-  GList* arena_filenames;               // list of GStrings
+  GList* arena_filenames;               // list of Strings
 
   int** robots_in_sequence;
   
@@ -408,8 +408,7 @@ struct rotation_t
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
-  Robot(const String& filename);
-  //Robot(const Vector2D& c, const double r, char* filename); 
+  Robot(const String& filename);   
   ~Robot();
   
   void move(const double timestep);  
@@ -455,6 +454,9 @@ private:
 
   bool alive;
   bool process_running;
+
+  bool send_usr_signal;
+
   double energy; 
   double extra_air_resistance;
   double break_percent;
