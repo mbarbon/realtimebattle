@@ -20,7 +20,8 @@ print_help_message()
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
   cout << " Options:  -d  debug mode" << endl;
   cout << "           -n  normal mode (default)" << endl;
-  cout << "           -c  competition mode" << endl << endl;
+  cout << "           -c  competition mode" << endl;
+  cout << "           -p  disables usage of /proc. Cannot be combined with -c" << endl << endl;
 }
 
 gint
@@ -67,7 +68,7 @@ main ( int argc, char* argv[] )
   gtk_init (&argc, &argv);
 
   int option_char;
-  while ((option_char = getopt (argc, argv, "dnc")) != -1)
+  while ((option_char = getopt (argc, argv, "dncp")) != -1)
     {
       switch (option_char)
         {
@@ -78,7 +79,21 @@ main ( int argc, char* argv[] )
           the_arena.set_game_mode(Arena::NORMAL_MODE);
           break;
         case 'c':
-          the_arena.set_game_mode(Arena::COMPETITION_MODE);
+          if( !the_arena.get_use_proc() )
+            {
+              cout << "In competition mode /proc is needed. Changing to normal mode." << endl;
+              the_arena.set_game_mode(Arena::NORMAL_MODE);
+            }
+          else
+            the_arena.set_game_mode(Arena::COMPETITION_MODE);
+          break;
+        case 'p':
+          the_arena.set_use_proc(false);
+          if( the_arena.get_game_mode() == Arena::COMPETITION_MODE )
+            {
+              cout << "In competition mode /proc is needed. Changing to normal mode." << endl;
+              the_arena.set_game_mode(Arena::NORMAL_MODE);
+            }              
           break;
         default:
           cerr << "Unknown option: -" << (char)option_char << "." << endl << endl;
