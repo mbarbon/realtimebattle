@@ -786,8 +786,9 @@ Robot::get_messages()
                   if( val > 0 && val < _NSIG )
                     {
                       signal_to_send = val;
-                      send_signal();
                       send_usr_signal = true;
+                      send_signal();
+
                     }
                   else
                     {                      
