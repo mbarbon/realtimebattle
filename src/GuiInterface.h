@@ -110,6 +110,8 @@ public:
 
 private:
 
+  long int unique_id;
+
   //  list<message_t> messages;
 
   // This should be the queue for guievents
