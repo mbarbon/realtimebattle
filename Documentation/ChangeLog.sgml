@@ -13,7 +13,7 @@ Added possibility to send the robots its position. This is done by a new
 message: <tt>Coordinates</tt>, and is enabled by a new option: <tt>Send
 robot coordinates</tt>. Look in the documentation for more info.
 
-New translation: Spanish by Mr_Tt
+New translation: Spanish by Mr_Tr
 
 Bugfix: CPU limits should work better now.
 
