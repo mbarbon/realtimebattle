@@ -16,7 +16,7 @@ class ShotGadget : public Gadget
     //cout<<"Creating a new ShotGadget\n"; 
     return new ShotGadget(Name, p); 
   };
-  int Read(FILE*);
+  int Read(FILE*, GtkWidget*, GtkCTreeNode*);
 
   enum ShotVars
   {

@@ -18,10 +18,9 @@ class WeaponGadget : public Gadget
   WeaponGadget( const char*, Gadget* const);
   Gadget* NewInstance( const char* Name, Gadget* const p ) 
     { 
-      //cout<<"Creating a new Weapon\n"; 
       return new WeaponGadget(Name, p); 
     };
-   int Read(FILE*);
+   int Read(FILE*, GtkWidget*, GtkCTreeNode*);
    vector<GadgetDefinition*> *Gadget_def();
 
 

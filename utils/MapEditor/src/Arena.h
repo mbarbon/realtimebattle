@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <gtk/gtk.h>
 #include "AllGadgets.h"
 
 
@@ -12,9 +13,9 @@ class Arena
 public:
   Arena()  {};
   ~Arena();
-  void Read(char*);
+  void Read(char*, GtkWidget* );
 protected:
-  int Read(FILE*);
+  int Read(FILE*, GtkWidget*);
   int ReadHead(FILE*);
   void Write();
 

@@ -6,6 +6,9 @@
 #include <iostream.h>
 #include <vector>
 
+#include <gtk/gtk.h>
+
+
 #include "GadgetSet.h"
 #include "GadgetDefinition.h"
 
@@ -15,18 +18,18 @@ class Function;
 struct VariableDefinition;
 struct FunctionDefinition;
 
+
 class Gadget
 {
 public:
-  Gadget() : 
-    info(this, 0, ""),
-    parent(NULL)
+  Gadget(string n) : name(n) {}
+  friend GtkCTreeNode* AddToTree(GtkWidget*, GtkCTreeNode*, Gadget*);
+  Gadget()  
     //variables(NULL), functions(NULL)  
     {}
 
   Gadget( const char* Name, Gadget* const p ) : 
-    info(this, last_id_used++, Name),
-    parent(p)
+    name(Name)
     //variables(NULL), functions(NULL)
     {
       //cout<<"NbGadgets : "<<last_id_used<<endl;
@@ -36,7 +39,7 @@ public:
 
   ~Gadget();
 
-  virtual int Read(FILE* /* fp */)
+  virtual int Read(FILE* /* fp */, GtkWidget* /* ctree */, GtkCTreeNode*)
   {
     return 0;
   };
@@ -65,13 +68,15 @@ public:
   */
 
  protected:
+  string name;
   string info_string;
-  GadgetInfo info;
-  Gadget* parent;
-  //GadgetSet my_gadgets;
+
   Variable* variables;
   //Function* functions;
 };
+
+GtkCTreeNode* AddToTree(GtkWidget*, GtkCTreeNode*, Gadget*);
+
 
 class ExplosionGadget : public Gadget
 {
@@ -83,12 +88,16 @@ class ExplosionGadget : public Gadget
       cout<<"Creating a new Explosion\n"; 
       return new ExplosionGadget(Name, p); 
     };
-   int Read(FILE*);
+   int Read(FILE*, GtkWidget*, GtkCTreeNode*);
 protected:
    //float mySize;
 };
 
 #endif
+
+
+
+
 
 
 

@@ -12,6 +12,10 @@ struct GadgetDefinition
   Gadget *theGadget;
 };
 
+
+Gadget*
+createGadget(string GadgetType, const char* Name);
+
 GadgetDefinition* 
 createGadgetDef(string /* GadgetType */, const char*, Gadget* const);
 GadgetDefinition*

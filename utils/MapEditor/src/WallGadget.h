@@ -11,7 +11,7 @@ public:
     {
       return new WallGadget(Name, p);
     }
-  int Read(FILE*);
+  int Read(FILE*, GtkWidget*, GtkCTreeNode*);
   void Print()
     { cout<<"A WallGadget\n";
     }
