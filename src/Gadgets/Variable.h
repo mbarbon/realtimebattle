@@ -70,7 +70,6 @@ public:
 
   void make_random ( const double min_val, const double max_val, const bool is_double=true );  
 
-
   void set_robot_permissions( const bool read, const bool write );
 
   //Without this function, we lose all the informations in the GadgetInfo info
@@ -82,6 +81,7 @@ public:
     };
 
   // conversions to/from Value
+  variable_type const type() { return my_type; }
 
   operator const Value() { return get_value(); }
   operator const double() const  { return double(get_value()); }
