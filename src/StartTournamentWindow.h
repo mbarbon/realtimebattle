@@ -101,17 +101,29 @@ private:
                                          const bool all );
   void add_all_selected                ( const bool robots );
   void remove_all_selected             ( const bool robots );
-  start_tournament_glist_info_t* find_row_in_clist( const int row, GList* glist );
+  start_tournament_info_t* find_row_in_clist
+                                       ( const int row,
+                                         List<start_tournament_info_t>* info_list );
   
   GtkWidget** get_entries              () { return entries; }
-  GList* get_selected_robot_tournament () { return selected_robot_tournament; };
-  GList* get_selected_robot_directory  () { return selected_robot_directory; };
-  GList* get_selected_arena_tournament () { return selected_arena_tournament; };
-  GList* get_selected_arena_directory  () { return selected_arena_directory; };
-  GtkWidget* get_robots_in_tournament_clist() { return robots_in_tournament_clist; }
-  GtkWidget* get_robots_in_directory_clist () { return robots_in_directory_clist; }
-  GtkWidget* get_arenas_in_tournament_clist() { return arenas_in_tournament_clist; }
-  GtkWidget* get_arenas_in_directory_clist () { return arenas_in_directory_clist; }
+
+  List<start_tournament_info_t>* get_selected_robot_tournament()
+    { return selected_robot_tournament; };
+  List<start_tournament_info_t>* get_selected_robot_directory ()
+    { return selected_robot_directory; };
+  List<start_tournament_info_t>* get_selected_arena_tournament()
+    { return selected_arena_tournament; };
+  List<start_tournament_info_t>* get_selected_arena_directory ()
+    { return selected_arena_directory; };
+
+  GtkWidget* get_robots_in_tournament_clist()
+    { return robots_in_tournament_clist; }
+  GtkWidget* get_robots_in_directory_clist ()
+    { return robots_in_directory_clist; }
+  GtkWidget* get_arenas_in_tournament_clist()
+    { return arenas_in_tournament_clist; }
+  GtkWidget* get_arenas_in_directory_clist ()
+    { return arenas_in_directory_clist; }
 
   GtkWidget* window_p;
 
@@ -122,10 +134,10 @@ private:
   GtkWidget* arenas_in_tournament_clist;
   GtkWidget* arenas_in_directory_clist;
 
-  GList* selected_robot_tournament;
-  GList* selected_robot_directory;
-  GList* selected_arena_tournament;
-  GList* selected_arena_directory;
+  List<start_tournament_info_t>* selected_robot_tournament;
+  List<start_tournament_info_t>* selected_robot_directory;
+  List<start_tournament_info_t>* selected_arena_tournament;
+  List<start_tournament_info_t>* selected_arena_directory;
 };
 
 #endif NO_GRAPHICS
