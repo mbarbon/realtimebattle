@@ -389,6 +389,7 @@ Arena::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
+        the_gui.set_score_window_title();
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
             for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))

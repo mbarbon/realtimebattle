@@ -404,6 +404,15 @@ Gui::setup_control_window()
 }
 
 void
+Gui::set_score_window_title()
+{
+  String title = (String)"RealTimeBattle Score " + " Seq: " + the_arena.get_sequence_nr() + " Game: " +
+    String(the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence()) +
+    " Time: " + String((int)the_arena.get_total_time());
+  gtk_window_set_title (GTK_WINDOW (score_window), title.chars());
+}
+
+void
 Gui::setup_score_window()
 {
   int robot_number=0;
@@ -421,7 +430,7 @@ Gui::setup_score_window()
   char * titles[6] = { "", "Name", "Energy ", "Place ", "Last ", "Score  " };
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (score_window), "RealTimeBattle Score");
+  set_score_window_title();
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);

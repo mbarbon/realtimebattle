@@ -109,6 +109,8 @@ public:
   void add_the_statistics_to_clist();
   void stat_make_title_button();
 
+  void set_score_window_title();
+
   void start_new_tournament();
   void start_tournament_change_all_selection(bool robots, bool dir, bool all);
   void start_tournament_change_one_selection(const int row, const GtkWidget * clist);
