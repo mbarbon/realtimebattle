@@ -403,7 +403,8 @@ ArenaReplay::parse_log_line()
 
         log_file >> sequence_nr >> game_nr;
 
-        get_time_positions_in_game();
+        if( !log_from_stdin )
+          get_time_positions_in_game();
 
         ListIterator<Shape> li;
         for( object_lists[ROBOT].first(li); li.ok(); li++ )
@@ -413,7 +414,8 @@ ArenaReplay::parse_log_line()
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
-        get_time_positions_in_game();
+        if( !log_from_stdin )
+          get_time_positions_in_game();
 #ifndef NO_GRAPHICS
         controlwindow_p->change_time_limitations();
 #endif
