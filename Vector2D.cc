@@ -99,6 +99,16 @@ operator*(const double factor, const Vector2D& vec)
   return( vec*factor );
 }
 
+Vector2D
+operator/(const Vector2D& vec, const double denom)
+{
+  Vector2D quotient(vec);
+
+  for( int i=0; i<2; i++)
+    quotient.vector[i] /= denom;
+  return( quotient );
+}
+
 Vector2D&
 Vector2D::operator=(const Vector2D& other)
 {
