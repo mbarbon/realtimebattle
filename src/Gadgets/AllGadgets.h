@@ -37,5 +37,24 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ShotGadget.h"
 #include "WeaponGadget.h"
 
+#include "Messagetypes.h"
+
+// Class with static only members that contains various functions and
+// information that deals with a gadget in some way and does not
+// fit into the ordinary gadgetclasses.
+// Do not create an object of this class.
+// TODO: If we decide to use Namespaces this should be a namespace instead.
+class AllGadgets
+{
+public:
+  // Create a gadget that matches the gadget_type supplied.
+  static Gadget* create_gadget_by_gadget_type ( const gadget_t    type,
+                                                const char*       name,
+                                                Gadget* const     p );
+  // Create a gadget that matches the string gadgettype supplied.
+  static Gadget* create_gadget_by_stringtype  ( const string&     type,
+                                                const char*       name,
+                                                Gadget* const     p );
+};
 
 #endif  __ALLGADGETS__
