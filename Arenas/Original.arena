@@ -113,7 +113,7 @@ Define Sensor Radar
 
 EndDefine
 
-Define Ball Mine
+Define Wall Mine
 
    InfoString               _("Standard exploding mine.")
 
@@ -143,9 +143,9 @@ Define Ball Mine
    Temperature              37.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #e02222
 
-EndDefine Ball Mine
+EndDefine Wall Mine
 
-Define Ball Cookie
+Define Wall Cookie
 
    InfoString               _("Standard cookie.")
    Size                      0.2
@@ -169,7 +169,7 @@ Define Ball Cookie
    Temperature              20.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #00ff48
 
-EndDefine
+EndDefine Wall Cookie
 
 Define Environment TheEnvironment
 
