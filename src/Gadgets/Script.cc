@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,6 +43,18 @@ Script::ScriptLine::get_value()
 
   return val;
 }
+
+const Script& 
+Script::operator= (const Script& v) {
+  commands = v.commands;
+}
+
+/*const ShotGadget& 
+ShotGadget::operator= (const ShotGadget& v) {
+  for(int i = 0; i < LAST_SHOTVAR; i++)
+    variables[i] = (Value&) v.variables[i];
+  return (*this);
+  }*/
 
 void
 Script::run()

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Variable.h"
 #include "RobotBodyGadget.h"
 #include "Shot.h"
+#include <string>
+#include "String.h"
 
 const VariableDefinition 
 WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 
@@ -60,6 +62,8 @@ WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] =
 
   {"CoolDownPerTime", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
 
+  {"Attachable", BOOL_V, false,0,0,0,false,true,true},
+
   {"Colour", INT_V, 0, 0, INT_MAX, false, true, false },
   {"Price", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
   {"Mass", DOUBLE_V, 0, 0, DBL_MAX, false, true, false }
@@ -77,7 +81,6 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
   { "RotateTo", true },
   { "RotateAmount", true },
   { "Sweep", true }
-  
 };
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
@@ -87,6 +90,22 @@ WeaponGadget::WeaponGadget( const char* name, Gadget* const p )
   init_functions(function_def, LAST_WEAPONFCN);
 
   last_shoot_time = -1e10;
+}
+
+Gadget* 
+WeaponGadget::create_instance( const string & s, const Gadget* build_as )
+{
+  if( equal_strings_nocase( s, "Shot") )
+    {
+      //TODO : dynamic_cast<ShotGadget*> (build_as);
+      cout<<"Here\n";
+      ShotGadget* build_as_shot = (ShotGadget*) build_as;
+      instance["Shot"]  = new ShotGadget( s.c_str(), this );
+      (*instance["Shot"]) = *build_as_shot;
+      return instance["Shot"];
+    }
+  else
+    return NULL;
 }
 
 void
@@ -120,6 +139,8 @@ WeaponGadget::shoot()
 {
   assert( parent->get_info().type == GAD_ROBOTBODY );
   // TODO: other objects should be able to carry weapon 
+
+  ShotGadget* shot = dynamic_cast<ShotGadget*> (instance["Shot"]);  //TODO : dynamic_cast
 
   if( variables[AMMUNITION] < 0 )
     {

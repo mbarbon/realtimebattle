@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 #include <list>
+#include <map>
 
 #include "GadgetSet.h"
 
@@ -51,7 +52,7 @@ public:
     parent(p), 
     variables(NULL), functions(NULL) {}
 
-  ~Gadget();
+  virtual ~Gadget();
 
   long int get_unique_id() const { return info.id; }
   const string& get_name() const { return info.name; }
@@ -70,6 +71,8 @@ public:
   const Variable* get_variables() const { return variables; }
   const Function* get_functions() const { return functions; }
 
+  virtual Gadget* create_instance( const string& s, const Gadget* ) { return NULL; }
+
 protected:
 
   void init_variables( const VariableDefinition* var_def, const int last_var );
@@ -86,9 +89,10 @@ protected:
 
   GadgetSet my_gadgets;
 
-  Variable* variables;
-  Function* functions;
+  Variable* variables;  //This is variable definitions
+  Function* functions;  //This is function definitions
 
+  map<string, Gadget*> instance; //I don't know what it's gonna be use
 
 public:
   static int last_id_used;

@@ -37,6 +37,10 @@ init_new_gadget_functions()
     DefenseGadget::new_defensegadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_ENGINE] ) ] =
     EngineGadget::new_enginegadget;
+  new_gadget_functions[ lowercase( gadget_types[GAD_SENSOR] ) ] =
+    SensorGadget::new_sensorgadget;
+  new_gadget_functions[ lowercase( gadget_types[GAD_ENVIRONMENT] ) ] =
+    EnvironmentGadget::new_environmentgadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_EXPLOSION] ) ] =
     ExplosionGadget::new_explosiongadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_FUNCTION] ) ] =
@@ -49,6 +53,8 @@ init_new_gadget_functions()
     ShotGadget::new_shotgadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_VARIABLE] ) ] =
     Variable::new_variable;
+  new_gadget_functions[ lowercase( gadget_types[GAD_WALL] ) ] =
+    WallGadget::new_wallgadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_WEAPON] ) ] =
     WeaponGadget::new_weapongadget;
 }
@@ -70,7 +76,7 @@ AllGadgets::create_gadget_by_stringtype( const string&     type,
     init_new_gadget_functions();
     
   map< string, NewGadgetFunction >::const_iterator 
-   ci = new_gadget_functions.find( lowercase( type ) );
+    ci = new_gadget_functions.find( lowercase( type ) );
   if( ci != new_gadget_functions.end() )
     return (*(ci->second))( name, p );
 

@@ -52,6 +52,15 @@ ShotGadget::ShotGadget( const char* name, Gadget* const p )
   //init_functions( function_def, LAST_SHOTFCN ); 
 }
 
+
+const ShotGadget& 
+ShotGadget::operator= (const ShotGadget& v) {
+  for(int i = 0; i < LAST_SHOTVAR; i++)
+    variables[i] = (Value&) v.variables[i];
+  return (*this);
+}
+
+
 // Sorry, no functions to be evaluated.
 void
 ShotGadget::eval_function( const int fcn )

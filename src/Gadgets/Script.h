@@ -46,7 +46,23 @@ public:
   void run();
   void continue_script() {}
 
-  void add_script_line( vector<string>& strings ) {} // TODO: Actually add a line
+  const Script& operator= (const Script& v) ;  
+
+  void add_script_lines( vector<string>& strings ) 
+    {
+      add_script_line( strings[0] );  //NOTE : Hmmmm
+    };
+  void add_script_line( string& s )
+    { //Make it better for futur uses
+      cout<<"Creating a script\n";
+      ScriptLine new_line;
+      new_line.line_nr = 0;
+      new_line.function = ACTION;
+      new_line.is_variable = false;
+      new_line.str_p = new string( s );
+      commands.push_back(new_line);
+      cout<<"Added\n";
+    }
 
   enum ScriptFunction
   {

@@ -71,8 +71,8 @@ public:
   void remove(const GadgetInfo& gi);
 
 
-  set_iterator find_by_name( const GadgetInfo& gi) const;
-  set_iterator find_by_name( const string& str) const;
+  Gadget* find_by_name( const GadgetInfo& gi) const;
+  Gadget* find_by_name( const string& str) const;
   
   friend class Gadget;
 

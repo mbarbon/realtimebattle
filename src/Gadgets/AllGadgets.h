@@ -32,9 +32,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "CommunicationGadget.h"
 #include "DefenseGadget.h"
 #include "EngineGadget.h"
+#include "EnvironmentGadget.h"
 #include "ExplosionGadget.h"
 #include "RobotBodyGadget.h"
 #include "ShotGadget.h"
+#include "SensorGadget.h"
+#include "WallGadget.h"
 #include "WeaponGadget.h"
 
 

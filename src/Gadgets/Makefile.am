@@ -19,6 +19,7 @@ libRTB_Gadgets_a_SOURCES = \
 	Function.h \
 	Gadget.cc Gadget.h \
 	GadgetSet.cc GadgetSet.h \
+	GeometryGadget.cc GeometryGadget.h \
 	RobotBodyGadget.cc RobotBodyGadget.h \
 	Script.h Script.cc \
 	SensorGadget.cc SensorGadget.h \

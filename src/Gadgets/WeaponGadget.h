@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,15 +48,15 @@ public:
     AUTOFIRE, MAXROTATESPEED, SOUNDLEVEL,
     MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
     USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
-    TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME,
+    TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME, ATTACHABLE,
     COLOUR, PRICE, MASS, LAST_WEAPONVAR
   };
 
+  Gadget* create_instance( const string & s, const Gadget*  );
 
 private:
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
-
 
   enum WeaponFcns
   {
@@ -74,12 +74,7 @@ private:
   // is true if attached to robot or ball
 
   bool movable;
-
-  
-
-  ShotGadget* shot;
-
-  double last_shoot_time;
+  double last_shoot_time;  //Shoudn't this be a normal varible also ?
 };
 
 

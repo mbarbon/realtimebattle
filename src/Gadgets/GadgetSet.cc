@@ -48,16 +48,22 @@ GadgetSet::remove(const GadgetInfo& gi)
     }
 }
 
-set_iterator
+Gadget*
 GadgetSet::find_by_name(const GadgetInfo& gi) const
 {
-  // returns the_set.end() if no element with same name as gi is found 
-  return( the_set.find(gi) );
+  set_iterator i = the_set.find( gi );
+  if( i != the_set.end() )
+    return i->gadgetp;
+  else 
+    return NULL;
 }
 
-set_iterator
+Gadget*
 GadgetSet::find_by_name(const string& str) const
 {
-  // returns the_set.end() if no element with name str is found 
-  return( the_set.find(GadgetInfo(str)) );
+  set_iterator i = the_set.find(GadgetInfo(str));
+  if( i != the_set.end() )
+    return i->gadgetp;
+  else
+    return NULL;
 }

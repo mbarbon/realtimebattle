@@ -97,17 +97,16 @@ Gadget::eval_message(const string& msg)
 
   GadgetInfo first_gadget = msg.substr( 0, pos-1 );
 
-  set_iterator si =  my_gadgets.find_by_name(first_gadget);
-  
-  if( si == my_gadgets.the_set.end() ) // No gadget found
+  Gadget* gad = my_gadgets.find_by_name( first_gadget );
+
+  if( ! gad ) // No gadget found
     {
       if( parent != NULL )  return false;
 
       return( parent->eval_message( msg ) );
     }
 
-  gadget_t gad_type = (*si).type;
-  Gadget* gad = (*si).gadgetp;
+  gadget_t gad_type = (*gad).info.type;
 
   if( msg[pos] == '.')  
     {
