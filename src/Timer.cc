@@ -23,16 +23,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include "Timer.h"
+#include <assert.h>
 
 Timer::Timer()
 {
-  gettimeofday(&start, NULL);
+  reset();
 }
 
 void
 Timer::reset()
 {
   gettimeofday(&start, NULL);
+  gametime = 0.0;
+  gamespeed = 1.0;
 }
 
 double
@@ -77,6 +80,7 @@ void
 Timer::set_game_speed( const double speed )
 {
   update();
+  assert( speed >= 0.0 );
   gamespeed = speed;
 }
 
@@ -86,4 +90,12 @@ Timer::realtime2gametime( const double time )
   double current_realtime = update();
 
   return gametime + ( time - current_realtime ) * gamespeed;
+}
+
+double
+Timer::gametime2realtime( const double gtime )
+{
+  double current_realtime = update();
+
+  return current_realtime + ( gtime - gametime ) / ( gamespeed + 1e-10 );
 }

@@ -47,10 +47,12 @@ public:
   double get_gametime();
 
   double realtime2gametime(const double time);
+  double gametime2realtime(const double gtime);
 
   void reset();   //Reset the timer (how to be useless :) )
   
   void set_game_speed( const double speed );
+  double get_game_speed() const { return gamespeed; }
 
   unsigned int get_random_seed() { return (unsigned int)start.tv_usec; }
 
