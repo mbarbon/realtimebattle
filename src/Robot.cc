@@ -421,14 +421,13 @@ Robot::set_stats(const int robots_killed_same_time)
   if( !no_graphics ) display_score();
 #endif
 
-  if( the_arena_controller.is_realtime() )
-    {
-      send_message(DEAD);
-      send_signal();
 
-      realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game,
-                                      position_this_game);
-    }
+  send_message(DEAD);
+  send_signal();
+
+  realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game,
+                                  position_this_game);
+
 
   stat_t* statp = new stat_t
     (
@@ -446,7 +445,8 @@ Robot::set_stats(const int robots_killed_same_time)
 // Version of set_stats used by ArenaReplay
 //
 void
-Robot::set_stats(const double pnts, const int pos, const double time_survived)
+Robot::set_stats(const double pnts, const int pos, const double time_survived, 
+                 const bool display)
 {
   position_this_game = pos;
   total_points = total_points - points_this_game + pnts;
@@ -455,10 +455,11 @@ Robot::set_stats(const double pnts, const int pos, const double time_survived)
   time_survived_in_sequence += time_survived;
 
 #ifndef NO_GRAPHICS
-  if( !no_graphics ) display_score();
+  if( !no_graphics && display ) display_score();
 #endif
 
-stat_t* statp = new stat_t
+
+  stat_t* statp = new stat_t
     (
      the_arena.get_sequence_nr(),
      the_arena.get_game_nr(),
@@ -467,7 +468,7 @@ stat_t* statp = new stat_t
      time_survived,
      total_points
      );
-
+  
   statistics.insert_last( statp );
 }
 
@@ -531,19 +532,51 @@ int
 Robot::get_last_position()
 {
   ListIterator<stat_t> li;
-  statistics.last(li);
 
+  if( the_arena_controller.is_realtime() )
+    {
+      
+      statistics.last(li);
+
+      if( !li.ok() ) return 0;
+      
+      if( li()->game_nr < the_arena.get_game_nr() )
+        return li()->position;
+    }      
+  else
+    {
+      if( !current_game_stats.ok() ||
+          current_game_stats()->sequence_nr != the_arena.get_sequence_nr() ||
+          current_game_stats()->game_nr != the_arena.get_game_nr() )
+        find_current_game_stats();
+
+      li = current_game_stats;
+    }
+     
   if( !li.ok() ) return 0;
-
-  if( li()->game_nr < the_arena.get_game_nr() )
-    return li()->position;
-
   li--;
   if( !li.ok() ) return 0;
-
-  return li()->position;
   
+  return li()->position;
 }
+
+void
+Robot::find_current_game_stats()
+{
+  ListIterator<stat_t> li;
+  for( statistics.first(li); li.ok(); li++ )
+    {
+      if( li()->sequence_nr == the_arena.get_sequence_nr() &&
+          li()->game_nr == the_arena.get_game_nr() )
+        {
+          current_game_stats = li;
+          return;
+        }          
+    }
+  
+  Error(false, "Couldn't find stats", "Robot::find_current_game_stats");  
+}
+
 
 bool
 Robot::update_rotation(rotation_t& angle, const double timestep)
