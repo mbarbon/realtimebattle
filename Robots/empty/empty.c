@@ -12,7 +12,7 @@ int main(int argc, char * argv[])
 {
   printf("RobotOption 0 0\n"); 
   printf("Name Empty\n");
-  printf("Colour aaffaa ee2299\n");
+  printf("Colour ee2299 aaffaa\n");
   fflush(stdout);
 
   sleep(50);
