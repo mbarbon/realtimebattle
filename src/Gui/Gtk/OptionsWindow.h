@@ -17,104 +17,108 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __OPTIONS_WINDOW__
-#define __OPTIONS_WINDOW__
+#ifndef RTB_GTKGUI__OPTIONS_WINDOW__
+#define RTB_GTKGUI__OPTIONS_WINDOW__
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#include <string>
+#include <gtk/gtk.h>
+
 #include <map>
 
+#include "FileSelector.h"
 #include "Option.h"
+#include "OptionHandler.h"
+#include "Window.h"
 
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-struct _GtkEntry;
-typedef struct _GtkEntry GtkEntry;
-union _GdkEvent;
-typedef union _GdkEvent GdkEvent;
-typedef void* gpointer;
-template<class T> struct option_info_t;
-
-template<class T> class FileSelector;
-
-class OptionsWindow
+class OptionsWindow : public Window
 {
-private:
-
 public:
-  OptionsWindow                   ( const int default_width  = -1,
-                                    const int default_height = -1,
-                                    const int default_x_pos  = -1,
-                                    const int default_y_pos  = -1 );
-  ~OptionsWindow                  ();
+  OptionsWindow                       ();
+  ~OptionsWindow                      ();
 
-  void update_all_gtk_entries     ();
-  void set_all_options            ();
-  void load_options               ( const string& );
-  void save_options               ( const string& );
+  void create                         ( const int&           default_width  = -1,
+                                        const int&           default_height = -1,
+                                        const int&           default_x_pos  = -1,
+                                        const int&           default_y_pos  = -1 );
 
-  static void default_opts        ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void load                ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void save                ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void save_def            ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void apply               ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void ok                  ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void cancel              ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void delete_event_occured( GtkWidget* widget, GdkEvent* event,
-                                    class OptionsWindow* optionswindow_p );
+  void add_new_options                ( const OptionHandler* opts );
 
-  static void grab_windows        ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
+  void destroy                        ();
 
-  static void min_callback        ( GtkWidget* widget, Option* option_p );
-  static void def_callback        ( GtkWidget* widget, Option* option_p );
-  static void max_callback        ( GtkWidget* widget, Option* option_p );
-  static void entry_handler       ( GtkWidget* widget, Option* option_p );
-
-  GtkWidget* get_window_p         () { return window_p; }
+  void set_window_title               ();
 
 private:
-  struct page_t
-  {
-    page_t( const string& l, GtkWidget* dt, GtkWidget* et,
-            GtkWidget* bt, const int noo )
-      : label(l), description_table(dt), entry_table(et), button_table(bt),
-        number_of_options(noo), current_row(0) {}
-    string label;
-    GtkWidget* description_table;
-    GtkWidget* entry_table;
-    GtkWidget* button_table;
-    int number_of_options;
-    int current_row;
-  };
 
-  typedef void (OptionsWindow::*process_option_func)( const Option*, GtkEntry* );
-  void process_all_options        ( process_option_func );
+  // Function to use when processing all options.
+  typedef void (OptionsWindow::*process_option_func)( GtkCTreeNode*, const Option* );
+  void process_all_options            ( process_option_func );
+  // Functions used as arguments to process_all_options().
+  void set_option                     ( GtkCTreeNode*        node,
+                                        const Option*        option_p );
+  void set_node_to_value              ( GtkCTreeNode*        node,
+                                        const Option*        option_p );
+  void set_node_to_default            ( GtkCTreeNode*        node,
+                                        const Option*        option_p );
 
-  // Various process_option_func functions
-  void set_option                 ( const Option* option_p, GtkEntry* entry );
-  void set_entry_to_value         ( const Option* option_p, GtkEntry* entry );
-  void set_entry_to_default       ( const Option* option_p, GtkEntry* entry );
+  // Functions that uses process_all_options().
+  void set_all_options                ();
+  void update_all_nodes               ();
+  void revert_all_options_to_default  ();
 
-  // Map of options and entries
-  map<const Option*,GtkEntry*> list_of_options_and_entries;
+  // Load/Save
+  void load_options                   ( const string&        filename );
+  void save_options                   ( const string&        filename );
 
-  // FileSelector
-  FileSelector<OptionsWindow>* get_filesel () { return filesel; }
-  FileSelector<OptionsWindow>* filesel;
+  // Change the option that is current.
+  void change_current_option          ( GtkCTreeNode*        node );
 
-  // The window pointer
-  GtkWidget* window_p;
+  // Graphics callbacks
+  static gint close_window            ( GtkWidget*           widget,
+                                        GdkEvent*            event,
+                                        OptionsWindow*       object_p );
+  static void ctree_row_selected      ( GtkWidget*           widget,
+                                        GtkCTreeNode*        row,
+                                        gint                 column,
+                                        OptionsWindow*       object_p );
+  static void min_callback            ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void def_callback            ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void max_callback            ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void revert_to_default       ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void load_callback           ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void save_callback           ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void save_as_default         ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void apply_callback          ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void ok_callback             ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void cancel_callback         ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  static void entry_handler           ( GtkWidget*           widget,
+                                        OptionsWindow*       object_p );
+  
+  // Variables
+  GtkWidget*                          ctree;
+  GtkWidget*                          option_label;
+  GtkWidget*                          option_entry;
+  GtkWidget*                          option_min_button;
+  GtkWidget*                          option_def_button;
+  GtkWidget*                          option_max_button;
+
+  map<GtkCTreeNode*, const Option*>   nodes_and_options;
+  GtkCTreeNode*                       current_node;
+  const Option*                       current_option;
+
+  FileSelector<OptionsWindow>         the_fileselector;
 };
 
-#endif __OPTIONS_WINDOW__
+#endif RTB_GTKGUI__OPTIONS_WINDOW__
