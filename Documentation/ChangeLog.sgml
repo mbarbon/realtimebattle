@@ -5,6 +5,25 @@
 Change log
 <itemize>
 
+<item> <bf>0.9.11:</bf>
+<p>
+
+Added info in the documentation on what the different things on the robot
+are.
+
+Fixed bug that caused rtb to segfault when it is impossible to open the
+logfiled supplied on the command-line to be replayed.
+
+Added so a message is displayed in the messagewindow when a robot has not
+given any name, so it easy to know which robot that hasn't given any name.
+
+Removed a memory-leak when adding messages (Note that there is still a lot
+of leaking memory but this is gtk+'s fault).
+
+Corrected code that caused a compile-time failure with gcc-2.95.
+
+Changed so <verb>string.h</verb> is included instead of <verb>strings.h</verb>
+
 <item> <bf>0.9.10:</bf>
 <p>
 
