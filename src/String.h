@@ -17,70 +17,40 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __STRING__
-#define __STRING__
+#ifndef __RTB_STRING__
+#define __RTB_STRING__
 
-#include <iostream.h>
+#include <string>
 
 enum string_double_t { STRING_NORMAL_FORM, STRING_EXP_FORM, STRING_FIXED_FORM };
 
-class String
-{
-public:
-  String();
-  String(const String& str);
-  String(const char* str);
-  String(const char c);
-  String(const int);
-  String(const long int);
-  String(const double, const int digits = 10, const string_double_t form = STRING_NORMAL_FORM);
-  ~String();
+bool equal_strings_nocase( const string&, const string& );
 
-  String& operator=(const String&);
-  String& operator=(const char);
-  String& operator=(const char*);
-  friend String operator+(const String&, const String&);
-  friend int operator==(const String&, const String&);
-  friend int operator!=(const String&, const String&);
-  String& operator+=(const String&);
+// Remember to delete[] the copied string
+char* copy_to_c_string( const string& str );
 
-  char operator[](int) const;
+char* int2chars   ( const int );
+char* lint2chars  ( const long int );
+char* double2chars( const double, const int digits = 10,
+                    const string_double_t form = STRING_NORMAL_FORM );
 
-  friend ostream& operator<<(ostream&, const String&);
-  friend istream& operator>>(istream&, String&);  
+string int2string   ( const int );
+string lint2string  ( const long int );
+string double2string( const double, const int digits = 10,
+                      const string_double_t form = STRING_NORMAL_FORM );
 
-  friend int str2int(const String&);
-  friend long str2long(const String&);
-  friend double str2dbl(const String&);
-  friend long str2hex(const String&);
-  friend String hex2str(const long);
+int chars2int      ( const char* );
+long int chars2lint( const char* );
+double chars2double( const char* );
 
-  String& erase(const int pos, const int size = 1);
-  String& insert(const String&, const int pos = 0);
-  int find( const char c, const int start = 0, const bool reverse = false ) const;
-  friend String get_segment(const String& str, const int start, const int end);
-  friend String make_lower_case(const String& str);
+int string2int      ( const string& );
+long int string2lint( const string& );
+double string2double( const string& );
 
-  int get_length() const { return length; }
-  bool is_empty() const { return length == 0; }
-  const char* chars() const { return array; }
+long int string2hex( const string& );
+string hex2string  ( const long );
 
-   //  Warning! This allows for changing the private member array.
-  char* non_const_chars() const { return array; }
+long int chars2hex( const char* );
+char* hex2chars   ( const long );
 
-  // allocates an array of chars, remember to delete afterwards!
-  char* copy_chars(); 
-
-private:
-  char* array;
-  int length;
-  int buf_size;
-
-  //  String& copy(const String&);
-  void allocate_array(const int size);
-  void enlarge_array(const int size);
-
-  class Range {};
-};
-
-#endif __STRING__
+#endif __RTB_STRING__
