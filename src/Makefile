@@ -5,7 +5,8 @@
 # Add '-DUSE_STDARG_H' if the compiler complains about va_list, va_args or similar.
 # Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
 # Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
-CXXFLAGS =-DINSTALLDIR='"$(INSTALLDIR)"'
+
+CXXFLAGS = -DINSTALLDIR='"$(INSTALLDIR)"'
 
 OPTIMIZEFLAGS = -O
 

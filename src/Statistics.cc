@@ -668,7 +668,11 @@ Gui::setup_statistics_window()
   char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
   stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
+#else
   gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);

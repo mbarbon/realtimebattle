@@ -452,7 +452,11 @@ Gui::setup_start_tournament_window()
   char * rob_tour_title[1] = { "Robots in Tournament" };
   robots_in_tournament_clist = gtk_clist_new_with_titles(1, rob_tour_title);
   gtk_clist_set_selection_mode (GTK_CLIST(robots_in_tournament_clist), GTK_SELECTION_MULTIPLE);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
+#else
   gtk_clist_set_border(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width(GTK_CLIST(robots_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
   //  gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
@@ -504,7 +508,11 @@ Gui::setup_start_tournament_window()
   char * rob_dir_title[1] = { "Robots in Directory" };
   robots_in_directory_clist = gtk_clist_new_with_titles(1, rob_dir_title);
   gtk_clist_set_selection_mode (GTK_CLIST(robots_in_directory_clist), GTK_SELECTION_MULTIPLE);
-  gtk_clist_set_border(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
+#else
+    gtk_clist_set_border(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width(GTK_CLIST(robots_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
   //  gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
@@ -558,7 +566,11 @@ Gui::setup_start_tournament_window()
   char * arena_tour_title[1] = { "Arenas in Tournament" };
   arenas_in_tournament_clist = gtk_clist_new_with_titles(1, arena_tour_title);
   gtk_clist_set_selection_mode (GTK_CLIST(arenas_in_tournament_clist), GTK_SELECTION_MULTIPLE);
-  gtk_clist_set_border(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
+#else
+    gtk_clist_set_border(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
   //  gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
@@ -610,7 +622,11 @@ Gui::setup_start_tournament_window()
   char * arena_dir_title[1] = { "Arenas in Directory" };
   arenas_in_directory_clist = gtk_clist_new_with_titles(1, arena_dir_title);
   gtk_clist_set_selection_mode (GTK_CLIST(arenas_in_directory_clist), GTK_SELECTION_MULTIPLE);
-  gtk_clist_set_border(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
+#else
+    gtk_clist_set_border(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
   //  gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,

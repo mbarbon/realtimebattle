@@ -719,7 +719,11 @@ Gui::setup_score_window()
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(score_clist), GTK_SHADOW_IN);
+#else
   gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
+#endif
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
@@ -829,8 +833,9 @@ Gui::setup_message_window()
   message_output = gtk_text_new (NULL, NULL);
   gtk_text_set_editable (GTK_TEXT (message_output), FALSE);
   gtk_table_attach (GTK_TABLE (messagetable), message_output, 0, 1, 0, 1,
-                    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
-                    GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
+                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
+                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
+                    0, 0);
   gtk_widget_set_usize(message_output, 250,90);
   gtk_widget_show(message_output);
 
@@ -838,7 +843,9 @@ Gui::setup_message_window()
 
   vscrollbar = gtk_vscrollbar_new (GTK_TEXT (message_output)->vadj);
   gtk_table_attach (GTK_TABLE (messagetable), vscrollbar, 1, 2, 0, 1,
-                    GTK_FILL, GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
+                    (GtkAttachOptions)(GTK_FILL),
+                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
+                    0, 0);
   gtk_widget_show (vscrollbar);
 
   gtk_widget_realize (message_output);
