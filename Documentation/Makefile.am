@@ -19,7 +19,8 @@ install-data-local:
    if test "x$(INSTALL_INFO)" != "xno"; then \
 		$(INSTALL_INFO) \
 		--entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
-		--info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
+		--info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz \
+		--section "Games"; \
 	fi || echo -e "\n\n** Info installation failed, please add the entry to dir by hand **\n\n"
 
 uninstall-local:
