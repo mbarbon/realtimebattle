@@ -104,5 +104,7 @@ WeaponGadget::eval_function( const int fcn )
       break;
     case ROTATEAMOUNT:
       break;
+    default:
+      break;
     }
 }
