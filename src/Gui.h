@@ -88,7 +88,7 @@ public:
   void setup_control_window();
   void setup_score_window();
   void setup_message_window();
-  void setup_arena_window( const Vector2D bound[] );
+  void setup_arena_window();
   void setup_start_tournament_window();
   void setup_statistics_window();
 
@@ -113,6 +113,7 @@ public:
 
   char ** get_colour_square_xpm( char ** col_sq, const GdkColor& colour );
 
+  void clear_area();
   void draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled );
   void draw_line( const Vector2D& start, const Vector2D& end, GdkColor& colour );
   void draw_line( const Vector2D& start, const Vector2D& end, const double length, 
@@ -128,6 +129,7 @@ public:
 
   void set_control_window_title( const bool halted );
   void set_score_window_title();
+  void add_robots_to_score_list();
 
   void start_new_tournament();
   void start_tournament_change_all_selection(bool robots, bool dir, bool all);
@@ -147,8 +149,6 @@ public:
   double get_zoom() { return zoom; }
 
 private:
-  void clear_area();
-
   bool statistics_up;
   bool start_tournament_up;
 

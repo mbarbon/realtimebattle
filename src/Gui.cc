@@ -110,8 +110,6 @@ delete_event(GtkWidget *widget, gpointer data)
 Gui::Gui()
 {
   statistics_up = false;
-  boundary[0] = Vector2D(0.0, 0.0);
-  boundary[1] = Vector2D(0.0, 0.0);
   if(NULL != getenv("RTB_ROBOTDIR"))
       robotdir = getenv("RTB_ROBOTDIR");
   else
@@ -146,8 +144,8 @@ Gui::change_zoom()
   da_scrolled_window_size = Vector2D((double)width,(double)height);
   double w = (double)(width * zoomfactor);
   double h = (double)(height * zoomfactor);
-  double bw = boundary[1][0] - boundary[0][0];
-  double bh = boundary[1][1] - boundary[0][1];
+  double bw = the_arena.get_boundary()[1][0] - the_arena.get_boundary()[0][0];
+  double bh = the_arena.get_boundary()[1][1] - the_arena.get_boundary()[0][1];
   if( w / bw >= h / bh )
     {
       zoom = h / bh;
@@ -187,7 +185,7 @@ int
 Gui::change_to_pixels_x(const double input)
 {
   double res;
-  res = (input-boundary[0][0])*zoom + 0.5;
+  res = (input-the_arena.get_boundary()[0][0])*zoom + 0.5;
   return (int)res;
 }
 
@@ -195,7 +193,7 @@ int
 Gui::change_to_pixels_y(const double input)
 {
   double res;
-  res = (input-boundary[0][1])*zoom + 0.5;
+  res = (input-the_arena.get_boundary()[0][1])*zoom + 0.5;
   return (int)res;
 }
 
@@ -503,21 +501,10 @@ Gui::set_score_window_title()
   gtk_window_set_title (GTK_WINDOW (score_window), title.chars());
 }
 
+// This function will create the score window
 void
 Gui::setup_score_window()
 {
-  int robot_number=0;
-
-  GList** object_lists;
-  GList* gl;
-  Robot* robotp;
-
-  object_lists = the_arena.get_object_lists();
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
-    robot_number++;
-
-  // Window 
-
   char * titles[6] = { "", "Name", "Energy ", "Place ", "Last ", "Score  " };
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -549,6 +536,22 @@ Gui::setup_score_window()
   gtk_widget_show(score_clist);
 
   gtk_widget_show (score_window);
+}
+
+// This function resets score windwo and adds all robbots in sequence to the score window
+void
+Gui::add_robots_to_score_list()
+{                             
+  gtk_clist_clear(GTK_CLIST(score_clist));
+  GList** object_lists;
+  GList* gl;
+  Robot* robotp;
+
+  object_lists = the_arena.get_object_lists();
+
+  int robot_number=0;
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    robot_number++;
 
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
@@ -640,13 +643,10 @@ Gui::setup_message_window()
 }
 
 void
-Gui::setup_arena_window( const Vector2D bound[] )
+Gui::setup_arena_window()
 {
   GtkWidget * vbox, * button_table;
   GtkWidget * button;
-
-  boundary[0] = bound[0];
-  boundary[1] = bound[1];
 
   // Window 
 
@@ -717,9 +717,6 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   gdk_window_set_background (drawing_area->window, the_arena.get_background_colour_p());
   gdk_window_clear (drawing_area->window);
-
-  clear_area();
-  change_zoom();
 }
 
 void

@@ -488,7 +488,8 @@ Arena::update()
   //update_explosions();
   move_shots();
   update_robots();
-  the_gui.draw_objects();
+  if( state == GAME_IN_PROGRESS )
+    the_gui.draw_objects();
 }
 
 void
@@ -868,11 +869,12 @@ Arena::start_game()
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
+  the_gui.clear_area();
+  the_gui.change_zoom();
+  the_gui.add_robots_to_score_list();
+
   reset_timer();  // Time should be zero in score window
-
-  the_gui.setup_arena_window( boundary );
-  the_gui.setup_score_window();
-
+  the_gui.set_score_window_title();
   reset_timer();  // Game starts !
   next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
@@ -880,11 +882,6 @@ Arena::start_game()
 void
 Arena::end_game()
 {
-  // Close Score, Message and Control Windows
-
-  the_gui.close_score_window();
-  the_gui.close_arena_window();
-
   broadcast(GAME_FINISHES);
 
   delete_lists(false, false, false, false);
@@ -1007,6 +1004,8 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
   // Create robot classes and to into the list all_robots_in_tournament
 
   the_gui.setup_message_window();
+  the_gui.setup_arena_window();
+  the_gui.setup_score_window();
 
   number_of_robots = 0;
   Robot* robotp;
@@ -1131,5 +1130,7 @@ Arena::end_tournament()
   state = FINISHED;
 
   the_gui.close_message_window();
+  the_gui.close_score_window();
+  the_gui.close_arena_window();
   //  the_gui.close_control_window();
 }
