@@ -550,7 +550,7 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
       String error_msg( _("\nCouldn't parse specified tournament file.") );
       List<String> button_list;
       button_list.insert_last( new String( _(" Ok ") ) );
-      Dialog( (String)_("Tournament could not be loadeded.") + error_msg, button_list, 
+      Dialog( (String)_("Tournament could not be loaded.") + error_msg, button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
     }
 }
