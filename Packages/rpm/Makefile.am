@@ -1,5 +1,5 @@
 
-EXTRA_DIST = RealTimeBattle.spec
+EXTRA_DIST = RealTimeBattle.spec.in
 
 SPECDIR =	$(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")
 SOURCEDIR =	$(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//")
