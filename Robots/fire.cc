@@ -29,9 +29,7 @@ check_messages(int sig)
   char text[81];
   message_to_robot_type msg_t;
 
-  srand(time(0));
-
-  if(rand() < (RAND_MAX/40))
+  if(rand() < (RAND_MAX/100))
     {
       robot_rotate = - robot_rotate;
       cout << "Rotate 1 " << robot_rotate << endl;
@@ -137,6 +135,8 @@ main(int argc, char * argv[])
 
   signal(SIGUSR1, check_messages);
   cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
+
+  srand(time(0));
 
   for(;;sleep(1))
     {
