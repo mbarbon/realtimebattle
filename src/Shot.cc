@@ -151,7 +151,10 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
       shot1p->velocity = vel;
       shot1p->energy = en;
       realtime_arena.print_to_logfile('D', (int)'S', shot1p->id);
+      shot1p->id = the_arena.increase_shot_count();
       realtime_arena.print_to_logfile('S', shot1p->id, shot1p->center[0], shot1p->center[1], 
                                       shot1p->velocity[0], shot1p->velocity[1]);
+      
+
     }
 }
