@@ -4,4 +4,4 @@ Makefile.in
 TAGS
 *.lo
 .libs
-libGui.la
+libRTBGui_Gtk.la
