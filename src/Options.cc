@@ -184,6 +184,30 @@ Options::Options()
   all_string_options[OPTION_OPTIONS_SAVE_FILE] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "Options savefile", NULL);
 
+  all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena x winodwsize", NULL);
+
+  all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena y winodwsize", NULL);
+
+  all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 294, 50, 10000, 6, "Initial Message x winodwsize", NULL);
+
+  all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 110, 25, 10000, 6, "Initial Message y winodwsize", NULL);
+
+  all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Score x winodwsize", NULL);
+
+  all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 50, 10000, 6, "Initial Score y winodwsize", NULL);
+
+  all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 50, 10000, 6, "Initial Statistics x winodwsize", NULL);
+
+  all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 50, 10000, 6, "Initial Statistics y winodwsize", NULL);
+
   get_options_from_rtbrc();
   options_window_up = false;
 }
@@ -256,8 +280,6 @@ Options::set_all_options_from_gui()
         }
 
       the_arena.set_colours();
-
-      close_options_window();
     }
 }
 
@@ -291,7 +313,6 @@ Options::get_options_from_rtbrc()
             rc_file >> option_value;
             rc_file.get(buffer,100,'\n');
             all_double_options[i].value = option_value;
-            all_double_options[i].default_value = option_value;
           }
 
       for(int i=0;i<LAST_LONG_OPTION;i++)
@@ -310,7 +331,6 @@ Options::get_options_from_rtbrc()
               }
             rc_file.get(buffer,100,'\n');
             all_long_options[i].value = option_value;
-            all_long_options[i].default_value = option_value;
           }
 
       for(int i=0;i<LAST_STRING_OPTION;i++)
@@ -322,19 +342,36 @@ Options::get_options_from_rtbrc()
               option_value = get_segment(option_value,1,-1);
             rc_file.get(buffer,100,'\n');
             all_string_options[i].value = option_value;
-            all_string_options[i].default_value = option_value;
           }
 
     }
 }
 
 void
-Options::save_all_options_to_file()
+Options::save_all_options_to_file(const bool as_default)
 {
-  String filename(gtk_entry_get_text(GTK_ENTRY(all_string_options[OPTION_OPTIONS_SAVE_FILE].entry)));
+  String filename;
+  if(as_default)
+    {
+      char* home_dir;
+      if( NULL == ( home_dir = getenv("HOME") ) )
+        strcpy(home_dir,"/??");
+
+      filename = String(home_dir) + "/.rtbrc";
+    }
+  else
+    filename = gtk_entry_get_text(GTK_ENTRY(all_string_options[OPTION_OPTIONS_SAVE_FILE].entry));
 
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
+
+  if( !file )
+    {
+      cerr << "Couldn't open save file" << endl;
+      return;
+    }
+
+  set_all_options_from_gui();
 
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
     file << all_double_options[i].label << ": " << all_double_options[i].value << endl;
@@ -349,6 +386,29 @@ Options::save_all_options_to_file()
 
   for(int i=0;i<LAST_STRING_OPTION;i++)
     file << all_string_options[i].label << ": " << all_string_options[i].value << endl;
+}
+
+void
+Options::revert_all_options_to_default()
+{
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    {
+      all_double_options[i].value = all_double_options[i].default_value;
+      gtk_entry_set_text( GTK_ENTRY( all_double_options[i].entry ), String(all_double_options[i].value).chars() );
+    }
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    {
+      all_long_options[i].value = all_long_options[i].default_value;
+      if( all_long_options[i].datatype == ENTRY_INT )
+        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), String(all_long_options[i].value).chars() );
+      else if (all_long_options[i].datatype == ENTRY_HEX)
+        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), hex2str(all_long_options[i].value).chars() );
+    }
+  for(int i=0;i<LAST_STRING_OPTION;i++)
+    {
+      all_string_options[i].value = all_string_options[i].default_value;
+      gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
+    }
 }
 
 void
@@ -369,7 +429,7 @@ Options::setup_options_window()
   gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
   gtk_widget_show( notebook );
 
-  char * page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot", "Extras", "Time", "Misc" };
+  char * page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot", "Extras", "Time", "Size of windows", "Misc" };
   for(int i=0; i < LAST_PAGE; i++)
     {
       int number_of_options = 0;
@@ -549,19 +609,37 @@ Options::setup_options_window()
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
-  GtkWidget * button = gtk_button_new_with_label ("Save options");
+  GtkWidget * button = gtk_button_new_with_label (" Default ");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (default_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label (" Save options ");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (save_options_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
   gtk_widget_show (button);
 
-  button = gtk_button_new_with_label ("Apply");
+  button = gtk_button_new_with_label (" Save as default ");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (save_def_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label (" Apply ");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (apply_options_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
   gtk_widget_show (button);
 
-  button = gtk_button_new_with_label ("Cancel");
+  button = gtk_button_new_with_label (" Ok ");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (ok_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label (" Cancel ");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (options_window_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
@@ -585,9 +663,28 @@ apply_options_requested(GtkWidget * widget, gpointer data)
 }
 
 void
+ok_options_requested(GtkWidget * widget, gpointer data)
+{
+  the_opts.set_all_options_from_gui();
+  the_opts.close_options_window();
+}
+
+void
 save_options_requested(GtkWidget * widget, gpointer data)
 {
-  the_opts.save_all_options_to_file();
+  the_opts.save_all_options_to_file(false);
+}
+
+void
+save_def_options_requested(GtkWidget * widget, gpointer data)
+{
+  the_opts.save_all_options_to_file(true);
+}
+
+void
+default_options_requested(GtkWidget * widget, gpointer data)
+{
+  the_opts.revert_all_options_to_default();
 }
 
 void

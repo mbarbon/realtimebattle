@@ -95,6 +95,15 @@ enum option_long_t
   OPTION_COOKIE_COLOUR,
   OPTION_MINE_COLOUR,
 
+  OPTION_ARENA_WINDOW_SIZE_X,
+  OPTION_ARENA_WINDOW_SIZE_Y,
+  OPTION_MESSAGE_WINDOW_SIZE_X,
+  OPTION_MESSAGE_WINDOW_SIZE_Y,
+  OPTION_SCORE_WINDOW_SIZE_X,
+  OPTION_SCORE_WINDOW_SIZE_Y,
+  OPTION_STATISTICS_WINDOW_SIZE_X,
+  OPTION_STATISTICS_WINDOW_SIZE_Y,
+
   LAST_LONG_OPTION
 };
 
@@ -117,6 +126,7 @@ enum pages_in_options_t
   PAGE_SHOT,
   PAGE_EXTRAS,
   PAGE_TIME,
+  PAGE_SIZE_OF_WINDOWS,
   PAGE_MISC,
   LAST_PAGE
 };
@@ -148,7 +158,10 @@ struct option_info_t
 
 void options_window_requested(GtkWidget *widget, gpointer data);
 void apply_options_requested(GtkWidget *widget, gpointer data);
+void ok_options_requested(GtkWidget *widget, gpointer data);
 void save_options_requested(GtkWidget *widget, gpointer data);
+void save_def_options_requested(GtkWidget *widget, gpointer data);
+void default_options_requested(GtkWidget *widget, gpointer data);
 
 void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
 void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );
@@ -173,8 +186,9 @@ public:
   void broadcast_opts();
   void setup_options_window();
   void close_options_window();
+  void revert_all_options_to_default();
   void set_all_options_from_gui();
-  void save_all_options_to_file();
+  void save_all_options_to_file(const bool as_default);
   void get_options_from_rtbrc();
   bool get_options_window_up() { return options_window_up; }
 

@@ -212,13 +212,8 @@ private:
   GtkWidget* statistics_window;
   GtkWidget* question_window;
 
-
   Vector2D control_window_size;
-  Vector2D score_window_size;
-  Vector2D message_window_size;
-  Vector2D arena_window_size;
   Vector2D start_tournament_window_size;
-  Vector2D statistics_window_size;
 
   Vector2D da_scrolled_window_size;
 
