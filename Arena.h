@@ -231,6 +231,9 @@ public:
   void end_process();
   int check_procees_finished();
 
+  void set_colour( int red, int green, int blue );
+  GdkColor get_colour() { return colour; }
+  
   object_type get_object_type() { return ROBOT; }
   char* get_robotname();
   bool is_alive() { return alive; }
@@ -246,7 +249,6 @@ private:
   double cannon_angle;
   double cannon_speed;
 
-  GdkGC* colour_gc;
   GdkColor colour;
   GString robot_name;
   GString robot_filename;

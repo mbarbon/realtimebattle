@@ -165,3 +165,12 @@ Robot::change_energy(const double energy_diff)
 {
   energy += energy_diff;
 }
+
+void
+Robot::set_colour( int red, int green, int blue )
+{
+  colour.red = red;
+  colour.green = green;
+  colour.blue = blue;
+  //  gdk_color_alloc (colormap, &colour);
+}
