@@ -137,7 +137,7 @@ Robot::update_radar_and_cannon(const double timestep)
   cannon_angle += timestep*cannon_speed;
   robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
-  Shape* col_obj;
+  void* col_obj;
   double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape, col_obj);
   send_message(RADAR, dist, closest_shape);
 }
@@ -155,20 +155,27 @@ Robot::bounce_on_robot(Robot* colliding_object)
 }
 
 void
-Robot::set_initial_position_and_direction(const Vector2D& pos, double angle, double size)
+Robot::set_initial_values(const Vector2D& pos, const double angle, 
+                          const double size, const double start_energy)
 {
   center = pos;
   robot_angle = angle;
   cannon_angle = angle;
   radar_angle = angle;
   radius = size;
+  energy = start_energy;
   velocity = Vector2D(0.7, 0.0); // Just for testing! 
+}
+
+void
+Robot::change_velocity(const double timestep)
+{
+  velocity = 0.99*velocity + timestep*acceleration*Vector2D(cos(robot_angle),sin(robot_angle));  // TODO: acceleration update
 }
 
 void
 Robot::move(const double timestep)
 {
-  velocity = 0.99*velocity + timestep*acceleration*Vector2D(cos(robot_angle),sin(robot_angle));  // TODO: acceleration update
   object_type closest_shape;
   void* colliding_object;
   double time_to_collision = the_arena->get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
@@ -190,6 +197,8 @@ Robot::move(const double timestep)
           bounce_on_robot((Robot*)colliding_object);
           break;
         case SHOT:
+          change_energy(-((Shot*)colliding_object)->get_energy());
+          ((Shot*)colliding_object)->die();
           break;
         case COOKIE:
           break;
@@ -288,15 +297,14 @@ Robot::get_messages()
             Shot* shotp = new Shot( center + (radius+1.5*shot_radius)*dir, 
                                     shot_radius,
                                     dir * the_arena->get_shot_speed(),
-                                    energy );
-            the_arena->add_to_list(*shotp);
-            the_arena->add_to_solid_object_list(*shotp);
+                                    the_arena, energy );
+            g_list_append((the_arena->get_object_lists())[SHOT], shotp);
           }
           break;
         case ACCELERATE:
           double acc;
           *instreamp >> acc;
-          if( acc < 0.0 || acc > the_arena->get_max_acceleration() )
+          if( acc < the_arena->get_min_acceleration() || acc > the_arena->get_max_acceleration() )
             send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
           else
             acceleration = acc;
@@ -330,8 +338,8 @@ Robot::change_energy(const double energy_diff)
 }
 
 Shot::Shot(const Vector2D& c, const double r, 
-           const Vector2D& vel, const double en) 
-  : MovingObject(vel), Circle(c, r)
+           const Vector2D& vel, Arena* ap, const double en ) 
+  : ArenaObject(ap), MovingObject(vel), Circle(c, r)
 {
   alive = true;
   energy = en;
@@ -357,6 +365,7 @@ Shot::move(const double timestep)
           break;
         case ROBOT:
           ((Robot*)colliding_object)->change_energy(-energy);
+          die();
           break;
         case SHOT:
           // TODO: shot explode on shot ?

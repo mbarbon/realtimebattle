@@ -23,18 +23,25 @@ Error::Error(char* strp, char ch, char* funcp)
   c = ch; 
   function_stringp = g_string_new(funcp);
 }
+
+Error::~Error()
+{
+  delete error_stringp;
+  delete error_string2p;
+  delete function_stringp;
+}
            
 void 
 Error::print_message() 
 { 
   if ( c != '\0' )
-    cerr << "Error in " << function_stringp << ": " << error_stringp 
+    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str 
          << " " << c << endl; 
   else if (error_string2p != NULL) 
-    cerr << "Error in " << function_stringp << ": " << error_stringp 
-         << " " << error_string2p << endl;
+    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str 
+         << " " << error_string2p->str << endl;
   else
-    cerr << "Error in " << function_stringp << ": " << error_stringp 
+    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str
          << endl;         
 }
 
