@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "Various.h"
 
+extern class ArenaController the_arena_controller;
 
 GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
                             int argc, char** argv )
@@ -112,6 +113,13 @@ GuiInterface::shutdown()
   void* ret_val;
   pthread_join( thread, &ret_val );
   // TODO: return something useful
+}
+
+//TODO: A Better way to end the gui.
+void
+GuiInterface::quit( bool exit_program )
+{
+  the_arena_controller.quit_gui( this, exit_program );
 }
 
 int
