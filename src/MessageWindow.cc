@@ -20,7 +20,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "MessageWindow.h"
-//#include "Gui.h"
+#include "ScoreWindow.h"
+#include "Gui.h"
 #include "Arena_Controller.h"
 #include "Arena_RealTime.h"
 #include "String.h"
@@ -223,7 +224,7 @@ void
 MessageWindow::show_one_robot( GtkWidget* widget,
                                class MessageWindow* messagewindow_p )
 {
-  messagewindow_p->set_viewed_robot( the_gui.get_selected_robot() );
+  messagewindow_p->set_viewed_robot( the_gui.get_scorewindow_p()->get_selected_robot() );
   messagewindow_p->set_window_title();
 }
 

@@ -24,9 +24,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-typedef void* gpointer;
+#ifndef NO_GRAPHICS
+
+#include <gtk/gtk.h>
 
 class StartTournamentWindow
 {
@@ -120,5 +120,7 @@ private:
   GList* selected_arena_tournament;
   GList* selected_arena_directory;
 };
+
+#endif NO_GRAPHICS
 
 #endif __START_TOURNAMENT_WINDOW__

@@ -18,7 +18,8 @@ CXXFLAGS += -DNO_GRAPHICS
 else
 GRAPHICS_O = \
 	Gui.o ControlWindow.o MessageWindow.o \
-	Statistics.o StartTournamentWindow.o Structs.o
+	ScoreWindow.o Statistics.o \
+	StartTournamentWindow.o Structs.o
 endif
 
 RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
@@ -51,6 +52,7 @@ EXTRA_RealTimeBattle_SOURCES = \
 	getopt.c getopt.h \
 	Gui.cc \
 	MessageWindow.cc MessageWindow.h \
+	ScoreWindow.cc ScoreWindow.h \
 	StartTournamentWindow.cc StartTournamentWindow.h \
 	Statistics.cc \
 	Structs.cc

@@ -20,7 +20,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ControlWindow.h"
-//#include "Gui.h"
+#include "ScoreWindow.h" 
+#include "Gui.h"
 #include "Arena_Controller.h"
 #include "Arena_RealTime.h"
 #include "Robot.h"
@@ -70,7 +71,7 @@ ControlWindow::ControlWindow( const int default_width,
     { " Pause ",
       (GtkSignalFunc) ControlWindow::pause             , TRUE  },
     { " End ",
-      (GtkSignalFunc) ControlWindow::end_tournament    , TRUE  },
+      (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
     { " Options ",
       (GtkSignalFunc) options_window_requested         , TRUE  },
     //      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
@@ -272,7 +273,7 @@ ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 {
   if(the_arena.get_state() == GAME_IN_PROGRESS)
     {
-      Robot* robotp = the_gui.get_selected_robot();
+      Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
       if( robotp != NULL )
         robotp->die();
     }

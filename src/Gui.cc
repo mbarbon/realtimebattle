@@ -34,6 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena_RealTime.h"
 
 #include "MessageWindow.h"
+#include "ScoreWindow.h"
 #include "StartTournamentWindow.h"
 
 #include "Shot.h"
@@ -60,14 +61,6 @@ question_no_callback(GtkWidget * widget, QuestionFunction function_name)
 {
   (*function_name)(false);
   the_gui.close_question_window();
-}
-
-void
-new_robot_selected( GtkWidget * clist, gint row, gint column,
-                    GdkEventButton *event, gpointer data )
-{
-  if( event != NULL )
-    the_gui.change_selected_robot( row );
 }
 
 void
@@ -341,148 +334,6 @@ Gui::quit_event()
   gtk_main_quit();
 }
 
-void
-Gui::set_score_window_title()
-{
-  String title = (String)"RealTimeBattle Score " + " Seq: " + the_arena.get_sequence_nr() + " Game: " +
-    String(the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence()) +
-    " Time: " + String((int)the_arena.get_total_time());
-  gtk_window_set_title (GTK_WINDOW (score_window), title.chars());
-}
-
-void
-Gui::change_selected_robot( const int row )
-{
-  GList* gl;
-  Robot* robotp;
-
-  for(gl = g_list_next(the_arena.get_object_lists()[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot*)(gl->data);
-
-      if( row == robotp->get_row_in_score_clist() )
-        selected_robot = robotp;
-    }
-}
-
-// This function will create the score window
-void
-Gui::setup_score_window()
-{
-  char * titles[6] = { "", "Name", "Energy ", "Place ", "Last ", "Score  " };
-
-  score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  set_score_window_title();
-  gtk_widget_set_name (score_window, "RTB Score");
-  gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
-                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
-  gtk_container_border_width (GTK_CONTAINER (score_window), 12);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_window_set_default_size( GTK_WINDOW( score_window ),
-                               (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),
-                               (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y) );
-  gtk_widget_set_usize( score_window, 175, 80 );
-#else
-  gtk_widget_set_usize(score_window,
-                       (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),
-                       (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y));
-#endif
-  gtk_widget_set_uposition(score_window,
-                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_X),
-                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_Y));
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
-                                                     GTK_ADJUSTMENT ( vadj ) );
-  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  gtk_container_add (GTK_CONTAINER (score_window), scrolled_win);
-  gtk_widget_show ( scrolled_win );
-#endif
-
-  score_clist = gtk_clist_new_with_titles( 6, titles);
-  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 5);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 3, 38);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 4, 35);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 5, 45);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 0, GTK_JUSTIFY_CENTER);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 1, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 2, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 3, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 4, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
-  gtk_signal_connect(GTK_OBJECT(score_clist), "select_row",
-                     GTK_SIGNAL_FUNC(new_robot_selected), NULL);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(score_clist), GTK_SHADOW_IN);
-  gtk_container_add(GTK_CONTAINER(scrolled_win), score_clist);
-#else
-  gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
-  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (score_window), score_clist);
-#endif
-  gtk_widget_show(score_clist);
-
-  gtk_widget_show (score_window);
-}
-
-// This function resets score window and adds all robots in sequence to the score window
-void
-Gui::add_robots_to_score_list()
-{                             
-  gtk_clist_clear(GTK_CLIST(score_clist));
-  GList** object_lists;
-  GList* gl;
-  Robot* robotp;
-
-  object_lists = the_arena.get_object_lists();
-
-  int robot_number=0;
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    robot_number++;
-
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot*)(gl->data);
-
-      char * list[6];
-
-      for(int j=0;j<6;j++)
-        {
-          list[j] = new char[30];
-          strcpy(list[j],"");
-        }
-
-      int row = gtk_clist_append(GTK_CLIST(score_clist), list);
-      gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena.get_foreground_colour_p());
-      gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena.get_background_colour_p());
-
-      robotp->set_row_in_score_clist( row );
-
-      GdkPixmap * colour_pixmap;
-      GdkBitmap * bitmap_mask;
-
-      robotp->get_score_pixmap(score_window->window, colour_pixmap, bitmap_mask);
-
-      gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
-
-      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robot_name().non_const_chars());
-
-      gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
-      robotp->reset_last_displayed();
-      robotp->display_score();
-
-      for(int i=0; i<6; i++) delete [] list[i];
-    }
-  change_selected_robot( 0 );
-}
-
 // This function sets the title of the arena window
 void
 Gui::set_arena_window_title()
@@ -624,6 +475,27 @@ Gui::ask_user(String question, QuestionFunction function_name)
 }
 
 void
+Gui::open_scorewindow()
+{
+  if( NULL == scorewindow_p )
+    scorewindow_p = 
+      new ScoreWindow( the_opts.get_l( OPTION_SCORE_WINDOW_SIZE_X ),
+                       the_opts.get_l( OPTION_SCORE_WINDOW_SIZE_Y ),
+                       the_opts.get_l( OPTION_SCORE_WINDOW_POS_X ),
+                       the_opts.get_l( OPTION_SCORE_WINDOW_POS_Y ) );
+}
+
+void
+Gui::close_scorewindow()
+{
+  if( NULL != scorewindow_p )
+    {
+      delete scorewindow_p;
+      scorewindow_p = NULL;
+    }
+}
+
+void
 Gui::open_starttournamentwindow()
 {
   if( NULL == starttournamentwindow_p )
@@ -677,12 +549,6 @@ Gui::close_messagewindow()
       delete messagewindow_p;
       messagewindow_p = NULL;
     }
-}
-
-void
-Gui::close_score_window()
-{
-  gtk_widget_destroy ( score_window );
 }
 
 void

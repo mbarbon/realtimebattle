@@ -58,6 +58,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "Wall.h"
 #include "Robot.h"
+#ifndef NO_GRAPHICS
+# include "ScoreWindow.h"
+#endif
 
 Arena_RealTime::Arena_RealTime()
 {
@@ -576,7 +579,8 @@ Arena_RealTime::timeout_function()
       {
         update();
 #ifndef NO_GRAPHICS
-        if((int)total_time > old_total && !no_graphics) the_gui.set_score_window_title();
+        if((int)total_time > old_total && !no_graphics)
+          the_gui.get_scorewindow_p()->set_window_title();
 #endif
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
@@ -920,10 +924,10 @@ Arena_RealTime::start_game()
     {
       the_gui.clear_area();
       the_gui.change_zoom();
-      the_gui.add_robots_to_score_list();
+      the_gui.get_scorewindow_p()->add_robots();
 
       reset_timer();  // Time should be zero in score window
-      the_gui.set_score_window_title();
+      the_gui.get_scorewindow_p()->set_window_title();
       the_gui.set_arena_window_title();
     }
 #endif
@@ -1061,7 +1065,7 @@ Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* a
     {
       the_gui.open_messagewindow();
       the_gui.setup_arena_window();
-      the_gui.setup_score_window();
+      the_gui.open_scorewindow();
     }
 #endif
 
@@ -1196,7 +1200,7 @@ Arena_RealTime::end_tournament()
   if( !no_graphics )
     {
       the_gui.close_messagewindow();
-      the_gui.close_score_window();
+      the_gui.close_scorewindow();
       the_gui.close_arena_window();
       //  the_gui.close_control_window();
     }

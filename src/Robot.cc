@@ -53,6 +53,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 # include "MessageWindow.h"
+# include "ScoreWindow.h"
 #endif
 
 //  #include "Gui.h"
@@ -1363,7 +1364,7 @@ Robot::display_score()
   if( last_displayed_energy != (int)energy )
     {
       last_displayed_energy = (int)energy;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist,
                          2, String((int)energy).non_const_chars());
     }
@@ -1371,7 +1372,7 @@ Robot::display_score()
   if( last_displayed_place != position_this_game )
     {
       last_displayed_place = position_this_game;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist,
                          3, String(position_this_game).non_const_chars());
     }
@@ -1380,7 +1381,7 @@ Robot::display_score()
     if( last_displayed_last_place != get_last_position() )
       {
         last_displayed_last_place = get_last_position();
-        gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                            row_in_score_clist,
                            4, String(get_last_position()).non_const_chars());
       }
@@ -1389,7 +1390,7 @@ Robot::display_score()
   if( last_displayed_score != (int)(10 * get_total_points()) )
     {
       last_displayed_score = (int)(10 * get_total_points());
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist,
                          5, String(get_total_points()).non_const_chars());
     }

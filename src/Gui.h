@@ -29,6 +29,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Vector2D.h"
 
 class MessageWindow;
+class ScoreWindow;
 class StartTournamentWindow;
 
 //#include "MovingObject.h"
@@ -77,8 +78,7 @@ enum start_tournament_button_t
 void question_yes_callback                            ( GtkWidget* widget, QuestionFunction function_name );
 void question_no_callback                             ( GtkWidget* widget, QuestionFunction function_name );
 
-void new_robot_selected                               ( GtkWidget* clist, gint row, gint column,
-                                                        GdkEventButton* event, gpointer data );
+
 
 void statistics_button_callback                       ( GtkWidget* widget, gpointer data );
 void save_statistics_callback                         ( GtkWidget* widget, gpointer data);
@@ -101,11 +101,9 @@ public:
   Gui();
   ~Gui() {}
 
-  void setup_score_window();
   void setup_arena_window();
   void setup_statistics_window();
 
-  void close_score_window();
   void close_arena_window();
   void close_statistics_window();
   void close_question_window();
@@ -134,20 +132,19 @@ public:
   void add_the_statistics_to_clist();
   void stat_make_title_button();
 
-  void set_score_window_title();
   void set_arena_window_title();
-  void add_robots_to_score_list();
-
-  void change_selected_robot( const int row );
 
   void ask_user(String question, QuestionFunction function_name);
 
   bool get_statistics_up() { return statistics_up; }
-  GtkWidget* get_score_clist() { return score_clist; }
-  Robot* get_selected_robot() { return selected_robot; }
   double get_zoom() { return zoom; }
   GtkWidget* get_filesel_widget() { return filesel_widget; }
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
+
+  ScoreWindow* get_scorewindow_p               ()
+    { return scorewindow_p; }
+  void open_scorewindow                        ();
+  void close_scorewindow                       ();
 
   StartTournamentWindow* get_starttournament_p ()
     { return starttournamentwindow_p; }
@@ -167,16 +164,12 @@ private:
   GtkWidget* drawing_area;
   GtkWidget* da_scrolled_window;
 
-  GtkWidget* score_clist;
   GtkWidget* stat_clist;
   GtkWidget* stat_title_button;
   GtkWidget* stat_title_hbox;
 
   GtkWidget* filesel_widget;
 
-  Robot* selected_robot;
-
-  GtkWidget* score_window;
   GtkWidget* arena_window;
   GtkWidget* statistics_window;
   GtkWidget* question_window;
@@ -192,8 +185,9 @@ private:
   stat_table_t stat_table_type;
   int stat_looking_at_nr;
 
-  StartTournamentWindow* starttournamentwindow_p;
   MessageWindow* messagewindow_p;
+  ScoreWindow* scorewindow_p;
+  StartTournamentWindow* starttournamentwindow_p;
 };
 
 #endif NO_GRAPHICS
