@@ -350,10 +350,71 @@ different columns by clicking on the corresponding title box.
 <p>
 <sect1>Tournament files<label id ="tournament_files">
 <p>
+
+The tournament file is specified as a <ref id="Command line options" name="command line option">.
+When specified a tournament will automatically begin and end. To save the statistics see section
+<ref id="statistics_files" name="statistics file"> for more information.
+
+A tournament file consists of five keywords. All of these keywords can be written several
+times, but keep in mind that only the last one of the keywords that takes a number as argument is
+counted. All keywords should be followed by a semicolon.
+
+<descrip>
+<tag>Games/Sequence or g/s:</tag> Takes a number or a <tt>*</tt> as an argument. The number is how
+many games should be played per tournament. The star means that the program takes the exact amount
+of arenas and uses this as the argument. The default value is 1.
+
+<tag>Robots/Sequence or r/s:</tag> Takes a number or a <tt>*</tt> as an argument. The number is how
+many robots is playing in each sequence. The star means that the program takes the exact amount of
+robots and uses this as the argument. The default value is 2.
+
+<tag>Sequences or seq:</tag> Takes a number or a <tt>*</tt> as an argument. The number is how
+many sequences that shall be played in the tournament. The star means that the program takes the
+exact amount of robots and the robots per sequence do a binomial calculation to determine the number
+of sequence for all robots to meet each other exactly one time and uses this number as the argument.
+The default value is 1.
+
+<tag>Robots or r:</tag> Takes one or more robot files as its argument.
+
+<tag>Arenas or a:</tag> Takes one or more arena files as its argument.
+</descrip>
+
+File arguments can be one of the following:
+<descrip>
+<tag>Just the file:</tag> This searches the path for the file
+
+Example: <tt>Robot: empty.robot</tt>
+
+<tag>Full path to the file:</tag> This takes the given file
+
+Example: <tt>Arena: /usr/Games/RealTimeBattle/Arenas/Circle.arena</tt>
+
+<tag>All files in path:</tag> This searches the whole path and takes all files found.
+
+Example: <tt>Arena: *</tt>
+
+<tag>One specific directory:<tag> This searches the specified directory and takes all files found. 
+
+Example: <tt>Robot: /usr/Games/RealTimeBattle/Robots/*</tt>
+
+</descrip>
+
+It is possible to write files more than one time. So if you want three rotate_and_fire.robot. Just
+write rotate_and_fire.robot three times. This is also true for <tt>*</tt>.
+
+Example tournament file:
+
+<tt>
+R: * Arenas: Circle.arena Square.arena G/S: 2 r/s: 3 Sequences: *
+</tt>
+
 <sect1>Log files<label id ="log_files">
 <p>
 <sect1>Statistics files<label id ="statistics_files">
 <p>
+
+The statistics file is a file used only when a <ref id="tournament_files" name="tournament file"> is
+specified. The statistics will be saved to this file when the tournament ends.
 
 
 <!--   ################       Structure        ##################   -->
