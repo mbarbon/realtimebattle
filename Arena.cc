@@ -88,7 +88,7 @@ void
 Arena::parse_file(istream& file)
 {
   char text[20];
-  double number1, number2, bounce_c, hardn, thickness;
+  double radie, bounce_c, hardn, thickness;
   int vertices;
 
   Vector2D vec1, vec2, vec0;
@@ -131,24 +131,24 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "inner_circle" ) == 0 )
         {
-          if( succession != 3 ) throw Error("'inner_circle' not between boundary other wallpieces", "Arena::parsefile");
-          file >> vec1;
-          file >> number1;
+          if( succession < 3 ) throw Error("'inner_circle' before boundary", "Arena::parsefile");
+          succession = 4;
           file >> bounce_c;
           file >> hardn;
-          wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*number1, bounce_c, hardn);
-          g_list_append(object_lists[WALL], wall_inner_circlep);
+          file >> vec1;
+          file >> radie;
+          wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radie, bounce_c, hardn);
+          g_list_insert(object_lists[WALL], wall_inner_circlep, 1);
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
           if( succession < 3 ) throw Error("'circle' before 'boundary'", "Arena::parsefile");
           succession = 4;
-          file >> vec1;
-          file >> number1;
           file >> bounce_c;
           file >> hardn;
-
-          wall_circlep = new WallCircle(scale*vec1, scale*number1, bounce_c, hardn);
+          file >> vec1;
+          file >> radie;
+          wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
           g_list_append(object_lists[WALL], wall_circlep);
         }
 //       else if( strcmp(text, "arc" ) == 0 )
@@ -158,25 +158,28 @@ Arena::parse_file(istream& file)
         {
           if( succession < 3 ) throw Error("'line' before 'boundary'", "Arena::parsefile");
           succession = 4;
-          file >> vec1;      // start_point
-          file >> vec2;      // end_point
-          file >> number2;   // thickness
           file >> bounce_c;
           file >> hardn;
+          file >> thickness; 
+          thickness *= 0.5;
+          file >> vec1;      // start_point
+          file >> vec2;      // end_point
+
 
           if( length(vec2-vec1) == 0.0 ) throw Error("Zero length line", "Arena::parsefile");
 
           wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
-                                    scale*number2, bounce_c , hardn);      
+                                    scale*thickness, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wall_linep);
         }
       else if( strcmp(text, "polygon" ) == 0 )
         {
           if( succession < 3 ) throw Error("'polygon' before 'boundary'", "Arena::parsefile");
           succession = 4;
-          file >> thickness;    // thickness
           file >> bounce_c;
           file >> hardn;
+          file >> thickness;
+          thickness *= 0.5;
           file >> vertices;   // number of vertices
           file >> vec1;      // first point
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
@@ -200,9 +203,10 @@ Arena::parse_file(istream& file)
         {
           if( succession < 3 ) throw Error("'closed_polygon' before 'boundary'", "Arena::parsefile");
           succession = 4;
-          file >> thickness;    // thickness
           file >> bounce_c;
           file >> hardn;
+          file >> thickness;
+          thickness *= 0.5;
           file >> vertices;   // number of vertices
           file >> vec1;      // first point
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
@@ -620,7 +624,10 @@ Arena::update_robots()
           killed_robots++;
         }
       else
-        robotp->send_message( ENERGY, (int)( robotp->get_energy() / (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS) ) );
+        {
+          double lvls = (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS);
+          robotp->send_message( ENERGY, rint( robotp->get_energy() / lvls ) * lvls );
+        }
     }
 
   if( killed_robots > 0 )
