@@ -11,16 +11,27 @@ BasicGadget AllGadgets[] =
 };
 
 
-Gadget* createGadget(string GadgetType, const char* Name, Gadget* const p)
+GadgetDefinition* 
+createGadgetDef(string GadgetType, const char* Name, Gadget* const p)
 {
+  Gadget* G = NULL;
+  GadgetDefinition *ToReturn = NULL;
   for(int i = 0; AllGadgets[i].theGadget != 0; i++)
     {
       if(AllGadgets[i].Name == GadgetType)
 	{
-	  return AllGadgets[i].theGadget->NewInstance(Name, p);
+	  G = AllGadgets[i].theGadget->NewInstance(Name, p);
+	  break;
 	}
     }
-  return NULL;
+  if(G)
+    {
+      ToReturn = new GadgetDefinition;
+      ToReturn->Name      = string(Name);
+      ToReturn->Type      = GadgetType;
+      ToReturn->theGadget = G;
+    }
+  return ToReturn;
 }
 
 /* UnComment to make a test

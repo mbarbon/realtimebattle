@@ -3,11 +3,20 @@
 
 #include <string>
 
+class Gadget;
+struct GadgetDefinition;
+
 #include "Gadget.h"
 #include "ShotGadget.h"
 #include "WeaponGadget.h"
 #include "WallGadget.h"
 
+struct GadgetDefinition
+{
+  string Name;
+  string Type;
+  Gadget *theGadget;
+};
 
 struct BasicGadget
 {
@@ -17,7 +26,9 @@ struct BasicGadget
 
 extern BasicGadget AllGadgets[]; 
 
-Gadget* createGadget(string /* GadgetType */, const char*, Gadget* const);
+
+GadgetDefinition* 
+createGadgetDef(string /* GadgetType */, const char*, Gadget* const);
 
 
 #endif
