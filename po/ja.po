@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 2000-01-21 19:37+0100\n"
+"POT-Creation-Date: 2000-01-30 11:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Minatsu Tukisima <minatsu@shiratori.riec.tohoku.ac.jp>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -192,11 +192,11 @@ msgstr " ロボット "
 msgid " Message "
 msgstr " メッセージ "
 
-#: src/MessageWindow.cc:175
+#: src/MessageWindow.cc:187
 msgid "Messages"
 msgstr "メッセージ"
 
-#: src/MessageWindow.cc:179
+#: src/MessageWindow.cc:191
 msgid " All "
 msgstr " 全て "
 
@@ -512,7 +512,7 @@ msgstr "ショット"
 msgid "Extras"
 msgstr "エクストラ"
 
-#: src/OptionsWindow.cc:77 src/ScoreWindow.cc:153
+#: src/OptionsWindow.cc:77 src/ScoreWindow.cc:157
 msgid "Time"
 msgstr "タイム"
 
@@ -562,8 +562,8 @@ msgstr " デフォルトとして保存 "
 msgid " Apply "
 msgstr " 適用 "
 
-#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:570
-#: src/StartTournamentWindow.cc:719 src/StartTournamentWindow.cc:858
+#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:574
+#: src/StartTournamentWindow.cc:723 src/StartTournamentWindow.cc:862
 msgid " Ok "
 msgstr " Ok "
 
@@ -677,7 +677,7 @@ msgid "    --version,                   -v   prints the version number"
 msgstr "    --version,                   -v   バージョンを表示します"
 
 #: src/ScoreWindow.cc:75 src/StatisticsWindow.cc:228
-#: src/StatisticsWindow.cc:390
+#: src/StatisticsWindow.cc:394
 msgid "Name"
 msgstr "名前"
 
@@ -693,16 +693,16 @@ msgstr "順位"
 msgid "Last"
 msgstr "前回"
 
-#: src/ScoreWindow.cc:76 src/ScoreWindow.cc:146
+#: src/ScoreWindow.cc:76 src/ScoreWindow.cc:150
 msgid "Score"
 msgstr "スコア"
 
-#: src/ScoreWindow.cc:147
+#: src/ScoreWindow.cc:151
 msgid " Seq: "
 msgstr " シーケンス: "
 
-#: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:409 src/StatisticsWindow.cc:521
+#: src/ScoreWindow.cc:154 src/StatisticsWindow.cc:91
+#: src/StatisticsWindow.cc:413 src/StatisticsWindow.cc:525
 msgid "Game"
 msgstr "ゲーム"
 
@@ -734,7 +734,7 @@ msgstr "順位"
 msgid "Points"
 msgstr "得点"
 
-#: src/StatisticsWindow.cc:229 src/StatisticsWindow.cc:367
+#: src/StatisticsWindow.cc:229 src/StatisticsWindow.cc:371
 msgid "Games"
 msgstr "ゲーム"
 
@@ -746,23 +746,23 @@ msgstr "生存時間"
 msgid "Total Points"
 msgstr "トータル得点"
 
-#: src/StatisticsWindow.cc:316
+#: src/StatisticsWindow.cc:320
 msgid "Choose a statistics file to save"
 msgstr "保存する統計情報ファイルを選んで下さい"
 
-#: src/StatisticsWindow.cc:408
+#: src/StatisticsWindow.cc:412
 msgid "Seq"
 msgstr "シーケンス"
 
-#: src/StatisticsWindow.cc:505
+#: src/StatisticsWindow.cc:509
 msgid " Grand Total "
 msgstr " グランドトータル "
 
-#: src/StatisticsWindow.cc:508
+#: src/StatisticsWindow.cc:512
 msgid " Sequence "
 msgstr " シーケンス "
 
-#: src/StatisticsWindow.cc:520
+#: src/StatisticsWindow.cc:524
 msgid " Sequence: "
 msgstr " シーケンス: "
 
@@ -836,44 +836,44 @@ msgstr " トーナメントの保存 "
 msgid " Start "
 msgstr " スタート "
 
-#: src/StartTournamentWindow.cc:490
+#: src/StartTournamentWindow.cc:494
 msgid "Choose a tournament file to load"
 msgstr "読み込むトーナメントファイルを選んで下さい"
 
-#: src/StartTournamentWindow.cc:524
+#: src/StartTournamentWindow.cc:528
 msgid "Choose file to save tournament into"
 msgstr "保存するトーナメントファイルを選んで下さい"
 
-#: src/StartTournamentWindow.cc:568
+#: src/StartTournamentWindow.cc:572
 msgid "Error in specified tournament file."
 msgstr "指定したトーナメントファイルにエラーがあります。"
 
-#: src/StartTournamentWindow.cc:571
+#: src/StartTournamentWindow.cc:575
 msgid "Tournament could not be loaded."
 msgstr "トーナメントが読み込みできませんでした。"
 
-#: src/StartTournamentWindow.cc:709
+#: src/StartTournamentWindow.cc:713
 msgid "There are too few robots in the tournament."
 msgstr "トーナメントに参加するロボットが少なすぎます。"
 
-#: src/StartTournamentWindow.cc:711 src/StartTournamentWindow.cc:853
+#: src/StartTournamentWindow.cc:715 src/StartTournamentWindow.cc:857
 msgid "There are no arenas in the tournament."
 msgstr "トーナメントに使用するアリーナが指定されていません。"
 
-#: src/StartTournamentWindow.cc:714
+#: src/StartTournamentWindow.cc:718
 msgid "Could not open file."
 msgstr "ファイルをオープンできません。"
 
-#: src/StartTournamentWindow.cc:720
+#: src/StartTournamentWindow.cc:724
 msgid "Tournament could not be saved."
 msgstr "トーナメントが保存できませんでした。"
 
-#: src/StartTournamentWindow.cc:851
+#: src/StartTournamentWindow.cc:855
 msgid "There must be at least two robots in the tournament."
 msgstr ""
 "トーナメントには少なくとも２つのロボットが参加していなければなりません。"
 
-#: src/StartTournamentWindow.cc:859
+#: src/StartTournamentWindow.cc:863
 msgid "Tournament could not be started."
 msgstr "トーナメントが開始できませんでした。"
 
