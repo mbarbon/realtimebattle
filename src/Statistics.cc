@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "Arena.h"
 #include "MovingObject.h"
+#include "Various.h"
 
 void
 statistics_button_callback(GtkWidget *widget, gpointer data)
@@ -71,6 +72,12 @@ destroy_stats_filesel()
   the_gui.set_filesel_widget(NULL);
 }
 
+void 
+stat_clist_column_callback (GtkCList *clist, gint column, gpointer data)
+{
+  the_gui.change_sorting_in_clist(column);
+}
+
 void
 buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p)
 {
@@ -114,13 +121,21 @@ Gui::change_stat_type( stat_table_t type )
   gtk_clist_freeze(GTK_CLIST(stat_clist));
   if(type == STAT_TABLE_TOTAL || type == STAT_TABLE_SEQUENCE)
     {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      gtk_clist_set_column_visibility (GTK_CLIST(stat_clist),4,TRUE);
+#else
       gtk_clist_set_column_title(GTK_CLIST(stat_clist), 4, "Games ");
       gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 45);
+#endif
     }
   else
     {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      gtk_clist_set_column_visibility (GTK_CLIST(stat_clist),4,FALSE);
+#else
       gtk_clist_set_column_title(GTK_CLIST(stat_clist), 4, "");
       gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 0);
+#endif
     }
   if(stat_table_type == STAT_TABLE_ROBOT && type != STAT_TABLE_ROBOT)
     {
@@ -144,19 +159,84 @@ Gui::change_stat_type( stat_table_t type )
   switch( type )
     {
     case STAT_TABLE_TOTAL:
+      change_sorting_in_clist( 6 );
       break;
     case STAT_TABLE_SEQUENCE:
+      change_sorting_in_clist( 6 );
       stat_looking_at_nr = the_arena.get_sequence_nr();
       break;
     case STAT_TABLE_GAME:
+      change_sorting_in_clist( 3 );
       stat_looking_at_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence()
         + the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
       break;
     case STAT_TABLE_ROBOT:
+      change_sorting_in_clist( 0 );
       stat_looking_at_nr = 1;
       break;
     }
   add_the_statistics_to_clist();
+  gtk_clist_thaw(GTK_CLIST(stat_clist));
+}
+
+void
+Gui::change_sorting_in_clist( const int column )
+{
+  gtk_clist_freeze(GTK_CLIST(stat_clist));
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  switch(column)
+    {
+    case 0:
+      if(stat_table_type == STAT_TABLE_ROBOT)
+        {
+          gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+          gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+          gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_ASCENDING);
+          gtk_clist_sort(GTK_CLIST(stat_clist));
+        }
+      break;
+    case 1:
+      if(stat_table_type != STAT_TABLE_ROBOT)
+        {
+          gtk_clist_set_compare_func(GTK_CLIST(stat_clist),string_case_insensitive_compare);
+          gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+          gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_ASCENDING);
+          gtk_clist_sort(GTK_CLIST(stat_clist));
+        }
+      else
+        {
+          gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+          gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+          gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_ASCENDING);
+          gtk_clist_sort(GTK_CLIST(stat_clist));
+        }
+      break;
+    case 2:
+      gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+      gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+      gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_ASCENDING);
+      gtk_clist_sort(GTK_CLIST(stat_clist));
+      break;
+    case 3:
+    case 5:
+    case 6:
+      gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+      gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+      gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_DESCENDING);
+      gtk_clist_sort(GTK_CLIST(stat_clist));
+      break;
+    case 4:
+      if(stat_table_type == STAT_TABLE_TOTAL || stat_table_type == STAT_TABLE_SEQUENCE)
+        {
+          gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+          gtk_clist_set_sort_column(GTK_CLIST(stat_clist),column);
+          gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_ASCENDING);
+          gtk_clist_sort(GTK_CLIST(stat_clist));
+        }
+      break;
+    }
+#endif
+  gtk_clist_thaw(GTK_CLIST(stat_clist));
 }
 
 void
@@ -166,6 +246,7 @@ Gui::change_statistics( int change, bool absolut_change )
   int game_nr = the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
   int max_nr = 0;
+
   switch(stat_table_type)
     {
     case STAT_TABLE_TOTAL:
@@ -200,8 +281,7 @@ Gui::change_statistics( int change, bool absolut_change )
         stat_looking_at_nr = max_nr;
     }
 
-  if( stat_looking_at_nr != old_look)
-    add_the_statistics_to_clist();
+  add_the_statistics_to_clist();
 }
 
 void
@@ -290,7 +370,14 @@ Gui::add_the_statistics_to_clist()
             robot_nr++;
             robotp = (Robot *)gl->data;
 
-            points[robot_nr] = robotp->get_total_points();
+            stat_t * statp = NULL;
+            points[robot_nr] = 0;
+
+            for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+              {
+                statp = (stat_t*)(stat_gl->data);
+                points[robot_nr] += statp->points;
+              }
           }
 
         for(int i = 0;i<number_of_robots;i++)
@@ -436,6 +523,9 @@ Gui::add_the_statistics_to_clist()
         break;
       }
     }  
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_sort(GTK_CLIST(stat_clist));
+#endif
   gtk_clist_thaw(GTK_CLIST(stat_clist));
 }
 
@@ -547,6 +637,7 @@ Gui::setup_statistics_window()
 
   statistics_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
+  gtk_widget_set_name (statistics_window, "RTB Statistics");
   gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
   gtk_container_border_width (GTK_CONTAINER (statistics_window), 12);  
@@ -703,7 +794,7 @@ Gui::setup_statistics_window()
   char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
   stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 20);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 0);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 3, 35);
@@ -719,6 +810,11 @@ Gui::setup_statistics_window()
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 6, GTK_JUSTIFY_RIGHT);
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_clist_set_shadow_type(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
+  gtk_clist_set_compare_func(GTK_CLIST(stat_clist),float_compare);
+  gtk_clist_set_sort_column(GTK_CLIST(stat_clist),6);
+  gtk_clist_set_sort_type(GTK_CLIST(stat_clist),GTK_SORT_DESCENDING);
+  gtk_signal_connect (GTK_OBJECT (stat_clist), "click_column",
+                      (GtkSignalFunc) stat_clist_column_callback, NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_win), stat_clist);
 #else
   gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
