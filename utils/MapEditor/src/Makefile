@@ -5,7 +5,7 @@ rtbme: AllGadgets.o Arena.o Gadget.o GadgetSet.o GadgetDef.o ShotGadget.o Weapon
 	`gtk-config --libs`
 
 
-main.o: main.cpp
+main.o: main.cc
 	g++ -c -o main.o main.cc `gtk-config --cflags`
 
 MainWindow.o: MainWindow.cpp
