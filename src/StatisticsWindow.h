@@ -93,7 +93,7 @@ public:
   GtkWidget* get_clist               () { return clist; }
   enum stat_types get_type           () { return type; }
   int get_looking_at_nr              () { return looking_at_nr; }
-  int set_looking_at_nr              ( const int number )
+  void set_looking_at_nr              ( const int number )
     { looking_at_nr = number; }
   void set_type                      ( stat_types t ) { type = t; }
 

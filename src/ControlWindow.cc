@@ -81,7 +81,7 @@ ControlWindow::ControlWindow( const int default_width,
     { "         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
-  GtkWidget* button_hbox;
+  GtkWidget* button_hbox = NULL;
   for(int i = 0;i < 6; i++)
     {
       if( i == 0 || i == 3 || i == 5 )

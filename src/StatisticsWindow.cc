@@ -407,7 +407,7 @@ StatisticsWindow::change_stats_viewed( GtkWidget* widget,
 
   int game = the_arena.get_games_per_sequence() -
     the_arena.get_games_remaining_in_sequence();
-  int max_nr;
+  int max_nr = -1;
 
   switch( sw_type )
     {
@@ -426,7 +426,7 @@ StatisticsWindow::change_stats_viewed( GtkWidget* widget,
       break;
     }
 
-  if( info_p->extreme_change )
+  if( info_p->extreme_change && max_nr > 0 )
     {
       if( info_p->change < 0 )
         number = abs( info_p->change );

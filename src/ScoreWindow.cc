@@ -203,8 +203,6 @@ ScoreWindow::add_robots()
 
   bool found_robot = false;
 
-  int robot_number = the_arena.get_object_lists()[ROBOT_T].number_of_elements();
-
   for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
     {
       robot_p = (Robot*)li();

@@ -131,7 +131,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                                 " Unselect All ", " Add ",
                                 " Select All ", " Unselect All " };
 
-      GtkWidget* vbox2;
+      GtkWidget* vbox2 = NULL;
 
       for( int i=START_TORUNAMENT_REMOVE;
            i<= START_TORUNAMENT_UNSELECT_ALL_DIRECTORY; i++ )
@@ -688,7 +688,6 @@ StartTournamentWindow::selection_made( GtkWidget* clist, gint row,
   if( event == NULL )
     return;
 
-  ListIterator<start_tournament_info_t> li;
   List<start_tournament_info_t>* info_list = NULL;
 
   if(clist == stw_p->get_robots_in_tournament_clist() )
