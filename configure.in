@@ -462,12 +462,12 @@ AC_CHECK_LIB(stdc++, getc,stdcxx=yes,
 AC_CHECK_HEADER(vector.h,,
 	AC_MSG_ERROR(You need to have the libstdc++ headers installed))
 
-AC_LANG_RESTORE
-
 if test "x$stdcxx" = "xyes"; then
 	STDCXX_LIBS=-lstdc++
 fi
 AC_SUBST(STDCXX_LIBS)
+
+AC_LANG_RESTORE # End of c++ checks
 
 #  RPM - set the correct CXXFLAGS and CFLAGS. Do not install the docs.
 
