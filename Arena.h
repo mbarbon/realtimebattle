@@ -26,23 +26,34 @@ public:
   Arena();
   ~Arena();
 
-  gint update();
+
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
                                const double size, class Shape* closest_shape);
+
+  gint timeout_function();
   
   void start_game(int arenanr);
-  void start_sequence_of_games(int first_arena);
+  void end_game();
+  void start_sequence(int first_arena);
+  void end_sequence();
   void start_tournament(char**robotfilenamelist, char** arenafilenamelist, // NULL terminated lists
                         int robots_per_game); 
+  void end_tournament();
+
+  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
   
 private:
   double timestep;
   double total_time;
+  GTimer timer;
+  
+  double next_check_time;
 
   void parse_file(istream&);
   void check_initialization();
 
+  void update();
   void start_robot(char* filename);
   void update_robots();
   void move_shots();
@@ -61,7 +72,11 @@ private:
   GList arena_filenames;               // list of GStrings
   
   int games_remaining_in_sequence;
-
+  int sequences_remaining;
+  int robots_left;
+  int robots_per_game;
+  state_t state;
+  
   double air_resistance;
   double roll_friction;
   double slide_friction;
@@ -162,12 +177,18 @@ public:
   object_type get_object_type() { return WALL; }
 };
 
-class WallCircle : private Wall, private Circle
+class WallCircle : public Wall, private Circle
 {
+public:
+  WallCircle(const Vector2D& c, const double r); 
+  ~WallCircle() {}
 };
 
-class WallLine : private Wall, private Line
+class WallLine : public Wall, private Line
 {
+public:
+  WallLine(const Vector2D& sp, const Vector2D& d, const double len, const double th);
+  ~WallLine() {}
 };
 
 
