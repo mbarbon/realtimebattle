@@ -446,6 +446,7 @@ private:
   double robot_angle;
   double robot_angle_speed;
   double acceleration;
+  double shot_energy;
 
   Vector2D last_drawn_robot_center;
   double last_drawn_radar_angle;
