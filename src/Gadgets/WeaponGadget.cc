@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 const VariableDefinition 
 WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 
 {
+  // Name,      type, value, min,max, inaccm, random, read, write
   {"Ammunition", INT_V, 0, 0, INT_MAX,0,false,true,false},
   
   {"RotateToAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
@@ -55,8 +56,6 @@ WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] =
 //      "MaxTemperature",
 
 //      "CoolDownPerTime",
-
-//      "Attachable",
 
 //      "Colour",
 //      "Price",
@@ -107,4 +106,11 @@ WeaponGadget::eval_function( const int fcn )
     default:
       break;
     }
+}
+
+void
+WeaponGadget::shoot()
+{  
+  // s = new Shot(c,vel,en, my_shotgadget);
+  the_arena.add_shot( s );
 }

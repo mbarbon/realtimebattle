@@ -43,7 +43,7 @@ private:
     MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
     USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
     TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME,
-    ATTACHABLE, COLOUR, PRICE, MASS, LAST_WEAPONVAR
+    COLOUR, PRICE, MASS, LAST_WEAPONVAR
   };
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
@@ -58,12 +58,18 @@ private:
   const static FunctionDefinition function_def[LAST_WEAPONFCN];
 
 
-  void shoot() {}
+  void shoot();
   
   void eval_function(const int fcn);
   
 
-  //  ShotGadget* shot;
+  // is true if attached to robot or ball
+
+  bool movable;
+
+  
+
+  ShotGadget* shot;
 
 };
 
