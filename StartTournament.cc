@@ -1,4 +1,3 @@
-#include <strstream.h>
 #include <iostream.h>
 #include <iomanip.h>
 #include <dirent.h>
