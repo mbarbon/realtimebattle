@@ -60,6 +60,7 @@ SocketClient::connect_to_server( string hostname, int port )
     }
 
   nc.the_socket = the_socket;
+  nc.make_nonblocking();
   nc.connected = true;
   nc.address = hostname;
 }
@@ -143,11 +144,20 @@ SocketClient::check_connection()
 	}
       else
 	{
-	  Packet* P ;
-	  while( (P = make_packet( nc.read_buffer )) )
+	  Packet *P;
+	  //cout<< "Read succesfully\n";
+	  while( ! (nc.read_buffers).empty() )
 	    {
-	      nc.read_buffer = 
-		P->get_string_from_netstring( nc.read_buffer );
+	      //Extract the string for the queue and make a packet with it
+	      string data = nc.read_buffers.front();
+	      //cout<<" >> "<< data <<endl;
+	      P = make_packet( data );
+	      nc.read_buffers.pop();
+	      
+	      if( !P ) continue; //Jump to the next Packet
+	      
+	      P->get_string_from_netstring( data );
+
 	      switch(P->packet_type()) 
 		{
 		case PACKET_COMMAND :
