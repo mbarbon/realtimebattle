@@ -36,6 +36,9 @@ It is now possible to load and save tournaments in the start tournament window.
 New game option: <tt>Robot startup time</tt>, the time between the
 launching the robot processes and the beginning of the game.
 
+New misc option: <tt>Directory for temporary files</tt>, a directory
+where various temporary files are stored. Defaulted to /tmp/rtb
+
 Possibility to use +,-,0 instead of pushing buttons zoom in, zoom out resp no zoom.
 
 There are various changes in the look and feel, which hopefully improves the usability. 
