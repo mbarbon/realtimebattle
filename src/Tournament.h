@@ -64,6 +64,8 @@ class Tournament
 
   Tournament();       //Need to have attributes one by one using the GUI and the Network
 
+  Tournament(list<NetConnection*>& negociators, const tourn_info_t& new_tournament);
+
   /* NOTE : No use unless having a dynamic tournament.
             As we can run only one tournament at the time (can't we ?) no need for it 
   */

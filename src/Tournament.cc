@@ -33,6 +33,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "EventHandler.h"
 #include "EventRT.h"
+#include "TournamentPackets.h"
 
 //  Tournament::Tournament(const int robots_p_match,
 //                         const int number_o_matches,
@@ -59,6 +60,18 @@ Tournament::Tournament(const tourn_info_t& new_tournament_info ) :
   my_tournament_info(new_tournament_info)
 {
   start();
+}
+
+Tournament::Tournament(list<NetConnection*>& negociators, const tourn_info_t& new_tournament_info ) :
+  my_tournament_info(new_tournament_info)
+{
+  //TODO : create a Robot PacketFactory
+  //TODO : create a View PacketFactory
+
+  //TODO : tell all the connection which protocol I will use and where !
+  //TODO : release each communications
+
+  //TODO : Start
 }
 
 Tournament::Tournament(const int robots_p_match,
