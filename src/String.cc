@@ -87,7 +87,7 @@ spaced_string( const char* ch )
 char*
 copy_to_c_string( const string& str )
 {
-  char* cstr_p = new char[str.length() - 1];
+  char* cstr_p = new char[str.length() + 1];
   str.copy( cstr_p, string::npos );
   cstr_p[str.length()] = 0;
   return cstr_p;
