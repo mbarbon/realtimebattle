@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -16,8 +17,10 @@ class Gui the_gui;
 void 
 print_help_message()
 {
-  cout << "   Usage: RealTimeBattle [options] " << endl << endl;
-  cout << " Options: No options yet" << endl << endl;
+  cout << " Usage: RealTimeBattle [options] " << endl << endl;
+  cout << " Options:  -d  debug mode" << endl;
+  cout << "           -n  normal mode (default)" << endl;
+  cout << "           -c  competition mode" << endl << endl;
 }
 
 gint
@@ -52,7 +55,6 @@ sig_handler (int signum)
         }
       if (pid == 0)
         break;
-      //notice_termination (pid, status);
     }
   //  if( signum == SIGCHLD ) cerr << "Sigchld caught!" << endl;
   //  if( signum == SIGPIPE ) cerr << "Sigpipe caught!" << endl;
@@ -62,88 +64,44 @@ sig_handler (int signum)
 int 
 main ( int argc, char* argv[] )
 {
-  //  int i, j;
-  //  int nr_robots;
+  int option_char;
+  while ((option_char = getopt (argc, argv, "dnc")) != -1)
+    {
+      switch (option_char)
+        {
+        case 'd':
+          the_arena.set_game_mode(Arena::DEBUG_MODE);
+          break;
+        case 'n':
+          the_arena.set_game_mode(Arena::NORMAL_MODE);
+          break;
+        case 'c':
+          the_arena.set_game_mode(Arena::COMPETITION_MODE);
+          break;
+        default:
+          cerr << "Unknown option: -" << (char)option_char << "." << endl << endl;
+          print_help_message();
+          return EXIT_FAILURE;
+        }
+    }
+
+  if(optind != argc) 
+    {
+      print_help_message();
+      return EXIT_FAILURE;
+    }
+  
   gint timeout_tag;
 
   gtk_init (&argc, &argv);
   the_arena.set_colours();
 
   srand(time(0));
-  
-//   for(i=1; i < argc && argv[i][0] == '-';i++)
-//     {
-//       for(j=1; argv[i][j] !='\0'; j++)
-//         {
-//           switch( argv[i][j] )
-//             {
-//             default:
-//               cout << "Cannot recognize option -" << argv[i][j] << endl;
-//               break;
-//             }
-//         }
-//     }
-
-  if(argc != 1) 
-    {
-    print_help_message();
-    return EXIT_FAILURE;
-  }
-
-//   nr_robots=argc-i;
-//   bool failed = false;
-//   char** robotnames;
-//   robotnames = new char*[nr_robots];
-//   for(j=i;j<argc;j++)
-//     {
-//       robotnames[j-i] = new char[strlen(argv[j]) + 1];
-//       strcpy(robotnames[j-i],argv[j]);
-//       // check if file argv[j] exists and is executable
-//       //        {
-//       //          error.print_message();
-//       //          nr_failed++;
-//       //        }
-//     }
-//   robotnames[nr_robots] = NULL;
-  
-//   char** arenanames; 
-//   arenanames = new char*[5];
-//   arenanames[0] = new char[strlen("Arenas/Forest.arena")+1];
-//   strcpy(arenanames[0], "Arenas/Forest.arena");
-//   arenanames[3] = new char[strlen("Arenas/Rooms.arena")+1];
-//   strcpy(arenanames[3], "Arenas/Rooms.arena");
-//   arenanames[1] = new char[strlen("Arenas/Star.arena")+1];
-//   strcpy(arenanames[1], "Arenas/Star.arena");
-//   arenanames[2] = new char[strlen("Arenas/Labyrinth.arena")+1];
-//   strcpy(arenanames[2], "Arenas/Labyrinth.arena");
-//   arenanames[4] = new char[strlen("Arenas/Circles.arena")+1];
-//   strcpy(arenanames[4], "Arenas/Circles.arena");
-//   arenanames[5] = NULL;
-
-//   if(failed)
-//     {
-//       cout << "No correct robots could be executed." << endl << endl;
-//       print_help_message();
-//       return EXIT_FAILURE;
-//     }
 
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
     
   the_gui.setup_control_window();
-
-//   try
-//     {
-//       the_arena.start_tournament( robotnames, arenanames, 4, 5, 8);
-//     }
-//   catch ( Error the_error )
-// 	 {
-// 		the_error.print_message();
-// 		return EXIT_FAILURE;
-// 	 }
-
-//  for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
-//  delete [] robotnames;
   
   timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
 
