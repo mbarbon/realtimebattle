@@ -141,7 +141,7 @@ ArenaReplay::parse_this_interval()
       }
   else
     {
-      search_backwards( "T" );
+      //      search_backwards( "T" );
     }
   
   if( log_file.eof() )
