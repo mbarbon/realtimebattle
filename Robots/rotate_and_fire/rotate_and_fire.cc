@@ -36,10 +36,10 @@ RotateAndFire::RotateAndFire(const char* name, const char* colour)
   textdomain( "RealTimeBattle" );
 #endif
 
-  robot_name = new char[strlen(name)];
+  robot_name = new char[strlen(name) + 1];
   strcpy(robot_name, name);
 
-  robot_colour = new char[strlen(colour)];
+  robot_colour = new char[strlen(colour) + 1];
   strcpy(robot_colour, colour);
 
   quitting = false;
