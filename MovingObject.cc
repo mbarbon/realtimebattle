@@ -28,7 +28,7 @@ Robot::Robot(const String& filename)
   process_running = false;
   send_usr_signal = false;
   alive = false;
-  points = 0;
+  total_points = 0.0;
 
   instreamp = NULL;
   outstreamp = NULL;
@@ -72,11 +72,11 @@ Robot::start_process()
   if(pid == 0)   // Child process, to be the new robot
     {
       // Make pipe_out the standard input for the robot
-      dup2(pipe_out[0],STDIN_FILENO);
       close(pipe_out[1]);
+      dup2(pipe_out[0], STDIN_FILENO);
 
       // Make pipe_in the standard output
-      dup2(pipe_in[1],STDOUT_FILENO);   
+      dup2(pipe_in[1],STDOUT_FILENO);
       close(pipe_in[0]);
 
       // Make the pipes non-blocking
@@ -162,7 +162,7 @@ Robot::start_process()
       close(pipe_in[1]);      // Close output side of pipe_in  
       
       pipes[0] = pipe_out[1];
-      pipes[1] = pipe_out[0];
+      pipes[1] = pipe_in[0];
 
       // Make the pipes non-blocking
       int pd_flags;
@@ -268,9 +268,11 @@ void
 Robot::set_stats(int robots_killed_same_time)
 {
   int adjust = robots_killed_same_time - 1;
-  position_this_game = the_arena.get_robots_left() - adjust; 
+  position_this_game = the_arena.get_robots_left() - adjust;
+  add_points( 1.0 + ((double)adjust) * 0.5 );
+
   display_place();
-  double points_this_game = (double)(the_arena.get_robots_per_game() - position_this_game) - ((double)adjust) * 0.5 + 1.0;
+  display_score();
 
   send_message(DEAD);
   send_signal();
@@ -282,7 +284,7 @@ Robot::set_stats(int robots_killed_same_time)
      position_this_game,
      points_this_game,   
      the_arena.get_total_time(),
-     get_total_points() + points_this_game
+     total_points
      );
 
   g_list_append(statistics, statp);
@@ -320,12 +322,12 @@ Robot::check_name_uniqueness()
       robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
 }
 
-double
-Robot::get_total_points()
-{
-  stat_t* sp = (stat_t*)g_list_last(statistics)->data;
-  return( sp != NULL ? sp->total_points + points : points );
-}
+// double
+// Robot::get_total_points()
+// {
+//   stat_t* sp = (stat_t*)g_list_last(statistics)->data;
+//   return( sp != NULL ? sp->total_points + points : points );
+// }
 
 int
 Robot::get_last_position()
@@ -366,7 +368,7 @@ Robot::update_radar_and_cannon(const double timestep)
   void* col_obj;
   double dist = the_arena.
     get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
-                          0.0, closest_shape, col_obj);
+                          0.0, closest_shape, col_obj, this);
   send_message(RADAR, dist, closest_shape, radar_angle.pos);
   send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
 }
@@ -397,7 +399,7 @@ bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& norma
   double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
   robot.change_energy(-injury);
 
-  robot.send_message(COLLISION, WALL, -injury, -vec2angle(normal)-robot.robot_angle.pos);
+  robot.send_message(COLLISION, WALL, -vec2angle(normal)-robot.robot_angle.pos);
 }
 
 void
@@ -444,12 +446,12 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   double en_diff = 0.5 * mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
-  robot1.send_message(COLLISION, ROBOT, -injury, an-robot1.robot_angle.pos);
+  robot1.send_message(COLLISION, ROBOT, an-robot1.robot_angle.pos);
 
   en_diff = 0.5 * mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
-  robot2.send_message(COLLISION, ROBOT, -injury, -an-robot2.robot_angle.pos);
+  robot2.send_message(COLLISION, ROBOT, -an-robot2.robot_angle.pos);
 }
 
 void
@@ -464,6 +466,7 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
+  points_this_game = 0.0;
   break_percent = 0.0;
   acceleration = 0.0;
 }
@@ -492,7 +495,7 @@ Robot::move(const double timestep, int iterstep)
 {
   object_type closest_shape;
   void* colliding_object;
-  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
+  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, closest_shape, colliding_object, this);
   if( time_to_collision > timestep )
     {
       center += timestep*velocity;
@@ -522,7 +525,7 @@ Robot::move(const double timestep, int iterstep)
             Shot* shotp =(Shot*)colliding_object;
             double en =  -shotp->get_energy();
             change_energy( en );
-            send_message(COLLISION, SHOT, en, vec2angle(shotp->get_center()-center)-robot_angle.pos);
+            send_message(COLLISION, SHOT, vec2angle(shotp->get_center()-center)-robot_angle.pos);
             shotp->die();
             g_list_remove((the_arena.get_object_lists())[SHOT], shotp);
             delete shotp;
@@ -533,7 +536,7 @@ Robot::move(const double timestep, int iterstep)
             Cookie* cookiep =(Cookie*)colliding_object;
             double en =  cookiep->get_energy();
             change_energy( en );
-            send_message(COLLISION, COOKIE, en, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
+            send_message(COLLISION, COOKIE, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
             cookiep->die();
             g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
             delete cookiep;
@@ -544,7 +547,7 @@ Robot::move(const double timestep, int iterstep)
             Mine* minep =(Mine*)colliding_object;
             double en =  -minep->get_energy();
             change_energy( en );
-            send_message(COLLISION, MINE, en, vec2angle(minep->get_center()-center)-robot_angle.pos);
+            send_message(COLLISION, MINE, vec2angle(minep->get_center()-center)-robot_angle.pos);
             minep->die();
             g_list_remove((the_arena.get_object_lists())[MINE], minep);
             delete minep;
@@ -610,11 +613,12 @@ Robot::get_messages()
     {
       *instreamp >> msg_name;
       msg_t = name2msg_from_robot_type(msg_name);
+      //      cerr << "Got message: " << msg_name << endl;
 
       switch(msg_t)
         {
         case UNKNOWN_MESSAGE_FROM_ROBOT:
-          cout << "Server: Warning sent for message: " << msg_name << endl;
+          //cout << "Server: Warning sent for message: " << msg_name << endl;
           send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
           instreamp->get(buffer, 80, '\n');
           break;
@@ -638,7 +642,7 @@ Robot::get_messages()
         case NAME:
           if( the_arena.get_state() != Arena::STARTING_ROBOTS ) 
             {
-              cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
+              //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
               send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, msg_name);
               instreamp->get(buffer, 80, '\n');
               break;
@@ -648,15 +652,22 @@ Robot::get_messages()
           check_name_uniqueness();
           break;
         case COLOUR:
-          if( the_arena.get_state() != Arena::STARTING_ROBOTS ) break;
-          {
-            long home_colour, away_colour;
-
-            *instreamp >> hex >> home_colour >> away_colour >> dec;
-  
-            // TODO: check if colour is already allocated! 
-            colour = make_gdk_colour(the_arena.find_free_colour(home_colour, away_colour, this));
-          }
+          if( the_arena.get_state() != Arena::STARTING_ROBOTS ) 
+            {
+              //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
+              send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, msg_name);
+              instreamp->get(buffer, 80, '\n');
+              break;
+            }
+          else
+            {
+              long home_colour, away_colour;
+              
+              *instreamp >> hex >> home_colour >> away_colour >> dec;
+              
+              // TODO: check if colour is already allocated! 
+              colour = make_gdk_colour(the_arena.find_free_colour(home_colour, away_colour, this));
+            }
           break;
         case ROTATE:
           { 
@@ -753,6 +764,7 @@ Robot::get_messages()
                                    radar_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }
           }
+          break;
         case SWEEP:
           {
             int bits;
@@ -789,72 +801,79 @@ Robot::get_messages()
           the_gui.print_to_message_output(robot_name, text, colour);
           break;
         case SHOOT:
-          if( the_arena.get_state() != Arena::GAME_IN_PROGRESS ) break;
-          {
-            double en;
-            *instreamp >> en;
-            en = min(en, shot_energy);
-            if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
-            shot_energy -= en;
-
-            Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
-            double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
-            Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
-            if( the_arena.space_available( shot_center, shot_radius + eps ) )
-              {
-                Shot* shotp = new Shot( shot_center, shot_radius,
-                                        velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED), en );
-                g_list_append((the_arena.get_object_lists())[SHOT], shotp);
-              }
-            else  // No space for shot, direct hit!!
-              { 
-                void* col_obj;
-                object_type cl_shape;
-                double dist;
-                if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius+eps, cl_shape, col_obj)) > radius+1.5*shot_radius )
-                  {
-                    cerr << "Shot has space available after all?" <<  endl;
-                    cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
-                    cerr << "col_shape: " << cl_shape << endl; 
-                    //                  throw Error("Shot has space available after all?", "Robot::get_messages");                  
-                  }
-                switch(cl_shape)
-                  {
-                  case WALL:
-                    break;
-                  case ROBOT:
+          if( the_arena.get_state() != Arena::GAME_IN_PROGRESS ) 
+            {
+              //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
+              send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, msg_name);
+              instreamp->get(buffer, 80, '\n');
+              break;
+            }
+          else
+            {
+              double en;
+              *instreamp >> en;
+              en = min(en, shot_energy);
+              if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
+              shot_energy -= en;
+              
+              Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
+              double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
+              Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
+              if( the_arena.space_available( shot_center, shot_radius + eps ) )
+                {
+                  Shot* shotp = new Shot( shot_center, shot_radius,
+                                          velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED), en );
+                  g_list_append((the_arena.get_object_lists())[SHOT], shotp);
+                }
+              else  // No space for shot, direct hit!!
+                { 
+                  void* col_obj;
+                  object_type cl_shape;
+                  double dist;
+                  if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius+eps, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
                     {
-                      Robot* robotp = (Robot*)col_obj;
-                      robotp->change_energy(-en);
-                      robotp->send_message(COLLISION, SHOT, -en, 
-                                           vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
+                      cerr << "Shot has space available after all?" <<  endl;
+                      cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
+                      cerr << "col_shape: " << cl_shape << endl; 
+                      //                  throw Error("Shot has space available after all?", "Robot::get_messages");                  
                     }
-                    break;
-                  case SHOT:
-                    ((Shot*)col_obj)->die();
-                    break;
-                  case COOKIE:
+                  switch(cl_shape)
                     {
-                      Cookie* cookiep =(Cookie*)col_obj;
-                      cookiep->die();
-                      g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
-                      delete cookiep;
+                    case WALL:
+                      break;
+                    case ROBOT:
+                      {
+                        Robot* robotp = (Robot*)col_obj;
+                        robotp->change_energy(-en);
+                        robotp->send_message(COLLISION, SHOT, 
+                                             vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
+                      }
+                      break;
+                    case SHOT:
+                      ((Shot*)col_obj)->die();
+                      break;
+                    case COOKIE:
+                      {
+                        Cookie* cookiep =(Cookie*)col_obj;
+                        cookiep->die();
+                        g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
+                        delete cookiep;
+                      }
+                      break;
+                    case MINE:
+                      {
+                        Mine* minep =(Mine*)col_obj;
+                        minep->die();
+                        g_list_remove((the_arena.get_object_lists())[MINE], minep);
+                        delete minep;
+                      }
+                      break;
+                    default:
+                      throw Error("Shot on unknown object", "Robot::get_messages");
                     }
-                    break;
-                  case MINE:
-                    {
-                      Mine* minep =(Mine*)col_obj;
-                      minep->die();
-                      g_list_remove((the_arena.get_object_lists())[MINE], minep);
-                      delete minep;
-                    }
-                    break;
-                  default:
-                    throw Error("Shot on unknown object", "Robot::get_messages");
-                  }
-              }
-            change_energy(-en * the_opts.get_d(OPTION_SHOOTING_PENALTY) );
-          }
+                }
+              change_energy(-en * the_opts.get_d(OPTION_SHOOTING_PENALTY) );
+            }
           break;
         case ACCELERATE:
           {
@@ -988,7 +1007,8 @@ Shot::move(const double timestep)
 {
   object_type closest_shape;
   void* colliding_object;
-  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
+  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, 
+                                                             closest_shape, colliding_object);
   if( time_to_collision > timestep )
     {
       center += timestep*velocity;
@@ -1004,7 +1024,7 @@ Shot::move(const double timestep)
           {
             Robot* robotp = (Robot*)colliding_object;
             robotp->change_energy(-energy);
-            robotp->send_message(COLLISION, SHOT, -energy,
+            robotp->send_message(COLLISION, SHOT,
                                  vec2angle(center-robotp->get_center()) - robotp->get_robot_angle().pos);
             die();
           }
