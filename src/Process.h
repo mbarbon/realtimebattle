@@ -17,6 +17,13 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/*
+ * Note from Benoit Rousseau (august 2001) :
+ *   I think the process will only be used by the robot_client to launch
+ *   a specific robot. I don't think we need variables such as Robot* my_robot
+ *   or things like that...
+ */
+
 #ifndef __PROCESS__
 #define __PROCESS__
 
@@ -34,6 +41,7 @@ class Process
 public:
   
   Process(const string& filenm, Robot* rbt);
+  Process(const string& filenm);
   ~Process();
 
   //  void set_name_and_robot(const string& filenm, Robot* rbt);
@@ -45,13 +53,13 @@ public:
   
   void send_signal();
   void set_signal_to_send(const bool do_send, const int sig);
-
+  
   bool get_default_non_blocking_state();
   void set_non_blocking_state(const bool use_non_blocking);
-
+  
   void delete_pipes();
   void kill_forcefully();
-
+  
 
   //  void get_messages();
   //  void send_message(enum message_to_robot_type ...);
@@ -61,7 +69,7 @@ public:
   ifstream* get_instreamp() { return instreamp; }  
 
   pid_t get_pid() { return pid; }
-
+ 
 
 private:
 
@@ -71,7 +79,7 @@ private:
   //                               const enum state_t state2 = NO_STATE);
 
 
-  Robot* my_robot;
+  //Robot* my_robot;
 
   string filename;
   string plain_filename;  // Filename without path
