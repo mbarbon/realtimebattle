@@ -10,6 +10,10 @@ rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
+NOTE_FILES = ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO 
+
+MAINTAINERCLEANFILES = *.{html,dvi,info,txt} $(NOTE_FILES)
+
 install-data-local:
 	gzip -f $(rtbinfodir)/RealTimeBattle.info; \
    if test "x$(INSTALL_INFO)" != "xno"; then \
@@ -29,15 +33,19 @@ uninstall-local:
 
 PAPER_SIZE = a4
 
+all: docs
+
 docs: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt \
 		note-files note-files-html
 
 html_docs: RealTimeBattle.html note-files-html
 
-note-files: ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO
+note-files: $(NOTE_FILES)
 
 note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
 
+realclean: 
+	rm -f $(MAINTAINERCLEANFILES)
 
 
 # Targets to generate the files if the sgml source exists, otherwise nothing happens 
@@ -50,7 +58,7 @@ note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
 
-RealTimeBattle.html: RealTimeBattle.sgml
+RealTimeBattle%.html: RealTimeBattle.sgml
 	@if [ -f $< ]; then \
 		echo "sgml2html --imagebuttons -D table=real -c latin $<"; \
 		sgml2html --imagebuttons -D table=real -c latin $<; \
