@@ -272,17 +272,33 @@ main ( int argc, char* argv[] )
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
+  try
     {
-      the_arena.set_colours();
-      the_gui.setup_control_window();
-    }
+#ifndef NO_GRAPHICS
+      if( !no_graphics )
+        {
+          the_arena.set_colours();
+          the_gui.setup_control_window();
+        }
 #endif
-  
-  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
+      
+      timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
+    }
+  catch ( Error the_error )
+	 {
+		the_error.print_message();
+      return EXIT_FAILURE;
+	 }
 
-  gtk_main();
+  try
+    {
+      gtk_main();
+    }
+  catch ( Error the_error )
+	 {
+		the_error.print_message();
+      gtk_main_quit();
+	 }
 
   return EXIT_SUCCESS;
 }
