@@ -31,6 +31,11 @@ public:
   void clear();
 
   bool timeout_function();
+  static void start_tournament_from_tournament_file
+  ( const List<start_tournament_info_t>& robotfilename_list, 
+    const List<start_tournament_info_t>& arenafilename_list, 
+    const int robots_p_game, const int games_p_sequence, 
+    const int n_o_sequences, ArenaRealTime* ar_p );
   void start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
                         const List<start_tournament_info_t>& arenafilename_list, 
                         const int robots_p_game, 
@@ -41,16 +46,6 @@ public:
 
   void broadcast(enum message_to_robot_type ...);
   
-  void search_directories( String directory, 
-                           List<start_tournament_info_t>& tour_list,
-                           const bool check_robots );
-
-  void check_for_robots_and_arenas( String& word, 
-                                    List<start_tournament_info_t>& tour_list,
-                                    List<String>& dir_list, 
-                                    const bool check_robots );
-
-  void parse_tournament_file( String& fname );
   void parse_arena_file(String& filename);
   
   void set_filenames( String& log_fname, const String& statistics_fname, 
