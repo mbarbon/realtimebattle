@@ -17,6 +17,57 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/*Class Diagram :
+    -------------------             ------------------
+    |   Event         |             |  EventHandler  |
+    -------------------             ------------------
+    |eval()           | n         1 |main_loop()     |
+    |operator<        |-------------|insert_event()  |
+    -------------------             |get_time()      |
+    |eval_time:double |             |quit()          |
+    |my_events_handler|             ------------------
+    -------------------             |                |
+             |                      ------------------
+	     |
+        ____/_\___________________________________________________
+	|                                                        |
+  ----------------                                          ---------------
+  |GameTimeEvent |                                          |RealTimeEvent|
+  ----------------                                          ---------------
+  |              |                                          |             |
+  ----------------                                          ---------------
+  |              |                                          |             |
+  ----------------                                          ---------------
+          |                                                         |
+       __/_\________________________________________                |
+       |                                           |         ______/_\_____
+  ----------------                         --------------    |CheckGUI    |
+  |Recursive     |                         | UniqueExec |    -------------- 
+  ----------------                         --------------    |            |
+  |Add_Next()    |                         |            |    --------------
+  ----------------                         --------------    |            |
+  |Refresh : int |                         |            |    --------------
+  ----------------                         --------------
+          |                                        |
+          |                                        |
+       __/_\_________________                      |
+       |           |        |                      |
+  _____|_________  |  ______|_______       _______/_\_______ 
+  |NewMine/Cook.|  |  |RobotUpDate |       |  QuitEvent    |
+  ---------------  |  --------------       -----------------
+  |             |  |  |            |       |               |
+  ---------------  |  --------------       -----------------
+  |             |  |  |Witch:Robot |       |               |
+  ---------------  |  --------------       -----------------
+                   |
+           ________|_______
+	   |RobotRadarUD  |
+           ----------------
+           |              |
+           ----------------
+           |              |
+           ----------------
+*/
 #ifndef __EVENT_HANDLER__
 #define __EVENT_HANDLER__
 
@@ -64,10 +115,25 @@ public:
     : Event(time), my_event_handler(ev) {}
 
   void eval() const { my_event_handler->finish(); }
-
-protected:
-  EventHandler* my_event_handler;
 };
 
+//All the 'recursive' update event should have the same gueule
+class RobotUpDate : public Event
+{
+ public:
+  RobotUpDate(const double time, EventHandler* ev)
+    : Event(time), my_event_handler(ev), refresh(time) {}
+  void eval() const 
+    {
+      Event * NextUpDate = new RobotUpDate(time + refresh, ev, refresh); 
+      ev->insert_event(NextUpDate);
+      //Execute what to do
+    }
+ protected:
+  double refresh; //Time between 2 Update of robot
+  //Robot MyRobot
+}
 
 #endif __EVENT_HANDLER__
+
+
