@@ -10,6 +10,9 @@ Change log
 
 Fixed a problem with COLLISION giving wrong angle. Thanks to Nathan D Green.
 
+Sorting by sequence in the statistics when viewing individual robots now
+works again.
+
 <item> <bf>1.0.0</bf>
 <p>
 
