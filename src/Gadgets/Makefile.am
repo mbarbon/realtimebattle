@@ -5,9 +5,7 @@ PROFFLAGS = -pg
 endif
 
 INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src \
-	        $(PROFFLAGS) $(THREAD_FLAGS) \
-           -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
-           -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+   $(PROFFLAGS) $(THREAD_FLAGS)
 
 
 libRTB_Gadgets_a_SOURCES = \

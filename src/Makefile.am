@@ -11,9 +11,7 @@ PROFFLAGS = -pg
 endif
 
 INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src/Gadgets \
-	        $(PROFFLAGS) $(THREAD_FLAGS) \
-           -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
-           -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+   $(PROFFLAGS) $(THREAD_FLAGS)
 
 if NO_GETOPT_LONG
 GETOPT_O = getopt.o
