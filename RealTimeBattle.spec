@@ -35,23 +35,29 @@ make
 
 %install
 make prefix=$RPM_BUILD_ROOT%{prefix} install
-# %post
-# install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
-# %preun
-# install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
+
+%post
+/sbin/install-info /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry="* RealTimeBattle: (RealTimeBattle).             A robot programming game."
+
+%preun
+if [ $1 = 0 ]; then
+    /sbin/install-info --delete /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry=""* RealTimeBattle: (RealTimeBattle).             A robot programming game."
+fi
 
 %files
-%doc BUGS COPYING FAQ ChangeLog README TODO 
-%doc Documentation/RealTimeBattle.dvi 
-%doc Documentation/RealTimeBattle.html
-%doc Documentation/RealTimeBattle-1.html
-%doc Documentation/RealTimeBattle-2.html
-%doc Documentation/RealTimeBattle-3.html
-%doc Documentation/RealTimeBattle-4.html
-%doc Documentation/RealTimeBattle-5.html
-%doc Documentation/RealTimeBattle-6.html
-%doc Documentation/prev.gif
-%doc Documentation/next.gif
-%doc Documentation/toc.gif
 
-%{prefix}/
+%doc ABOUT-NLS BUGS COPYING FAQ ChangeLog README TODO
+%doc Documentation/*.html
+%doc Documentation/*.gif
+%doc Documentation/*.dvi
+
+%{prefix}/bin/*
+%{prefix}/include/*
+%{prefix}/share/*
+%{prefix}/info/*
+
+%{prefix}/games/RealTimeBattle/*.h
+%{prefix}/games/RealTimeBattle/*.xpm
+%{prefix}/games/RealTimeBattle/*.txt
+%{prefix}/games/RealTimeBattle/Arenas/*
+%{prefix}/games/RealTimeBattle/Robots/*
