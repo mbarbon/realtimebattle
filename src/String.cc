@@ -242,7 +242,9 @@ String::insert(const String& str, const int pos)
   return *this;
 }
 
-// Returns -1 if char woas not found in string
+// Returns -1 if char was not found in string
+// If char was found => returns its position
+// If reverse: start also counts from the end
 int
 String::find( const char c, const int start, const bool reverse ) const
 {
