@@ -127,6 +127,7 @@ public:
 
   void set_control_window_title( const bool halted );
   void set_score_window_title();
+  void set_arena_window_title();
   void add_robots_to_score_list();
 
   void start_new_tournament();

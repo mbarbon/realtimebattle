@@ -604,6 +604,25 @@ Gui::setup_message_window()
   gtk_widget_show (message_window);
 }
 
+// This function sets the title of the arena window
+void
+Gui::set_arena_window_title()
+{
+  String title;
+  if(the_arena.get_arena_filenames()->next != NULL)
+    {
+      String name;
+      String* filename = (String*)(g_list_nth(the_arena.get_arena_filenames(),
+                                            the_arena.get_current_arena_nr())->data);
+      filename->find(name,'/',true);
+      name.erase(0,1);
+      title = "RealTimeBattle Arena  "  + name;
+    }
+  else
+    title = "RealTimeBattle Arena";
+  gtk_window_set_title (GTK_WINDOW (arena_window), title.chars());
+}
+
 void
 Gui::setup_arena_window()
 {
@@ -613,7 +632,7 @@ Gui::setup_arena_window()
   // Window 
 
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena");
+  set_arena_window_title();
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  

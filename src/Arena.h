@@ -61,11 +61,13 @@ public:
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
+  GList* get_arena_filenames() { return arena_filenames; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
   int get_sequences_remaining() { return sequences_remaining; }
   int get_robots_per_game() { return robots_per_game; }
+  int get_current_arena_nr() { return current_arena_nr; }
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }

@@ -875,6 +875,7 @@ Arena::start_game()
 
   reset_timer();  // Time should be zero in score window
   the_gui.set_score_window_title();
+  the_gui.set_arena_window_title();
   reset_timer();  // Game starts !
   next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
