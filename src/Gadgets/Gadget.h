@@ -70,6 +70,8 @@ public:
   
   void eval_function(const int fcn) {}
 
+  const Variable* get_variables() const { return variables; }
+
 protected:
 
   void init_variables( const VariableDefinition* var_def, const int last_var );
