@@ -663,23 +663,24 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
           break;
         case 'C': // Cookie
           {
-            double x, y;
-            //              Cookie* cookiep = new Cookie( Vector2D(x,y), 0.0, object_id);
-            //              object_lists[COOKIE].insert_last( cookiep );
+            object_pos_info_t* info = find_object_in_log( COOKIE, object_id );
+            object_lists[COOKIE].insert_last
+              ( new Cookie( info->pos, 0.0, info->id ) );
           }
           break;
         case 'M': // Mine
           {
-            double x, y;
-            //              Mine* minep = new Mine( Vector2D(x,y), 0.0, object_id);
-            //              object_lists[MINE].insert_last( minep );
+            object_pos_info_t* info = find_object_in_log( MINE, object_id );
+            object_lists[MINE].insert_last
+              ( new Mine( info->pos, 0.0, info->id ) );
           }
           break;
         case 'S': // Shot
           {
-            double x, y, dx, dy;
-            //              Shot* shotp = new Shot( Vector2D(x,y), Vector2D(dx,dy), 0, object_id );
-            //              object_lists[SHOT].insert_last( shotp );
+            object_pos_info_t* info = find_object_in_log( SHOT, object_id );
+            object_lists[SHOT].insert_last
+              ( new Shot( info->pos + (current_replay_time - info->start_time)
+                          * info->vel, info->vel, 0, info->id ) );
           }
           break;
   
@@ -952,11 +953,11 @@ ArenaReplay::recreate_lists()
                 break;
               case COOKIE:
                 object_lists[COOKIE].insert_last
-                  ( new Cookie( info->pos, 0, info->id ) );
+                  ( new Cookie( info->pos, 0.0, info->id ) );
                 break;
               case MINE:
                 object_lists[MINE].insert_last
-                  ( new Mine( info->pos, 0, info->id ) );
+                  ( new Mine( info->pos, 0.0, info->id ) );
                 break;
               case ROBOT:
                 break;
