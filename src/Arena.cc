@@ -183,19 +183,15 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                    equal_strings_nocase( wordlist[0], "Define" ) &&
                    wordlist.size() > 2 )
             {
-              for( int i = 0;i < LAST_GADGET; i++ )
-                if( equal_strings_nocase( wordlist[1], gadget_types[i] ) )
-                  {
-                    // TODO: Remember to delete this somewehere!!!!!!!!!
-                    Gadget* gadget = create_gadget( gadget_t(i), wordlist[2],
-                                                    current_gadget );
-                    assert( gadget != NULL );
-                    current_gadget->get_my_gadgets().add( gadget->get_info() );
-                    current_gadget = (Gadget*)gadget;
-                    if( gadget_t(i) == GAD_SCRIPT )
-                      mode = LAF_SCRIPT_MODE;
-                    break;
-                  }
+              Gadget* gadget =
+                AllGadgets::create_gadget_by_stringtype( wordlist[1],
+                                                         wordlist[2].c_str(),
+                                                         current_gadget );
+              assert( gadget != NULL );
+              current_gadget->get_my_gadgets().add( gadget->get_info() );
+              current_gadget = (Gadget*)gadget;
+              if( gadget->get_info().type == GAD_SCRIPT )
+                mode = LAF_SCRIPT_MODE;
             }
           else if( equal_strings_nocase( wordlist[0], "EndDefine" ) )
             {
@@ -294,7 +290,7 @@ Arena::sufficient_arena_version( vector<string>& wordlist ) const
 
 // Splits the strings into whitespace separated words. Special strings (e.g. strings
 // separated by ") is taken as ONE word, this is translated if surrounded by _( )
-// TODO: Enable use of backslash-sequences other than \,\n,\t (if needed).
+// TODO: Enable use of backslash-sequences other than \\,\n,\t (if needed).
 vector<string>&
 Arena::special_split_string( const string& input_str, vector<string>& strlist ) const
 {
@@ -345,6 +341,8 @@ Arena::special_split_string( const string& input_str, vector<string>& strlist ) 
             temp_string.replace( backslash_pos, 2, "\n" );
           if( temp_string.substr( backslash_pos, 2 ) == "\\t" )
             temp_string.replace( backslash_pos, 2, "\t" );
+          if( temp_string.substr( backslash_pos, 2 ) == "\\\\" )
+            temp_string.replace( backslash_pos, 2, "\\" );
           temp_pos = backslash_pos;
         }
       // Note: Should maybe add this to specify that this is a string.
@@ -359,72 +357,6 @@ Arena::special_split_string( const string& input_str, vector<string>& strlist ) 
   split_string( str.substr( beg_pos, string::npos ), tmp_list );
   strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
   return strlist;
-}
-
-// Remember to delete the gadget when not used anymore!
-Gadget*
-Arena::create_gadget( gadget_t type, const string& name, Gadget* parent ) const
-{
-/* Better would be :
-  add a new function to the gadget class called 
-      Gadget* NewInstance(string, Gadget*);
-  returning a new instance Gadget (ie Gadget* WeaponGadget::NewInstance(string, Gadget*) { return new WeaponGadget; }
-  And than create a new vector of struct{string, Gadget} (see in the map editor)
-  . : {"Weapon", WeaponGadget, "Shot", ShotGadget...}
-  and compare the string we have after the Define...
-*/
-
-  Gadget* gadget = NULL;
-  switch( type )
-    {
-    case GAD_WEAPON:
-      gadget = (Gadget*) new WeaponGadget( name.c_str(), parent );
-      break;
-    case GAD_SHOT: 
-      gadget = (Gadget*) new ShotGadget( name.c_str(), parent );
-      break;
-    case GAD_EXPLOSION: 
-      gadget = (Gadget*) new ExplosionGadget( name.c_str(), parent );
-      break;
-    case GAD_DEFENSE: 
-      gadget = (Gadget*) new DefenseGadget( name.c_str(), parent );
-      break;
-    case GAD_ENGINE: 
-      gadget = (Gadget*) new EngineGadget( name.c_str(), parent );
-      break;
-    case GAD_SENSOR: 
-      break;
-    case GAD_COMMUNICATION:
-      gadget = (Gadget*) new CommunicationGadget( name.c_str(), parent );
-      break;
-    case GAD_WALL: 
-      break;
-    case GAD_BALL: 
-      break;
-    case GAD_EQUIPMENT:
-      break;
-    case GAD_ENVIRONMENT: 
-      break;
-    case GAD_ROBOTBODY: 
-      gadget = (Gadget*) new RobotBodyGadget( name.c_str(), parent );
-      break;
-    case GAD_SCORING: 
-      break;
-    case GAD_VARIABLE: 
-      gadget = (Gadget*) new Variable( name.c_str(), parent );
-      break;
-    case GAD_FUNCTION:
-      gadget = (Gadget*) new Function( name.c_str(), parent );
-      break;
-    case GAD_SCRIPT:
-      gadget = (Gadget*) new Script( name.c_str(), parent );
-      break;
-    default:
-      Error( true, "Non existing gadget. Should not happen.",
-             "Arena::load_arena_file" );
-      break;
-    }
-  return gadget;
 }
 
 void
