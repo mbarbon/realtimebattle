@@ -20,18 +20,30 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __EXPLOSION__
 #define __EXPLOSION__
 
+#include "GeometricalObjects.h"
+#include "Gadgets/ExplosionGadget.h"
+
+class Vector2D;
 
 class Explosion : public Circle
 {
 public:
-  Explosion(const Vector2D& c, const ExplosionGadget& gad);
+  Explosion(const Vector2D& c, const ExplosionGadget& gad, const double st_time);
   ~Explosion() {}
 
-  double get_percentage_inside( const Vector2D& c, const double r )
+  double get_percentage_inside( const Vector2D& c, const double r );
+  
+  void update_size( const double time );
 
-  proteced:
+protected:
+  
+  ExplosionGadget my_gadget;
 
-  double heat;
+  double start_time;
+  double max_size;
+  double reach_maximum_time;
+  double start_shrink_time;
+  double end_time;
 };
 
 #endif __EXPLOSION__
