@@ -25,12 +25,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
 <date>12 December 1998
 
-<abstract>
+<!-- <abstract> -->
 
-RealTimeBattle is a programming game, in which robots controlled by
-programs are fighting each other. The goal is to
-destroy the enemies, using the radar to examine the environment and
-the cannon to shoot.
+
+
+
 
 </titlepag>
 
@@ -44,7 +43,16 @@ the cannon to shoot.
 This is the user manual for RealTimeBattle. Here you should find how to run the program, how the
 program work, how to create your own robots and how to construct arenas.
 
-RealTimeBattle constructed to be easy to use, flexible and fast.
+RealTimeBattle is a programming game for Unix, in which robots controlled by
+programs are fighting each other. The goal is to
+destroy the enemies, using the radar to examine the environment and
+the cannon to shoot.
+
+Even though the environment the robots are moving in is fairly simple, it is far from easy to construct
+an intelligent robot-program. RealTimeBattle constructed to be easy to use, flexible and fast. The
+intention is that the program could be used as a test for intelligent algorithms, as well as just a
+game to play and enjoy.
+
 Features include:
 
 <itemize>
@@ -71,8 +79,8 @@ makes easy to start constructing robots.
 
 <sect1>More information<label id="More information">
 <p>
-More information can be found in the <tt>INSTALLATION</tt>, <tt>BUGS</tt>, <tt>TODO</tt>,
-<tt>FAQ</tt> and <tt>ChangeLog</tt> files in the 
+More information can be found in the <tt>INSTALL</tt>, <tt>BUGS</tt>, <tt>TODO</tt>,
+<tt>README</tt>, <tt>FAQ</tt> and <tt>ChangeLog</tt> files in the 
 distribution. More updated information are available on the 
 <url name="RealTimeBattle homepage" url="http://realtimebattle.netpedia.net/">, where you also can
 find robots, news on tournaments as well as this manual in different formats.
