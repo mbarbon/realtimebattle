@@ -76,8 +76,8 @@ print_help_message()
   cout << "          --no_graphics,             -g   no graphics will be displayed" << endl ;
   cout << "          --option_file [file],      -o   selects option-file " << endl;
   cout << "                                          (default: $HOME/.rtbrc)"  << endl;
-  cout << "          --log_file [file],         -l   make log file," << endl;
-  cout << "                                          file=- logs to STDOUT" << endl;
+  cout << "          --log_file [file],         -l   make log file, if 'file' is '-'" << endl;
+  cout << "                                          the log is send to STDOUT" << endl;
   cout << "          --tournament_file [file],  -t   specify a tournament file to" << endl;
   cout << "                                          autostart a tournament" << endl;
   cout << "          --statistics_file [file],  -s   file to print the statistics to" << endl;
