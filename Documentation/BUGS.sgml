@@ -16,7 +16,8 @@ don't forget to describe the system you are using, including the version of Real
 
 <tag>Various compilation problems</tag>
 <p>
-System dependent problems are present. We need help with bug-reports to overcome this.
+System dependent problems may still be present.
+If you encounter such a bug please send a bug report to us.
 
 <tag>Statistics window doesn't work in gtk+ 1.1</tag>
 <p>
