@@ -397,9 +397,9 @@ Options::Options()
                         false, false, "Initial Statistics window height",
                         _("Initial Statistics window height") );
 
-#ifndef NO_GRAPHICS
-  optionswindow_p = NULL;
-#endif
+//  #ifndef NO_GRAPHICS
+//    optionswindow_p = NULL;
+//  #endif
 }
 
 void
@@ -602,20 +602,20 @@ Options::get_option_from_string( const String& option_name )
   return result;
 }
 
-#ifndef NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
 
-bool
-Options::is_optionswindow_up()
-{
+//  bool
+//  Options::is_optionswindow_up()
+//  {
 //    if( NULL == optionswindow_p )
 //      return false;
 
-    return false;
-}
+//      return false;
+//  }
 
-void
-Options::open_optionswindow()
-{
+//  void
+//  Options::open_optionswindow()
+//  {
 //    bool allowed = false;
 
 //    if( the_arena_controller.is_started() )
@@ -631,16 +631,16 @@ Options::open_optionswindow()
 //        NULL == optionswindow_p )
 //      optionswindow_p = 
 //        new OptionsWindow( -1, -1, -1, -1 );
-}
+//  }
 
-void
-Options::close_optionswindow()
-{
+//  void
+//  Options::close_optionswindow()
+//  {
 //    if( NULL != optionswindow_p )
 //      {
 //        delete optionswindow_p;
 //        optionswindow_p = NULL;
 //      }
-}
+//  }
 
-#endif NO_GRAPHICS
+//  #endif NO_GRAPHICS

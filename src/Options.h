@@ -173,9 +173,9 @@ struct option_info_t
     max_value=n.max_value; max_letters_in_entry=n.max_letters_in_entry;
     broadcast_option=n.broadcast_option; log_option=n.log_option;
     label=n.label;translated_label=n.translated_label;
-#ifndef NO_GRAPHICS
-    entry=n.entry; 
-#endif NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
+//      entry=n.entry; 
+//  #endif NO_GRAPHICS
     return *this; }
 
   entry_datatype_t datatype;
@@ -189,9 +189,9 @@ struct option_info_t
   bool log_option;
   String label;
   String translated_label;
-#ifndef NO_GRAPHICS
-  GtkWidget * entry;
-#endif
+//  #ifndef NO_GRAPHICS
+//    GtkWidget * entry;
+//  #endif
 };
 
 struct option_return_t
@@ -237,13 +237,13 @@ public:
 
   option_return_t get_option_from_string       ( const String& option_name );
 
-#ifndef NO_GRAPHICS
-  OptionsWindow* get_optionswindow_p           ()
-    { return optionswindow_p; }
-  bool is_optionswindow_up                     ();
-  void open_optionswindow                      ();
-  void close_optionswindow                     ();
-#endif
+//  #ifndef NO_GRAPHICS
+//    OptionsWindow* get_optionswindow_p           ()
+//      { return optionswindow_p; }
+//    bool is_optionswindow_up                     ();
+//    void open_optionswindow                      ();
+//    void close_optionswindow                     ();
+//  #endif
 
 private:
   option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
@@ -252,8 +252,8 @@ private:
   option_info_t<String> all_string_options[LAST_STRING_OPTION];
   //  option_info_t<bool> all_bool_options[LAST_BOOL_OPTION];
 
-#ifndef NO_GRAPHICS
-  OptionsWindow* optionswindow_p;
-#endif
+//  #ifndef NO_GRAPHICS
+//    OptionsWindow* optionswindow_p;
+//  #endif
 };
 #endif __OPTIONS__
