@@ -47,11 +47,25 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "List.h"
 
+class List<start_tournament_info_t> robots_in_last_tournament;
+class List<start_tournament_info_t> arenas_in_last_tournament;
+int games_per_sequence_in_last_tournament = 1;
+int robots_per_sequence_in_last_tournament = 2;
+int number_of_sequences_in_last_tournament = 1;
+
 StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_height,
                                               const int default_x_pos,
                                               const int default_y_pos )
 {
+  // Set the selected_robot_tournament List to be equal to 
+  // robots_in_last_tournament. The same for arena;
+
+  selected_robot_tournament = robots_in_last_tournament;
+  selected_arena_tournament = arenas_in_last_tournament;
+  selected_robot_tournament.set_deletion_responsibility(true);
+  selected_arena_tournament.set_deletion_responsibility(true);
+
   // The window widget
 
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
@@ -93,6 +107,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
   for( int j = 0; j < 2; j++ )
     {
+      List<start_tournament_info_t>* tour_list;
       List<start_tournament_info_t>* dir_list;
       GtkWidget* tour_clist;
       GtkWidget* dir_clist;
@@ -102,6 +117,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       if( j == 0 )
         {
+          tour_list = &selected_robot_tournament;
           dir_list  = &selected_robot_directory;
           tour_clist = robots_in_tournament_clist;
           dir_clist  = robots_in_directory_clist;
@@ -111,6 +127,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
         }
       else
         {
+          tour_list = &selected_arena_tournament;
           dir_list  = &selected_arena_directory;
           tour_clist = arenas_in_tournament_clist;
           dir_clist  = arenas_in_directory_clist;
@@ -126,6 +143,26 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       tour_clist = gtk_clist_new_with_titles( 1, tour_title );
 
       add_clist( tour_clist, hbox );
+
+      ListIterator<start_tournament_info_t> st_li;
+      for( tour_list->first(st_li); st_li.ok(); st_li++ )
+        {
+          char* lst[] = { "" };
+
+          int row = gtk_clist_append( GTK_CLIST( tour_clist ), lst );
+          gtk_clist_set_foreground( GTK_CLIST( tour_clist ), row, 
+                                    the_gui.get_fg_gdk_colour_p());
+          gtk_clist_set_background( GTK_CLIST( tour_clist ), row, 
+                                    the_gui.get_bg_gdk_colour_p());
+
+          String fname = st_li()->filename;
+          fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
+
+          gtk_clist_set_text( GTK_CLIST( tour_clist ),
+                              row, 0, fname.chars() );
+          st_li()->selected = false;
+          st_li()->row = row;
+        }
 
       char* button_labels[] = { " Remove ", " Select All ",
                                 " Unselect All ", " Add ",
@@ -250,10 +287,22 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       gtk_widget_show(label);
 
       entries[i] = gtk_entry_new_with_max_length(4);
-      if(i !=1 )
-        gtk_entry_set_text( GTK_ENTRY( entries[i] ), "1");
-      else
-        gtk_entry_set_text( GTK_ENTRY( entries[i] ), "2");
+
+      switch(i)
+        {
+        case 0:
+          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
+                              String(games_per_sequence_in_last_tournament).chars() );
+          break;
+        case 1:
+          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
+                              String(robots_per_sequence_in_last_tournament).chars() );
+          break;
+        case 2:
+          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
+                              String(number_of_sequences_in_last_tournament).chars() );
+          break;
+        }
 
       entry_t * info = new entry_t( ENTRY_INT, false );
 
@@ -401,6 +450,13 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
 }
 
 void
+StartTournamentWindow::set_deletion_resp_for_tournament_lists( const bool resp )
+{
+  selected_robot_tournament.set_deletion_responsibility( resp );
+  selected_arena_tournament.set_deletion_responsibility( resp );
+}
+
+void
 StartTournamentWindow::delete_event_occured( GtkWidget* widget,
                                              GdkEvent* event,
                                              class StartTournamentWindow* stw_p )
@@ -523,6 +579,17 @@ StartTournamentWindow::start( GtkWidget* widget,
                                        *( stw_p->get_selected_arena_tournament() ),
                                        value[1], value[0], value[2] );
 
+      // Are there memory leaks here?
+      robots_in_last_tournament.set_deletion_responsibility(false);
+      arenas_in_last_tournament.set_deletion_responsibility(false);
+      robots_in_last_tournament = *(stw_p->get_selected_robot_tournament());
+      arenas_in_last_tournament = *(stw_p->get_selected_arena_tournament());
+      games_per_sequence_in_last_tournament = value[0];
+      robots_per_sequence_in_last_tournament = value[1];
+      number_of_sequences_in_last_tournament = value[2];
+      robots_in_last_tournament.set_deletion_responsibility(true);
+      arenas_in_last_tournament.set_deletion_responsibility(true);
+      stw_p->set_deletion_resp_for_tournament_lists(false);
       the_gui.close_starttournamentwindow();
     }
 }

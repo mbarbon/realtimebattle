@@ -97,6 +97,8 @@ public:
                                          GdkEventButton *event,
                                          class StartTournamentWindow* stw_p );
 
+  void set_deletion_resp_for_tournament_lists( const bool resp );
+
 private:
 
   void add_clist                       ( GtkWidget* clist, GtkWidget* box );
