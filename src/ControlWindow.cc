@@ -629,9 +629,20 @@ ControlWindow::prev_seq( GtkWidget* widget,
 {
   int seq = the_arena.get_sequence_nr();
   int sit = the_arena.get_sequences_in_tournament();
+  int game = the_arena.get_game_nr();
 
   if( sit <= 1 || seq == 1 )
     return;
+
+  int new_game = game;
+  int new_seq = seq;
+
+  while( new_game != 1 || ( game == 1 && new_seq == seq ) )
+    {
+      String result = replay_arena.search_backwards( String( "G" ) );
+      new_seq = str2int( get_segment( result, 1, -1 ) );
+      new_game = str2int( get_segment( result, result.find( ' ' ), -1 ) );
+    }
 }
 
 void
