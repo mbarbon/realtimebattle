@@ -79,7 +79,15 @@ GIMain( GuiClientInterface* _gi_p )
 {
   int returncode = the_gui.main_loop( _gi_p );
   _gi_p->quit_program( true );
+  delete gui_p;
   return returncode;
+}
+
+void
+Gtk_GIExit_pre( int result )
+{
+  delete gui_p;
+  GIExit( result );
 }
 
 Gui::Gui()
@@ -230,10 +238,7 @@ Gui::get_information()
         case INFO_UNKNOWN:
           break;
         case INFO_QUIT:
-          {
-            gtk_main_quit();
-            GIExit(EXIT_SUCCESS);
-          }
+          quit( false );
           break;
         case INFO_STATE:
           {
@@ -308,6 +313,30 @@ Gui::set_colours()
   bg_gdk_colour = make_gdk_colour( bg_rgb_colour );
   fg_gdk_colour = make_gdk_colour( fg_rgb_colour );
   rtb_message_gdk_colour = make_gdk_colour( rtb_message_rgb_colour );
+}
+
+// TODO: Cleanly destruct everything in the gui
+void
+Gui::quit( bool exit_program )
+{
+  gtk_main_quit();
+  if( exit_program )
+    guiinterface_p->quit_program( EXIT_SUCCESS );
+  Gtk_GIExit_pre( EXIT_SUCCESS );
+}
+
+// TODO: Cleanly destruct everything in the gui
+void
+Gui::error( const bool fatal, const string& error_msg, const string& function_name )
+{
+  cerr << "RealTimeBattle Gtk gui: " << _("Error in") << " "
+       << function_name << ": " << error_msg << endl;
+  if( fatal )
+    {
+      gtk_main_quit();
+      guiinterface_p->quit_program( EXIT_FAILURE );
+      Gtk_GIExit_pre( EXIT_FAILURE );
+    }
 }
 
 void

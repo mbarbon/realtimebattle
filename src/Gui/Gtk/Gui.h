@@ -60,9 +60,14 @@ public:
   int timeout_function                         ();
   void get_information                         ();
   void set_colours                             ();
+  void quit                                    ( bool exit_program = true );
+  void error                                   ( const bool fatal,
+                                                 const string& error_msg,
+                                                 const string& function_name );
 
   const OptionHandler* get_main_opts           () const { return main_opts; }
   const OptionHandler* get_gtk_opts            () const { return gtk_opts; }
+  GuiClientInterface* get_guiinterface         () const { return guiinterface_p; }
 
   list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
 

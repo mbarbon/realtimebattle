@@ -47,7 +47,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "IntlDefs.h"
 #include "StartTournamentWindow.h"
-#include "Various.h"
 #include "GuiVarious.h"
 #include "Dialog.h"
 #include "OptionHandler.h"
@@ -657,7 +656,7 @@ new_tournament( list<start_tournament_info_t>& robotfilename_list,
           if( (charpos = fname.rfind('/')) != string::npos )
             fname = fname.substr( charpos+1, string::npos );
           else
-            Error(true, "Incomplete arena file path" + fname,
+            the_gui.error(true, "Incomplete arena file path" + fname,
                   "StartTournamentWindow::new_tournament");
       
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1

@@ -525,7 +525,7 @@ ControlWindow::set_status( const state_t state )
       break;
 
     default:
-      Error(true, "Unknown state", "ArenaBase::set_state");
+      the_gui.error(true, "Unknown state", "ArenaBase::set_state");
     }
 
   gtk_label_set_text( GTK_LABEL( status_label ), infotext.c_str() );
@@ -538,7 +538,7 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
   switch( (menu_t)callback_action )
     {
     case MENU_QUIT:
-//    Quit();
+      the_gui.quit( true );
       break;
     case MENU_NEW_TOURNAMENT:
       the_gui.open_starttournamentwindow();
@@ -627,14 +627,14 @@ void
 ControlWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* cw_p )
 {
-//    Quit();
+  the_gui.quit( true );
 }
 
 void
 ControlWindow::quit_rtb( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
-//    Quit();
+  the_gui.quit( true );
 }
 
 void
