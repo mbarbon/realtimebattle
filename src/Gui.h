@@ -24,18 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include "Vector2D.h"
 #include "MovingObject.h"
-//#include "Arena.h"
+#include "Arena.h"
 #include "String.h"
-
-struct start_tournament_glist_info_t
-{
-  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
-    row(r), selected(s), filename(fn), directory(dir) {}
-  int row;
-  bool selected;
-  String filename;
-  String directory;
-};
 
 #ifndef NO_GRAPHICS
 
