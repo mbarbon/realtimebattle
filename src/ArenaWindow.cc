@@ -178,9 +178,9 @@ ArenaWindow::hide_window( GtkWidget* widget, GdkEvent* event,
         {
           GtkWidget* menu_item = controlwindow_p->get_show_arena_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #else
-          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #endif
         }
     }
