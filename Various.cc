@@ -27,7 +27,7 @@ binomial(const int n, const int k)
   int k2 = min(k, n-k);
   
   double bin = 1;
-  for(int i=n; i>=n-k2; i--)  
+  for(int i=n; i>n-k2; i--)  
     bin *= i;
 
   for(int i=1; i<=k2; i++)  
