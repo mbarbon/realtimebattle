@@ -1,3 +1,8 @@
+
+#ifndef __MESSAGETYPES__
+#define __MESSAGETYPES__
+
+
 /* Messagetypes from Robot */
 
 #define MES_FROM_NAME                   "Name"
@@ -23,3 +28,34 @@
 #define MES_TO_HIT                      "Hit"
 #define MES_TO_DEAD                     "Dead"
 #define MES_TO_EXIT_ROBOT               "ExitRobot"
+
+enum message_type 
+{ 
+  INITIALIZE,              
+  EXIT_ROBOT,
+  RADAR 
+};
+
+enum argument_type
+{
+  NONE,
+  STRING,
+  DOUBLE,
+  INT
+};
+
+struct Message
+{
+  char* msg;
+  int number_of_args;
+  argument_type arg_type[4];
+};
+
+static const Message message[20] = 
+{
+  {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
+  {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
+  {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}}
+};
+
+#endif __MESSAGETYPES__
