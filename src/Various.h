@@ -24,6 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdktypes.h>
 #include <gtk/gtkwidget.h>
 
+#include "List.h"
+
 //#include "String.h"
 class String;
 
@@ -63,9 +65,8 @@ void reorder_pointer_array(void** array, int size);
 
 void entry_handler( GtkWidget * entry, entry_t * entry_info );
 
-void read_dirs_from_system(GList*& robotdirs, GList*& arenadirs);
-void clean_dir_glists(GList*& robotdirs, GList*& arenadirs);
-void split_colonseparated_dirs(String& dirs, GList * gl);
+void read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs);
+void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
 
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );

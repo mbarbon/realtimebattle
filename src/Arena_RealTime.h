@@ -29,20 +29,25 @@ public:
   ~Arena_RealTime();
 
   gint timeout_function();
-  void start_tournament(const GList* robotfilenamelist, 
-                        const GList* arenafilenamelist,
-                        int robots_p_game, 
-                        int games_p_sequence,
-                        int number_of_sequences);   
+  void start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
+                        const List<start_tournament_info_t>& arenafilename_list, 
+                        const int robots_p_game, 
+                        const int games_p_sequence, 
+                        const int n_o_sequences);
 
   void end_game();
 
   void broadcast(enum message_to_robot_type ...);
   
-  void search_directories( String directory, GList* dir_gl,
+  void search_directories( String directory, 
+                           List<start_tournament_info_t>& tour_list,
                            const bool check_robots );
-  void check_for_robots_and_arenas( String& word, GList* tour_gl,
-                                    GList* dir_gl, const bool check_robots );
+
+  void check_for_robots_and_arenas( String& word, 
+                                    List<start_tournament_info_t>& tour_list,
+                                    List<String>& dir_list, 
+                                    const bool check_robots );
+
   void parse_tournament_file( String& fname );
   void parse_arena_file(String& filename);
   

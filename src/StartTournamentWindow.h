@@ -24,10 +24,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
+#include "List.h"
+
 #ifndef NO_GRAPHICS
 
-struct _GList;
-typedef struct _GList GList;
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 struct _GdkEventButton;
@@ -108,13 +108,13 @@ private:
   GtkWidget** get_entries              () { return entries; }
 
   List<start_tournament_info_t>* get_selected_robot_tournament()
-    { return selected_robot_tournament; };
+    { return &selected_robot_tournament; };
   List<start_tournament_info_t>* get_selected_robot_directory ()
-    { return selected_robot_directory; };
+    { return &selected_robot_directory; };
   List<start_tournament_info_t>* get_selected_arena_tournament()
-    { return selected_arena_tournament; };
+    { return &selected_arena_tournament; };
   List<start_tournament_info_t>* get_selected_arena_directory ()
-    { return selected_arena_directory; };
+    { return &selected_arena_directory; };
 
   GtkWidget* get_robots_in_tournament_clist()
     { return robots_in_tournament_clist; }
@@ -134,10 +134,10 @@ private:
   GtkWidget* arenas_in_tournament_clist;
   GtkWidget* arenas_in_directory_clist;
 
-  List<start_tournament_info_t>* selected_robot_tournament;
-  List<start_tournament_info_t>* selected_robot_directory;
-  List<start_tournament_info_t>* selected_arena_tournament;
-  List<start_tournament_info_t>* selected_arena_directory;
+  List<start_tournament_info_t> selected_robot_tournament;
+  List<start_tournament_info_t> selected_robot_directory;
+  List<start_tournament_info_t> selected_arena_tournament;
+  List<start_tournament_info_t> selected_arena_directory;
 };
 
 #endif NO_GRAPHICS

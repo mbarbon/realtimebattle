@@ -48,14 +48,6 @@ class WallCircle;
 class WallInnerCircle;
 class Arena_RealTime;
 
-
-//This fixes a problem with glib, which can give warning messages about converting 
-// NULL from void* to GList* implicitly.
-#undef g_list_previous
-#undef g_list_next
-#define g_list_previous(list) ((list) ? (((GList *)list)->prev) : (GList*)NULL)
-#define g_list_next(list) ((list) ? (((GList *)list)->next) : (GList*)NULL)
-
 static const double infinity = 1.0e10;  //approximatly ;-)
 
 extern class Options the_opts;

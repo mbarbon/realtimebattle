@@ -104,8 +104,9 @@ Arena_RealTime::set_filenames(String& log_fname, const String& statistics_fname,
 }
 
 void
-Arena_RealTime::search_directories( String directory, GList* dir_gl,
-                           const bool check_robots )
+Arena_RealTime::search_directories( String directory, 
+                                    List<start_tournament_info_t>& tour_list,
+                                    const bool check_robots )
 {
   DIR* dir;
   if( NULL != ( dir = opendir(directory.chars()) ) )
@@ -121,17 +122,19 @@ Arena_RealTime::search_directories( String directory, GList* dir_gl,
             res = check_if_filename_is_arena(full_file_name);
           if(res)
             {
-              start_tournament_glist_info_t* info;
-              info = new start_tournament_glist_info_t(0,false,full_file_name,"");
-              g_list_append(dir_gl,info);
+              start_tournament_info_t* info;
+              info = new start_tournament_info_t(0, false, full_file_name, "");
+              tour_list.insert_last( info );
             }
         }
     }
 }
 
 void
-Arena_RealTime::check_for_robots_and_arenas( String& word, GList* tour_gl,
-                                    GList* dir_gl, const bool check_robots )
+Arena_RealTime::check_for_robots_and_arenas( String& word, 
+                                             List<start_tournament_info_t>& tour_list,
+                                             List<String>& dir_list, 
+                                             const bool check_robots )
 {
   bool found = false;
   String full_file_name = "";
@@ -139,14 +142,15 @@ Arena_RealTime::check_for_robots_and_arenas( String& word, GList* tour_gl,
   if( word.get_length() > 1 )
     if( get_segment( word, -2, -1 ) == "/*" )
       {
-        search_directories( get_segment( word, 0, -2 ), tour_gl, check_robots );
+        search_directories( get_segment( word, 0, -2 ), tour_list, check_robots );
         return;
       }
   if( word.get_length() == 1 && word[0] == '*' )
     {
-      GList* gl;
-      for(gl=g_list_next(dir_gl);gl != NULL; gl=g_list_next(gl))
-        search_directories( *((String*)gl->data), tour_gl, check_robots );
+      
+      ListIterator<String> li;
+      for( dir_list.first(li); li.ok(); li++ )
+        search_directories( *li(), tour_list, check_robots );
       return;
     }
   if( word.find('/') != -1 )
@@ -160,12 +164,10 @@ Arena_RealTime::check_for_robots_and_arenas( String& word, GList* tour_gl,
     }
   if( !found )
     {
-      GList* gl;
-      for(gl=g_list_next(dir_gl);gl != NULL; gl=g_list_next(gl))
+      ListIterator<String> li;
+      for( dir_list.first(li); li.ok(); li++ )
         {
-          String* current_dir = (String*)gl->data;
-
-          String temp_name = *current_dir + word;
+          String temp_name = *li() + word;
 
           if((check_robots && check_if_filename_is_robot( temp_name )) ||
              (!check_robots && check_if_filename_is_arena( temp_name )))
@@ -178,9 +180,9 @@ Arena_RealTime::check_for_robots_and_arenas( String& word, GList* tour_gl,
     }
   if( found )
     {
-      start_tournament_glist_info_t* info;
-      info = new start_tournament_glist_info_t(0,false,full_file_name,"");
-      g_list_append(tour_gl, info);
+      start_tournament_info_t* info;
+      info = new start_tournament_info_t(0, false, full_file_name, "");
+      tour_list.insert_last( info );
     }
   else
     {
@@ -242,8 +244,8 @@ Arena_RealTime::parse_arena_file(String& filename)
 void
 Arena_RealTime::parse_tournament_file( String& fname )
 {
-  GList* robotdirs;
-  GList* arenadirs;
+  List<String> robotdirs;
+  List<String> arenadirs;
 
   read_dirs_from_system(robotdirs, arenadirs);
 
@@ -256,8 +258,8 @@ Arena_RealTime::parse_tournament_file( String& fname )
   int n_o_sequences = 1;
   int looking_for = 0; // 0 = keyword, 1 = robot, 2 = arena
 
-  GList* robot_glist = g_list_alloc();
-  GList* arena_glist = g_list_alloc();
+  List<start_tournament_info_t> robot_list;
+  List<start_tournament_info_t> arena_list;
 
   for(;;)
     {
@@ -267,54 +269,46 @@ Arena_RealTime::parse_tournament_file( String& fname )
 
       if( word == "" )
         {
-          int robots_counted = 0;
-          int arenas_counted = 0;
-
-          GList* gl;
-          for(gl=g_list_next(robot_glist); gl != NULL; gl=g_list_next(gl))
-            robots_counted++;
-          for(gl=g_list_next(arena_glist); gl != NULL; gl=g_list_next(gl))
-            arenas_counted++;
-
-
+          int robots_counted = robot_list.number_of_elements();
+          int arenas_counted = arena_list.number_of_elements();
+          
           if (games_p_s == -1)
             games_p_s = arenas_counted;
+
           if (robots_p_s == -1)
             robots_p_s = robots_counted;
+
           if (n_o_sequences == -1)
             n_o_sequences=binomial(robots_counted, games_p_s);
 
           robots_p_s = min(robots_counted,robots_p_s);
           
           if(robots_p_s < 2)
-              Error(true, "Can't start tournament with only " + String(robots_p_s) + " robots per sequence",
+              Error(true, "Can't start tournament with only " + String(robots_p_s) + 
+                    " robots per sequence", 
                     "Arena_RealTime::parse_tournament_file");
+
           if(games_p_s < 1)
-            Error(true, "Must have at least one game per sequence. Current value is: " + String(games_p_s),
+            Error(true, "Must have at least one game per sequence. " 
+                  "Current value is: " + String(games_p_s),
                   "Arena_RealTime::parse_tournament_file");
+
           if(n_o_sequences < 1)
-            Error(true, "Must have at least one sequence. Current value is: " + String(n_o_sequences),
+            Error(true, "Must have at least one sequence. Current value is: " + 
+                  String(n_o_sequences),
                   "Arena_RealTime::parse_tournament_file");
           
           // Startup the tournament
 
-          start_tournament( robot_glist , arena_glist, robots_p_s, games_p_s, n_o_sequences);  
+          start_tournament( robot_list, arena_list, robots_p_s, 
+                            games_p_s, n_o_sequences);  
 
-          // Finally, delete the GLists
-
-          for(gl=g_list_next(robot_glist); gl != NULL; gl=g_list_next(gl))  
-            delete (start_tournament_glist_info_t*)(gl->data);
-          g_list_free(robot_glist);
-
-          for(gl=g_list_next(arena_glist); gl != NULL; gl=g_list_next(gl))  
-            delete (start_tournament_glist_info_t*)(gl->data);
-          g_list_free(arena_glist);
-
-          clean_dir_glists(robotdirs, arenadirs);
-          
           return;
         }
-      if((make_lower_case(word) == "games/sequence:") || (make_lower_case(word) == "g/s:"))
+
+
+      if((make_lower_case(word) == "games/sequence:") || 
+         (make_lower_case(word) == "g/s:"))
         {
           looking_for = 0;
           file >> buffer;
@@ -323,7 +317,8 @@ Arena_RealTime::parse_tournament_file( String& fname )
           else
             games_p_s = str2int( buffer );
         }
-      else if((make_lower_case(word) == "robots/sequence:") || (make_lower_case(word) == "r/s:"))
+      else if((make_lower_case(word) == "robots/sequence:") || 
+              (make_lower_case(word) == "r/s:"))
         {
           looking_for = 0;
           file >> buffer;
@@ -332,7 +327,8 @@ Arena_RealTime::parse_tournament_file( String& fname )
           else
             robots_p_s = str2int( buffer );
         }
-      else if((make_lower_case(word) == "sequences:") || (make_lower_case(word) == "seq:"))
+      else if((make_lower_case(word) == "sequences:") || 
+              (make_lower_case(word) == "seq:"))
         {
           looking_for = 0;
           file >> buffer;
@@ -354,10 +350,10 @@ Arena_RealTime::parse_tournament_file( String& fname )
               cerr << "Unrecognized keyword in tournament file: " << word << endl;
               break;
             case 1:
-              check_for_robots_and_arenas( word, robot_glist, robotdirs, true);
+              check_for_robots_and_arenas( word, robot_list, robotdirs, true);
               break;
             case 2:
-              check_for_robots_and_arenas( word, arena_glist, arenadirs, false);
+              check_for_robots_and_arenas( word, arena_list, arenadirs, false);
               break;
             }
         }
@@ -1065,8 +1061,12 @@ Arena_RealTime::end_sequence_follow_up()
 }
 
 void
-Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* arenafilename_list, 
-                        int robots_p_game, int games_p_sequence, int n_o_sequences)
+Arena_RealTime::
+start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
+                 const List<start_tournament_info_t>& arenafilename_list, 
+                 const int robots_p_game, 
+                 const int games_p_sequence, 
+                 const int n_o_sequences)
 {
   clear();
 
@@ -1084,13 +1084,13 @@ Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* a
   number_of_robots = 0;
   robot_count = 0;
   Robot* robotp;
-  start_tournament_glist_info_t* infop;
+  start_tournament_info_t* infop;
   String* stringp;
 
-  GList* gl;
-  for(gl = g_list_next(robotfilename_list); gl != NULL; gl = g_list_next(gl))
+  ListIterator<start_tournament_info_t> li;
+  for( robotfilename_list.first(li); li.ok(); li++ )
     {
-      infop = (start_tournament_glist_info_t*)gl->data;
+      infop = li();
       robotp = new Robot(infop->filename);
       all_robots_in_tournament.insert_last( robotp );
       number_of_robots++;
@@ -1098,10 +1098,10 @@ Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* a
 
   // Create list of arena filenames
   number_of_arenas = 0;
-
-  for(gl = g_list_next(arenafilename_list); gl != NULL; gl = g_list_next(gl))
+  
+  for( arenafilename_list.first(li); li.ok(); li++ )
     {
-      stringp = new String(((start_tournament_glist_info_t*)gl->data)->filename);
+      stringp = new String(li()->filename);
       arena_filenames.insert_last( stringp );
       number_of_arenas++;
     }

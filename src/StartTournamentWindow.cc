@@ -45,6 +45,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StartTournamentWindow.h"
 #include "String.h"
 #include "Various.h"
+#include "List.h"
 
 StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_height,
@@ -160,11 +161,11 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       ListIterator<String> li;
 
       if( robot )
-        robotdirs->first(li);
+        robotdirs.first(li);
       else
-        arenadirs->first(li);
+        arenadirs.first(li);
 
-      for( ; li.ok() ; li() )
+      for( ; li.ok() ; li++ )
         {
           String* current_dir = li();
           DIR* dir;
@@ -180,10 +181,10 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                       char* lst[] = { "" };
 
                       int row = gtk_clist_append( GTK_CLIST( dir_clist ), lst );
-                      gtk_clist_set_foreground( GTK_CLIST( dir_clist ),
-                                                row, the_arena.get_foreground_colour_p());
-                      gtk_clist_set_background( GTK_CLIST( dir_clist ),
-                                                row, the_arena.get_background_colour_p());
+                      gtk_clist_set_foreground( GTK_CLIST( dir_clist ), row, 
+                                                the_arena.get_foreground_colour_p());
+                      gtk_clist_set_background( GTK_CLIST( dir_clist ), row, 
+                                                the_arena.get_background_colour_p());
 
                       gtk_clist_set_text( GTK_CLIST( dir_clist ),
                                           row, 0, entry->d_name);
@@ -482,11 +483,8 @@ StartTournamentWindow::start( GtkWidget* widget,
   if(the_arena.get_state() != NOT_STARTED && the_arena.get_state() != FINISHED)
     return;
 
-  int robot_number = 0;
   int value[3];
-
-  int robot_number = stw_p->get_selected_robot_tournament()->
-    number_of_elements();
+  int robot_number = stw_p->get_selected_robot_tournament()->number_of_elements();
 
   for( int i = 0; i < 3; i++ )
     {
@@ -504,7 +502,7 @@ StartTournamentWindow::start( GtkWidget* widget,
       else
         min_value = 2;
 
-      value[i] = str2int( gtk_entry_get_text( GTK_ENTRY ( stw_p->get_entries()[i] ) ) );
+      value[i] = str2int( gtk_entry_get_text( GTK_ENTRY( stw_p->get_entries()[i] ) ) );
 
       value[i] = min( max_value, value[i] );
       value[i] = max( min_value, value[i] );
@@ -512,8 +510,8 @@ StartTournamentWindow::start( GtkWidget* widget,
   if( robot_number > 1 &&
       !( stw_p->get_selected_arena_tournament()->is_empty() ) )
     {
-      realtime_arena.start_tournament( stw_p->get_selected_robot_tournament(),
-                                       stw_p->get_selected_arena_tournament(),
+      realtime_arena.start_tournament( *( stw_p->get_selected_robot_tournament() ),
+                                       *( stw_p->get_selected_arena_tournament() ),
                                        value[1], value[0], value[2] );
 
       the_gui.close_starttournamentwindow();
@@ -639,7 +637,7 @@ StartTournamentWindow::add_all_selected( const bool robots )
 
           info_tourn_p = new start_tournament_info_t
             ( row, false, full_filename.chars(), info_dir_p->directory );
-          info_tourn_list.insert_last( info_tourn_p );
+          info_tourn_list->insert_last( info_tourn_p );
         }
     }
 }
@@ -670,7 +668,6 @@ StartTournamentWindow::remove_all_selected( const bool robots )
       if( info_p->selected )
         {
           gtk_clist_remove(GTK_CLIST(clist_tourn), info_p->row);
-          info_dir_list.remove(li);
           
           for( info_dir_list->first(li2); li2.ok(); li2++ )
             {
@@ -678,6 +675,7 @@ StartTournamentWindow::remove_all_selected( const bool robots )
               if(info2_p->row > info_p->row)
                 info2_p->row = info2_p->row - 1;
             }
+          info_dir_list->remove(li);
         }
     }
 }
@@ -691,7 +689,7 @@ StartTournamentWindow::selection_made( GtkWidget* clist, gint row,
     return;
 
   ListIterator<start_tournament_info_t> li;
-  List<start_tournament_info_t>* info__list = NULL;
+  List<start_tournament_info_t>* info_list = NULL;
 
   if(clist == stw_p->get_robots_in_tournament_clist() )
     info_list = stw_p->get_selected_robot_tournament();

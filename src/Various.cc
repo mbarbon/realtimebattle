@@ -125,56 +125,33 @@ gdk2hex_colour(const GdkColor& col)
 
 
 void
-read_dirs_from_system(GList*& robotdirs, GList*& arenadirs)
+read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs)
 {
   String dirs;
 
-  robotdirs = g_list_alloc();
-  arenadirs = g_list_alloc();
+  robotdirs.delete_list();
+  arenadirs.delete_list();
 
   dirs = the_opts.get_s(OPTION_ROBOT_SEARCH_PATH);
-  split_colonseparated_dirs(dirs,robotdirs);
+  split_colonseparated_dirs(dirs, robotdirs);
 
 #ifdef ROBOTDIR
   String * str = new String(ROBOTDIR "/");
-  g_list_append(robotdirs,str);
+  robotdirs.insert_last( str );
 #endif
 
   dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
-  split_colonseparated_dirs(dirs,arenadirs);
+  split_colonseparated_dirs(dirs, arenadirs);
 
 #ifdef ARENADIR
   str = new String(ARENADIR "/");
-  g_list_append(arenadirs,str);
+  arenadirs.insert_last( str );
 #endif
-}
-
-void
-clean_dir_glists(GList*& robotdirs, GList*& arenadirs)
-{
-  GList* gl;
-  for(gl=g_list_next(robotdirs);gl != NULL; )
-    {
-      String* str = (String*)gl->data;
-      delete str;
-      gl=g_list_next(gl);
-      g_list_remove(robotdirs,str);
-    }
-  for(gl=g_list_next(arenadirs);gl != NULL; )
-    {
-      String* str = (String*)gl->data;
-      delete str;
-      gl=g_list_next(gl);
-      g_list_remove(arenadirs,str);
-    }
-
-  g_list_free(robotdirs);
-  g_list_free(arenadirs);
 }
 
 // This function splits a string of colonseparated directories into a glist
 void
-split_colonseparated_dirs(String& dirs, GList * gl)
+split_colonseparated_dirs(String& dirs, List<String>& str_list)
 {
   String current_dir = dirs;
   int pos, lastpos = 0;
@@ -184,8 +161,8 @@ split_colonseparated_dirs(String& dirs, GList * gl)
       if(current_dir[current_dir.get_length() - 1] != '/')
         current_dir += '/';
 
-      String * str = new String(current_dir);
-      g_list_append(gl,str);
+      String* str = new String(current_dir);
+      str_list.insert_last( str );
 
       lastpos = pos+1;
     }
@@ -196,8 +173,8 @@ split_colonseparated_dirs(String& dirs, GList * gl)
       if(current_dir[current_dir.get_length() - 1] != '/')
         current_dir += '/';
 
-      String * str = new String(current_dir);
-      g_list_append(gl,str);
+      String* str = new String(current_dir);
+      str_list.insert_last( str );
     }
 }
 
