@@ -176,9 +176,9 @@ check_messages(int sig)
 int 
 main(int argc, char * argv[])
 {
-  signal (SIGUSR1, check_messages);
-
   robot_rotate = 0.53;
+
+  check_messages(SIGUSR1);
 
   for(;;sleep(1))
     {
