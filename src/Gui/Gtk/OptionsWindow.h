@@ -24,9 +24,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
-
 #include <string>
+
+#include "Option.h"
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
@@ -36,18 +36,10 @@ typedef void* gpointer;
 template<class T> struct option_info_t;
 
 struct entry_t;
-class Options;
 
 class OptionsWindow
 {
 private:
-  struct button_t
-  {
-    string label;
-    bool used;
-    GtkSignalFunc func;
-    gpointer data;
-  };
 
 public:
   OptionsWindow                   ( const int default_width  = -1,
@@ -56,12 +48,6 @@ public:
                                     const int default_y_pos  = -1 );
   ~OptionsWindow                  ();
 
-  void add_option_to_notebook     ( GtkWidget* description_table,
-                                    GtkWidget* entry_table,
-                                    GtkWidget* button_table,
-                                    int row, string description,
-                                    GtkWidget* entry, string entry_text,
-                                    entry_t* info, button_t* buttons );
   void update_all_gtk_entries     ();
   void set_all_options            ();
 
@@ -92,31 +78,34 @@ public:
   static void grab_windows        ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
 
-  static void double_min          ( GtkWidget* widget,
-                                    option_info_t<double>* option );
-  static void double_def          ( GtkWidget* widget,
-                                    option_info_t<double>* option );
-  static void double_max          ( GtkWidget* widget,
-                                    option_info_t<double>* option );
-  static void long_min            ( GtkWidget* widget,
-                                    option_info_t<long>* option );
-  static void long_def            ( GtkWidget* widget,
-                                    option_info_t<long>* option );
-  static void long_max            ( GtkWidget* widget,
-                                    option_info_t<long>* option );
-  static void string_def          ( GtkWidget* widget,
-                                    option_info_t<string>* option );
+  static void min_callback        ( GtkWidget* widget, Option* option_p );
+  static void def_callback        ( GtkWidget* widget, Option* option_p );
+  static void max_callback        ( GtkWidget* widget, Option* option_p );
+  static void entry_handler       ( GtkWidget* widget, Option* option_p );
 
   GtkWidget* get_window_p         () { return window_p; }
 
 private:
+  struct page_t
+  {
+    page_t( const string& l, GtkWidget* dt, GtkWidget* et,
+            GtkWidget* bt, const int noo )
+      : label(l), description_table(dt), entry_table(et), button_table(bt),
+        number_of_options(noo), current_row(0) {}
+    string label;
+    GtkWidget* description_table;
+    GtkWidget* entry_table;
+    GtkWidget* button_table;
+    int number_of_options;
+    int current_row;
+  };
+
+
   GtkWidget* get_filesel          () { return filesel; }
   void set_filesel                ( GtkWidget* fs ) { filesel = fs; } 
 
   GtkWidget* window_p;
   GtkWidget* filesel;
 };
-
-#endif NO_GRAPHICS
 
 #endif __OPTIONS_WINDOW__
