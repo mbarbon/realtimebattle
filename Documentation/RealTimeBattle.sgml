@@ -348,6 +348,18 @@ during the game. There energy and frequency can be controlled with the
 
 <sect1>Time<label id="Time">
 <p>
+As the name of the program indicates, the time used is the real time. It is entirely up to the
+robots to respond quickly enough to the events in the game. The game progresses by calling the
+update function in regular intervals. Between these, the robots have to share the remaining CPU
+time. To prevent robots from using too much of the processor, their CPU time is limited in 
+<ref id="Command line options" name="competition-mode">. The 
+<ref name="corresponding options" id="CPUOptions"> give more details.
+
+The real-timeness can, however, be
+violated under some circumstances. You can speed up or slow down the game speed by changing the 
+<ref name="timescale" id="TimeScale"> option and there is a method to prevent disruption of
+the game , when the system load is too high. If the time between two updates is longer than
+the <ref name="max timestep" id="MaxTimestep">, the game time will be slow down accordingly.
 
 
 <sect1>A game<label id="A_game">
@@ -786,6 +798,7 @@ game clock will go faster relative to an ordinary clock. Changing this
 value can be usefull if you either want to give the robots more time
 or if you have a fast computer you may want to speed the game up.
 
+<label id="CPUOptions">
 <tag>Start CPU time:</tag> In <ref id="Command line options" name="competition-mode"> a robots CPU
 usage is limited. At the beginning of a sequence a robot will get this amount of CPU time to spent.
 
