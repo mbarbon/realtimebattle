@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -102,60 +102,7 @@ InitializationPacket::handle_packet(void* p_void)
 
   is >> type_init >> protocol;
 
-  if(type_init == "Join" && protocol == RTB_PROTOCOL_VERSION_STR)
-    {	      // This is the good protocol and he is looking for a server
-      //TODO : Send some info about me (as with a metaserver)
-      string his_host_name;
-      int port_num, max_friends;
-      is >> his_host_name >> port_num >> max_friends;
-      
-      //TODO : Check if it is not already connected
-      if( my_socketserver.accept_new_server() ) //Try just to add it to the packet factory, maybe it will accept it, otherwise it will close it
-	{
-	  nc->set_type(SERVER_CONNECTION);   //NOTE : Is it usefull ?
-	  my_socketserver. by_type_connections[SERVER_CONNECTION]. push_back(nc);
-	  my_socketserver. connection_factory[ nc ] = &my_serverpacketfactory;
-	  
-	  ServerState new_server_info = ServerState(his_host_name, port_num, 1, 1);
-	  my_socketserver. server_states[nc] = new_server_info;
-	  my_socketserver.nb_conn_friends += 1;
-
-	  if(my_socketserver.leader == NULL) //I don't have any leader : I'm the leader !!!
-	    {
-	      ostrstream os;
-	      os << "NextId "<<	(my_socketserver.next_id) ++ <<ends; 
-	      CommandPacket NextId ( os.str() );
-	      my_socketserver.send_packet_by_type(SERVER_CONNECTION, &NextId);	      
-	    }	  
-	  
-	  ostrstream os1;
-	  os1<<"Connection_Confirmed "
-	     << my_socketserver.by_type_connections[SERVER_CONNECTION].size() << " "
-	     << my_socketserver.nb_conn_friends << ends;
-	  
-	  CommandPacket P ( os1.str() );
-	  nc->send_data( P.make_netstring() );
-	  
-	  //Send all my friends that I have one more connection
-	  CommandPacket To_Servers ( "FreeConn" );
-	  my_socketserver. send_packet_by_type(SERVER_CONNECTION, &To_Servers );
-	  return 1;
-	}
-      else
-	{
-	  //Send him some other addresses where he can connect
-	  CommandPacket P ("Connection_Refused");
-	  nc->send_data( P.make_netstring() );
-	  nc->close_socket();
-	  //Either accept the new connection (and have more connections than allowed)
-	  //Or close the connection and redirect him on an other server
-	  //Or close an other server and let it be the link between us two ...
-	  //Use a random value to know which one we 
-	}
-      //Find the other servers that will be connected to the new comer.
-    }
-  
-  else if(type_init == "Connect") //He is already connected and he wants to open a other channel
+  if(type_init == "Connect") //He is already connected and he wants to open a other channel
     {
       is >> channel;
       cout<<"He wants to connect to protocol "<<protocol<<" on channel "<<channel<<endl;
@@ -163,13 +110,13 @@ InitializationPacket::handle_packet(void* p_void)
       if(my_socketserver.channel_protocol(channel) == protocol) {
 	cout<<"Ok, he can connect\n";
 	nc->set_type(channel);
-	my_socketserver. by_type_connections[channel]. push_back(nc);  //USELESS
-	my_socketserver. connection_factory[ nc ] = my_socketserver.packet_factory( channel );
-	cout<<my_socketserver. connection_factory[ nc ]->Protocol()<<endl;
 
-	//TODO : add this connection to the packet factory and remove it from InitPacketFactory 
+	PacketFactory* factory =  my_socketserver.packet_factory( channel );
 
-	my_socketserver. connection_factory[ nc ]->add_connection( nc );
+	factory->add_connection( nc );
+	my_socketserver. connection_factory[ nc ] = factory;
+	cout<<factory->Protocol()<<endl;
+
 	return 1;
       }
     }
@@ -198,6 +145,7 @@ CommandPacket::make_netstring() const
 
   if(comm == "FreeConn")
     {
+      /*
       int av = 0;
       for(map<NetConnection*, ServerState>::iterator it =my_socketserver.server_states.begin();
 	  it != my_socketserver.server_states.end(); it ++)
@@ -208,6 +156,7 @@ CommandPacket::make_netstring() const
 	<< my_socketserver.by_type_connections[SERVER_CONNECTION].size() << " " 
 	<< av << ends;
       datastring = os.str();
+      */
     }
   else
     datastring = comm;
@@ -245,7 +194,7 @@ CommandPacket::handle_packet(void* p_void)
 
     ostrstream os;
     os << "SomeFriends " << protocol << ends;
-
+    /*
     vector<string> vs;
     vs = my_socketserver.give_other_addresses(cc, protocol);
 
@@ -254,6 +203,7 @@ CommandPacket::handle_packet(void* p_void)
 	SubmitListPacket P( os.str(), vs );
 	cc->send_data( P.make_netstring() );
       }
+    */
   }
   else if( command == "NextId") {
     int next_id;
@@ -267,39 +217,17 @@ CommandPacket::handle_packet(void* p_void)
     my_socketserver.next_id = next_id;
   }
   else if( command == "FreeConn") { //He has changed his number of connections
+    /*
     int nb_friends, nb_conn_of_friends;
     is >> nb_friends >> nb_conn_of_friends;
     my_socketserver.nb_conn_friends += nb_friends - my_socketserver.server_states[cc].nb_conn;
     my_socketserver.server_states[cc].set_nb_conn (nb_friends, nb_conn_of_friends);
+    */
   }
   else if( command == "Quit" )
     {
       cc->close_socket();
       return 0;
-    }
-  else if( command == "Connection_Confirmed")
-    {
-      //Know I know that I'm on the ring !!!
-      unsigned int his_nb_conn, nb2;
-      is >> his_nb_conn >> nb2;
-
-      my_socketserver.server_states[cc].set_nb_conn(his_nb_conn, nb2);
-      my_socketserver.nb_conn_friends += nb2;
-
-      unsigned int my_nb_conn = my_socketserver.by_type_connections[SERVER_CONNECTION].size();
-
-      CommandPacket To_Servers ( "FreeConn" );
-      my_socketserver.send_packet_by_type(SERVER_CONNECTION, &To_Servers );
-
-      my_socketserver.by_type_conn(SERVER_CONNECTION) -> push_back(cc);
-      if( my_nb_conn < his_nb_conn  ) 
-      {
-	  //TODO : Also check if I have some request going on...
-        cc -> send_data( CommandPacket("NeedFriends 1").make_netstring() );
-      }
-    }
-  else if( command == "Connection_Refused") 
-    {
     }
   else
     cout<<"Unknown command "<< command<<endl;
@@ -415,68 +343,6 @@ SubmitListPacket::handle_packet( void* p_void)
   istrstream is(type.c_str());
   string command;
   is >> command;
-
-  if( command  == "SomeFriends")
-    {
-      string protocol;
-      is >> protocol;
-
-      map<int, PacketFactory*>::iterator it;
-      
-      for(it = my_socketserver.packet_factories.begin(); it != my_socketserver.packet_factories.end(); it++)
-	{
-	  if(protocol == it->second->Protocol())
-	    { break; }
-	}
-     
-      if( it != my_socketserver.packet_factories.end() ) //if not : I don't need it anymore...
-	{
-	  int local_channel = it->first;
-
-	  string hostname; 
-	  int port_num, dist_channel;
-
-	  if(local_channel == SERVER_CONNECTION)
-	    {
-	      for(unsigned int i = 0; i < file_name.size(); i ++)
-		{
-		  istrstream is(file_name[i].c_str());
-		  is>>hostname>>port_num>>dist_channel;
-		  if( my_socketserver.not_connected_to(hostname, port_num))
-		    {
-		      NetConnection* nc = 
-			my_socketserver.connect_to_an_other_server(hostname, port_num);
-		      if( nc )
-			{
-			  //Either force him to accept my connection           (70%)
-			  //Or tell him to redirect me on one of his friend    (30%)
-			  //if(my_socketserver.by_type_connections[SERVER_CONNECTION].size() == 1)
-			    nc->send_data( InitializationPacket( "Join" ).make_netstring() );
-		      
-			  nc->send_data( CommandPacket( "FreeConn" ).make_netstring() );
-			}
-		    }
-		}
-	    }
-	  else  //if local_channel != SERVER_CONNECTION
-	    {
-	      //NOTE : right now I only get 1, but maybe this will change
-	      istrstream is(file_name[0].c_str());
-	      is>>hostname>>port_num>>dist_channel;
-	      if(dist_channel != 0)
-		{
-		  NetConnection* nc = my_socketserver.connect_to_an_other_server(hostname, port_num);
-		  if( nc ) {
-		    nc->send_data( InitializationPacket( "Connect", protocol, dist_channel ).make_netstring());
-		    my_socketserver.connection_factory[ nc ] = my_socketserver.packet_factory( local_channel );
-		    my_socketserver.by_type_connections[ local_channel ].push_back( nc );
-		  }
-		}
-	    }
-	}
-    }
-  else 
-    return 1;
 
   return 0;
 }

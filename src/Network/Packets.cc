@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,6 +49,15 @@ PacketFactory::remove_connection( NetConnection* nc )
       my_connections. erase( li );
       return;
     }
+}
+
+void
+PacketFactory::broadcast( Packet* p )
+{
+  string data = p->make_netstring();
+  
+  for( list<NetConnection*>::iterator li = my_connections.begin(); li != my_connections.end(); li++ )
+    (**li).send_data( data ); 
 }
 
 string&

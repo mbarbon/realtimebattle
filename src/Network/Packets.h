@@ -96,8 +96,11 @@ class PacketFactory {
   virtual ~PacketFactory() {};
   virtual string Protocol() {return "NoProtocol";};
   virtual Packet* MakePacket(string & s) {return NULL;};
+
   virtual void add_connection( NetConnection* );
   virtual void remove_connection( NetConnection* );
+
+  void broadcast( Packet* );
 
  protected:
   //TODO : set< NetConnection* >

@@ -36,8 +36,8 @@ class TournamentAgreementPacketFactory: public PacketFactory {
 
 class TournamentCommitChangePacket : /* virtual */ public Packet {
 public:
-  TournamentCommitChangePacket(tourn_info_t* tourn)
-    : tourn_p(tourn), change("") {};
+  TournamentCommitChangePacket(tourn_info_t* tourn, TournamentAgreementPacketFactory* f)
+    : tourn_p(tourn), change(""), my_factory( f ) {};
   TournamentCommitChangePacket( const string& c ) 
     : change(c)  {};
   TournamentCommitChangePacket( const string& t, const string& c)
@@ -46,12 +46,15 @@ public:
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_TOURNAMENT_COMMIT_CHANGE; };
 
+  void add_connection( NetConnection* );
+
   string& type()  {return type_init;}
   string& value() {return change;}
 protected:
   tourn_info_t *tourn_p;
   string type_init;
   string change;
+  TournamentAgreementPacketFactory* my_factory;
 };
 
 #endif
