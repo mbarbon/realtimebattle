@@ -91,8 +91,8 @@ endif
 if SGML2LATEX
 %.dvi: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o dvi $<"; \
-		sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o dvi $<; \
+		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -o dvi $<"; \
+		sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -o dvi $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
@@ -107,8 +107,8 @@ endif
 if SGML2LATEX
 %.ps: %.sgml
 	@if [ -f $< ]; then \
-		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o ps $<"; \
-		sgml2latex  -p $(PAPER_SIZE)  -D table=real -c latin -v -o ps $<; \
+		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -o ps $<"; \
+		sgml2latex  -p $(PAPER_SIZE)  -D table=real -c latin -o ps $<; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
