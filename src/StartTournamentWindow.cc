@@ -60,6 +60,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_x_pos,
                                               const int default_y_pos )
 {
+  tournament_started_flag = false;
+
   filesel = NULL;
 
   // The window widget
@@ -794,6 +796,9 @@ void
 StartTournamentWindow::start( GtkWidget* widget,
                               class StartTournamentWindow* stw_p )
 {
+  if( stw_p->get_tournament_started_flag() == true )
+    return;
+
   if( the_arena_controller.is_started() )
     if( the_arena.get_state() != NOT_STARTED && the_arena.get_state() != FINISHED )
       return;
@@ -825,6 +830,7 @@ StartTournamentWindow::start( GtkWidget* widget,
   if( robot_number > 1 &&
       !( stw_p->get_selected_arena_tournament()->is_empty() ) )
     {
+      stw_p->set_tournament_started_flag( true );
       the_arena_controller.start_realtime_arena();
       realtime_arena.start_tournament( *( stw_p->get_selected_robot_tournament() ),
                                        *( stw_p->get_selected_arena_tournament() ),
