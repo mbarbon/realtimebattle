@@ -4,7 +4,7 @@ rtbstddocsdir = $(DOCS_DIR)
 rtbstddocs_DATA = BUGS FAQ TODO README INSTALL ChangeLog
 
 rtbextradir = $(RTB_DIR)
-rtbextra_DATA = RealTimeBattle.xpm
+rtbextra_DATA = RealTimeBattle.xpm tournament.txt
 
 EXTRA_DIST = $(rtbextra_DATA) $(rtbstddocs_DATA) RealTimeBattle.spec
 
