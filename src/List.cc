@@ -5,8 +5,10 @@
 
 #include <iostream.h>
 #include "List.h"
-#include "Various.h"
+//#include "Various.h"
 #include "String.h"
+
+void Error(const bool fatal, const String& error_msg, const String& function_name);
 
 template <class T>
 List<T>::List(bool resp)
