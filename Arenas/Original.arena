@@ -33,7 +33,7 @@ Define Weapon Cannon
 
    EndDefine
 
-   Shot                     Cannonball
+   Shot                     $Cannonball
 
    AutoFire                 false
    ReloadTime                0.5
@@ -177,17 +177,19 @@ Define Environment TheEnvironment
 and a very devastating cannon. Watch out for the mines, but eat the cookies. \
 The goal is to kill all other robots.")
 
-   RollFriction              0.002
-   SlideFriction             0.1
+   Friction                  0.002
    AirResistance             0.005
    Gravity                   9.82
-
    Visibility               10.0
-
    Temperature              18.0   ;Note: in degrees (not kelvin), is this right?
+
+   MatchTimeLimit           true
+   TimeLimit                true
+   FixedLength              false
+   Timeout                 120.0
 
    Include                  "StdGeometries.include"
 
-   GeometryList             PlainSquare PlainCircle Circles Nippon
+   GeometryList             $PlainSquare $PlainCircle $Circles $Nippon
 
 EndDefine
