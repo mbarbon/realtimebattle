@@ -324,7 +324,21 @@ Arena::parse_tournament_file( String& fname )
             games_p_s = arenas_counted;
           if (robots_p_s == -1)
             robots_p_s = robots_counted;
+          if (n_o_sequences == -1)
+            n_o_sequences=binomial(robots_counted, games_p_s);
 
+          robots_p_s = min(robots_counted,robots_p_s);
+          
+          if(robots_p_s < 2)
+              Error(true, "Can't start tournament with only " + String(robots_p_s) + " robots per sequence",
+                    "Arena::parse_tournament_file");
+          if(games_p_s < 1)
+            Error(true, "Must have at least one game per sequence. Current value is: " + String(games_p_s),
+                  "Arena::parse_tournament_file");
+          if(n_o_sequences < 1)
+            Error(true, "Must have at least one sequence. Current value is: " + String(n_o_sequences),
+                  "Arena::parse_tournament_file");
+          
           // Startup the tournament
 
           start_tournament( robot_glist , arena_glist, robots_p_s, games_p_s, n_o_sequences);  
@@ -364,7 +378,11 @@ Arena::parse_tournament_file( String& fname )
       else if((make_lower_case(word) == "sequences:") || (make_lower_case(word) == "seq:"))
         {
           looking_for = 0;
-          file >> n_o_sequences;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            n_o_sequences = -1;
+          else
+            n_o_sequences = str2int( buffer );
         }
       else if((make_lower_case(word) == "robots:") || (make_lower_case(word) == "r:"))
         looking_for = 1;
