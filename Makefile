@@ -24,7 +24,7 @@ libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
 
-all: RealTimeBattle $(ROBOTDIR)/empty ETAGS
+all: RealTimeBattle $(ROBOTDIR)/empty $(ROBOTDIR)/fire ETAGS
 
 RealTimeBattle: $(objects)
 	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
@@ -44,6 +44,7 @@ MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h
 Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h
 Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h
 $(ROBOTDIR)/empty: $(ROBOTDIR)/empty.c 
+$(ROBOTDIR)/fire: $(ROBOTDIR)/fire.cc 
 
 #$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 #	cd $(ROBOTDIR); \
