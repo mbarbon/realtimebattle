@@ -108,8 +108,6 @@ public:
   void paus_game_toggle();
   void step_paused_game();
   bool is_game_halted();
-  bool get_use_proc() { return use_proc; }
-  void set_use_proc(const bool v) { use_proc = v; }
 
   void end_game();
 
@@ -177,8 +175,6 @@ private:
   state_t state;
   game_mode_t game_mode;
   
-  bool use_proc;
-
   int debug_level;
   int max_debug_level;
 

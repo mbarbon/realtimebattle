@@ -39,7 +39,6 @@ Arena::Arena()
 {
   state = NOT_STARTED;
   game_mode = NORMAL_MODE;
-  use_proc = true;
 
   halted = false;
   halt_next = false;
