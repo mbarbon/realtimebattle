@@ -88,18 +88,30 @@ GuiInterface::GuiInterface( const String& name, int argc, char** argv )
   if(!(*func_Init)( argc, argv ))
     Error( true, "Couldn't initialize gui " + name,
              "GuiInterface::GuiInterface" );
+}
 
+GuiInterface::~GuiInterface()
+{
+  dlclose( dl_handle );
+  //TODO: thread should be joined or whatever is appropriate
+}
+
+void
+GuiInterface::startup()
+{
   pthread_create(&thread, NULL, GIMain_pre, (void*)this);
 
   pthread_mutex_init( &gi_mutex, NULL );
 }
 
-GuiInterface::~GuiInterface()
+void
+GuiInterface::shutdown()
 {
   pthread_mutex_destroy( &gi_mutex );
 
-  dlclose( dl_handle );
-  //TODO: thread should be joined or whatever is appropriate
+  void* ret_val;
+  pthread_join( thread, &ret_val );
+  // TODO: return something useful
 }
 
 int

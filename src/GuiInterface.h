@@ -23,7 +23,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <pthread.h>
 #include <list>
 
-
 #include "Options.h"
 //#include "ArenaBase.h"
 #include "Structs.h"
@@ -31,7 +30,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class ArenaController;
 class String;
 class Vector2D;
-
 
 // ---------------------------------------------------------------------------
 // class GuiInterface
@@ -43,19 +41,17 @@ class Vector2D;
 class GuiInterface
 {
 public:
-  struct message_t
-  {
-    message_t( const class String m, const class String f ) : message(m), from(f) {}
-    class String message;
-    class String from;
-  };
-
   // Constructor & Destructor
 
   GuiInterface( const String&, int, char** );
   ~GuiInterface();
 
-  // Functions that supplies information to the Gui.
+  // Start up and Shut down the gui
+
+  void startup                                ();
+  void shutdown                               ();
+
+// Functions that supplies information to the Gui.
 
   String get_current_arena_filename           ();
   int get_game_nr                             ();
@@ -79,7 +75,6 @@ public:
 
   void quit                                   ();
 
-  message_t get_message                       ();
   int set_debug_level                         ( const int new_level );
   void pause_game_toggle                      ();
   void step_paused_game                       ();
@@ -97,28 +92,35 @@ public:
   void set_opt_l                              ( option_long_t   option, long int val );
   void set_opt_s                              ( option_string_t option, String   val );
 
+  // guivent??? pop_event                        ();
+
   // Functions for the server.
 
   pthread_t* get_thread_p                     ();
 
-  void add_message                            ( String message, String from );
+  //TODO: Perhaps an eventqueue?
+  // push_event                                  ( guievent??? );
 
-  //TODO: Perhaps an eventlist?
-
-  const String Name                           () { return (*func_Name)(); }
-  const String UsageMessage                   () { return (*func_UsageMessage)(); }
+  // Gui functions
+  const String Name                           () const { return (*func_Name)(); }
+  const String UsageMessage                   () const
+    { return (*func_UsageMessage)(); }
   int Main                                    ( GuiInterface* gi )
     { return (*func_Main)( gi ); }
 
 private:
 
-  list<message_t> messages;
+  //  list<message_t> messages;
+
+  // This should be the queue for guievents
+  //  queue<guievent???> eventlist
 
   pthread_t thread;
 
   // dl_handle
   void* dl_handle;
 
+  // Gui functions stored
   const String (*func_Name)();
   const String (*func_UsageMessage)();
   bool (*func_Init)( int, char** );
