@@ -1,0 +1,24 @@
+<!doctype linuxdoc system>
+
+<notes>
+<title>BUGS
+
+This is a list of the currently known bugs in this version of the program. If you have found
+another bug, please look at the most recent version of 
+<url name="this file on the homepage" url="http://realtimebattle.netpedia.net/BUGS.html"> and if you
+cannot find it there either, send a bug report to <htmlurl name="TODO: mail" url="mailto:">.
+
+<descrip>
+<tag>Windows resizing</tag>
+<p> 
+We have some troubles getting the windows work properly when allowing
+the windows to shrink. The gtk+ documentation is very sparse, so if anyone can find a
+solution please send a patch.
+
+<tag>Load and Save doesn't work</tag> 
+<p> 
+Please use debug-mode and save to your own files if you want
+something stored. This should be fixed soon.
+
+</descrip>
+</notes>
