@@ -799,13 +799,15 @@ Robot::set_values_at_process_start_up()
   cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
   cpu_timeout = 0.0;
 
-  if( statistics.is_empty() )
+  if( statistics.is_empty() )       // first sequence !
     {
-      send_message(INITIALIZE, 1);        // first sequence !
+      send_message(INITIALIZE, 1);  
+      colour_given = false;
+      name_given = false;
     }
-  else
+  else        // not first sequence !
     {
-      send_message(INITIALIZE, 0);        // not first sequence !
+      send_message(INITIALIZE, 0);
       send_message(YOUR_NAME, robot_name.chars());
       int long col = rgb_colour;
       int long newcol = realtime_arena.find_free_colour(col, col, this);
@@ -1037,6 +1039,7 @@ Robot::get_messages()
               instreamp->get(text, 80, '\n');
               plain_robot_name = text;
               check_name_uniqueness();
+              name_given = true;
             }
           break;
         case COLOUR:
@@ -1048,6 +1051,7 @@ Robot::get_messages()
               
               // TODO: check if colour is already allocated! 
               set_colour( realtime_arena.find_free_colour(home_colour, away_colour, this) );
+              colour_given = true;
             }
           break;
         case ROTATE:

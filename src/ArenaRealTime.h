@@ -66,7 +66,7 @@ public:
   void quit_ordered();
 
   long int find_free_colour(const long int home_colour, const long int away_colour, 
-                            const class Robot*);
+                            const class Robot*, const bool random_colours = false);
 
 
 private:

@@ -695,14 +695,17 @@ ArenaRealTime::is_colour_allowed(const long colour, const double min_dist, const
 long int
 ArenaRealTime::find_free_colour(const long int home_colour, 
                                  const long int away_colour, 
-                                 const Robot* robotp)
+                                 const Robot* robotp, const bool random_colours)
 {  
   long int tmp_colour;
 
   for(double min_dist = 0.1; min_dist > 0.01 ; min_dist *= 0.8)
     {
-      if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
-      if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
+      if( !random_colours )
+        {
+          if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
+          if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
+        }
       for(int i=0; i<25; i++)
         {
           tmp_colour = rand() & 0xffffff;
@@ -911,9 +914,23 @@ ArenaRealTime::start_sequence_follow_up()
           all_robots_in_sequence.remove(li);
           robots_left--;
         }
-      if( !robotp->set_and_get_has_competed() )
-        print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), 
-                         robotp->get_robot_name().chars());
+      else
+        {      
+          if( !robotp->set_and_get_has_competed() )
+            print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), 
+                             robotp->get_robot_name().chars());
+          
+          if( !robotp->is_name_given() )
+            robotp->send_message(WARNING, NAME_NOT_GIVEN, "");
+
+          if( !robotp->is_colour_given() )
+            {
+              robotp->send_message(WARNING, COLOUR_NOT_GIVEN, "");
+              robotp->set_colour( find_free_colour( 0, 0, robotp, true ) );
+              robotp->set_colour_given( true );
+            }
+        }
+
     }
   start_game();
 }

@@ -87,6 +87,11 @@ public:
   //  bool get_died_this_round() { return died_this_round; }
   int get_last_position();
 
+  bool is_colour_given() { return colour_given; }
+  void set_colour_given( const bool c ) { colour_given = c; }
+  bool is_name_given() { return name_given; }
+  
+
   ListIterator<stat_t> get_current_game_stats();
   
 
@@ -152,6 +157,10 @@ private:
 
   class String robot_filename;        // Filename with path  
   class String robot_plain_filename;  // Filename without path
+
+  bool colour_given;
+  bool name_given;
+  
 
   //class String robot_dir;
   //  double total_points;
