@@ -33,7 +33,7 @@ public:
   Shape();
   Shape(int long colour);
 
-  ~Shape() {}
+  virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
                               const double size) = 0;
@@ -51,7 +51,7 @@ public:
 
 #ifndef NO_GRAPHICS
   virtual void draw_shape(bool erase) = 0;
-  GdkColor get_gdk_colour() { return gdk_colour; }
+  GdkColor& get_gdk_colour() { return gdk_colour; }
   void set_colour(const GdkColor& gdk_colour);
 #endif
 

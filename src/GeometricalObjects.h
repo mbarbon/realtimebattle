@@ -34,7 +34,7 @@ public:
   Line(const Vector2D& sp, const Vector2D& d, const double len, const double th);
   Line(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
        const double b_c, const double hardn);
-  ~Line() {}
+  virtual ~Line() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
@@ -71,7 +71,7 @@ public:
   Circle(const Vector2D& c, const double r); 
   Circle(const Vector2D& c, const double r, const long int col); 
   Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
-  ~Circle() {}
+  virtual ~Circle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
