@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <time.h>
 #include <glib.h>
 #include <math.h>
-#include "../src/Messagetypes.h"
+#include "Messagetypes.h"
 
 #define abs(x) ((x>0) ? (x) : -(x))
 
@@ -75,7 +75,7 @@ check_messages(int sig)
           cin >> init ;
           if (init == 1)
             {
-              cout << "Name Thomas" << endl;
+              cout << "Name Seek and Destroy" << endl;
               cout << "Colour dede11 de5500" << endl;
             }
           break;
@@ -99,7 +99,7 @@ check_messages(int sig)
               slumprotate = 0.0;
               while (abs(slumprotate)<0.5)
                 slumprotate = ((double)(rand())/(double)RAND_MAX-0.5)*2.0;
-              // cout << "Print Thomas: slumptal = " << slumprotate << endl;
+              // cout << "Print seek_and_destroy: slumptal = " << slumprotate << endl;
             }
           break;
           

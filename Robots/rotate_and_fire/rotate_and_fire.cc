@@ -22,7 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../src/Messagetypes.h"
+#include "Messagetypes.h"
 
 volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;
@@ -66,7 +66,7 @@ check_messages(int sig)
           cin >> init;
           if(init == 1)
             {
-              cout << "Name Fire" << endl;
+              cout << "Name Rotate and Fire" << endl;
               cout << "Colour 2877ea 33ca11" << endl;
             }
           break;
@@ -165,7 +165,7 @@ main(int argc, char * argv[])
     {
       if( exit_robot ) 
         {
-          //          cerr << "Fire: Exiting normally!" << endl;
+          //          cerr << "rotate_and_fire: Exiting normally!" << endl;
           return(EXIT_SUCCESS);
         }
     }

@@ -1,0 +1,31 @@
+ifndef CXX
+CXX=g++
+endif
+
+ifndef DEBUG_MODE
+DEBUG_MODE=no
+endif
+
+ifdef RPM_OPT_FLAGS
+CFLAGS = $(RPM_OPT_FLAGS)
+
+else
+
+ifeq ($(DEBUG_MODE), yes)
+#debug-options
+CFLAGS = -g -Wall
+else
+#final-options
+CFLAGS = -O
+endif
+
+endif
+
+
+target: rotate_and_fire.robot
+
+rotate_and_fire.robot: rotate_and_fire.cc
+	$(CXX) $(CFLAGS)  -I../../src rotate_and_fire.cc -o rotate_and_fire.robot
+
+clean:
+	rm -f *~

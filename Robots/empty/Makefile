@@ -1,0 +1,31 @@
+ifndef CC
+CC=gcc
+endif
+
+ifndef DEBUG_MODE
+DEBUG_MODE=no
+endif
+
+ifdef RPM_OPT_FLAGS
+CFLAGS = $(RPM_OPT_FLAGS)
+
+else
+
+ifeq ($(DEBUG_MODE), yes)
+#debug-options
+CFLAGS = -g -Wall
+else
+#final-options
+CFLAGS = -O
+endif
+
+endif
+
+
+target: empty.robot
+
+empty.robot: empty.c
+	$(CC) $(CFLAGS) empty.c -o empty.robot
+
+clean:
+	rm -f *~
