@@ -267,9 +267,9 @@ int
 main ( int argc, char* argv[] )
 {
 
-
 #ifdef FLOATINGPOINT_H
-  fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
+  fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP | FP_X_OFL | FP_X_UFL | FP_X_DNML) );
+  //fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
 #endif
 
   gtk_init (&argc, &argv);
