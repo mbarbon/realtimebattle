@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/resource.h>
 #include <sys/stat.h>
 
-#ifdef USE_STDARGS_H
+#ifdef USE_STDARG_H
 #include <stdarg.h>
 #endif
 
