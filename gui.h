@@ -11,6 +11,17 @@
 #define ZOOMFACTOR 20
 
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
+enum stat_button_t
+{
+  STAT_BUTTON_TOTAL,
+  STAT_BUTTON_SEQUENCE,
+  STAT_BUTTON_GAME,
+  STAT_BUTTON_ROBOT,
+  STAT_BUTTON_FIRST,
+  STAT_BUTTON_PREV,
+  STAT_BUTTON_NEXT,
+  STAT_BUTTON_LAST
+};
 
 void statistics_button_callback(GtkWidget *widget, gpointer guip);
 void delete_event( GtkWidget * widget, gpointer guip );
@@ -19,9 +30,13 @@ void zoom_in_callback(GtkWidget *widget, gpointer guip);
 void zoom_out_callback(GtkWidget *widget, gpointer guip);
 gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer guip);
 
+void buttons_in_statistics_callback(GtkWidget *widget, gpointer button_info_p);
+
 class Gui
 {
 public:
+  enum stat_table_t { STAT_TABLE_TOTAL, STAT_TABLE_SEQUENCE, STAT_TABLE_GAME, STAT_TABLE_ROBOT };
+
   Gui(class Arena * arenap);
   ~Gui() {}
 
@@ -54,6 +69,9 @@ public:
                   const double thickness, GdkColor& colour );
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
+  void change_statistics( int change );
+  void add_the_statistics_to_clist();
+
   int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
   GtkWidget * get_score_clist() { return score_clist; }
@@ -69,6 +87,7 @@ private:
   GtkWidget * da_scrolled_window;
 
   GtkWidget * score_clist;
+  GtkWidget * stat_clist;
 
   GtkWidget * control_window;
   GtkWidget * score_window;
@@ -81,7 +100,18 @@ private:
   int zoomfactor;
   Vector2D boundary[2];
 
+  stat_table_t stat_table_type;
+  int stat_looking_at_sequence;
+  int stat_looking_at_game;
+
   class Arena * the_arena;
+};
+
+struct button_info_t
+{
+  button_info_t(Gui * p, stat_button_t t) : guip(p), type(t) {}
+  Gui * guip;
+  stat_button_t type;
 };
 
 #endif
