@@ -61,6 +61,7 @@ private:
 
 class TournamentStartedInfo : public InfoBase
 {
+public:
   TournamentStartedInfo              ( const int nom, const int gpm )
     : number_of_matches(nom), games_per_match(gpm) {}
   ~TournamentStartedInfo             () {}
@@ -76,6 +77,7 @@ private:
 // Doesn't contain anything.
 class TournamentEndedInfo : public InfoBase
 {
+public:
   TournamentEndedInfo  () {}
   ~TournamentEndedInfo () {}
 };
