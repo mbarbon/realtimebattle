@@ -15,10 +15,7 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
 static const double infinity = 1.0e10;
-
-enum touch_type { NO_ACTION, BOUNCE, TRANSFORM };
-
-static const number_of_object_types = 6;
+static const double eps = 1.0e-2;
 
 static class Options opts;
 
@@ -105,6 +102,7 @@ private:
   
   GList* all_robots_in_tournament;
   GList* all_robots_in_sequence;
+  GList* exclusion_points;
   GList* arena_filenames;               // list of GStrings
   
   int sequence_nr;
@@ -159,7 +157,7 @@ private:
 class Shape
 {
 public:
-  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5; colour = make_gdk_color( 0x000000 ); }
+  Shape() {bounce_coeff = 0.5; colour = make_gdk_color( 0x000000 ); }
   virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
@@ -174,7 +172,6 @@ public:
   friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
 
 protected:
-  touch_type touch_action;
   double bounce_coeff;
   double hardness_coeff;
   double mass;

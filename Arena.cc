@@ -11,6 +11,7 @@ Arena::Arena()
   all_robots_in_sequence = g_list_alloc();
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
+  exclusion_points = g_list_alloc();
 
   background_colour = make_gdk_color(opts.get_background_colour());
   foreground_colour = make_gdk_color(opts.get_foreground_colour());
@@ -31,6 +32,7 @@ Arena::~Arena()
   g_list_free(all_robots_in_sequence);
   g_list_free(all_robots_in_tournament);
   g_list_free(arena_filenames);
+  g_list_free(exclusion_points);
   for(int i=ROBOT; i<EXPLOSION; i++)
     g_list_free(object_lists[i]);
 }
@@ -69,6 +71,13 @@ Arena::parse_file(istream& file)
           file >> b1;
           file >> b2;
           boundary[1] = Vector2D(scale*b1, scale*b2);
+        }
+      else if( strcmp(text, "exclusion_point" ) == 0 )
+        {
+          if( succession < 3 ) throw Error("'boundary' after wallpieces or duplicate", "Arena::parsefile");
+          file >> vec1;
+          Vector2D* excl_p = new Vector2D(scale*vec1);
+          g_list_append(exclusion_points, excl_p);
         }
       else if( strcmp(text, "inner_circle" ) == 0 )
         {
@@ -121,7 +130,7 @@ Arena::parse_file(istream& file)
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
           g_list_append(object_lists[WALL], wall_circlep);
 
-          for(int i=0; i<vertices; i++)
+          for(int i=1; i<vertices; i++)
             {
               vec2 = vec1;
               file >> vec1;      // next point
@@ -252,6 +261,21 @@ Arena::space_available(const Vector2D& pos, const double margin)
 
   for(gl=g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->within_distance(pos, margin) ) return false;
+
+  // Check if it is possible to see any exclusion_points
+  
+  Vector2D vec;
+  double dist;
+  object_type obj_t;
+  void* col_obj;
+  for(gl=g_list_next(exclusion_points); gl != NULL; gl = g_list_next(gl))
+    {
+      vec = *((Vector2D*)gl->data);
+      dist = length(vec - pos);
+      if( dist <= margin || 
+          dist <= get_shortest_distance(pos, unit(vec - pos), 0.0, obj_t, col_obj) )
+        return false;
+    }
 
   return true;
 }
@@ -529,6 +553,13 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
       delete explosionp;
       gl=g_list_next(gl);
       g_list_remove(object_lists[EXPLOSION], explosionp);
+    }
+  Vector2D* vecp;
+  for(gl=g_list_next(exclusion_points); gl != NULL; )
+    {
+      vecp = (Vector2D*)gl->data;
+      gl=g_list_next(gl);
+      g_list_remove(exclusion_points, vecp);
     }
   if( del_seq_list )
     for(gl=g_list_next(all_robots_in_sequence); gl != NULL; )
