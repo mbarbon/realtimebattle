@@ -8,8 +8,9 @@ CVS help
 If you want to get the very latest snapshot of RealTimeBattle, you are
 advised to 
 <url name="checkout the CVS tree from SourceForge"
-url="https://www.sourceforge.net/cvs/?group_id=561">. There you will get more
-information on how to use CVS.
+url="https://www.sourceforge.net/cvs/?group_id=561">. On this page there
+are more information on how to use CVS. It is also possible to browse the
+source there.
 
 <descrip>
 <tag>Requirements:</tag> 
