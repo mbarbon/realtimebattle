@@ -184,6 +184,12 @@ Options::Options()
   all_string_options[OPTION_OPTIONS_SAVE_FILE] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "Options savefile", NULL);
 
+  all_string_options[OPTION_ROBOT_SEARCH_PATH] =
+    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000, "Robot search path", NULL);
+
+  all_string_options[OPTION_ARENA_SEARCH_PATH] =
+    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000, "Arena search path", NULL);
+
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena x winodwsize", NULL);
 
@@ -313,6 +319,7 @@ Options::get_options_from_rtbrc()
             rc_file >> option_value;
             rc_file.get(buffer,100,'\n');
             all_double_options[i].value = option_value;
+            all_double_options[i].default_value = option_value;
           }
 
       for(int i=0;i<LAST_LONG_OPTION;i++)
@@ -331,6 +338,7 @@ Options::get_options_from_rtbrc()
               }
             rc_file.get(buffer,100,'\n');
             all_long_options[i].value = option_value;
+            all_long_options[i].default_value = option_value;
           }
 
       for(int i=0;i<LAST_STRING_OPTION;i++)
@@ -342,6 +350,7 @@ Options::get_options_from_rtbrc()
               option_value = get_segment(option_value,1,-1);
             rc_file.get(buffer,100,'\n');
             all_string_options[i].value = option_value;
+            all_string_options[i].default_value = option_value;
           }
 
     }
