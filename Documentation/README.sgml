@@ -3,6 +3,26 @@
 <notes>
 <title>README
 
-This is RealTimeBattle!
+RealTimeBattle is a programming game for Unix, in which robots controlled by
+programs are fighting each other. The goal is to destroy the enemies,
+using the radar to examine the environment and the cannon to shoot.
+
+RealTimeBattle is open source software, distributed under the General Public License (GPL).
+
+For info on installation, read the file <tt>INSTALL</tt>.
+
+More information on usage, construction of robots and more can be found in the user manual in the
+subdirectory <tt>Documentation</tt>.
+
+If you encounter a bug or some problem of any sort, please look in the files <tt>BUGS</tt>,
+<tt>TODO</tt> and <tt>FAQ</tt> in this directory, as well as the corresponding pages at the 
+<url name="RealTimeBattle homepage" url="http://realtimebattle.netpedia.net">. 
+
+Comments, bug reports and/or patches can be sent to the email address
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
+
+Hope you will enjoy your time using the program!
+
+
 
 </notes>
