@@ -6,7 +6,6 @@
 
 <item> <bf>0.9.7:</bf>
 <p>
-
 Lots of internal changes, the class hierarchy is completely
 redone. Hopefully this will have changed nothing in the behavior of RTB,
 expect for: GTK+ is no longer necessary when compiling without graphics.
@@ -41,6 +40,9 @@ robot and a much better example.
 The arena is now draw using a normal right handed coordinate system instead of the one
 used be gtk+ by default. The result is that everything is turned upside down. Angles
 do now increase in the counterclockwise direction as they should.
+
+New option: 'Update interval' which determines how often the robot positions
+and radars are updated.
 
 <item> <bf>0.9.6:</bf>
 <p>

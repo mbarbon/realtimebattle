@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.7 rev 1
+<title>RealTimeBattle User Manual, version 0.9.7 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 7 mars 1999
+<date> 8 mars 1999
 
 <!-- <abstract> -->
 
@@ -1029,6 +1029,14 @@ therefore violate the realtimeness.
 game clock will go faster relative to an ordinary clock. Changing this
 value can be usefull if you either want to give the robots more time
 or if you have a fast computer you may want to speed the game up.
+
+<label id="UpdateInterval">
+<tag>Update interval:</tag> This option determines the time between robot
+updates, i.e., how often the robot states are changed. It is not influenced
+by the 'Time Scale' and cannot be altered when the program is running. 
+The accuracy is 1/100 s if RTB was compiled with graphics (in this case 
+<tt>gtk+</tt> is responsible for calling the updating function), otherwise 
+the accuracy is one microsecond.
 
 <label id="CPUOptions">
 <tag>Start CPU time:</tag> In <ref id="Command line options" name="competition-mode"> a robots CPU
