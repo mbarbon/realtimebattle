@@ -22,9 +22,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 #include <math.h>
 
+#include <algorithm>
+#include <functional>
 #include <iostream>
 
 #include "ArenaDisplay.h"
+#include "DrawingObjects.h"
+#include "Gui.h"
 
 #define GDK_360_DEGREES 23040     // 64 * 360 degrees
 
@@ -33,7 +37,7 @@ ArenaDisplay::ArenaDisplay( GtkWidget* parent )
   // Make sure parent is a container
   assert( GTK_IS_CONTAINER( parent ) );
 
-  zoom_level = 2;
+  zoom_level = 1;
 
   non_changeable_display  = 0;
   semi_changeable_display = 0;
@@ -60,7 +64,7 @@ ArenaDisplay::ArenaDisplay( GtkWidget* parent )
                     0, 1, 1, 2,
                     static_cast<GtkAttachOptions>( GTK_EXPAND | GTK_FILL ),
                     static_cast<GtkAttachOptions>( GTK_SHRINK | GTK_FILL ),
-                    5, 5 );
+                    2, 2 );
   gtk_widget_show( x_scrollbar );
 
   y_scrollbar = gtk_vscrollbar_new( GTK_ADJUSTMENT( y_adjustment ) );
@@ -69,7 +73,7 @@ ArenaDisplay::ArenaDisplay( GtkWidget* parent )
                     1, 2, 0, 1,
                     static_cast<GtkAttachOptions>( GTK_SHRINK | GTK_FILL ),
                     static_cast<GtkAttachOptions>( GTK_EXPAND | GTK_FILL ),
-                    5, 5 );
+                    2, 2 );
   gtk_widget_show( y_scrollbar );
 
   // Create the arena.
@@ -89,14 +93,17 @@ ArenaDisplay::ArenaDisplay( GtkWidget* parent )
                     static_cast<GtkAttachOptions>( GTK_EXPAND | GTK_FILL ),
                     5, 5 );
 
+  gdk_window_set_background( drawing_area->window,
+                             the_gui.get_bg_gdk_colour_p() );
+
+  gtk_widget_show( drawing_area );
+
   // Prepare table and show it.
 
   gtk_table_set_row_spacings( GTK_TABLE( ad_table ), 0 );
   gtk_table_set_col_spacings( GTK_TABLE( ad_table ), 0 );
   gtk_container_add( GTK_CONTAINER( parent ), ad_table );
   gtk_widget_show( ad_table );
-  
-  gtk_widget_show( drawing_area );
 }
 
 ArenaDisplay::~ArenaDisplay()
@@ -121,8 +128,11 @@ ArenaDisplay::update()
 void
 ArenaDisplay::set_zoom_level( const int& level )
 {
-  zoom_level = level;
-  change_size();
+  if( level != zoom_level )
+    {
+      zoom_level = level;
+      change_size();
+    }
 }
 
 void
@@ -148,7 +158,10 @@ ArenaDisplay::recreate_non_changeable_display()
                       true, 0, 0,
                       width, height );
 
-  // TODO: Draw the non_changeable shapes
+  // TODO: Use new object_lists (when they are finished).
+  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  for_each( object_lists[WALL].begin(), object_lists[WALL].end(),
+            bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
 }
 
 void
@@ -175,7 +188,12 @@ ArenaDisplay::recreate_semi_changeable_display()
                    0, 0,
                    width, height );
 
-  // TODO: Draw the semi_changeable shapes
+  // TODO: Use new object_lists (when they are finished).
+  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  for_each( object_lists[COOKIE].begin(), object_lists[COOKIE].end(),
+            bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
+  for_each( object_lists[MINE].begin(), object_lists[MINE].end(),
+            bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
 }
 
 void
@@ -202,7 +220,12 @@ ArenaDisplay::recreate_current_display()
                    0, 0,
                    width, height );
 
-  // TODO: Draw the changeable shapes
+  // TODO: Use new object_lists (when they are finished).
+  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  for_each( object_lists[SHOT].begin(), object_lists[SHOT].end(),
+            bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
+  for_each( object_lists[ROBOT].begin(), object_lists[ROBOT].end(),
+            bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
 }
 
 void
@@ -300,7 +323,8 @@ ArenaDisplay::configure_event( GtkWidget*         widget,
 }
 
 // Functions used by DrawingObjects to draw on the arena.
-
+// TODO: Do not use the drawing_area->window directly.
+// TODO: Determine which pixmap to draw on.
 void
 ArenaDisplay::draw_line( const Vector2D&  start,
                          const Vector2D&  direction,
