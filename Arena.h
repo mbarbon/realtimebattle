@@ -10,6 +10,7 @@
 #include "messagetypes.h"
 #include "Options.h"
 #include "gui.h"
+#include "Various.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -51,7 +52,6 @@ public:
   void broadcast(enum message_to_robot_type ...);
   void set_colours();
   long find_free_colour(const long home_colour, const long away_colour, const class Robot*);
-  friend GdkColor make_gdk_colour(const long col);
   void quit_ordered();
   void delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list);
 
@@ -106,6 +106,8 @@ private:
   GList* all_robots_in_sequence;
   GList* exclusion_points;
   GList* arena_filenames;               // list of GStrings
+
+  int** robots_in_sequence;
   
   gdouble timestep;
   gdouble total_time;
@@ -124,6 +126,7 @@ private:
   int number_of_arenas;
   int current_arena_nr;
 
+  int number_of_robots;
   int robots_left;
   int robots_per_game;
 
