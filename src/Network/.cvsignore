@@ -3,6 +3,3 @@ Makefile.in
 .deps
 .libs
 TAGS
-Server
-Client
-
