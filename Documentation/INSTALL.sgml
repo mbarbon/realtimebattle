@@ -41,7 +41,7 @@ The following options are especially useful:
  --infodir=DIR             Where info-files are stored,
                             default: prefix/info
  --with-rtb-dir            Directory for main installation,
-                            default: prefix/games/RealTimeBattle
+                            default: eprefix/games/RealTimeBattle
 
  --disable-nls             do not use Native Language Support
  --with-included-gettext   use the GNU gettext library included here
