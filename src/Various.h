@@ -34,7 +34,7 @@ class String;
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define abs(a) ((a) > 0 ? (a) : -(a))
-//#define sgn(a) ((a) > 0 ? 1 : -1)
+#define sgn(a) ((a) > 0 ? 1 : -1)
 
 enum entry_datatype_t
 {
@@ -54,6 +54,7 @@ struct entry_t
 };
 
 void Error(const bool fatal, const String& error_msg, const String& function_name);
+void Quit(const bool success = true);
 
 int factorial(const int n);
 

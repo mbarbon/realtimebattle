@@ -40,6 +40,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 
 extern class Options the_opts;
+#ifndef NO_GRAPHICS
+# include "ControlWindow.h"
+extern class ControlWindow* controlwindow_p;
+#endif NO_GRAPHICS
 
 void
 Error(const bool fatal, const String& error_msg, const String& function_name)
@@ -49,12 +53,25 @@ Error(const bool fatal, const String& error_msg, const String& function_name)
 
   if( fatal == true )
     {
-#ifndef NO_GRAPHICS
-      gtk_main_quit();
-#endif NO_GRAPHICS
-      exit(EXIT_FAILURE);
+      Quit(false);
     }
 }
+
+void
+Quit(const bool success)
+{
+#ifndef NO_GRAPHICS
+  gtk_main_quit();
+#endif NO_GRAPHICS
+
+  delete controlwindow_p;
+
+  if( !success )
+    exit(EXIT_FAILURE);  
+      
+  exit(EXIT_SUCCESS);
+}
+
 
 int
 factorial(const int n)
