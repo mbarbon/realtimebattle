@@ -37,6 +37,8 @@ typedef struct _GdkEventButton GdkEventButton;
 typedef int gint;
 typedef void* gpointer;
 
+struct start_tournament_info_t;
+
 class StartTournamentWindow
 {
 public:
