@@ -178,20 +178,20 @@ Robot::start_process()
           if( robotp != this ) robotp->delete_pipes();
         }
 
-      // Deny file access
+//        // Deny file access
 
-      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
-        {
-          struct rlimit res_limit;
+//        if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
+//          {
+//            struct rlimit res_limit;
           
-          if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-            Error(true, "Couldn't get file limits for robot " + robot_filename, 
-                  "Robot::start_process, child");
+//            if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+//              Error(true, "Couldn't get file limits for robot " + robot_filename, 
+//                    "Robot::start_process, child");
           
-          //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
-          if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-            Error(true, "Couldn't limit file access for robot " + robot_filename, 
-                  "Robot::start_process, child");
+//            //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
+//            if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+//              Error(true, "Couldn't limit file access for robot " + robot_filename, 
+//                    "Robot::start_process, child");
           
           // Forbid creation of child processes
           
