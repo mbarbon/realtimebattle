@@ -46,10 +46,13 @@ Arena::parse_file(istream& file)
       file >> ws >> text;
       if( strcmp(text, "boundary" ) == 0 )
         {
-          file >> boundary[0];
-          file >> boundary[1];
-          file >> boundary[2];
-          file >> boundary[3];
+          double b1, b2;
+          file >> b1;
+          file >> b2;
+          boundary[0] = Vector2D(b1, b2);
+          file >> b1;
+          file >> b2;
+          boundary[1] = Vector2D(b1, b2);
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
@@ -155,9 +158,9 @@ Arena::space_available(const Vector2D& pos, const double margin)
 Vector2D
 Arena::get_random_position()
 {
-  return Vector2D( boundary[0] + (boundary[2] - boundary[0])*
+  return Vector2D( boundary[0][0] + (boundary[1][0] - boundary[0][0])*
                    (double)rand()/(double)RAND_MAX, 
-                   boundary[1] + (boundary[3] - boundary[1])*
+                   boundary[0][1] + (boundary[1][1] - boundary[0][1])*
                    (double)rand()/(double)RAND_MAX );
 }
 
@@ -165,8 +168,6 @@ gint
 Arena::timeout_function()
 {
   update_timer ();
-
-  //  the_gui->draw_objects( this );
 
   switch(state)
     {
@@ -280,6 +281,7 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
+  the_gui->setup_arena_window( boundary );
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
   g_timer_reset(timer);
@@ -400,7 +402,7 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 {
   // Create robot classes and to into the list all_robots_in_tournament
 
-  the_gui->display_gui(robotfilename_list,DEFAULT_WIDTH,DEFAULT_HEIGHT);
+  the_gui->setup_control_window(robotfilename_list);
 
   Robot* robotp;
 
