@@ -5,6 +5,11 @@
 Change log
 <itemize>
 
+<item> <bf>0.9.10:</bf>
+<p>
+
+The missing file IntlDefs.h has been added to the distribution.
+
 <item> <bf>0.9.9:</bf>
 <p>
 Added support for internationalization. If you do not want native language support
