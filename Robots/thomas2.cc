@@ -184,7 +184,7 @@ check_messages(int sig)
                   }
                 else
                   {
-                  if ((dist < 3.0) && (radar_angle < M_PI/4.0) && (rotating != 1))
+                  if ((dist < 3.0) && (abs(radar_angle) < M_PI/4.0) && (rotating != 1))
                     {
                       acceleration = 0.0;
                       broms = 1.0-abs(radar_angle);
