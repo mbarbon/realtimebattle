@@ -75,7 +75,7 @@ step_button_callback(GtkWidget * widget, gpointer data)
 void
 end_game_button_callback(GtkWidget * widget, gpointer data)
 {
-  //  the_arena.end_game();
+  the_arena.end_game();
 }
 
 void
@@ -200,8 +200,6 @@ Gui::split_colonseparated_dirs(String& dirs, GList * gl)
       String * str = new String(current_dir);
       g_list_append(gl,str);
 
-      cerr << *str << endl;
-
       lastpos = pos+1;
     }
 
@@ -213,8 +211,6 @@ Gui::split_colonseparated_dirs(String& dirs, GList * gl)
 
       String * str = new String(current_dir);
       g_list_append(gl,str);
-
-      cerr << *str << endl;
     }
 }
 
