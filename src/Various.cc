@@ -82,10 +82,13 @@ void
 Quit(const bool success)
 {
 #ifndef NO_GRAPHICS
-  gtk_main_quit();
+  if( gtk_main_level() != 0 )
+  {
+    gtk_main_quit();
 
-  if( !no_graphics )
-    delete controlwindow_p;
+    if( !no_graphics )
+      delete controlwindow_p;
+  }
 #endif NO_GRAPHICS
 
   if( !success )
