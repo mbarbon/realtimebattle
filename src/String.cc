@@ -365,8 +365,8 @@ String::copy_chars()
 istream&
 operator>>(istream& is, String& str)
 {
-  char buf[100];
-  is.get(buf, 100, '\n');
+  char buf[500];
+  is.get(buf, 500, '\n');
 
   str = buf;
 
