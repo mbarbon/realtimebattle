@@ -98,6 +98,7 @@ SocketServer::check_socket()
 
   FD_SET( server_socket, &readfs );
   FD_SET( server_socket, &exceptfs );
+
   int max_desc = server_socket;
 
   list<ServerNetConnection*>::iterator li;
@@ -124,7 +125,7 @@ SocketServer::check_socket()
   for( li = connected_clients.begin(); li != connected_clients.end(); li++ )
     if( (**li).connected && FD_ISSET((**li).the_socket, &exceptfs) )
       {
-        cout << "Exception for client." << endl;
+        cerr << "Exception for client." << endl;
         (**li).close_socket();
       }
 
@@ -166,6 +167,12 @@ SocketServer::check_socket()
 		  else if( client == (client_t)CHAT_CLIENT_CONNECTION )
 		    {
 		      temp = new Chat_Connection( **li );
+
+		      ServerMessagePacket TempMess("Server",
+						   temp->name + string(" has join the game") 
+						   );
+		      send_packet_by_name( "all", &TempMess); 
+
 		      chat_nb++;
 		    }
 		  else if( client == (client_t)ROBOT_CLIENT_CONNECTION )
@@ -180,17 +187,12 @@ SocketServer::check_socket()
 		    {
 		      (**li).connected = false;
 
-		      ServerMessagePacket TempMess("Server",
-						   temp->name + string(" has join the game") 
-						   );
-		      send_packet_by_name( "all", &TempMess); 
-
 		      connected_clients.push_back( temp );
 		      if( MetaServer )
 			{
 			  MetaServer->send_data( MetaServerDataPacket( name, version, port_number, 
-								       chat_nb, 
-								       language ).make_netstring() );
+									   chat_nb, 
+									   language ).make_netstring() );
 			}
 		    }
 		}
@@ -273,7 +275,6 @@ SocketServer::connect_to_metaserver( string hostname, int port_nb = 0 )
 
   MetaServer->the_socket = the_socket;
   MetaServer->connected = true;
-  MetaServer->address = hostname;
 
   /*
    *  TO DELETE THE FOLLOWING AS SOON AS POSSIBLE!!!
@@ -313,17 +314,10 @@ SocketServer::accept_connection()
 
   nc->make_nonblocking();
 
-  struct hostent* from = gethostbyaddr( (char*)&fromend.sin_addr,
+  /*struct hostent* from = gethostbyaddr( (char*)&fromend.sin_addr,
                                         sizeof(fromend.sin_addr),
                                         AF_INET );
-
-  if( from )
-    nc->address = (string)from->h_name;
-  else
-    nc->address = (string)inet_ntoa( fromend.sin_addr );
-
-  //cout << "nc.address: " << nc->address << endl;
-
+  */
   nc->connected = true;
 
   connected_clients.push_back( nc );

@@ -55,6 +55,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define USE_LAUNCHROBOT_PACKET
 #  define SEND_LAUNCHROBOT_PACKET
 
+#define USE_ROBOTMESSAGE_PACKET
+#  define SEND_ROBOTMESSAGE_PACKET
+#  define RECV_ROBOTMESSAGE_PACKET
+
 #include "Packets.h"
 
 #endif

@@ -62,6 +62,10 @@ make_packet( string& netstr )
     {
       return new SubmitPacket( type[1] );
     }
+  else if( type == "@R" )
+    {
+      return new RobotMessagePacket( );
+    }
   //else I don't know this kind of packet;
 
   return 0;
@@ -76,7 +80,7 @@ InitializationPacket::handle_packet(void* p_void)
     {
       vector<string> wordlist;
 
-      wordlist = split_string( data, wordlist ); //This function is buggy
+      wordlist = split_string( data, wordlist ); //This function is buggy???
 
       if(wordlist.size() == 3)
 	{
@@ -95,6 +99,7 @@ InitializationPacket::handle_packet(void* p_void)
 		}
 	      else if( wordlist[1] == "Chat" )
 		{
+		  //TODO : Check if the name isn't in the list...
 		  return (client_t)CHAT_CLIENT_CONNECTION;
 		}
 	    }
@@ -170,7 +175,6 @@ CommandPacket::handle_packet(void* p_void)
 	  SHUNT for(list<RobotElement*>::iterator i = RobotList.begin(); i != RobotList.end(); i++)
 	    SHUNT {
 	    SHUNT ((**i).cc)->send_data( LaunchRobotPacket((**i).robot_name).make_netstring() );
-	    SHUNT cout<<"Ask to launch "<<(**i).robot_name<<endl;
 	    SHUNT }
 
 	  return 0;
@@ -320,6 +324,7 @@ SubmitPacket::handle_packet( void* p_void)
     cout<<"Delete the following arenas : ";
   else if( type == Add_Robot )
     {
+      int count = 0;
       cout<<"Add the following robots : ";
       while( 1 )
 	{
@@ -327,7 +332,6 @@ SubmitPacket::handle_packet( void* p_void)
 	  int begin = data.find('<');
 	  int end = data.find('>');
 	  string robot_name = data.substr(begin+1, end-begin-1);
-	  cout<<robot_name<<endl;
 
 	  //Add the robot to the list
 	  SHUNT RobotElement* R;
@@ -335,13 +339,15 @@ SubmitPacket::handle_packet( void* p_void)
 	  SHUNT R->robot_name = robot_name; R->cc = cc;
 	  SHUNT RobotList.push_back(R);
 
+	  count ++;
+
 	  //Get the following robots
 	  data = data.substr(end-begin+1, data.length()-end-1);
 	  if( data == "" )
 	    break;
 	}
+      cout<<count<<" more robots on the list\n";
     }
-
   else if( type == Del_Robot )
     cout<<"Delete the following robots : ";
   else
@@ -396,6 +402,19 @@ LaunchRobotPacket::make_netstring() const
 {
   string n_str;
   n_str = string( "LR" ) + robot_name;
-  cout<<n_str<<endl;
   return n_str;
+}
+
+string
+RobotMessagePacket::make_netstring() const
+{
+  return ( string("@R") + robot_message );
+}
+
+int 
+RobotMessagePacket::handle_packet( void* ) 
+{
+  robot_message = data;
+  cout<<"The robot send "<<data<<endl;
+  return 0;
 }
