@@ -22,7 +22,7 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 export libdirs = -L/usr/lib -L/usr/X11R6/lib
 export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o
+objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o
 
 all: RealTimeBattle robots
 
@@ -45,6 +45,7 @@ Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
 Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
 Options.o: Options.cc Options.h
 Statistics.o: Statistics.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
+StartTournament.o: StartTournament.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
 
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
