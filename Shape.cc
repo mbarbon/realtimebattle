@@ -1,18 +1,6 @@
 #include <math.h>
 #include "Arena.h"
 
-void
-Shape::set_colour(const long col)
-{
-  GdkColormap *cmap;
-
-  cmap = gdk_colormap_get_system();
-  colour.red =   ((col & 0xff0000) >> 16 ) * 0x101;
-  colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
-  colour.blue =  (col & 0x0000ff) * 0x101;
-  gdk_color_alloc (cmap, &colour);
-}
-
 Line::Line()
 {
   start_point = Vector2D(0.0, 0.0);
@@ -84,7 +72,8 @@ void
 Line::draw_shape(Gui& the_gui, bool erase)
 {
   if( erase )
-    the_gui.draw_line(last_drawn_start_point, last_drawn_direction, last_drawn_length, last_drawn_thickness, the_gui.get_background_color());
+    the_gui.draw_line(last_drawn_start_point, last_drawn_direction, last_drawn_length, 
+                      last_drawn_thickness, *(the_gui.get_the_arena()->get_background_colour_p()));
   last_drawn_start_point = start_point;
   last_drawn_direction = direction;
   last_drawn_length = length;
@@ -143,7 +132,8 @@ void
 Circle::draw_shape(Gui& the_gui, bool erase)
 {
   if( erase )
-    the_gui.draw_circle(last_drawn_center,last_drawn_radius,the_gui.get_background_color(),true);
+    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
+                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
   last_drawn_center = center;
   last_drawn_radius = radius;
   the_gui.draw_circle(center,radius,colour,true);
