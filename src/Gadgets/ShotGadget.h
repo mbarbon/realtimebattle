@@ -34,8 +34,6 @@ public:
 
   ShotGadget( const char* name, Gadget* const p );
 
-private:
-
   enum ShotVars
   {
     DAMAGE=0, SPEED, SIZE, COSTPERDAMAGE, COSTPERSPEED,
@@ -43,6 +41,9 @@ private:
     MAXTIME, TARGETSEEKING, MAXANGULARVELOCITY, COLOUR,
     PRICE, MASS, LAST_SHOTVAR
   };
+
+
+private:
 
   const static VariableDefinition variable_def[LAST_SHOTVAR]; 
 

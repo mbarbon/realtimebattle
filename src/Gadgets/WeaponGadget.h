@@ -35,8 +35,6 @@ public:
 
   WeaponGadget( const char* name, Gadget* const p );
 
-private:
-
   enum WeaponVars
   {
     AMMUNITION=0,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
@@ -47,8 +45,10 @@ private:
     COLOUR, PRICE, MASS, LAST_WEAPONVAR
   };
 
-  const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
+private:
+
+  const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
 
   enum WeaponFcns

@@ -34,14 +34,15 @@ public:
 
   DefenseGadget( const char* name, Gadget* const p );
 
-private:
-
   enum DefenseVars
   {
     COLLISIONPROTECTION=0, HEATPROTECTION, SHOTPROTECTION, FRONTANGLE,
     MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST, USCOSTPERTIME,
     ATTACHABLE, COLOUR, PRICE, MASS, LAST_DEFENSEVAR
   };
+
+
+private:
 
   const static VariableDefinition variable_def[LAST_DEFENSEVAR]; 
 
