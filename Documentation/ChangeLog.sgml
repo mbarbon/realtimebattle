@@ -36,6 +36,10 @@ It is now possible to load and save tournaments in the start tournament window.
 New game option: <tt>Robot startup time</tt>, the time between the
 launching the robot processes and the beginning of the game.
 
+Possibility to use +,-,0 instead of pushing buttons zoom in, zoom out resp no zoom.
+
+There are various changes in the look and feel, which hopefully improves the usability. 
+
 <item> <bf>0.9.7:</bf>
 <p>
 Lots of internal changes, the class hierarchy is completely
@@ -107,14 +111,15 @@ Error handling is improved (by removing exception handling).
 
 <item> <bf>0.9.5:</bf>
 <p>
-The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.
-The easiest way of setting this is to click the <tt>Save as Default</tt> button in the options
-window.
+The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite
+settings. The easiest way of setting this is to click the <tt>Save as Default</tt>
+button in the options window.
 
 Changing of window sizes has been implemented. Change your <tt>.rtbrc</tt> for new default sizes.
 
-The environmental variables <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt> are replaced with regular
-options. Place your default directories in your <tt>.rtbrc</tt> for permanent options.
+The environmental variables <tt>RTB&lowbar;ROBOTDIR</tt> and
+<tt>RTB&lowbar;ARENADIR</tt> are replaced with regular options. Place your default
+directories in your <tt>.rtbrc</tt> for permanent options.
 
 Added some buttons to the options window.
 
@@ -124,12 +129,13 @@ The savefile-options is removed
 
 Keyword <tt>Break</tt> is changed to the correct spelling <tt>Brake</tt>.
 
-New robot option: <tt>SIGNAL</tt>, which will replace the old <tt>SEND_SIGNAL</tt>. You can now
-specify which signal to be sent.
+New robot option: <tt>SIGNAL</tt>, which will replace the old
+<tt>SEND&lowbar;SIGNAL</tt>. You can now specify which signal to be sent.
 
-A new warning message: <tt>OBSOLETE_KEYWORD</tt>. Please replace all the obsolete keywords with the
-corresponding new version as soon as possible, since obsolete keyword will be completely removed
-within a number of releases and certainly before 1.0.
+A new warning message: <tt>OBSOLETE&lowbar;KEYWORD</tt>. Please replace all the
+obsolete keywords with the corresponding new version as soon as possible, since
+obsolete keyword will be completely removed within a number of releases and certainly
+before 1.0. 
 
 Long command line options are now available.
 
