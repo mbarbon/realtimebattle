@@ -25,17 +25,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <string>
+#include <map>
 
 #include "Option.h"
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+struct _GtkEntry;
+typedef struct _GtkEntry GtkEntry;
 union _GdkEvent;
 typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 template<class T> struct option_info_t;
 
-struct entry_t;
+template<class T> class FileSelector;
 
 class OptionsWindow
 {
@@ -50,6 +53,8 @@ public:
 
   void update_all_gtk_entries     ();
   void set_all_options            ();
+  void load_options               ( const string& );
+  void save_options               ( const string& );
 
   static void default_opts        ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
@@ -66,13 +71,6 @@ public:
   static void cancel              ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
   static void delete_event_occured( GtkWidget* widget, GdkEvent* event,
-                                    class OptionsWindow* optionswindow_p );
-
-  static void load_options        ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void save_options        ( GtkWidget* widget,
-                                    class OptionsWindow* optionswindow_p );
-  static void destroy_filesel     ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
 
   static void grab_windows        ( GtkWidget* widget,
@@ -100,12 +98,23 @@ private:
     int current_row;
   };
 
+  typedef void (OptionsWindow::*process_option_func)( const Option*, GtkEntry* );
+  void process_all_options        ( process_option_func );
 
-  GtkWidget* get_filesel          () { return filesel; }
-  void set_filesel                ( GtkWidget* fs ) { filesel = fs; } 
+  // Various process_option_func functions
+  void set_option                 ( const Option* option_p, GtkEntry* entry );
+  void set_entry_to_value         ( const Option* option_p, GtkEntry* entry );
+  void set_entry_to_default       ( const Option* option_p, GtkEntry* entry );
 
+  // Map of options and entries
+  map<const Option*,GtkEntry*> list_of_options_and_entries;
+
+  // FileSelector
+  FileSelector<OptionsWindow>* get_filesel () { return filesel; }
+  FileSelector<OptionsWindow>* filesel;
+
+  // The window pointer
   GtkWidget* window_p;
-  GtkWidget* filesel;
 };
 
 #endif __OPTIONS_WINDOW__

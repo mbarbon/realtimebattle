@@ -35,10 +35,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ScoreWindow.h"
 #include "StatisticsWindow.h"
 #include "OptionHandler.h"
+#include "Option.h"
 #include "GuiVarious.h"
 #include "Gui.h"
 #include "String.h"
-
+#include "FileSelector.h"
 
 OptionsWindow::OptionsWindow( const int default_width,
                               const int default_height,
@@ -148,7 +149,9 @@ OptionsWindow::OptionsWindow( const int default_width,
                                    number_of_options[page_nr] ) );
     }
 
+  struct button_t { string label; bool used; GtkSignalFunc func; };
 
+  list_of_options_and_entries.clear();
   for( mci = all_options.begin(); mci != all_options.end(); mci++ )
     {
       const int current_group = mci->second->get_group();
@@ -160,8 +163,6 @@ OptionsWindow::OptionsWindow( const int default_width,
       if( mci->second->get_string_min().empty() ||
           mci->second->get_string_max().empty() )
         use_minmax = false;
-
-      struct button_t { string label; bool used; GtkSignalFunc func; };
 
       struct button_t buttons[] = {
         { (string)_(" Min "), use_minmax,
@@ -199,324 +200,174 @@ OptionsWindow::OptionsWindow( const int default_width,
                 i, i+1, current_row, current_row + 1 );
             gtk_widget_show( button_w );
           }
+      list_of_options_and_entries[ mci->second ] = GTK_ENTRY( entry );
       page_list[current_group].current_row++;
     }
 
-//        for( int opt=0; opt<LAST_LONG_OPTION; opt++ )
-//          if( long_opts[opt].page == i )
-//            {
-//              row++;
+  // Lower buttons
 
-//              bool sign = false;
-//              if( long_opts[opt].min_value < 0.0 )
-//                sign = true;
+  GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
+  gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
+  gtk_widget_show( hbox );
 
-//              string entry_text;
-//              if( long_opts[opt].datatype == ENTRY_INT )
-//                entry_text = lint2string( long_opts[opt].value );
-//              else if( long_opts[opt].datatype == ENTRY_HEX )
-//                entry_text = hex2string( long_opts[opt].value );
+  struct button_t buttons[] = {
+    { spaced_string( _("Default") ), true,
+      (GtkSignalFunc) OptionsWindow::default_opts },
+    { spaced_string( _("Load options") ), true, (GtkSignalFunc) OptionsWindow::load },
+    { spaced_string( _("Save options") ), true, (GtkSignalFunc) OptionsWindow::save },
+    { spaced_string( _("Save as default") ), true,
+      (GtkSignalFunc) OptionsWindow::save_def },
+    { spaced_string( _("Apply") ), true, (GtkSignalFunc) OptionsWindow::apply },
+    { spaced_string( _("Ok") ), true, (GtkSignalFunc) OptionsWindow::ok },
+    { spaced_string( _("Cancel") ), true, (GtkSignalFunc) OptionsWindow::cancel } };
 
-//              entry_t* info = new entry_t( long_opts[opt].datatype, sign );
+  for( int i=0; i<7; i++ )
+    {
+      GtkWidget* button_w =
+        gtk_button_new_with_label( buttons[i].label.c_str() );
+      gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
+                          buttons[i].func, (gpointer) this );
+      gtk_box_pack_start( GTK_BOX( hbox ), button_w, TRUE,TRUE, 0 );
+      gtk_widget_show( button_w );
+    }
 
-//  //              long_opts[opt].entry =
-//  //                gtk_entry_new_with_max_length
-//  //                ( long_opts[opt].max_letters_in_entry );
-
-//              struct button_t buttons[] = {
-//                { (string)_(" Min "), true, (GtkSignalFunc) OptionsWindow::long_min,
-//                  (gpointer) &long_opts[opt] },
-//                { (string)_(" Def "), true, (GtkSignalFunc) OptionsWindow::long_def,
-//                  (gpointer) &long_opts[opt] },
-//                { (string)_(" Max "), true, (GtkSignalFunc) OptionsWindow::long_max,
-//                  (gpointer) &long_opts[opt] } };
-
-//  //              add_option_to_notebook( description_table,
-//  //                                      entry_table, button_table,
-//  //                                      row, long_opts[opt].translated_label,
-//  //                                      long_opts[opt].entry,
-//  //                                      entry_text, info, buttons );
-
-//            }
-//        for( int opt=0; opt<LAST_STRING_OPTION; opt++ )
-//          if( string_opts[opt].page == i )
-//            {
-//              row++;
-
-//              entry_t* info = new entry_t( ENTRY_CHAR, false );
-
-//  //              string_opts[opt].entry =
-//  //                gtk_entry_new_with_max_length
-//  //                ( string_opts[opt].max_letters_in_entry );
-
-//              struct button_t buttons[] = {
-//                { (string)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL },
-//                { (string)_(" Def "), true, (GtkSignalFunc) OptionsWindow::string_def,
-//                  (gpointer) &string_opts[opt] },
-//                { (string)"" , false, (GtkSignalFunc) NULL, (gpointer) NULL } };
-
-//  //              add_option_to_notebook( description_table,
-//  //                                      entry_table, button_table,
-//  //                                      row, string_opts[opt].translated_label,
-//  //                                      string_opts[opt].entry,
-//  //                                      string_opts[opt].value,
-//  //                                      info, buttons );
-
-//            }
-
-//      }
-
-//    // Lower buttons
-
-//    GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
-//    gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
-//    gtk_widget_show( hbox );
-
-//    struct button_t buttons[] = {
-//      { (string)_(" Default "), true, (GtkSignalFunc) OptionsWindow::default_opts,
-//        (gpointer) this },
-//      { (string)_(" Load options "), true, (GtkSignalFunc) OptionsWindow::load,
-//        (gpointer) this },
-//      { (string)_(" Save options "), true, (GtkSignalFunc) OptionsWindow::save,
-//        (gpointer) this },
-//      { (string)_(" Save as default "), true, (GtkSignalFunc) OptionsWindow::save_def,
-//        (gpointer) this },
-//      { (string)_(" Apply "), true, (GtkSignalFunc) OptionsWindow::apply,
-//        (gpointer) this },
-//      { (string)_(" Ok "), true, (GtkSignalFunc) OptionsWindow::ok,
-//        (gpointer) this },
-//      { (string)_(" Cancel "), true, (GtkSignalFunc) OptionsWindow::cancel,
-//        (gpointer) this } };
-
-//    for( int i=0; i<7; i++ )
-//      {
-//        GtkWidget* button_w =
-//          gtk_button_new_with_label( buttons[i].label.c_str() );
-//        gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
-//                            buttons[i].func, buttons[i].data );
-//        gtk_box_pack_start( GTK_BOX( hbox ), button_w, TRUE,TRUE, 0 );
-//        gtk_widget_show( button_w );
-//      }
-
-//    gtk_widget_show( window_p );
-//    filesel = NULL;
+  gtk_widget_show( window_p );
+  filesel = new FileSelector<OptionsWindow>( this );
 }
 
 OptionsWindow::~OptionsWindow()
 {
-//    gtk_widget_destroy( window_p );
+  delete filesel;
+  gtk_widget_destroy( window_p );
+}
+
+void
+OptionsWindow::process_all_options( process_option_func func )
+{
+  map<const Option*,GtkEntry*>::iterator mi;
+  for( mi = list_of_options_and_entries.begin();
+       mi != list_of_options_and_entries.end(); mi++ )
+    (this->*func)( mi->first, mi->second );
+}
+
+void
+OptionsWindow::set_option( const Option* option_p, GtkEntry* entry )
+{
+  string new_val( gtk_entry_get_text( entry ) );
+  string old_val( option_p->get_string_val() );
+  if( old_val != new_val )
+    ; // TODO: Set the option in some way. e.g. send a OptionChangeRequest
 }
 
 void
 OptionsWindow::set_all_options()
 {
-//    bool allowed = false;
+  if( !(( the_gui.get_game_mode() == COMPETITION_MODE &&
+          ( the_gui.get_state() == NO_STATE ||
+            the_gui.get_state() == NOT_STARTED ||
+            the_gui.get_state() == FINISHED ) ) ||
+        ( the_gui.get_game_mode() != COMPETITION_MODE )) )
+    return;
 
-//    if( the_arena_controller.is_started() )
-//      {
-//        if( ( the_arena.get_game_mode() == COMPETITION_MODE &&
-//              ( the_arena.get_state() == NO_STATE ||
-//                the_arena.get_state() == NOT_STARTED ||
-//                the_arena.get_state() == FINISHED ) ) ||
-//            ( the_arena.get_game_mode() != COMPETITION_MODE ) )
-//          allowed = true;
-//      }
-//    if( !the_arena_controller.is_started() || allowed )
-//      {
-//        option_info_t<double>* double_opts = the_opts.get_all_double_options();
-//        option_info_t<long>* long_opts = the_opts.get_all_long_options();
-//        option_info_t<string>* string_opts = the_opts.get_all_string_options();
-//        for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-//          {
-//            double entry_value = 0;
-//            entry_value = str2dbl
-//              ( gtk_entry_get_text( GTK_ENTRY( double_opts[i].entry ) ) );
-//            if( entry_value > double_opts[i].max_value )
-//              entry_value = double_opts[i].max_value;
-//            if( entry_value < double_opts[i].min_value )
-//              entry_value = double_opts[i].min_value;
+  process_all_options( &OptionsWindow::set_option );
 
-//            double_opts[i].value = entry_value;
-//          }
+  the_gui.set_colours();
+}
 
-//        for(int i=0;i<LAST_LONG_OPTION;i++)
-//          {
-//            long entry_value = 0;
-//            if( long_opts[i].datatype == ENTRY_INT )
-//              entry_value = str2long
-//                ( gtk_entry_get_text( GTK_ENTRY( long_opts[i].entry ) ) );
-//            if( long_opts[i].datatype == ENTRY_HEX )
-//              entry_value = str2hex
-//                ( gtk_entry_get_text( GTK_ENTRY( long_opts[i].entry ) ) );
-
-//            if( entry_value > long_opts[i].max_value )
-//              entry_value = long_opts[i].max_value;
-//            if( entry_value < long_opts[i].min_value )
-//              entry_value = long_opts[i].min_value;
-
-//            long_opts[i].value = entry_value;
-//          }
-
-//        for(int i=0;i<LAST_STRING_OPTION;i++)
-//          string_opts[i].value =
-//            gtk_entry_get_text( GTK_ENTRY( string_opts[i].entry ) );
-
-//        the_gui.set_colours();
-//      }
+void
+OptionsWindow::set_entry_to_value( const Option* option_p, GtkEntry* entry )
+{
+  string prev_text( gtk_entry_get_text( entry ) );
+  string new_text( option_p->get_string_val() );
+  if( prev_text != new_text )
+    gtk_entry_set_text( entry, new_text.c_str() );
 }
 
 void
 OptionsWindow::update_all_gtk_entries()
 {
-//    option_info_t<double>* double_opts = the_opts.get_all_double_options();
-//    option_info_t<long>* long_opts = the_opts.get_all_long_options();
-//    option_info_t<string>* string_opts = the_opts.get_all_string_options();
+  process_all_options( &OptionsWindow::set_entry_to_value );
+}
 
-//    for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-//      gtk_entry_set_text( GTK_ENTRY( double_opts[i].entry ),
-//                          string(double_opts[i].value).chars() );
-//    for(int i=0;i<LAST_LONG_OPTION;i++)
-//      {
-//        if( long_opts[i].datatype == ENTRY_INT )
-//          gtk_entry_set_text( GTK_ENTRY( long_opts[i].entry ),
-//                              string( long_opts[i].value).chars() );
-//        else if (long_opts[i].datatype == ENTRY_HEX)
-//          gtk_entry_set_text( GTK_ENTRY( long_opts[i].entry ),
-//                              hex2str(long_opts[i].value).chars() );
-//      }
-//    for(int i=0;i<LAST_STRING_OPTION;i++)
-//      gtk_entry_set_text( GTK_ENTRY( string_opts[i].entry ),
-//                          string_opts[i].value.chars() );
+void
+OptionsWindow::set_entry_to_default( const Option* option_p, GtkEntry* entry )
+{
+  string prev_text( gtk_entry_get_text( entry ) );
+  string new_text( option_p->get_string_def() );
+  if( prev_text != new_text )
+    gtk_entry_set_text( entry, new_text.c_str() );
 }
 
 void
 OptionsWindow::default_opts( GtkWidget* widget,
                              class OptionsWindow* optionswindow_p )
 {
-//    option_info_t<double>* double_opts = the_opts.get_all_double_options();
-//    option_info_t<long>* long_opts = the_opts.get_all_long_options();
-//    option_info_t<string>* string_opts = the_opts.get_all_string_options();
-
-//    for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-//      double_opts[i].value = double_opts[i].default_value;
-//    for(int i=0;i<LAST_LONG_OPTION;i++)
-//      long_opts[i].value = long_opts[i].default_value;
-//    for(int i=0;i<LAST_STRING_OPTION;i++)
-//      string_opts[i].value = string_opts[i].default_value;
-//    optionswindow_p->update_all_gtk_entries();
+  optionswindow_p->process_all_options( &OptionsWindow::set_entry_to_default );
 }
 
 void
-OptionsWindow::load( GtkWidget* widget,
-                     class OptionsWindow* optionswindow_p )
+OptionsWindow::load( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
-//    if( optionswindow_p->get_filesel() == NULL )
-//      {
-//        GtkWidget* fs =
-//          gtk_file_selection_new( _("Choose an options file to load") );
-//        gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
-//                            (GtkSignalFunc) OptionsWindow::destroy_filesel,
-//                            (gpointer) optionswindow_p );
-//        gtk_signal_connect
-//          ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
-//            (GtkSignalFunc) OptionsWindow::destroy_filesel,
-//            (gpointer) optionswindow_p );
-//        gtk_signal_connect
-//          ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
-//            (GtkSignalFunc) OptionsWindow::load_options,
-//            (gpointer) optionswindow_p );
-//        gtk_widget_show( fs );
-//        optionswindow_p->set_filesel( fs );
-//      }
+  optionswindow_p->get_filesel()->bring_up( _("Choose an options file to load"),
+                                            &OptionsWindow::load_options );
 }
 
 void
-OptionsWindow::save( GtkWidget* widget,
-                     class OptionsWindow* optionswindow_p )
+OptionsWindow::save( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
-//    if( optionswindow_p->get_filesel() == NULL )
-//      {
-//        GtkWidget* fs =
-//          gtk_file_selection_new( _("Choose an options file to save") );
-//        gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
-//                            (GtkSignalFunc) OptionsWindow::destroy_filesel,
-//                            (gpointer) optionswindow_p );
-//        gtk_signal_connect
-//          ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
-//            (GtkSignalFunc) OptionsWindow::destroy_filesel,
-//            (gpointer) optionswindow_p );
-//        gtk_signal_connect
-//          ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
-//            (GtkSignalFunc) OptionsWindow::save_options,
-//            (gpointer) optionswindow_p );
-//        gtk_widget_show( fs );
-//        optionswindow_p->set_filesel( fs );
-//      }
+  optionswindow_p->get_filesel()->bring_up( _("Choose an options file to save"),
+                                            &OptionsWindow::save_options );
 }
 
 void
-OptionsWindow::load_options( GtkWidget* widget,
-                             class OptionsWindow* optionswindow_p )
+OptionsWindow::load_options( const string& filename )
 {
-//    the_opts.read_options_file
-//      ( gtk_file_selection_get_filename
-//        ( GTK_FILE_SELECTION( optionswindow_p->get_filesel() )), false );
-//    optionswindow_p->update_all_gtk_entries();
-//    destroy_filesel( optionswindow_p->get_filesel(), optionswindow_p );
+  if( filename.empty() || filename[filename.length() - 1] == '/' )  
+    return;  // no file is selected
+
+  // Read all opts
+  update_all_gtk_entries();
 }
 
 void
-OptionsWindow::save_options( GtkWidget* widget,
-                             class OptionsWindow* optionswindow_p )
+OptionsWindow::save_options( const string& filename )
 {
-//    the_opts.save_all_options_to_file
-//      ( gtk_file_selection_get_filename
-//        ( GTK_FILE_SELECTION( optionswindow_p->get_filesel() )), false );
-//    destroy_filesel( optionswindow_p->get_filesel(), optionswindow_p );
+  if( filename.empty() || filename[filename.length() - 1] == '/' )  
+    return;  // no file is selected
+
+  // Save all opts
 }
 
 void
-OptionsWindow::destroy_filesel( GtkWidget* widget,
-                               class OptionsWindow* optionswindow_p )
-{
-//    gtk_widget_destroy( optionswindow_p->get_filesel() );
-//    optionswindow_p->set_filesel( NULL );
-}
-
-void
-OptionsWindow::save_def( GtkWidget* widget,
-                         class OptionsWindow* optionswindow_p )
+OptionsWindow::save_def( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
 //    the_opts.save_all_options_to_file("",true);
 }
 
 void
-OptionsWindow::apply( GtkWidget* widget,
-                      class OptionsWindow* optionswindow_p )
+OptionsWindow::apply( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
-//    optionswindow_p->set_all_options();
+  optionswindow_p->set_all_options();
 }
 
 void
-OptionsWindow::ok( GtkWidget* widget,
-                   class OptionsWindow* optionswindow_p )
+OptionsWindow::ok( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
-//    optionswindow_p->set_all_options();
-  //  the_opts.close_optionswindow();
+  optionswindow_p->set_all_options();
+  the_gui.close_optionswindow();
 }
 
 void
-OptionsWindow::cancel( GtkWidget* widget,
-                       class OptionsWindow* optionswindow_p )
+OptionsWindow::cancel( GtkWidget* widget, class OptionsWindow* optionswindow_p )
 {
-  //  the_opts.close_optionswindow();
+  the_gui.close_optionswindow();
 }
 
 void
 OptionsWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                      class OptionsWindow* optionswindow_p )
 {
-  //  the_opts.close_optionswindow();
+  the_gui.close_optionswindow();
 }
 
 void
