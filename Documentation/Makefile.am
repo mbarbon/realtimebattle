@@ -6,7 +6,7 @@ docs_DATA = \
 	RealTimeBattle.html next.gif prev.gif toc.gif RealTimeBattle.dvi
 
 
-rtbinfodir = $(INFODIR)
+rtbinfodir = $(infodir)
 rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)

@@ -4,7 +4,7 @@ rtbextradir = $(RTB_DIR)
 
 rtbextra_DATA = BUGS FAQ RealTimeBattle.xpm TODO README INSTALL ChangeLog
 
-EXTRA_DIST = $(rtbextra)
+EXTRA_DIST = $(rtbextra_DATA)
 
 
 #If you compile the documentation from the sgml-sources with, you may change the paper-size to 'letter'.
@@ -26,6 +26,7 @@ docs:
 tar: docs
 	cd .. && tar -cf RealTimeBattle/RealTimeBattle.tar \
 	RealTimeBattle/Makefile.am \
+	RealTimeBattle/configure \
 	RealTimeBattle/configure.in \
 	RealTimeBattle/BUGS \
 	RealTimeBattle/COPYING \
@@ -85,7 +86,7 @@ rpm-install:
 	cp src/Messagetypes.h   /usr/games/RealTimeBattle/; \
 	cp src/Messagetypes.h   /usr/include/; \
 	cp RealTimeBattle.xpm   /usr/games/RealTimeBattle/; \
-	gzip -c Documentation/RealTimeBattle.info > $(INFODIR)/RealTimeBattle.info.gz
+	gzip -c Documentation/RealTimeBattle.info > $(infodir)/RealTimeBattle.info.gz
 
 rpm: tar.gz
 	SOURCEDIR=`rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//"` && \
