@@ -972,7 +972,7 @@ Arena::set_debug_level( const int new_level)
 
   if( GAME_IN_PROGRESS )
     {
-      broadcast(GAME_OPTION, DEBUG_LEVEL, debug_level);
+      broadcast(GAME_OPTION, DEBUG_LEVEL, (double)debug_level);
     }
 
   return debug_level;

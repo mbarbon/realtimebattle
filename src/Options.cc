@@ -222,7 +222,7 @@ Options::broadcast_opts()
 
   the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY, get_d(OPTION_ROBOT_START_ENERGY));
   the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY, get_d(OPTION_ROBOT_MAX_ENERGY));
-  the_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS, get_l(OPTION_ROBOT_ENERGY_LEVELS));
+  the_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS, (double)get_l(OPTION_ROBOT_ENERGY_LEVELS));
 
   the_arena.broadcast( GAME_OPTION, SHOT_SPEED, get_d(OPTION_SHOT_SPEED));
   the_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY, get_d(OPTION_SHOT_MIN_ENERGY));
@@ -231,7 +231,7 @@ Options::broadcast_opts()
 
   the_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT));  
 
-  the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, the_arena.get_debug_level());  
+  the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, (double)the_arena.get_debug_level());  
 }
 
 #ifndef NO_GRAPHICS
