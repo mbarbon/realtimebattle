@@ -14,7 +14,18 @@ print_help_message()
 gint
 update_function(gpointer the_arenap)
 {  
-  return ((Arena*)the_arenap)->timeout_function();
+  gint res;
+  try
+    {
+      res = ((Arena*)the_arenap)->timeout_function();
+    }
+  catch ( Error the_error )
+	 {
+		the_error.print_message();
+		exit( EXIT_FAILURE );
+	 }
+
+  return res;
 }
 
 
@@ -78,7 +89,15 @@ main ( int argc, char* argv[] )
     }
     
   Arena the_arena;
-  the_arena.start_tournament( robotnames, arenanames, 1, 3);
+  try
+    {
+      the_arena.start_tournament( robotnames, arenanames, 1, 3);
+    }
+  catch ( Error the_error )
+	 {
+		the_error.print_message();
+		return EXIT_FAILURE;
+	 }
 
   for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
   delete [] robotnames;
