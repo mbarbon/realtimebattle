@@ -231,10 +231,8 @@ parse_command_line(int argc, char **argv)
         {
 
         case 0:
-          // If this option set a flag, do nothing else now.
-          // This is not the case for debug_mode
-          if( long_options[option_index].flag != 0 &&
-              option_index != 2 )
+          // If this option sets a flag, do nothing else now.
+          if( long_options[option_index].flag != 0 )
             break;
           
           switch( option_index )
