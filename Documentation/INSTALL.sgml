@@ -3,23 +3,27 @@
 <notes>
 <title>Installation
 <p>
-Installing RealTimeBattle should not be too difficult; in case you get problems, please send your
-bug report to 
-<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> and tell what
-went wrong. 
-
+Installing RealTimeBattle should not be too difficult; in case you get
+problems, please send your bug report to 
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> and
+tell what went wrong.
 
 
 To compile and install RealTimeBattle, you only need to execute the following commands:
-<verb>% ./configure [options]
+
+<verb>
+% ./configure [options]
 % make
 # make install</verb>
 
 You can change the settings by supplying options to configure, e.g. if you want a different install
 directory or compile in debug mode. A full list of options is listed by
-<verb>% ./configure --help</verb>
 
+<verb>
+% ./configure --help
+</verb>
 The following options are especially useful:
+
 <verb>
  --prefix=DIR            The root directory for all installed files, 
                           default: /usr
@@ -42,4 +46,13 @@ The following options are especially useful:
 The <tt>gtk</tt> options can be useful too.
 
 Note that in order to install to directories other than your own, you have to be root.
+
+If you need to supply extra flags to the c or c++ compiler, you can do this by
+changing <tt>CFLAGS</tt> and <tt>CXXFLAGS</tt> respectively. For example, using bash,
+
+<verb>
+export CXXFLAGS=-Wall
+</verb> 
+will add '-Wall' when compiling a c++ program.
+
 </notes>
