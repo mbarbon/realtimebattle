@@ -18,8 +18,9 @@ To compile and install RealTimeBattle, you only need to execute the following co
 % make
 # make install</verb>
 
-You can change the settings by supplying options to configure, e.g. if you want a different install
-directory or compile in debug mode. A full list of options is listed by
+You can change the settings by supplying options to configure, e.g. if you want a
+different install directory, compile in debug mode or turn off graphics or native
+language supprt. A full list of options is listed by
 
 <verb>
 % ./configure --help
@@ -27,18 +28,25 @@ directory or compile in debug mode. A full list of options is listed by
 The following options are especially useful:
 
 <verb>
- --prefix=DIR            The root directory for all installed files, 
-                          default: /usr
- --exec-prefix=DIR       Root for architecture-dependent files,
-                          default: prefix
- --bindir=DIR            Where the RealTimeBattle binary is placed,
-                          default: eprefix/bin
- --includedir=DIR        Where Messagetypes.h is installed,
-                          default: prefix/include
- --infodir=DIR           Where info-files are stored,
-                          default: prefix/info
- --with-rtb-dir          Directory for main installation,
-                          default: prefix/games/RealTimeBattle
+ --prefix=DIR              The root directory for all installed files, 
+                            default: /usr
+ --exec-prefix=DIR         Root for architecture-dependent files,
+                            default: prefix
+ --bindir=DIR              Where the RealTimeBattle binary is placed,
+                            default: eprefix/bin
+ --datadir=DIR             Where data is installed
+                            default: prefix/share
+ --includedir=DIR          Where Messagetypes.h is installed,
+                            default: prefix/include
+ --infodir=DIR             Where info-files are stored,
+                            default: prefix/info
+ --with-rtb-dir            Directory for main installation,
+                            default: prefix/games/RealTimeBattle
+
+ --disable-nls             do not use Native Language Support
+ --with-included-gettext   use the GNU gettext library included here
+ --with-nls-localedir=PATH directory where your locales are
+                            default: datadir/locale
 
  --enable-debug          Compile for debugging
  --disable-graphics      Compile a version without a gui.
