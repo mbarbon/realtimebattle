@@ -38,7 +38,7 @@ AC_SUBST(VERSION)
 
 # Languages
 
-ALL_LINGUAS="sv pl pt de"
+ALL_LINGUAS="sv pl pt de ja"
 
 # Directories
 
@@ -73,7 +73,7 @@ AC_PREFIX_DEFAULT(/usr/local)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(fcntl.h strings.h sys/time.h unistd.h floatingpoint.h) 
+AC_CHECK_HEADERS(fcntl.h strings.h sys/time.h unistd.h floatingpoint.h sys/types.h) 
 AC_EGREP_HEADER(RLIMIT_NPROC, sys/resource.h, AC_DEFINE(HAVE_RLIMIT_NPROC))
 
 # Search for install_info
@@ -214,6 +214,8 @@ AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(select)
 AC_CHECK_FUNC(getopt_long,, [getopt=yes])
 AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
+
+AC_CHECK_LIB(xpg4, setlocale)
 
 # Finished !
 
