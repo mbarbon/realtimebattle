@@ -449,8 +449,8 @@ Gui::setup_score_window()
       strstream ss;
       char str[25];
 
-      ss << ".      c #" << setw(4) << setfill('0') << hex << robotp->get_colour().red
-         << robotp->get_colour().green << robotp->get_colour().blue << ends << endl;
+      ss << ".      c #" << setfill('0') << hex << setw(4) << robotp->get_colour().red
+         << setw(4) << robotp->get_colour().green << setw(4) << robotp->get_colour().blue << ends << endl;
       ss.getline(str,25,'\n');
       char* newstr = new char[30];
       strcpy(newstr, str);

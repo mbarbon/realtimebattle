@@ -386,7 +386,7 @@ Arena::update_timer()
   gdouble last_timer = current_timer;
   gulong microsecs;
   current_timer = g_timer_elapsed(timer, &microsecs);
-  timestep = min( (current_timer - last_timer) * timescale, 0.5 );
+  timestep = min( (current_timer - last_timer) * timescale, opts.get_max_timestep() );
   total_time += timestep;
 }
 
@@ -659,6 +659,7 @@ Arena::start_game()
   double angle;
   Vector2D pos;
 
+  robots_left = 0;
   for( ; gl != NULL; gl=g_list_next(gl))
     {
       robotp = (Robot*)gl->data;
@@ -673,20 +674,13 @@ Arena::start_game()
         throw Error("Couldn't find space for all robots", "Arena::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_initial_values(pos, angle);
-    }
-
-  // Make list of living robots and tell them to get ready
-
-  gl = g_list_next(all_robots_in_sequence);
-  robots_left = 0;
-  for( ; gl != NULL; gl=g_list_next(gl))
-    {
       g_list_append(object_lists[ROBOT], gl->data);
-      ((Robot*)gl->data)->send_message(GAME_STARTS);
       robots_left++;
       ((Robot*)gl->data)->live();
     }
 
+  broadcast(GAME_STARTS);
+  
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
