@@ -6,9 +6,7 @@ AC_INIT(src/RealTimeBattle.cc)
 AM_CONFIG_HEADER(config.h)
 
 
-# Save this value here, since automake will set cflags later
-#cflags_set=${CFLAGS+set}
-
+# Version numbers
 
 RTB_MAJOR_VERSION=0
 RTB_MINOR_VERSION=9
@@ -33,6 +31,11 @@ AC_SUBST(RTB_VERSION)
 VERSION=$RTB_VERSION
 PACKAGE=RealTimeBattle
 
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
+
+
+# Directories
+
 AC_SUBST(RTB_DIR)
 
 ROBOTDIR=['${RTB_DIR}/Robots']
@@ -40,58 +43,44 @@ ARENADIR=['${RTB_DIR}/Arenas']
 AC_SUBST(ROBOTDIR)
 AC_SUBST(ARENADIR)
 
-AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
-
 DOCS_DIR=['${RTB_DIR}']
-
 AC_SUBST(DOCS_DIR)
 
-
-INSTALL_INFO=yes
 AC_SUBST(INSTALL_INFO)
 
-# Save this value here, since automake will set cflags later
-#cflags_set=${CFLAGS+set}
+
+# Start up automake
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
-dnl Checks for programs.
+
+# Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 
 AC_PREFIX_DEFAULT(/usr)
 
-dnl Checks for libraries.
-AM_PATH_GTK(0.99.7, ,
-	AC_MSG_ERROR([*** GTK+ >= 0.99.7 not installed - please install first ***]))
 
-dnl Checks for header files.
+# Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(fcntl.h strings.h sys/time.h unistd.h floatingpoint.h) 
 AC_EGREP_HEADER(RLIMIT_NPROC, sys/resource.h, AC_DEFINE(HAVE_RLIMIT_NPROC))
 
+
+# Search for install_info
+
 AC_PATH_PROG(install_info, install-info, no, $PATH:/sbin:/usr/sbin/:/usr/local/sbin)
 INSTALL_INFO=$install_info
 
 
-dnl AC_ARG_ENABLE(bsd-fp, [  --enable-bsd-fp         use this if program dies with FPE on a bsd system], AC_DEFINE(BSD_FP))
+#  debug
 
-AC_ARG_ENABLE(rpm, [  --enable-rpm=[opts]     use rpm optimization], use_rpm=yes, use_rpm=no)
-
-changequote(,)dnl
-if test "x$use_rpm" = "xyes"; then
-   CXXFLAGS="$enable_rpm" 	
-   CFLAGS="$enable_rpm" 	
-	DOCS_DIR=['${prefix}/doc/RealTimeBattle-${VERSION}']
-	INSTALL_INFO=no
-fi
-changequote([,])dnl
-AM_CONDITIONAL(ENABLE_RPM, test x$use_rpm = xyes)
-
-AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging],, enable_debug=no)
+AC_ARG_ENABLE(debug, [  
+RealTimeBattle options:
+  --enable-debug          turn on debugging],, enable_debug=no)
 
 changequote(,)dnl
 if test "x$enable_debug" = "xno"; then
@@ -111,32 +100,74 @@ else
 fi
 changequote([,])dnl
 
+
+#  RPM 
+
+AC_ARG_ENABLE(rpm, [  --enable-rpm=[opts]     used when making RPM-packages], use_rpm=yes, use_rpm=no)
+
+changequote(,)dnl
+if test "x$use_rpm" = "xyes"; then
+   CXXFLAGS="$enable_rpm" 	
+   CFLAGS="$enable_rpm" 	
+	DOCS_DIR=['${prefix}/doc/RealTimeBattle-${VERSION}']
+	INSTALL_INFO=no
+fi
+changequote([,])dnl
+AM_CONDITIONAL(ENABLE_RPM, test x$use_rpm = xyes)
+
+
 #AC_ARG_ENABLE(docs-install,[ --enable-docs-install   install documentation], enable_docs_install=yes)
 
 #AM_CONDITIONAL(INSTALL_DOCS, test x$enable_docs_install = xyes)
 
-AC_ARG_ENABLE(graphics, [  --disable-graphics      make a version without a GUI], enable_graphics=no, enable_graphics=yes)
 
-AM_CONDITIONAL(NO_GRAPHICS, test x$enable_graphics = xno)
+# rtb-dir
 
-
-AC_ARG_WITH(rtb_dir, [  --with-rtb-dir=[path]   directory for rtb installation [PREFIX/games/RealTimeBattle]],, \
+AC_ARG_WITH(rtb_dir, 
+[  --with-rtb-dir=[path]   directory for rtb installation 
+                          [PREFIX/games/RealTimeBattle]],,
    with_rtb_dir=['${prefix}/games/RealTimeBattle'])
 
 RTB_DIR=$with_rtb_dir
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+
+# graphics / GTK
+
+AC_ARG_ENABLE(graphics, [  --disable-graphics      make a version without a GUI], enable_graphics=no, enable_graphics=yes)
+
+AC_ARG_WITH(gtk,        [  --without-gtk           do not use GTK+ (same as --disable-graphics)], enable_graphics=no)
+
+AM_CONDITIONAL(NO_GRAPHICS, test x$enable_graphics = xno)
+
+
+
+# Check for GTK+.
+
+if test "x$enable_graphics" = "xyes"; then
+	AC_ARG_ENABLE(dummy, [
+GTK options: ])
+	AM_PATH_GTK(0.99.7, ,
+		AC_MSG_WARN([
+*** GTK+ >= 0.99.7 not correcly installed.
+*** Changing to non-graphical version of RTB.
+*** The latest version of GTK can be found at http://www.gtk.org])
+		enable_graphics=no
+	)
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_PID_T
 AC_HEADER_TIME
 
-dnl Checks for library functions.
+# Checks for library functions.
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(select)
 AC_CHECK_FUNC(getopt_long,, [getopt=yes])
 AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
 
 
+# Finished !
 
 AC_OUTPUT(Arenas/Makefile Documentation/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile Robots/Makefile Makefile)
