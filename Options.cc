@@ -61,6 +61,8 @@ Options::Options()
 
   max_timestep = 0.5;
   timeout = 120.0;        // i.e. 2 minutes
+
+  options_window_up = false;
 }
 
 void
@@ -79,4 +81,19 @@ Options::broadcast_opts()
   the_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED, shot_energy_increase_speed);
 
   the_arena.broadcast( GAME_OPTION, TIMEOUT, timeout );  
+}
+
+void
+Options::get_options_from_rtbrc()
+{
+}
+
+void
+Options::setup_options_window()
+{
+}
+
+void
+Options::close_options_window()
+{
 }

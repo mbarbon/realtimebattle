@@ -1,7 +1,19 @@
 
-
 #ifndef __OPTIONS__
 #define __OPTIONS__
+
+#include <gtk/gtk.h>
+#include "Various.h"
+
+struct option_info_t
+{
+  option_info_t(entry_datatype_t d, double mn, double mx, GtkWidget * e) :
+    datatype(d), min_value(mn), max_value(mx), entry(e) {}
+  entry_datatype_t datatype;
+  double min_value;
+  double max_value;
+  GtkWidget * entry;
+};
 
 class Options
 {
@@ -10,7 +22,7 @@ public:
   ~Options() {}
   //static void set_options();
 
-private:
+private: // options
   double grav_const;
   double air_resistance;
   double roll_friction;
@@ -61,9 +73,7 @@ private:
   double max_timestep;
   double timeout;
 
-public:
-  void broadcast_opts();
-
+public: // get_options
   double get_grav_const() { return grav_const; }
   double get_air_resistance() { return air_resistance; }
   double get_roll_friction() { return roll_friction; }
@@ -113,6 +123,18 @@ public:
 
   double get_max_timestep() { return max_timestep; }
   double get_timeout() { return timeout; }
+
+private:  // other private variables and functions
+
+  bool options_window_up;
+  GtkWidget * options_window;
+
+public:  // other public variables and functions
+  void broadcast_opts();
+  void setup_options_window();
+  void close_options_window();
+  void get_options_from_rtbrc();
+  bool get_options_window_up() { return options_window_up; }
 };
 #endif __OPTIONS__
 
