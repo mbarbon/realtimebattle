@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>
 <title>RealTimeBattle User Manual, version 0.9.8 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 12 June 1999
+<date> 13 June 1999
 
 <!-- <abstract> -->
 
@@ -103,19 +103,16 @@ the graphical user interface.
 <sect1>Background<label id="Background">
 <p>
 The project started in August 1998. Inspiration came from 
-<url url="http://www.robotbattle.com/" name="RobotBattle">, a very interesting game, which
-however suffers from two major drawbacks: 
+<url url="http://www.robotbattle.com/" name="RobotBattle">, a very
+interesting game we used to enjoy some years earlier. That version of
+RobotBattle, however, had some drawbacks: It was only available on
+Windows and the robots were written in an own language, which restricts the
+possibilities to write intelligent robots. RobotBattle has since then been
+under development, but it still lack support for other
+operative systems.
 
-<itemize>
-<item> It is only available on Windows.
-
-<item> The robots are written in an own language, which restricts the
-possibilities to write intelligent robots.
-
-</itemize>
-We therefore decided to construct a Unix-version, which makes use of
-features of a modern OS.
-
+We therefore decided to construct a Unix robot programming game, which
+makes use of features of a modern OS.
 
 <sect1>License<label id="License">
 <p>
@@ -467,9 +464,9 @@ received] [position])
 <p>
 You can replay a game from its <ref name="log file" id="log_files"> either
 by giving the <ref name="command line option" id="Command line options">
-<tt>'-r'</tt> or from the <ref name="control window" id="Control window">.
+<tt>&lsquo;-r&rsquo;</tt> or from the <ref name="control window" id="Control window">.
 Note that if the log is comming from standard input (command line option
-<tt>'-r&nbsp;-'</tt>), you cannot do much but watch the game, but otherwise
+<tt>&lsquo;-r&nbsp;-&rsquo;</tt>), you cannot do much but watch the game, but otherwise
 you can influence the flow of the game:
 
 <itemize>
@@ -658,7 +655,7 @@ server program. It is also instructive to study the example robots in
 the <tt>Robots/</tt> directory.
 
 
-<sect1>General information<label id="General information">
+<sect1>Reading messages<label id="Reading messages">
 <p>
 At the beginning of each sequence the robot processes are launched by
 the server program and assigned two pipes, one for input and the other
@@ -667,12 +664,60 @@ for output. These are connected to the <tt>stdin</tt> and
 communicating with the server via the standard input and standard output.
 
 This approach means that the robots can be written in any programming
-languages. However, there is one catch, the robot must be able to know
-when it has received a message. One solution is to tell the server to
-<ref id="RobotOption" name="send a signal"> after sending the message. This requires the robot
-program to be able to handle signals. This can be done in many languages including c, c++ and
-perl. Another method is to use the libc function <tt>select()</tt> to wait until a message has
-arrived.
+languages. However, the robot must be able to know when it has received a
+new message. To achieve this there are (at least) three different methods
+to choose from:
+
+<descrip>
+<tag>Standard in blocks:</tag> This is the simplest method, when reading
+from stdin, the program is blocked until the next message arrives. You can
+therefore make the program as if there is always a message waiting. The
+drawback is that you cannot do any calculations while waiting for new
+messages. 
+
+To choose the blocking method, send the following robot option <em>as soon
+as the program is started</em>:
+<verb>
+cout << "RobotOption " << USE_NON_BLOCKING << " " << 0 << endl;
+</verb>
+
+
+<tag>Select:</tag> Using the Unix libc function <tt>select</tt> makes it
+possible for the robot to have better control over when to look for new
+messages. It enables you, for example, to read all messages available, do
+some calculations, send commands and thereafter wait for more messages. To
+learn more of <tt>select</tt>, please read its Unix documentation 
+( e.g. man pages or emacs info ). 
+
+To choose the select method, send the following robot option <em>as soon
+as the program is started</em>:
+<verb>
+cout << "RobotOption " << USE_NON_BLOCKING << " " << 1 << endl;
+</verb>
+
+<tag>Signals:</tag> If you want, you can tell RealTimeBattle to send the
+robot a signal whenever a new message is sent. This method makes it
+possible for the robot to be continuously updated with information from
+the server program also when the robot is busy doing calculations. If you
+feel you don't know how to use signals, look in the Unix documentation to
+or study other robots to learn more.
+
+To choose the signal method, send the following robot option <em>as soon
+as the program is started</em>:
+<verb>
+cout << "RobotOption " << USE_NON_BLOCKING << " " << 1 << endl;
+cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
+</verb>
+
+You can of course choose any signal you want instead of <tt>SIGUSR1</tt>.
+
+</descrip>
+
+As a help to implement these methods, the robot <tt>rotate_and_fire</tt>
+has been written in three different, but functionally equivalent,
+versions. Feel free to study and copy to use in your own robots.
+
+
 
 Note that it is not a good idea to do &dquot;busy wait&dquot;, i.e., to repeatedly look for a
 message until you get one. This will slow things down considerably and, worse, in 
@@ -838,6 +883,11 @@ message when a rotation is
 finished, you should set this option. With a value of 1, the message is sent when 
 a RotateTo or a RotateAmount is finished, with a value of 2, changes in sweep direction are
 also notified. Default is 0, i.e. no messages are sent.
+
+<tt>USE&lowbar;NON&lowbar;BLOCKING:</tt> Selects how to
+<ref name="reading messages" id="Reading messages">
+works. This option should be sent exactly once as soon as the program
+starts. Since it should always be given, there is no default value.
 
 <label id="NameAndColour">
 <tag>Name [name (string)]</tag> When receiving the <ref id="Initialize" name="Initialize"> message
