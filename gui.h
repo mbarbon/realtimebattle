@@ -69,6 +69,8 @@ public:
   int change_to_pixels_x(const double input);
   int change_to_pixels_y(const double input);
 
+  char ** get_colour_square_xpm( char ** col_sq, const GdkColor& colour );
+
   void draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled );
   void draw_line( const Vector2D& start, const Vector2D& end, GdkColor& colour );
   void draw_line( const Vector2D& start, const Vector2D& end, const double length, 
@@ -79,6 +81,7 @@ public:
   void change_statistics( int change, bool absoult_change );
   void add_new_row( void * rp, void * sp );
   void add_the_statistics_to_clist();
+  void stat_make_title_button();
 
   int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
@@ -96,6 +99,8 @@ private:
 
   GtkWidget * score_clist;
   GtkWidget * stat_clist;
+  GtkWidget * stat_title_button;
+  GtkWidget * stat_title_hbox;
 
   GtkWidget * control_window;
   GtkWidget * score_window;
