@@ -3,7 +3,7 @@ target: RealTimeBattle.html
 
 all: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info
 
-documents = RealTimeBattle.udo Introduction.udo Usage.udo Options.udo RobotConstruction.udo
+documents = RealTimeBattle.udo Introduction.udo Usage.udo Options.udo RobotConstruction.udo ArenaConstruction.udo
 
 RealTimeBattle.html: $(documents)
 	udo --html --verbose -o RealTimeBattle.html RealTimeBattle.udo
