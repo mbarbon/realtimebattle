@@ -38,5 +38,9 @@ doc_clean:
 ETAGS:
 	cd $(SRCDIR) && $(MAKE) ETAGS
 
+tgz:
+	tar -czf RealTimeBattle.tgz Makefile COPYING src/*.cc src/*.h src/Makefile Documentation/RealTimeBattle*.html Documentation/RealTimeBattle.dvi Documentation/RealTimeBattle.info Arenas/*.arena Robots/*.c* Robots/Makefile
+
+
 install:
 #NOT YET DONE!!!
