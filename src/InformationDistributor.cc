@@ -61,7 +61,10 @@ InformationDistributor::get_information( const int reader_id )
 {
   list<reader_t>::iterator li
     = find( readerlist.begin(), readerlist.end(), reader_id );
-  assert( li == readerlist.end() );
+  assert( li != readerlist.end() );
+  if( (*li).is_quitting )
+    return &info_when_quitting;
+
   if( (*li).reading_point == writing_point )
     return NULL;
   const InfoBase* info = *((*li).reading_point);
@@ -78,4 +81,13 @@ InformationDistributor::add_reader()
   readerlist.push_back( reader_t( this_reader, writing_point ) );
   next_reader_id++;
   return this_reader;
+}
+
+void
+InformationDistributor::make_reader_quit( const int reader_id )
+{
+  list<reader_t>::iterator li
+    = find( readerlist.begin(), readerlist.end(), reader_id );
+  assert( li != readerlist.end() );
+  (*li).is_quitting = true;
 }

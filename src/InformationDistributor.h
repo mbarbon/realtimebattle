@@ -39,12 +39,13 @@ class InformationDistributor
 public:
   struct reader_t {
     reader_t( const int id, list<const InfoBase*>::iterator& r )
-      : reader_id(id), reading_point(r) {}
+      : reader_id(id), reading_point(r), is_quitting(false) {}
 
     const bool operator==( const int& id ) { return( reader_id == id ); }
     const bool operator!=( const int& id ) { return( reader_id != id ); }
     int reader_id;
     list<const InfoBase*>::iterator reading_point;
+    bool is_quitting;
   };
 
   InformationDistributor                           ();
@@ -53,7 +54,10 @@ public:
   void insert_information                          ( const InfoBase* );
   const InfoBase* get_information                  ( const int );
   const int add_reader                             ();
+  void make_reader_quit                            ( const int );
 private:
+
+  const QuitInfo info_when_quitting;
 
   list<const InfoBase*> informationlist;
   list<const InfoBase*>::iterator writing_point;

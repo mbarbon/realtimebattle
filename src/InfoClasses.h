@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 enum infoclass_t
 {
   INFO_UNKNOWN,
+  INFO_QUIT,
   INFO_STATE,
   INFO_TOURNAMENT_STARTED,
   INFO_TOURNAMENT_ENDED,
@@ -109,6 +110,13 @@ private:
 };
 
 // All other InfoClasses.
+class QuitInfo : public InfoBase
+{
+public:
+  QuitInfo                   () : InfoBase(INFO_QUIT) {}
+  ~QuitInfo                  () {}
+private:
+};
 
 class StateInfo : public InfoBase
 {
