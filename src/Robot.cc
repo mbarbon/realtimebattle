@@ -1048,6 +1048,21 @@ Robot::get_messages()
               brake_percent = brk;
             } 
           break;
+	case TEAMWORK:
+	  if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+	    {
+	      pin->get(text, 2, '\n');
+              if(!strcmp(text, 'OK'))
+	        set_teamworking(true);
+              else
+	        set_teamworking(false);
+	    }
+	  break;
+	case SEND:  // Only for teamwork
+	  {
+	  }
+	  break;
+	  
           //          case LOAD_DATA:
           //            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
           //              {
