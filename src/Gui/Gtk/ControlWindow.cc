@@ -23,19 +23,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <algorithm>
 
-#include "ControlWindow.h"
-#include "IntlDefs.h"
 #include "ArenaWindow.h"
+#include "ControlWindow.h"
+#include "Dialog.h"
+#include "FileSelector.h"
+#include "Gui.h"
+#include "GuiVarious.h"
 #include "MessageWindow.h"
 #include "ScoreWindow.h" 
 #include "StatisticsWindow.h" 
-#include "Gui.h"
-#include "Dialog.h"
+
+#include "GuiRequest.h"
+#include "IntlDefs.h"
 #include "OptionHandler.h"
-#include "Structs.h"
-#include "FileSelector.h"
 #include "String.h"
-#include "GuiVarious.h"
+#include "Structs.h"
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -124,7 +126,7 @@ ControlWindow::ControlWindow( const int default_width,
       MENU_SHOW_SCORE, "<CheckItem>" },
     { "/_" N_("Match control"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("Match control") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/" N_("Match control") "/" N_("Pause"), "<shift>p",
+    { "/" N_("Match control") "/" N_("Pause"), "p",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PAUSE, "" },
     { "/" N_("Match control") "/" N_("End tournament"), "<control><shift>e",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
@@ -232,8 +234,9 @@ ControlWindow::ControlWindow( const int default_width,
   int max_label_height = *(max_element( heights.begin(), heights.end() )) + 4;
 
   status_label = gtk_label_new("");
+  gtk_widget_set_name( status_label, "RTB status label" );
   gtk_widget_set_usize( status_label, max_label_width, max_label_height );
-  gtk_widget_set_style( status_label, status_style );
+//    gtk_widget_set_style( status_label, status_style );
   gtk_label_set_justify( GTK_LABEL( status_label ), GTK_JUSTIFY_CENTER );
   gtk_box_pack_start( GTK_BOX( label_vbox ), status_label, TRUE, TRUE, 0 );
   gtk_widget_show( status_label );
@@ -511,18 +514,18 @@ ControlWindow::set_debug_sensitivity( const bool is_debugging )
 }
 
 void
-ControlWindow::set_replay_sensitivity( const bool is_debugging )
+ControlWindow::set_replay_sensitivity( const bool is_replaying )
 {
-  menu_set_sensitive("<main>/Replay", is_debugging);
-  menu_set_sensitive("<main>/Replay/Step forward", is_debugging);
-  menu_set_sensitive("<main>/Replay/Step backward", is_debugging);
-  menu_set_sensitive("<main>/Replay/Next match", is_debugging);
-  menu_set_sensitive("<main>/Replay/Previous match", is_debugging);
-  menu_set_sensitive("<main>/Replay/Next round", is_debugging);
-  menu_set_sensitive("<main>/Replay/Previous round", is_debugging);
-  gtk_widget_set_sensitive( rewind_button, (gint)is_debugging );
-  gtk_widget_set_sensitive( fast_forward_button, (gint)is_debugging );
-  gtk_widget_set_sensitive( time_control, (gint)is_debugging );
+  menu_set_sensitive("<main>/Replay", is_replaying);
+  menu_set_sensitive("<main>/Replay/Step forward", is_replaying);
+  menu_set_sensitive("<main>/Replay/Step backward", is_replaying);
+  menu_set_sensitive("<main>/Replay/Next match", is_replaying);
+  menu_set_sensitive("<main>/Replay/Previous match", is_replaying);
+  menu_set_sensitive("<main>/Replay/Next round", is_replaying);
+  menu_set_sensitive("<main>/Replay/Previous round", is_replaying);
+  gtk_widget_set_sensitive( rewind_button, (gint)is_replaying );
+  gtk_widget_set_sensitive( fast_forward_button, (gint)is_replaying );
+  gtk_widget_set_sensitive( time_control, (gint)is_replaying );
 }
 
 void
@@ -617,6 +620,7 @@ void
 ControlWindow::menu_callback( class ControlWindow* cw_p,
                               guint callback_action, GtkWidget *widget )
 {
+  cerr << "menu_callback: start      callback_action: " << callback_action << endl;
   switch( (menu_t)callback_action )
     {
     case MENU_QUIT:
@@ -630,24 +634,24 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
       the_gui.open_starttournamentwindow();
       break;
     case MENU_REPLAY_TOURNAMENT:
-//    if( the_arena_controller.is_started() &&
-//        ( the_arena.get_state() != NOT_STARTED &&
-//          the_arena.get_state() != FINISHED ) )
-//      {
-//        string info_text = _("This action will kill the current tournament.\n"
-//                             "Do you want to do that?");
-//        list<string> string_list;
-//        string_list.push_back( string( _("Yes") ) );
-//        string_list.push_back( string( _("No")  ) );
-//        Dialog( info_text, string_list,
-//                (DialogFunction) ControlWindow::kill_and_open_filesel );
-//      }
-//      else
-//        cw_p->open_replay_filesel();
+      if( //the_arena_controller.is_started() &&
+          ( the_gui.get_state() != NO_STATE &&
+            the_gui.get_state() != NOT_STARTED &&
+            the_gui.get_state() != FINISHED ) )
+        {
+          string info_text = _("This action will kill the current tournament.\n"
+                               "Do you want to do that?");
+          list<string> string_list;
+          string_list.push_back( string( _("Yes") ) );
+          string_list.push_back( string( _("No")  ) );
+          Dialog( info_text, string_list,
+                  (DialogFunction) ControlWindow::kill_and_open_filesel );
+        }
+      else
+        cw_p->open_replay_filesel();
       break;
     case MENU_PAUSE:
-//    if( the_arena_controller.is_started() )
-//      the_arena.pause_game_toggle();
+      the_gui.apply_request( new TogglePauseGameRequest );
       break;
     case MENU_STEP:
 //    if( the_arena_controller.is_started() )
