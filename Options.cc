@@ -28,14 +28,14 @@ Options::Options()
     
   shot_radius = 0.1;
   shot_speed = 10.0;
-  start_energy = 100.0;
+  start_energy = 1.0;
   shooting_penalty = 0.075;
   
   background_colour = 0xfaf0e6;  // linen
   foreground_colour = 0x000000;   // black
 
-  cookie_max_energy = 25.0;
-  cookie_min_energy = 15.0;
+  cookie_max_energy = 10.0;
+  cookie_min_energy = 5.0;
   cookie_frequency = 1.0/15.0;
   cookie_radius = 0.3;
   cookie_colour = 0x35d715;
@@ -45,6 +45,8 @@ Options::Options()
   mine_frequency = 1.0/15.0;
   mine_radius = 0.3;
   mine_colour = 0xff0000;
+
+  max_timestep = 0.5;
 }
 
 

@@ -48,6 +48,8 @@ private:
   double mine_frequency;
   double mine_radius;
   long mine_colour;
+  
+  double max_timestep;
 
 public:
   double get_grav_const() { return grav_const; }
@@ -87,6 +89,8 @@ public:
   double get_mine_frequency() { return mine_frequency; }
   double get_mine_radius() { return mine_radius; }
   long get_mine_colour() { return mine_colour; }
+
+  double get_max_timestep() { return max_timestep; }
 };
 #endif __OPTIONS__
 
