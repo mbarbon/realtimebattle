@@ -20,11 +20,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __RTB_STRING__
 #define __RTB_STRING__
 
-#include <string>
+#include <vector>
+#include <list>
 
 enum string_double_t { STRING_NORMAL_FORM, STRING_EXP_FORM, STRING_FIXED_FORM };
 
 bool equal_strings_nocase( const string&, const string& );
+void remove_initial_whitespace( string& );
+
+vector<string>& split_string( const string& str , vector<string>& strlist,
+                              const string& separators = " \n\t\v\r\f" );
 
 // Remember to delete[] the copied string
 char* copy_to_c_string( const string& str );

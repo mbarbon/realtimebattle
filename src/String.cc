@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 #include <string.h>
+#include <vector>
 //#include <iostream.h>
 //#include <strstream.h>
 //#include <iomanip.h>
@@ -48,6 +49,32 @@ equal_strings_nocase( const string& s, const string& t )
       }
 
   return( s.length() == t.length() );
+}
+
+void
+remove_initial_whitespace( string& str )
+{
+  while( str.length() > 0 && isspace( str[0] ) )
+    str = str.substr( 1, string::npos );
+}
+
+vector<string>&
+split_string( const string& str, vector<string>& strlist, const string& separators )
+{
+  strlist.clear();
+  string::size_type current_pos = 0;
+  while( current_pos != string::npos )
+    {
+      string::size_type next_pos = str.find_first_of( separators, current_pos );
+      string word = str.substr( current_pos, next_pos - current_pos );
+      if( word != string("") )
+        strlist.push_back( word );
+      if( current_pos == next_pos )
+        current_pos++;
+      else
+        current_pos = next_pos;
+    }
+  return strlist;
 }
 
 // Remember to delete[] the copied string
