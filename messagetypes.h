@@ -22,7 +22,7 @@ enum message_to_robot_type
   DEAD,
   GAME_FINISHES,
   SAVE_DATA,
-  EXIT_ROBOT,
+  EXIT_ROBOT
 };
 
 enum message_from_robot_type 
@@ -116,13 +116,13 @@ static const Message message_to_robot[20] =
 {
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
-  {"YourColor",  1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
-  {"BinData",    2,   {INT,    BINDATA,NONE,   NONE}},
+  {"YourColour", 1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
+  {"BinData",    2, {INT,    BINDATA,NONE,   NONE}},
   {"AsciiData",  1, {STRING, NONE,   NONE,   NONE}},
   {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
   {"GameOption", 2, {INT,    DOUBLE, NONE,   NONE}},  // arg 1: OPTION_NR,  arg 2:  value 
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
-  {"Radar",      4, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, 
+  {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, 
                                                        // third arg: radar_angle
                                                        // TODO: fourth arg: if robot, its energylevel ??
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
