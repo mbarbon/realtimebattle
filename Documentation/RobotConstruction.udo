@@ -22,10 +22,10 @@ directory.
    (!link [(!T)competition-mode(!t)][CommandLineOptions]) the robot will rapidly run out of CPU-time
    and die.
 
-!subnode messagetypes.h
-!label messagetypes
+!subnode Messagetypes.h
+!label Messagetypes
 
-The file (!T)messagetypes.h(!t) is a good source of information on the messaging language. It is a c/c++
+The file (!T)Messagetypes.h(!t) is a good source of information on the messaging language. It is a c/c++
 include file, but you can easily rewrite it to use with other languages. There you can find listing
 of messages, warning types, objects, game options and robot options.
    
@@ -62,7 +62,7 @@ of messages, warning types, objects, game options and robot options.
 
    !item [GameOption [optionnr (int)!] [value (double)!]] At the beginning of each game the robots
          will be sent a number of settings, which can be useful to the robot. For a complete list of
-         these, look in the file (!T)messagetypes.h(!t) for the (!T)game_option_type(!t)
+         these, look in the file (!T)Messagetypes.h(!t) for the (!T)game_option_type(!t)
          enum. In the (!link [options chapter][Options]) you can get more detailed information on
          each option. 
 
@@ -90,7 +90,7 @@ of messages, warning types, objects, game options and robot options.
 
    !item [Collision [colliding object type (int)!] [angle relative robot (double)!]]
          When a robot hits (or is hit by) something it gets this message. In the file
-         (!link [messagetypes.h][messagetypes]) you can find a list of the object types.
+         (!link [Messagetypes.h][Messagetypes]) you can find a list of the object types.
          
    !item [Warning [warning type (int)!] [message (string)!]]
          A warning message can be sent for various reasons
