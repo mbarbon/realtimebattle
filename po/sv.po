@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-27 17:55+0200\n"
+"POT-Creation-Date: 1999-07-29 18:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -199,287 +199,287 @@ msgstr "Meddelanden"
 msgid " All "
 msgstr " Alla "
 
-#: src/Options.cc:50
+#: src/Options.cc:56
 msgid "Gravitational Constant"
 msgstr "Tyngdacceleration"
 
-#: src/Options.cc:54
+#: src/Options.cc:60
 msgid "Air resistance"
 msgstr "Luftmotstånd"
 
-#: src/Options.cc:58
+#: src/Options.cc:64
 msgid "Roll friction"
 msgstr "Rullfriktion"
 
-#: src/Options.cc:63
+#: src/Options.cc:69
 msgid "Slide/brake friction"
 msgstr "Glid/bromsfriktion"
 
-#: src/Options.cc:68
+#: src/Options.cc:74
 msgid "Robot max acceleration"
 msgstr "Robots maxacceleration"
 
-#: src/Options.cc:73
+#: src/Options.cc:79
 msgid "Robot min acceleration"
 msgstr "Robots minacceleration"
 
-#: src/Options.cc:77
+#: src/Options.cc:83
 msgid "Robot radius"
 msgstr "Robotradie"
 
-#: src/Options.cc:81
+#: src/Options.cc:87
 msgid "Robot mass"
 msgstr "Robotvikt"
 
-#: src/Options.cc:86
+#: src/Options.cc:92
 msgid "Robot bounce coefficient"
 msgstr "Robots studskoefficient"
 
-#: src/Options.cc:91
+#: src/Options.cc:97
 msgid "Robot hardness coefficient"
 msgstr "Robots hårdhetskoefficient"
 
-#: src/Options.cc:96
+#: src/Options.cc:102
 msgid "Robot protection coefficient"
 msgstr "Robots skyddskoefficient"
 
-#: src/Options.cc:101
+#: src/Options.cc:107
 msgid "Robot frontsize [radians]"
 msgstr "Robots frontstorlek [radianer]"
 
-#: src/Options.cc:106
+#: src/Options.cc:112
 msgid "Robot front bounce coefficient"
 msgstr "Robotfronts studskoefficient"
 
-#: src/Options.cc:111
+#: src/Options.cc:117
 msgid "Robot front hardness coefficient"
 msgstr "Robotfronts hårdhetskoefficient"
 
-#: src/Options.cc:116
+#: src/Options.cc:122
 msgid "Robot front protection coefficient"
 msgstr "Robotfronts skyddskoefficient"
 
-#: src/Options.cc:121
+#: src/Options.cc:127
 msgid "Robot start energy"
 msgstr "Robots startenergi"
 
-#: src/Options.cc:126
+#: src/Options.cc:132
 msgid "Robot max energy"
 msgstr "Robots maxenergi"
 
-#: src/Options.cc:132
+#: src/Options.cc:138
 msgid "Robot max rotate speed [rad/s]"
 msgstr "Robots högsta rotationshast. [rad/s]"
 
-#: src/Options.cc:138
+#: src/Options.cc:144
 msgid "Robot cannon max rotate speed [rad/s]"
 msgstr "Kanons högsta rotationshast. [rad/s]"
 
-#: src/Options.cc:144
+#: src/Options.cc:150
 msgid "Robot radar max rotate speed [rad/s]"
 msgstr "Radars högsta rotationshast. [rad/s]"
 
-#: src/Options.cc:149
+#: src/Options.cc:155
 msgid "Process check interval"
 msgstr "Tid mellan processkontroller"
 
-#: src/Options.cc:153
+#: src/Options.cc:159
 msgid "Robot energy levels"
 msgstr "Antal energinivåer för robot"
 
-#: src/Options.cc:157
+#: src/Options.cc:163
 msgid "Shot radius"
 msgstr "Skottradie"
 
-#: src/Options.cc:161
+#: src/Options.cc:167
 msgid "Shot speed"
 msgstr "Skotthastighet"
 
-#: src/Options.cc:166
+#: src/Options.cc:172
 msgid "Shooting penalty (times shot energy)"
 msgstr "Skada på skytt (mult. m skottenergin)"
 
-#: src/Options.cc:170
+#: src/Options.cc:176
 msgid "Shot min energy"
 msgstr "Skotts lägsta energi"
 
-#: src/Options.cc:174
+#: src/Options.cc:180
 msgid "Shot max energy"
 msgstr "Skotts högsta energi"
 
-#: src/Options.cc:179
+#: src/Options.cc:185
 msgid "Shot energy increase speed [energy/s]"
 msgstr "Robots skotttenegi-ökning [per sekund]"
 
-#: src/Options.cc:183
+#: src/Options.cc:189
 msgid "Background colour"
 msgstr "Bakgrundsfärg"
 
-#: src/Options.cc:187
+#: src/Options.cc:193
 msgid "Foreground colour"
 msgstr "Förgrnudsfärg"
 
-#: src/Options.cc:192
+#: src/Options.cc:198
 msgid "Colour for RTB messages"
 msgstr "Färg på RTB-meddelanden"
 
-#: src/Options.cc:196
+#: src/Options.cc:202
 msgid "Cookie max energy"
 msgstr "Kakors högsta energi"
 
-#: src/Options.cc:200
+#: src/Options.cc:206
 msgid "Cookie min energy"
 msgstr "Kakors lägsta energi"
 
-#: src/Options.cc:205
+#: src/Options.cc:211
 msgid "Cookie frequency [cookies per second]"
 msgstr "Kakors talrikhet [kakor per sekund]"
 
-#: src/Options.cc:209
+#: src/Options.cc:215
 msgid "Cookie radius"
 msgstr "Kakors radie"
 
-#: src/Options.cc:213
+#: src/Options.cc:219
 msgid "Cookie colour"
 msgstr "Kakors färg"
 
-#: src/Options.cc:217
+#: src/Options.cc:223
 msgid "Mine max energy"
 msgstr "Minors högsta energi"
 
-#: src/Options.cc:221
+#: src/Options.cc:227
 msgid "Mine min energy"
 msgstr "Minors lägsta energi"
 
-#: src/Options.cc:226
+#: src/Options.cc:232
 msgid "Mine frequency [mines per second]"
 msgstr "Minors talrikhet [minor per sekund]"
 
-#: src/Options.cc:230
+#: src/Options.cc:236
 msgid "Mine radius"
 msgstr "Minors radie"
 
-#: src/Options.cc:234
+#: src/Options.cc:240
 msgid "Mine colour"
 msgstr "Minors färg"
 
-#: src/Options.cc:238
+#: src/Options.cc:244
 msgid "Arena scale"
 msgstr "Arenaskala"
 
-#: src/Options.cc:243
+#: src/Options.cc:249
 msgid "Fast forward factor"
 msgstr "Snabbspolningsfaktor"
 
-#: src/Options.cc:247
+#: src/Options.cc:253
 msgid "Timeout [s]"
 msgstr "Max tids [s]"
 
-#: src/Options.cc:251
+#: src/Options.cc:257
 msgid "Max timestep"
 msgstr "Max tidshopp"
 
-#: src/Options.cc:255
+#: src/Options.cc:261
 msgid "Timescale"
 msgstr "Tidsskala"
 
-#: src/Options.cc:260
+#: src/Options.cc:266
 msgid "Update interval [s]"
 msgstr "Uppdateringsintervall [s]"
 
-#: src/Options.cc:265
+#: src/Options.cc:271
 msgid "Robot startup time [s]"
 msgstr "Startupptid för robotar [s]"
 
-#: src/Options.cc:269
+#: src/Options.cc:275
 msgid "Start CPU time [s]"
 msgstr "Processtid [s]"
 
-#: src/Options.cc:273
+#: src/Options.cc:279
 msgid "Extra CPU time [s]"
 msgstr "Extra processtid [s]"
 
-#: src/Options.cc:278
+#: src/Options.cc:284
 msgid "Extra CPU period [s]"
 msgstr "Extra processtid-intervall [s]"
 
-#: src/Options.cc:283
+#: src/Options.cc:289
 msgid "CPU time warning percentage"
 msgstr "Låg processtidsvarning [procent]"
 
-#: src/Options.cc:287
+#: src/Options.cc:293
 msgid "Robot search path"
 msgstr "Robot sökväg"
 
-#: src/Options.cc:291
+#: src/Options.cc:297
 msgid "Arena search path"
 msgstr "Arena sökväg"
 
-#: src/Options.cc:296
+#: src/Options.cc:302
 msgid "Directory for temporary files"
 msgstr "Bibliotek för tillfälliga filer"
 
-#: src/Options.cc:301
+#: src/Options.cc:307
 msgid "Initial Arena window width"
 msgstr "Arenafönster bredd"
 
-#: src/Options.cc:306
+#: src/Options.cc:312
 msgid "Initial Arena window height"
 msgstr "Arenafönster höjd"
 
-#: src/Options.cc:311
+#: src/Options.cc:317
 msgid "Initial Arena window x position"
 msgstr "Arenafönster x-position"
 
-#: src/Options.cc:316
+#: src/Options.cc:322
 msgid "Initial Arena window y position"
 msgstr "Arenafönster y-position"
 
-#: src/Options.cc:321
+#: src/Options.cc:327
 msgid "Initial Control window x position"
 msgstr "kontrollfönster x-position"
 
-#: src/Options.cc:326
+#: src/Options.cc:332
 msgid "Initial Control window y position"
 msgstr "kontrollfönster y-position"
 
-#: src/Options.cc:331
+#: src/Options.cc:337
 msgid "Initial Message window width"
 msgstr "Meddelandefönster bredd"
 
-#: src/Options.cc:336
+#: src/Options.cc:342
 msgid "Initial Message window height"
 msgstr "Meddelandefönster höjd"
 
-#: src/Options.cc:341
+#: src/Options.cc:347
 msgid "Initial Message window x position"
 msgstr "Meddelandefönster x-position"
 
-#: src/Options.cc:346
+#: src/Options.cc:352
 msgid "Initial Message window y position"
 msgstr "Meddelandefönster y-position"
 
-#: src/Options.cc:351
+#: src/Options.cc:357
 msgid "Initial Score window width"
 msgstr "Resultatfönster bredd"
 
-#: src/Options.cc:356
+#: src/Options.cc:362
 msgid "Initial Score window height"
 msgstr "Resultatfönster höjd"
 
-#: src/Options.cc:361
+#: src/Options.cc:367
 msgid "Initial Score window x position"
 msgstr "Resultatfönster x-position"
 
-#: src/Options.cc:366
+#: src/Options.cc:372
 msgid "Initial Score window y position"
 msgstr "Resultatfönster y-position"
 
-#: src/Options.cc:371
+#: src/Options.cc:377
 msgid "Initial Statistics window width"
 msgstr "Statistikfönster bredd"
 
-#: src/Options.cc:376
+#: src/Options.cc:382
 msgid "Initial Statistics window height"
 msgstr "Statistikfönster höjd"
 
@@ -535,7 +535,7 @@ msgstr " Använd nuvarande fönsterstorlekar och -positioner "
 
 #: src/OptionsWindow.cc:246
 msgid " Default "
-msgstr " Default " 
+msgstr " Default "
 
 #: src/OptionsWindow.cc:248
 msgid " Load options "
@@ -586,8 +586,7 @@ msgstr "    --debug_mode,                -d   debugläge"
 msgid ""
 "    --debug_level [0-5],         -D   sets the initial debug level. implies "
 "-d"
-msgstr ""
-"    --debug_level [0-5],         -D   sätt debug-nivå. Implicerar -d"
+msgstr "    --debug_level [0-5],         -D   sätt debug-nivå. Implicerar -d"
 
 #: src/RealTimeBattle.cc:95
 msgid "    --normal_mode,               -n   normal mode (default)"
@@ -619,7 +618,8 @@ msgstr "                                      så skickas loggen till STDOUT"
 
 #: src/RealTimeBattle.cc:104
 msgid "    --tournament_file [file],    -t   specify a tournament file to"
-msgstr "    --tournament_file [fil],     -t   välj turneringsfil för automatisk"
+msgstr ""
+"    --tournament_file [fil],     -t   välj turneringsfil för automatisk"
 
 #: src/RealTimeBattle.cc:105
 msgid "                                      autostart a tournament"
@@ -640,15 +640,17 @@ msgstr "    --message_file [fil],        -m   skicka meddelanden till 'fil'"
 #: src/RealTimeBattle.cc:111
 msgid ""
 "                                      '-' as 'file' is equivalent to STDOUT."
-msgstr ""
-"                                      Om 'fil' är '-' används STDOUT."
+msgstr "                                      Om 'fil' är '-' används STDOUT."
+
 #: src/RealTimeBattle.cc:112
 msgid "                                      If both log and messages are send"
-msgstr "                                      Om både loggen och meddelanden skickas"
+msgstr ""
+"                                      Om både loggen och meddelanden skickas"
 
 #: src/RealTimeBattle.cc:113
 msgid "                                      to STDOUT, '-m' will be ignored"
-msgstr "                                      till STDOUT kommer '-m' att ignoreras"
+msgstr ""
+"                                      till STDOUT kommer '-m' att ignoreras"
 
 #: src/RealTimeBattle.cc:115
 msgid "    --replay [file]              -r   a log file to replay."

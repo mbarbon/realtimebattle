@@ -220,7 +220,7 @@ $HOME/.rtbrc)", 147},
   {"\
 \n\
 Couldn't parse specified tournament file.", 206},
-  {"Tournament could not be loadeded.", 207},
+  {"Tournament could not be loaded.", 207},
   {"\
 \n\
 There are too few robots in the tournament.", 208},
@@ -236,7 +236,7 @@ Could not open file.", 210},
 There must be at least two robots in the tournament.", 212},
   {"Tournament could not be started.", 213},
   {"Error in", 214},
-  {"Robot found and locked at distance", 215},
+  {"Brakes locked: Robot found and at distance", 215},
   {"Acceleration", 216},
   {"Brake", 217},
   {"Modular angle, Angle", 218},
