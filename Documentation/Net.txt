@@ -93,10 +93,12 @@ S_ : Submit a robot/arena (i.e. message from a chat to submit a robot)
 st : A modification in statistics
 rp : A modification on robot position 
 rm : A message to display in the message window (message from a robot)
-aa : Add a new objetc on the arena
+aa : Add a new object on the arena
 ad : The arena definition is coming (only the 'picture')
 
+LR : ask to the chat to launch a robot
 @R : a robot command... (Maybe we will have to split it...)
+
 
 @B : We are going to start the game!!!
 
