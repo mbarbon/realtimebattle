@@ -140,6 +140,26 @@ MessageWindow::MessageWindow( const int default_width,
 #endif
   gtk_widget_show( clist );
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  rtb_message_row_style = gtk_style_new();
+  rtb_message_row_style->base[GTK_STATE_NORMAL] =
+    make_gdk_colour( the_gui.get_bg_rgb_colour() );
+  rtb_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+  rtb_message_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+  rtb_message_row_style->fg[GTK_STATE_NORMAL] = 
+    *( the_gui.get_rtb_message_gdk_colour_p() );
+  rtb_message_row_style->fg[GTK_STATE_SELECTED] =
+    *( the_gui.get_rtb_message_gdk_colour_p() );
+
+  robot_message_row_style = gtk_style_new();
+  robot_message_row_style->base[GTK_STATE_NORMAL] =
+    make_gdk_colour( the_gui.get_bg_rgb_colour() );
+  robot_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+  robot_message_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+  robot_message_row_style->fg[GTK_STATE_NORMAL] = *( the_gui.get_fg_gdk_colour_p() );
+  robot_message_row_style->fg[GTK_STATE_SELECTED] = *( the_gui.get_fg_gdk_colour_p() );
+#endif
+
   if( window_shown = ( controlwindow_p->is_messagewindow_checked() ) )
     gtk_widget_show_now( window_p );
 }
@@ -183,21 +203,19 @@ MessageWindow::add_message( const String& name_of_messager,
       gtk_clist_insert( GTK_CLIST( clist ), row, lst );
 #endif
 
+
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      if( name_of_messager == "RealTimeBattle" )
+        gtk_clist_set_row_style( GTK_CLIST( clist ), row, rtb_message_row_style );
+      else
+        gtk_clist_set_row_style( GTK_CLIST( clist ), row, robot_message_row_style );
+#else
       GdkColor* fg_colour = NULL;
       if( name_of_messager == "RealTimeBattle" )
         fg_colour = the_gui.get_rtb_message_gdk_colour_p();
       else
         fg_colour = the_gui.get_fg_gdk_colour_p();
 
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      GtkStyle* clist_row_style = gtk_style_new();
-      clist_row_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
-      clist_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
-      clist_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
-      clist_row_style->fg[GTK_STATE_NORMAL] = *fg_colour;
-      clist_row_style->fg[GTK_STATE_SELECTED] = *fg_colour;
-      gtk_clist_set_row_style( GTK_CLIST( clist ), row, clist_row_style );
-#else
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
                                 fg_colour );
       gtk_clist_set_background( GTK_CLIST( clist ), row,

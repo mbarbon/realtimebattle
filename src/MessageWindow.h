@@ -73,6 +73,11 @@ private:
   GtkWidget* clist;
   Robot* viewed_robot;
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  GtkStyle* rtb_message_row_style;
+  GtkStyle* robot_message_row_style;
+#endif
+
   bool window_shown;
 };
 
