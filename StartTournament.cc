@@ -39,6 +39,12 @@ start_tournament_full_round_callback(GtkWidget *widget, gpointer data)
 }
 
 void
+start_tournament_all_arenas_callback(GtkWidget *widget, gpointer data)
+{
+  the_gui.set_entry(0,MMF_ALL_ARENAS);
+}
+
+void
 start_tournament_button_callback(GtkWidget *widget, gpointer data)
 {
   if(the_gui.get_start_tournament_up() == false)
@@ -359,6 +365,20 @@ Gui::set_entry(const int entry, const enum min_max_full_t mmf)
                             String(min(9999,binomial(number_of_robots,robots_per_sequence))).chars() );
       break;
       }
+    case MMF_ALL_ARENAS:
+      {
+        GList * gl;
+        int number_of_arenas = 0;
+        for(gl = g_list_next(selected_items_in_arena_tournament); gl !=NULL; gl = g_list_next(gl))
+          number_of_arenas++;
+        if( number_of_arenas > 120 )
+          number_of_arenas = 120;
+        if( number_of_arenas < 1 )
+          number_of_arenas = 1;
+        gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ),
+                            String(number_of_arenas).chars() );
+      break;
+      }
     }
 }
 
@@ -631,13 +651,22 @@ Gui::setup_start_tournament_window()
 
       GtkWidget * button;
       int add = 0;
-      if( i != 2 ) add = 3;
+      if( i == 1 ) add = 3;
 
       button = gtk_button_new_with_label ("Min");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (start_tournament_min_callback), (gpointer) label_titles[i] );
       gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 0, 3 + add, i, i + 1 );
       gtk_widget_show (button);
+
+      if( i == 0 )
+        {
+          button = gtk_button_new_with_label ("All Arenas");
+          gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                              GTK_SIGNAL_FUNC (start_tournament_all_arenas_callback), (gpointer) NULL );
+          gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 3, 9, i, i + 1 );
+          gtk_widget_show (button);
+        }
 
       if( i == 2 )
         {
