@@ -1,4 +1,40 @@
-Process :
+  ////////////////////////////
+ // I. Introduction        //
+////////////////////////////
+
+A mail from Erik : 
+[
+the best approch would be to have three parts:
+
+(1) A robot server, which handles a particular game.
+(2) An meeting place server, where people can chat and decide to setup a
+    game. This server then launches the robot server for the game either
+    locally or on some users machine.
+(3) A robot-client.
+]
+
+A mail from Ragnar : 
+[
+The (1) server is an integrated server in RTB which should look (when
+running RTB) the same as a local robot. The difference is that you
+can not start several copies of a networked robot connected to RTB.
+
+The robot-client (3) application takes a local (where the client is
+running) robot as argument and the robot runs locally communicating as
+usual but with the robot-client which sends the commands from the robot to
+the RTB-server. The programmer will not need to know anything on how to
+program sockets and tcp/ip.
+
+The Meeting place server (2) is what in freeciv is called a meta-server.
+This is  a list of where there are RTB-servers running and thus you can
+see if you can join a tournament, this could be developed a bit further as
+ideas come in, for example an automatic ladder-competition, etc.
+]
+
+  ////////////////////////////
+ // II. Process            //
+////////////////////////////
+
 * First the Server open a socket to wait for friends
 * He execute a Root Client (see Connection types below) that should immedialty connect on him... (That is not a very good idea, but I didn't find any other way) 
 * The Chat Clients can open sockets and chat together (They decide what they want to play, the robots that are going to fight... The server establish a list of the robots with the chat client that submit them...
@@ -21,6 +57,21 @@ Process :
   * let the chat submit new ideas
 
 Maybe a little 'UML' diagram would be more explicit... I will work on it latter
+
+
+
+  /////////////////////////////////
+ // III. About sending messages //
+/////////////////////////////////
+
+Mail from Ragnar :
+[
+Another point is that I want it possible to send various-length messages
+without (a low) length-limit or a stop-character. My suggestion is: send
+messages in packages with the length of the message first (two bytes
+allows 2^16 characters long messages). The packages them self  could be
+fixed size so you read in everything and parse it as it comes.
+]
 
 message_lentgh message_type   message
     [  ]          [  ]        [ ... ]
@@ -50,7 +101,7 @@ Message types :
 Initialisation :
 Only one message : "<lentgh>@I <protocol_version> <connection_type> <name>"
 courant protocol version : RTBNetV1
-connection type : see below
+connection type : see above
 This may be the only message using the @I message type
 
 Command form a Root connection (don't forget to start with @C):
@@ -72,4 +123,15 @@ Command from server to chat :
 * Kill <robot_name> : you can kill him, he is useless 
   
 
+  /////////////////////////
+ // Other               //
+/////////////////////////
 
+A mail from Ragnar
+[
+I think that the server should have a NetConnection class containing the
+information about the Connection, there should be a list of all
+NetConnections available. This list is distributed to the gui or a
+start_tournament_script or whatever. The gui should then select the robots
+that may start in the new tournament
+]
