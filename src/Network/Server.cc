@@ -109,7 +109,7 @@ server(int socket_fd)
 
   char buffer[80];
 
-  in_socket.get(buffer, 20, '\n');
+  in_socket.get(buffer, 80, '\n');
 
   robotname = buffer;
 
@@ -215,7 +215,7 @@ server(int socket_fd)
       
       cout << "." << flush;      
       
-      out_socket << "Message_from_server_" << robotname << endl;
+      //      out_socket << "Message_from_server_" << robotname << endl;
       //      sleep(1);
 
     }
