@@ -145,7 +145,7 @@ main ( int argc, char* argv[] )
   bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
   textdomain( "RealTimeBattle" );
 
-  the_arena_controller.parse_command_line( argc, argv );
+  the_arena_controller.init( argc, argv );
 
   //  parse_command_line(argc, argv);
 
