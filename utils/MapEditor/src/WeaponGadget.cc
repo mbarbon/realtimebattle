@@ -5,6 +5,12 @@
 #include "WeaponGadget.h"
 #include "Variable.h"
 
+vector<GadgetDefinition*>* WeaponGadget::Gadget_def()
+{
+  return &gadget_def;
+}
+
+
 
 const VariableDefinition 
 WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 

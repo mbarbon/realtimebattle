@@ -22,6 +22,8 @@ class WeaponGadget : public Gadget
       return new WeaponGadget(Name, p); 
     };
    int Read(FILE*);
+   vector<GadgetDefinition*> *Gadget_def();
+
 
  private:
   enum WeaponVars
