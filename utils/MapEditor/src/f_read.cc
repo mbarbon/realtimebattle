@@ -78,25 +78,31 @@ int Arena::Read(FILE *fp, GtkWidget* ctree)
   NbSpace++;
   while (read_line(fp) > 0) 
     {
-      if(strncmp(buf, "Define ", 7))
+      if(!strncmp(buf, "Define ", 7))
 	{
-	  printf("Invalid format at line %d.\n", line_no);
-	}
-      else if (sscanf(buf, "%*s %s %s", Value, GadgetName) != 2) 
-	{
-	  printf("Incorrect definition at line %d.\n", line_no);
-	  return (num_object != 0? 0: -1);     // ok if any objects have been read 
-	}
-      if( theGadget = createGadget(Value, GadgetName) /* != NULL */ )
-	{
-	  theGadget->Print();
-	  theGadget->Read(fp, ctree, NULL);
-	  num_object ++;
+	  if (sscanf(buf, "%*s %s %s", Value, GadgetName) != 2) 
+	    {
+	      printf("Incorrect definition at line %d.\n", line_no);
+	      return (num_object != 0? 0: -1);     // ok if any objects have been read 
+	    }
+	  else
+	    {
+	      if( theGadget = createGadget(Value, GadgetName) /* != NULL */ )
+		{
+		  theGadget->Print();
+		  theGadget->Read(fp, ctree, NULL);
+		  num_object ++;
+		}
+	      else
+		{
+		  SkipUnknownObject(fp);
+		  NbSkiped++;
+		}
+	    }
 	}
       else
 	{
-	  SkipUnknownObject(fp);
-	  NbSkiped++;
+	  printf("Invalid format at line %d.\n", line_no);
 	}
     }
   NbSpace--;
