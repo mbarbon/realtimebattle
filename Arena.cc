@@ -1,4 +1,5 @@
 #include "Arena.h"
+#include "math.h"
 
 Arena::Arena()
 {
@@ -116,6 +117,30 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
   return dist;
 }
 
+bool
+Arena::space_available(const Vector2D& pos, const double margin)
+{
+  Shape* objp;
+  GList* gl =g_list_first(&solid_objects);
+
+  for(; gl->next != NULL; gl = g_list_next(gl))
+    {
+      objp = (Shape*)gl->data;
+      if( objp->within_distance(pos, margin) ) return false;
+    }
+
+  return true;
+}
+
+Vector2D
+Arena::get_random_position()
+{
+  return Vector2D( boundary[0] + (boundary[2] - boundary[0])*
+                   (double)rand()/(double)RAND_MAX, 
+                   boundary[1] + (boundary[3] - boundary[1])*
+                   (double)rand()/(double)RAND_MAX );
+}
+
 gint
 Arena::timeout_function()
 {
@@ -197,10 +222,31 @@ Arena::start_game()
 
   // Place robots on the arena
 
+  GList* gl = g_list_first(&all_robots_in_sequence);
+  Robot* robotp;
+  bool found_space;
+  double angle;
+  Vector2D pos;
+
+  for( ; gl != NULL; gl=g_list_next(gl))
+    {
+      robotp = (Robot*)gl->data;
+      found_space = false;
+      for( int i=0; i<100 && !found_space; i++)
+        {
+          pos = get_random_position();
+          found_space = space_available(pos, robot_size);
+        }
+
+      if( !found_space )
+        throw Error("Couldn't find space for all robots", "Arena::start_game");
+      angle = (double)rand()*2.0*M_PI;
+      robotp->set_initial_position_and_direction(pos, angle, robot_size);
+    }
 
   // Make list of living robots and tell them to get ready
 
-  GList* gl = g_list_first(&all_robots_in_sequence);
+  gl = g_list_first(&all_robots_in_sequence);
   robots_left = 0;
   for( ; gl != NULL; gl=g_list_next(gl))
     {
