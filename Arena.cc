@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "Arena.h"
 #include "gui.h"
+#include "Various.h"
 
 Arena::Arena()
 {
@@ -32,6 +33,9 @@ Arena::~Arena()
   g_list_free(exclusion_points);
   for(int i=ROBOT; i<EXPLOSION; i++)
     g_list_free(object_lists[i]);
+
+  for(int i=0; i < sequences_remaining+sequence_nr; i++)
+    delete [] robots_in_sequence[i];
 }
 
 void
@@ -823,12 +827,14 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   //  the_gui.setup_control_window();
   the_gui.setup_message_window();
 
+  number_of_robots = 0;
   Robot* robotp;
 
   for(int i=0; robotfilename_list[i] != NULL; i++)
     {
       robotp = new Robot(robotfilename_list[i]);
       g_list_append(all_robots_in_tournament, robotp);
+      number_of_robots++;
     }
 
   // Create list of arena filenames
@@ -844,6 +850,18 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   robots_per_game = robots_p_game;
   games_per_sequence = games_p_sequence;
   sequences_remaining = n_o_sequences;
+
+  // TODO: make list of robots to compete in the sequences
+  long games_per_round = binomial(number_of_robots, robots_per_game);
+  int complete_rounds = n_o_sequences / games_per_round;
+  int rem_games = n_o_sequences % games_per_round;
+
+  //robots_in_sequence = new (int*)[n_o_sequences];
+  
+  //int* current_sequence;
+  //for(int i=0; i< games_per_round; i++)
+    
+          
   sequence_nr = 0;
   start_sequence();
 }
@@ -851,15 +869,6 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 void
 Arena::end_tournament()
 {
-  // delete all robot classes in all_robots_in_tournament
-
-  //  GList* gl = g_list_next(all_robots_in_tournament);
-
-  //  for(; gl != NULL; gl = g_list_next(gl))
-  //    {
-  //      delete gl->data;
-  //    }
-
   state = FINISHED;
 
   the_gui.close_message_window();
