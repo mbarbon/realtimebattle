@@ -38,7 +38,7 @@ update_function(gpointer data)
 }
 
 void
-sigchld_handler (int signum)
+sig_handler (int signum)
 {
   int pid;
   int status;
@@ -54,7 +54,9 @@ sigchld_handler (int signum)
         break;
       //notice_termination (pid, status);
     }
-  signal(signum, sigchld_handler);
+  if( signum == SIGCHLD ) cerr << "Sigchld caught!" << endl;
+  if( signum == SIGPIPE ) cerr << "Sigpipe caught!" << endl;
+  signal(signum, sig_handler);
 }
 
 int 
@@ -125,7 +127,8 @@ main ( int argc, char* argv[] )
 //       return EXIT_FAILURE;
 //     }
 
-  signal(SIGCHLD, sigchld_handler);
+  signal(SIGCHLD, sig_handler);
+  signal(SIGPIPE, sig_handler);
     
   the_gui.setup_control_window();
 
