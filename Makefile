@@ -8,7 +8,7 @@ export PAPER_SIZE = a4
 BINDIR=/usr/bin
 INFODIR=/usr/info
 INFO_TOPDIR=$(INFODIR)/dir
-INSTALLDIR=/usr/games/RealTimeBattle
+export INSTALLDIR=/usr/games/RealTimeBattle
 INCLUDEDIR=/usr/include
 
 
@@ -106,15 +106,14 @@ install:
 	cp -R $(DOCSDIR) $(INSTALLDIR); \
 	cp Makefile   $(INSTALLDIR)/; \
    install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
-                --info-dir $(INFODIR) /usr/info/RealTimeBattle.info.gz
+                --info-dir $(INFODIR) $(INFODIR)/RealTimeBattle.info.gz
 
 uninstall:
 	rm -r $(INSTALLDIR); \
 	rm $(INFODIR)/RealTimeBattle.info.gz; \
 	rm $(INCLUDEDIR)/Messagetypes.h; \
 	rm $(BINDIR)/RealTimeBattle; \
-	grep -v "RealTimeBattle" $(INFO_TOPDIR) > /tmp/dir && cat /tmp/dir > $(INFO_TOPDIR); \
-   install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
+   install-info --delete --info-dir $(INFODIR) $(INFODIR)/RealTimeBattle.info.gz
 
 rpm-install:
 	$(MAKE) -f Makefile.rpm rpm-install
