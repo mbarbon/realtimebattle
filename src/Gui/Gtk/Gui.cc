@@ -89,9 +89,12 @@ Gui::Gui()
 {
   arenawindow_p = NULL;
   messagewindow_p = NULL;
+  optionswindow_p = NULL;
   scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
+
+  debug_level = 0;
 
   initialize_gtk_options();
 }
@@ -101,6 +104,7 @@ Gui::~Gui()
   close_statisticswindow();
   close_starttournamentwindow();
   close_scorewindow();
+  close_optionswindow();
   close_messagewindow();
   close_arenawindow();
 
@@ -199,9 +203,9 @@ Gui::main_loop( GuiClientInterface* _gi_p )
   set_colours();
 
   controlwindow_p = 
-    new ControlWindow( -1, -1, 0, 0 );
-//                         gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_X ),
-//                         gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
+    new ControlWindow( -1, -1, 
+                       gtk_opts->get_l( "Control window xpos" ),
+                       gtk_opts->get_l( "Control window ypos" ) );
 
   gint timeout_tag;      
 //    double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
