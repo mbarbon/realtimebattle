@@ -40,6 +40,19 @@ Arena::~Arena()
 }
 
 void
+Arena::clear()
+{
+  delete_lists(true, true, true);
+
+  for(int i=0; i < sequences_remaining+sequence_nr; i++)
+    delete [] robots_in_sequence[i];
+  
+  state = NOT_STARTED;
+
+  timescale = 1.0;
+}
+
+void
 Arena::set_colours()
 {  
   background_colour = make_gdk_colour(the_opts.get_background_colour());
@@ -62,6 +75,7 @@ Arena::parse_file(istream& file)
   double scale = 1.0;
   do
     {
+      // TODO: max 20 should be read
       file >> ws >> text;
       if( strcmp(text, "scale" ) == 0 )
         {
@@ -804,19 +818,24 @@ Arena::end_sequence_follow_up()
 }
 
 void
-Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_p_game, int games_p_sequence, int n_o_sequences)
+Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilename_list, 
+                        int robots_p_game, int games_p_sequence, int n_o_sequences)
 {
+  clear();
+
   // Create robot classes and to into the list all_robots_in_tournament
 
-  //  the_gui.setup_control_window();
   the_gui.setup_message_window();
 
   number_of_robots = 0;
   Robot* robotp;
+  start_tournament_glist_info_t* infop;
 
-  for(int i=0; robotfilename_list[i] != NULL; i++)
+  GList* gl;
+  for(gl = g_list_next(robotfilename_list); gl != NULL; gl = g_list_next(gl))
     {
-      robotp = new Robot(robotfilename_list[i]);
+      infop = (start_tournament_glist_info_t*)gl->data;
+      robotp = new Robot(infop->filename);
       g_list_append(all_robots_in_tournament, robotp);
       number_of_robots++;
     }
@@ -824,10 +843,10 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   // Create list of arena filenames
   number_of_arenas = 0;
 
-  for(int i=0; arenafilename_list[i] != NULL; i++)
+  for(gl = g_list_next(arenafilename_list); gl != NULL; gl = g_list_next(gl))
     {
-      // TODO: check if arena filename is ok
-      g_list_append(arena_filenames, g_string_new(arenafilename_list[i]));
+      infop = (start_tournament_glist_info_t*)gl->data;
+      g_list_append(arena_filenames, g_string_new(infop->filename));
       number_of_arenas++;
     }
 

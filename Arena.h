@@ -31,6 +31,8 @@ public:
   Arena();
   ~Arena();
 
+  void clear();
+
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, object_type& closest_shape, 
                                void*& colliding_object );
@@ -38,8 +40,8 @@ public:
   bool space_available(const Vector2D& pos, const double margin);
 
   gint timeout_function();
-  void start_tournament(char**robotfilenamelist, 
-                        char** arenafilenamelist, // NULL terminated lists
+  void start_tournament(const GList* robotfilenamelist, 
+                        const GList* arenafilenamelist, // NULL terminated lists
                         int robots_p_game, 
                         int games_p_sequence,
                         int number_of_sequences);   
@@ -416,6 +418,7 @@ public:
   friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
   friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
   void change_energy(const double energy_diff);
+  void check_name_uniqueness();
   void get_messages();
   void send_message(enum message_to_robot_type ...);
   void set_initial_values(const Vector2D& pos, double angle);
@@ -447,7 +450,7 @@ public:
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
-  void move(const double timestep, int iterstep);  
+  void move(const double timestep, int iterstep);
 
   bool alive;
   bool process_running;
@@ -470,7 +473,10 @@ private:
 
   GList* statistics;
 
+  int robot_name_uniqueness_number;
+  GString plain_robot_name;
   GString robot_name;
+
   GString robot_filename;
   GString robot_dir;
   int points;

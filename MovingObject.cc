@@ -11,7 +11,9 @@ Robot::Robot(char* filename)
   velocity = Vector2D(0.0, 0.0);
   acceleration = 0.0;
   robot_filename = *g_string_new(filename);
+  plain_robot_name = *g_string_new("");
   robot_name = *g_string_new("");
+  robot_name_uniqueness_number = 0;
   robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
   statistics = g_list_alloc();
   extra_air_resistance = 0.0;
@@ -175,6 +177,44 @@ Robot::set_stats(int robots_killed_same_time)
      );
 
   g_list_append(statistics, statp);
+}
+
+void
+Robot::check_name_uniqueness()
+{
+  Robot* robotp;
+  int first_avail = 0;
+
+  g_string_assign(&robot_name, plain_robot_name.str);
+  
+  GList* gl = g_list_next(the_arena.get_all_robots_in_tournament());
+  for(; gl != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot*)gl->data;
+      if( robotp != this && strcmp(plain_robot_name.str, robotp->plain_robot_name.str) == 0 )
+        {
+          if( robotp->robot_name_uniqueness_number == 0 )
+            {
+              robotp->robot_name_uniqueness_number = 1;
+              g_string_append(&(robotp->robot_name), "(1)");
+            }
+
+          first_avail = max( robotp->robot_name_uniqueness_number + 1, first_avail );
+
+          if( robot_name_uniqueness_number == robotp->robot_name_uniqueness_number 
+              || robot_name_uniqueness_number == 0 )
+            robot_name_uniqueness_number = first_avail;
+        }
+    }
+
+  if( robot_name_uniqueness_number > 0 )
+    {
+      char buf[8];
+      strstream ss;
+      ss << '(' << robot_name_uniqueness_number << ')' << ends;
+      ss.getline(buf, 7, '\0');
+      g_string_append(&robot_name, buf);
+    }
 }
 
 double
@@ -483,7 +523,8 @@ Robot::get_messages()
               break;
             }
           *instreamp >> text;
-          g_string_assign(&robot_name, text);
+          g_string_assign(&plain_robot_name, text);
+          check_name_uniqueness();
           // TODO: Tell gui to change name
           break;
         case COLOUR:
