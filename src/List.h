@@ -68,4 +68,35 @@ private:
   bool responsible_for_deletion;
 };
 
+class String;
+void Error(const bool fatal, const String& error_msg, const String& function_name);
+
+template <class T>
+inline T*
+ListIterator<T>::operator() () const
+{
+  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator()");
+
+  return listp->element;
+}
+
+template <class T>
+inline const ListIterator<T>&
+ListIterator<T>::operator++ (int)
+{
+  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator++");
+  listp = listp->next;
+  return *this;
+}
+
+template <class T>
+inline const ListIterator<T>&
+ListIterator<T>::operator-- (int)
+{
+  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator--");
+  listp = listp->prev;
+  return *this;
+}
+
+
 #endif __LIST__

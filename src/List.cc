@@ -223,53 +223,18 @@ List<T>::insert_last(T* x)
 }
 
 
-
-template <class T>
-inline T*
-ListIterator<T>::operator() () const
-{
-  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator()");
-
-  return listp->element;
-}
-
-template <class T>
-inline const ListIterator<T>&
-ListIterator<T>::operator++ (int)
-{
-  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator++");
-  listp = listp->next;
-  return *this;
-}
-
-template <class T>
-inline const ListIterator<T>&
-ListIterator<T>::operator-- (int)
-{
-  if ( listp == NULL ) Error(true, "NULL pointer", "ListIterator::operator--");
-  listp = listp->prev;
-  return *this;
-}
-
 #include "String.h"
 template class List<String>;
-template class ListIterator<String>;
 
 #include "Vector2D.h"
 template class List<Vector2D>;
-template class ListIterator<Vector2D>;
 
 #include "Shape.h"
 template class List<Shape>;
-template class ListIterator<Shape>;
 
 #include "Robot.h"
 template class List<Robot>;
-template class ListIterator<Robot>;
 
 #include "Structs.h"
 template class List<stat_t>;
-template class ListIterator<stat_t>;
-
 template class List<start_tournament_info_t>;
-template class ListIterator<start_tournament_info_t>;
