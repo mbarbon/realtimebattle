@@ -1,6 +1,15 @@
 SUBDIRS = empty rotate_and_fire seek_and_destroy
 
-#robots: $(shell ls -dF1 --color=never */ | grep -v CVS | sed -e "s/[/][/]*/.robot/")
 
-#%.robot: %
-#	cd $< && $(MAKE) && mv $@ ..
+# Creates hard links to robots in subdirectories
+
+link_robots: 
+	find . -path "./*/*.robot" -type f -links 1 -exec ln -v \{\} . \;
+
+
+# If your robot already has some hard links, this may work better:
+
+#link_robots: 
+#	find . -path "./*/*.robot" -type f --exec ln -vf \{\} . \;
+
+
