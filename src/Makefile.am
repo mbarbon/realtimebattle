@@ -18,6 +18,11 @@ else
 CCMALLOC_O =
 endif
 
+if ENABLE_PROF
+CXXFLAGS += -pg
+CFLAGS += -pg
+endif
+
 if NO_GRAPHICS
 GRAPHICS_O = 
 CXXFLAGS += -DNO_GRAPHICS 
