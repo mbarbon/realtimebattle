@@ -99,6 +99,9 @@ protected:
   double bounce_coeff;
   double hardness_coeff;
   int id;
+
+  bool killed;
+  bool removable;  // could be removed by the garbage_collector?
 };
 
 #endif __SHAPE__
