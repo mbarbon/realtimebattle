@@ -434,6 +434,7 @@ Options::broadcast_opts()
   realtime_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT));  
 
   realtime_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, (double)the_arena.get_debug_level());  
+  realtime_arena.broadcast( GAME_OPTION, SEND_ROBOT_COORDINATES, get_l(OPTION_SEND_ROBOT_COORDINATES));  
 }
 
 void
