@@ -1,4 +1,7 @@
-SUBDIRS = Gadgets Network Gui
+SUBDIRS = Gadgets Network .
+
+#noinst_LIBRARIES = libRTB.a
+#include_HEADERS = Messagetypes.h
 
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
@@ -10,8 +13,11 @@ if ENABLE_PROF
 PROFFLAGS = -pg
 endif
 
+#This include start to be too complicated : Change the repository structure !!!
 INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src/Gadgets \
-   $(PROFFLAGS) $(THREAD_FLAGS)
+	-I$(top_srcdir)/src/Network \
+	$(PROFFLAGS) $(THREAD_FLAGS)
+
 
 if NO_GETOPT_LONG
 GETOPT_O = getopt.o
@@ -28,12 +34,14 @@ endif
 #Note the gui-lib should be taken via configure
 RealTimeBattle_LDFLAGS = -export-dynamic
 RealTimeBattle_LDADD = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
+	$(top_builddir)/src/Network/libRTB_Network.a \
 	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) $(THREAD_LIBS)
 RealTimeBattle_DEPENDENCIES = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
+	$(top_builddir)/src/Network/libRTB_Network.a \
 	$(GETOPT_O) $(INTLDEPS) $(GUI_OBJS)
 RealTimeBattle_SOURCES = \
 	Arena.cc Arena.h \
-	ArenaController.cc ArenaController.h \
+	ArenaController.h ArenaController.cc \
 	Console.h Console.cc \
 	Event.h \
 	EventGT.h EventGT.cc \
@@ -70,6 +78,6 @@ RealTimeBattle_SOURCES = \
 	Wall.h
 
 
-EXTRA_RealTimeBattle_SOURCES = \
-	getopt.c getopt.h
+#EXTRA_RealTimeBattle_SOURCES = \
+#	getopt.c getopt.h
 
