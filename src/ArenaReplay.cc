@@ -531,6 +531,46 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
     speed = REWIND;
 }
 
+// Changes the game or sequence number. Mainly after pressing one of
+// the replay buttons in the control panel.
+void
+ArenaReplay::change_game( const int inc_game, const int inc_seq )
+{
+  int temp_game = game_nr;
+  int temp_seq = sequence_nr;
+
+  temp_game += inc_game;
+  temp_seq += inc_seq;
+
+  if( inc_seq == 0 )
+    {
+    if( temp_game >= games_per_sequence + 1 )
+      {
+        temp_game -= games_per_sequence;
+        temp_seq++;
+      }
+    else if( temp_game <= 0 )
+      {
+        temp_game += games_per_sequence;
+        temp_seq--;
+      }
+    }
+  else if( inc_seq < 0 )
+    temp_game = games_per_sequence;
+  else if( inc_seq > 0 )
+    temp_game = 1;
+
+  if( temp_seq < 1 || temp_seq > sequences_in_tournament )
+    return;
+
+  cout << "Seq: " << temp_seq << "  Game: " << temp_game
+       << "  game_pos: " << game_position_in_log[temp_seq-1][temp_game-1] << endl;
+
+  log_file.seekg( game_position_in_log[temp_seq-1][temp_game-1] );
+
+  cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
+}
+
 // Searches the log_file for a line beginning with any of the 
 // letters in 'search_letters'.
 // The file pointer will be directly after the found letter.
@@ -714,8 +754,11 @@ ArenaReplay::make_statistics_from_file()
           break;
             
         case 'G':
-          log_file >> sequence_nr >> game_nr;
-          game_position_in_log[sequence_nr-1][game_nr-1] = log_file.tellg();
+          {
+            streampos temp_pos = log_file.tellg() - 1;
+            log_file >> sequence_nr >> game_nr;
+            game_position_in_log[sequence_nr-1][game_nr-1] = temp_pos;
+          }
           break;
             
         case 'T':
@@ -749,6 +792,8 @@ ArenaReplay::make_statistics_from_file()
 
   log_file.seekg( old_pos );
   log_file.clear();
+
+  current_replay_time = 0;
 }
 
 void
@@ -801,4 +846,5 @@ ArenaReplay::get_time_positions_in_game()
     }
 
   log_file.seekg( old_pos );
+  log_file.clear();
 }
