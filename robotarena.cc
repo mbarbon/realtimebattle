@@ -64,14 +64,14 @@ int main ( int argc, char * argv[] )
   }
 
   nr_robots=argc-i;
-  Robot * robots[nr_robots];
+  RobotOld * robots[nr_robots];
   for(j=i;j<argc;j++)
     {
       try
         {
-          robots[j-i-nr_failed] = new Robot(argv[j]);
+          robots[j-i-nr_failed] = new RobotOld(argv[j]);
         }
-      catch( Robot::InitError error )
+      catch( RobotOld::InitError error )
         {
           error.print_message();
           nr_failed++;
