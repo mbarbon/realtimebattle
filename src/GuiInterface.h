@@ -38,14 +38,5 @@ int  GIMain( ArenaController* );
 void GIExit( int );
 
 
-// Internal 
-
-// TODO: GIExit should maybe do something more
-void
-GIExit( int returncode )
-{
-  int* returncode_p = new int(returncode);
-  pthread_exit(returncode_p);
-}
 
 #endif __GUIINTERFACE__
