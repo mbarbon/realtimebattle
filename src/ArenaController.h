@@ -20,7 +20,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_CONTROLLER__
 #define __ARENA_CONTROLLER__
 
+#include <pthread.h>
+
 #include "ArenaBase.h"
+
 
 class String;
 
@@ -29,11 +32,14 @@ class ArenaController
 public:
   ArenaController();
   ~ArenaController();
+
+  int rtb_main( int, char** );
+  void parse_command_line( int, char** );
   
+  void close_arena();
+
   void start_realtime_arena();
   void start_replay_arena();
-
-  void close_arena();
 
   ArenaBase* get_the_arena() { return my_arena; }
   bool is_started() { return started; }
@@ -41,6 +47,10 @@ public:
 
 private:
   
+  void print_help_message();
+
+  pthread_t gui_thread;
+
   bool started;
   bool realtime;
 
