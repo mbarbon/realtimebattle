@@ -43,7 +43,7 @@ WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] =
 //      "Mass"
 };
 
-
+/*
 const FunctionDefinition 
 WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] = 
 {
@@ -55,13 +55,15 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
   { "RotateTo", true },
   { "RotateAmount", true }
 };
+*/
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
   : Gadget(name, p)
 {
-  init_variables(variable_def, LAST_WEAPONVAR);
-  init_functions(function_def, LAST_WEAPONFCN);
+  // init_variables(variable_def, LAST_WEAPONVAR);
+  //init_functions(function_def, LAST_WEAPONFCN);
 }
+
 
 void
 WeaponGadget::eval_function( const int fcn )
@@ -95,3 +97,11 @@ WeaponGadget::shoot()
   // s = new Shot(c,vel,en, my_shotgadget);
   //  the_arena.add_shot( s );
 }
+
+
+
+
+
+
+
+

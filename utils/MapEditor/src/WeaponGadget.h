@@ -5,28 +5,35 @@
 #include <float.h>
 
 #include "Gadget.h"
-#include "Variable.h"
-#include "Function.h"
+//#include "Variable.h"
+//#include "Function.h"
 #include "ShotGadget.h"
-#include "../Arena.h"
+//#include "../Arena.h"
 
 
 
 class WeaponGadget : public Gadget
 {
  public:
-   Gadget* NewInstance() { cout<<"Creating a new Weapon\n"; return new WeaponGadget; };
+  WeaponGadget( const char*, Gadget* const);
+  Gadget* NewInstance( const char* Name, Gadget* const p ) 
+    { 
+      cout<<"Creating a new Weapon\n"; 
+      return new WeaponGadget(Name, p); 
+    };
    int Read(FILE*);
 
  private:
   enum WeaponVars
   {
     AMMUNITION=0,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
-    AUTOFIRE, MAXROTATESPEED, SOUNDLEVEL,
-    MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
-    USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
-    TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME,
-    COLOUR, PRICE, MASS, LAST_WEAPONVAR
+    AUTOFIRE, 
+    //MAXROTATESPEED, SOUNDLEVEL,
+    //MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
+    //USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
+    //TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME,
+    //COLOUR, PRICE, MASS, 
+    LAST_WEAPONVAR
   };
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
