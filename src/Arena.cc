@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "Gadget.h"
 #include "Vector2D.h"
+#include "String.h"
 
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
@@ -44,23 +45,24 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
         }
       current_file->get( buffer, 400, '\n' );
       current_file->get();
-      string str( buffer );
-      string keyword = get_first_word_from_string( str, str );
-      if( keyword == "Include" )
-        file_stack.push
-          ( new ifstream( get_first_word_from_string( str, tempstr ).c_str() ) );
+      vector<string> wordlist = split_string( buffer, wordlist );
+      if( wordlist.size() > 0 )
+        {
+          if( wordlist[0] == "Include" )
+            file_stack.push( new ifstream( wordlist[1].c_str() ) );
+          else if( wordlist[0] == "Define" && wordlist.size() > 2 )
+            {
+              // TODO: Create new Gadget in the hierarchy, might be:
+              // initialize_gadget( wordlist[1], wordlist[2] );
+            }
+          else if( wordlist[0] == "EndDefine" )
+            {
+              // TODO: Gadgetdefinition finished
+            }
+          else
+            {
+              // TODO: Check if this sets a function or variable in the current Gadget
+            }
+        }
     }
-  
-}
-
-// Returns the next word in the string
-string
-Arena::get_first_word_from_string( const string str, string& remainder )
-{
-  remainder = str;
-  while( remainder.length() > 0 && isspace( remainder[0] ) )
-    remainder = remainder.substr( 1, string::npos );
-  string word = remainder.substr( 0, remainder.find( ' ', string::npos ) );
-  remainder =  remainder.substr( remainder.find( ' ', string::npos ), string::npos );
-  return word;
 }

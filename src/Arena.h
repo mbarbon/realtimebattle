@@ -57,11 +57,6 @@ private:
   
   double get_heat_in_direction( const Vector2D& point, const Vector2D& direction );
 
-  
-  // For load_arena_file()
-  string get_first_word_from_string( const string str, string& remainder );
-
-
 };
 
 class ShotUpdateEvent : public Event
