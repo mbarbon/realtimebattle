@@ -529,7 +529,7 @@ Arena::print_to_logfile(const char first_letter ... )
 
 
 void
-Arena::parse_arena_file(istream& file)
+Arena::parse_arena_file(String& filename)
 {
   char text[20];
   double radie, bounce_c, hardn, thickness;
@@ -539,6 +539,9 @@ Arena::parse_arena_file(istream& file)
   WallLine* wall_linep;
   WallCircle* wall_circlep;
   WallInnerCircle* wall_inner_circlep;
+
+  ifstream file(filename.chars());
+  if( !file ) Error(true, "Couldn't open arena file" + filename, "Arena::parse_arena_file");
 
   int succession = 1;
   double scale = the_opts.get_d(OPTION_ARENA_SCALE);
@@ -685,18 +688,22 @@ Arena::parse_arena_file(istream& file)
         
     } while( text[0] != '\0' );
 
+  file.close();
+
   if( use_log_file )      // copy the arena file to the log file
     {
       char buffer[500];
       
-      file.seekg(0);      // goto beginning of file for rereading
-      file.get(buffer, 499, '\n');
-
+      ifstream file(filename.chars());
+      if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "Arena::parse_arena_file");
+  
       do
         {
-          print_to_logfile('A', buffer);
-          file.get(buffer, 499, '\n');
-        } while( buffer[0] != '\0' );
+          file >> ws;
+          file.get(buffer, 500, '\n');
+          if( buffer[0] != '\0' ) print_to_logfile('A', buffer);
+        } 
+      while( buffer[0] != '\0' );
       
     }
 
@@ -1350,10 +1357,8 @@ Arena::start_game()
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
   String* filename = (String*)g_list_nth(arena_filenames, current_arena_nr)->data;
-  ifstream file(filename->chars());
-  if( !file ) Error(true, "Couldn't open arena file" + *filename, "Arena::start_game");
 
-  parse_arena_file(file);
+  parse_arena_file(*filename);
 
   int charpos;
   if( (charpos = filename->find('/',0,true)) != -1 )
