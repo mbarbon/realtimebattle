@@ -144,22 +144,22 @@ if test "x$enable_compile_warnings" = "xyes"; then
 fi
 
 changequote(,)dnl
-if test "x$enable_debug" = "xno"; then
+if test "x$enable_debug" = "xyes"; then
+   case " $CXXFLAGS " in
+   *[\ \	]-g[\ \	]*) ;;
+   *) CXXFLAGS="$CXXFLAGS -g " ;;
+   esac
+   case " $CFLAGS " in
+   *[\ \	]-g[\ \	]*) ;;
+   *) CFLAGS="$CFLAGS -g " ;;
+   esac
+   CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
+   CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
+else
    CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-g //"`
    CFLAGS=`echo "$CFLAGS " | sed "s/-g //"`
-   CPPFLAGS="$CPPFLAGS -DNDEBUG"
-else
-   if test "x$enable_debug" = "xyes"; then
-      case " $CXXFLAGS " in
-      *[\ \	]-g[\ \	]*) ;;
-      *) CXXFLAGS="$CXXFLAGS -g " ;;
-      esac
-      case " $CFLAGS " in
-      *[\ \	]-g[\ \	]*) ;;
-      *) CFLAGS="$CFLAGS -g " ;;
-      esac
-      CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
-      CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
+   if test "x$enable_debug" = "xno"; then
+      CPPFLAGS="$CPPFLAGS -DNDEBUG"
    fi
 fi
 changequote([,])dnl
