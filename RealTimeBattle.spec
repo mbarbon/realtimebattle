@@ -71,6 +71,10 @@ install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 /usr/games/RealTimeBattle/Robots/empty/empty.c
 /usr/games/RealTimeBattle/Robots/empty/Makefile
 /usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire.cc
+/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire.h
+/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_select.cc
+/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_signal.cc
+/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_blocking.cc
 /usr/games/RealTimeBattle/Robots/rotate_and_fire/Makefile
 /usr/games/RealTimeBattle/Robots/seek_and_destroy/seek_and_destroy.cc
 /usr/games/RealTimeBattle/Robots/seek_and_destroy/Makefile
