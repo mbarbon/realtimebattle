@@ -20,19 +20,19 @@ endif
 gtkincludedirs = `gtk-config --cflags`
 libs = `gtk-config --libs`
 
-target: empty fire thomastest thomas2
+target: empty.robot fire.robot thomastest.robot thomas2.robot
 
-empty: empty.o
-	$(CC) $(CFLAGS) empty.o -o empty
+empty.robot: empty.o
+	$(CC) $(CFLAGS) empty.o -o empty.robot
 
-fire: fire.o
-	$(CXX) $(CFLAGS) fire.o -o fire
+fire.robot: fire.o
+	$(CXX) $(CFLAGS) fire.o -o fire.robot
 
-thomastest: thomastest.o
-	$(CXX) $(CPPFLAGS) $(CFLAGS) thomastest.o -o thomastest $(libs)
+thomastest.robot: thomastest.o
+	$(CXX) $(CPPFLAGS) $(CFLAGS) thomastest.o -o thomastest.robot $(libs)
 
-thomas2: thomas2.o
-	$(CXX) $(CPPFLAGS) $(CFLAGS) thomas2.o -o thomas2 $(libs)
+thomas2.robot: thomas2.o
+	$(CXX) $(CPPFLAGS) $(CFLAGS) thomas2.o -o thomas2.robot $(libs)
 
 
 empty.o: empty.c 
@@ -41,4 +41,4 @@ thomastest.o: thomastest.cc ../src/Messagetypes.h
 thomas2.o: thomas2.cc ../src/Messagetypes.h
 
 clean:
-	rm -f *~ *.o core*
+	rm -f *~ *.o core* *.robot
