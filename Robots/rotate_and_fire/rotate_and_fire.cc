@@ -388,7 +388,7 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 
   double old_acc = acceleration;
 
-  double mod_angle = drem( angle, 2 * pi );
+  double mod_angle = fmod( angle, 2 * pi ) - pi;
 
   if( mod_angle > -pi / 3 && mod_angle < pi / 3 )
     {
