@@ -51,6 +51,15 @@ question_no_callback(GtkWidget * widget, QuestionFunction function_name)
 }
 
 void
+new_robot_selected( GtkWidget * clist, gint row, gint column,
+                    GdkEventButton *event, gpointer data )
+{
+  if( event != NULL )
+    the_gui.change_selected_robot( row );
+}
+
+
+void
 pause_button_callback(GtkWidget * widget, gpointer data)
 {
   the_arena.paus_game_toggle();
@@ -61,6 +70,35 @@ void
 step_button_callback(GtkWidget * widget, gpointer data)
 {
   the_arena.step_paused_game();
+}
+
+void
+end_game_button_callback(GtkWidget * widget, gpointer data)
+{
+  //  the_arena.end_game();
+}
+
+void
+kill_robot_button_callback(GtkWidget * widget, gpointer data)
+{
+  if(the_arena.get_state() == GAME_IN_PROGRESS)
+    {
+      Robot* robotp = the_gui.get_selected_robot();
+      if( robotp != NULL )
+        robotp->die();
+    }
+}
+
+void
+decrease_debug_level_button_callback(GtkWidget * widget, gpointer data)
+{
+  the_gui.display_new_debug_level( the_arena.set_debug_level( the_arena.get_debug_level() - 1) );
+}
+
+void
+increase_debug_level_button_callback(GtkWidget * widget, gpointer data)
+{
+  the_gui.display_new_debug_level( the_arena.set_debug_level( the_arena.get_debug_level() + 1) );
 }
 
 void
@@ -183,8 +221,8 @@ Gui::read_dirs_from_system()
       dirs = getenv("RTB_ROBOTDIR");
   split_semicolonseparated_dirs(dirs,robotdirs);
 
-#ifdef INSTALL_DIR
-  String * str = new String(INSTALL_DIR "/Robots/");
+#ifdef INSTALLDIR
+  String * str = new String(INSTALLDIR "/Robots/");
   g_list_append(robotdirs,str);
 #endif
 
@@ -194,8 +232,8 @@ Gui::read_dirs_from_system()
       dirs = "Arenas/";
   split_semicolonseparated_dirs(dirs,arenadirs);
 
-#ifdef INSTALL_DIR
-  str = new String(INSTALL_DIR "/Arenas/");
+#ifdef INSTALLDIR
+  str = new String(INSTALLDIR "/Arenas/");
   g_list_append(arenadirs,str);
 #endif
 }
@@ -432,11 +470,13 @@ Gui::quit_event()
   gtk_main_quit();
 }
 
+// This function sets up the control window with debug control if necessary
 void
 Gui::setup_control_window()
 {
   GtkWidget *button;
   GtkWidget *toptable,*bottomtable;
+  GtkWidget *hbox;
   GtkWidget *vbox;
 
   // Window 
@@ -446,10 +486,14 @@ Gui::setup_control_window()
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
-  gtk_widget_set_usize(control_window, (int)control_window_size[0],(int)control_window_size[1]);
+  //  gtk_widget_set_usize(control_window, (int)control_window_size[0],(int)control_window_size[1]);
+
+  hbox = gtk_hbox_new (FALSE, 10);
+  gtk_container_add (GTK_CONTAINER (control_window), hbox);
+  gtk_widget_show (hbox);
 
   vbox = gtk_vbox_new (FALSE, 10);
-  gtk_container_add (GTK_CONTAINER (control_window), vbox);
+  gtk_container_add (GTK_CONTAINER (hbox), vbox);
   gtk_widget_show (vbox);
 
   // Top Table 
@@ -465,29 +509,16 @@ Gui::setup_control_window()
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 0, 4, 0, 1);
   gtk_widget_show (button);
 
-  int pos_add = 0;
-  if(the_arena.get_game_mode() != Arena::DEBUG_MODE)
-    pos_add = 1;
-
   button = gtk_button_new_with_label ("Pause");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (pause_button_callback), (gpointer) NULL);
-  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 4, 6 + pos_add, 0, 1);
+  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 4, 7, 0, 1);
   gtk_widget_show (button);
-
-  if(the_arena.get_game_mode() == Arena::DEBUG_MODE)
-    {
-      button = gtk_button_new_with_label ("Step");
-      gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                          GTK_SIGNAL_FUNC (step_button_callback), (gpointer) NULL);
-      gtk_table_attach_defaults (GTK_TABLE(toptable), button, 6, 8, 0, 1);
-      gtk_widget_show (button);
-    }
 
   button = gtk_button_new_with_label ("End");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (end_button_callback), (gpointer) "End");
-  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 8 - pos_add, 10, 0, 1);
+  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 7, 10, 0, 1);
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Options");
@@ -502,16 +533,8 @@ Gui::setup_control_window()
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 5, 10, 1, 2);
   gtk_widget_show (button);
 
-  gtk_table_set_row_spacing (GTK_TABLE(toptable), 0, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 0, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 1, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 2, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 3, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 4, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 5, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 6, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 7, 10);
-  gtk_table_set_col_spacing (GTK_TABLE(toptable), 8, 10);
+  gtk_table_set_row_spacings (GTK_TABLE(toptable), 10);
+  gtk_table_set_col_spacings (GTK_TABLE(toptable), 10);
   gtk_widget_show (toptable);
 
   // Bottom Table 
@@ -529,6 +552,117 @@ Gui::setup_control_window()
   gtk_widget_show (bottomtable);
 
   gtk_widget_show (control_window);
+
+  // Debug controls
+
+  if(the_arena.get_game_mode() == Arena::DEBUG_MODE)
+    {
+      GtkWidget* vseparator = gtk_vseparator_new();
+      gtk_box_pack_start (GTK_BOX (hbox), vseparator, FALSE, FALSE, 0);
+      gtk_widget_show(vseparator);
+
+      vbox = gtk_vbox_new (FALSE, 10);
+      gtk_container_add (GTK_CONTAINER (hbox), vbox);
+      gtk_widget_show (vbox);
+
+      GtkWidget* debugtable = gtk_table_new (3, 10, TRUE);
+      gtk_box_pack_start (GTK_BOX (vbox), debugtable, FALSE, FALSE, 0);
+
+      button = gtk_button_new_with_label ("Step");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (step_button_callback), (gpointer) NULL);
+      gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 0, 5, 0, 1);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("End Game");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (end_game_button_callback), (gpointer) NULL);
+      gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 5, 10, 0, 1);
+      gtk_widget_show (button);
+
+
+      button = gtk_button_new_with_label ("Kill Marked Robots");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (kill_robot_button_callback), (gpointer) NULL);
+      gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 0, 10, 1, 2);
+      gtk_widget_show (button);
+
+      const char * arrow_xpms[2][13] = {
+        {"9 10 2 1",
+         "       c None",
+         "x      c #000000000000",
+         "       xx",
+         "     xxxx",  
+         "   xxxxxx",
+         " xxxxxxxx",
+         "xxxxxxxxx",
+         "xxxxxxxxx",
+         " xxxxxxxx",
+         "   xxxxxx",
+         "     xxxx",
+         "       xx"},
+        {"9 10 2 1",
+         "       c None",
+         "x      c #000000000000",
+         "xx       ",
+         "xxxx     ",  
+         "xxxxxx   ",
+         "xxxxxxxx ",
+         "xxxxxxxxx",
+         "xxxxxxxxx",
+         "xxxxxxxx ",
+         "xxxxxx   ",
+         "xxxx     ",
+         "xx       "}};
+      
+      GtkWidget * label = gtk_label_new("Debug Level:");
+      gtk_table_attach_defaults (GTK_TABLE(debugtable), label, 0, 5, 2, 3);
+      gtk_widget_show (label);
+
+      // Create pixmap and button for left arrow
+      {
+        GdkPixmap * pixmap;
+        GdkBitmap * bitmap_mask;
+        pixmap = gdk_pixmap_create_from_xpm_d( control_window->window, &bitmap_mask,
+                                               the_arena.get_background_colour_p(),
+                                               (gchar **)arrow_xpms[0] );
+        GtkWidget * pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
+        gtk_widget_show( pixmap_widget );
+        button = gtk_button_new();
+        gtk_container_add( GTK_CONTAINER(button), pixmap_widget );
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (decrease_debug_level_button_callback), (gpointer) NULL);
+        gtk_widget_set_usize(button, 28,14);
+        gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 5, 7, 2, 3);
+        gtk_widget_show (button);
+      }
+
+      debug_level_widget = gtk_label_new( String(the_arena.get_debug_level()).chars() );
+      gtk_table_attach_defaults (GTK_TABLE(debugtable), debug_level_widget, 7, 8, 2, 3);
+      gtk_widget_show (debug_level_widget);
+
+      // Create pixmap and button for right arrow
+      {
+        GdkPixmap * pixmap;
+        GdkBitmap * bitmap_mask;
+        pixmap = gdk_pixmap_create_from_xpm_d( control_window->window, &bitmap_mask,
+                                               the_arena.get_background_colour_p(),
+                                               (gchar **)arrow_xpms[1] );
+        GtkWidget * pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
+        gtk_widget_show( pixmap_widget );
+        button = gtk_button_new();
+        gtk_container_add( GTK_CONTAINER(button), pixmap_widget );
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (increase_debug_level_button_callback), (gpointer) NULL);
+        gtk_widget_set_usize(button, 28,14);
+        gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 8, 10, 2, 3);
+        gtk_widget_show (button);
+      }
+
+      gtk_table_set_row_spacings (GTK_TABLE(debugtable), 10);
+      gtk_table_set_col_spacings (GTK_TABLE(debugtable), 10);
+      gtk_widget_show(debugtable);
+    }
 }
 
 void
@@ -548,6 +682,27 @@ Gui::set_score_window_title()
   gtk_window_set_title (GTK_WINDOW (score_window), title.chars());
 }
 
+void
+Gui::change_selected_robot( const int row )
+{
+  GList* gl;
+  Robot* robotp;
+
+  for(gl = g_list_next(the_arena.get_object_lists()[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot*)(gl->data);
+
+      if( row == robotp->get_row_in_score_clist() )
+        selected_robot = robotp;
+    }
+}
+
+void
+Gui::display_new_debug_level( const int debug_level )
+{
+  gtk_label_set( GTK_LABEL( debug_level_widget ), String(debug_level).chars() );  
+}
+
 // This function will create the score window
 void
 Gui::setup_score_window()
@@ -562,7 +717,7 @@ Gui::setup_score_window()
   gtk_widget_set_usize(score_window, (int)score_window_size[0],(int)score_window_size[1]);
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
-  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_EXTENDED);
+  gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
   gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
@@ -578,6 +733,8 @@ Gui::setup_score_window()
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
+  gtk_signal_connect(GTK_OBJECT(score_clist), "select_row",
+                     GTK_SIGNAL_FUNC(new_robot_selected), NULL);
   gtk_widget_set_usize(score_clist, 335, 350);
   gtk_container_add (GTK_CONTAINER (score_window), score_clist);
   gtk_widget_show(score_clist);
@@ -633,6 +790,7 @@ Gui::add_robots_to_score_list()
 
       for(int i=0; i<6; i++) delete [] list[i];
     }
+  change_selected_robot( 0 );
 }
 
 void
