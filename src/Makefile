@@ -2,15 +2,18 @@
 #CXX = g++
 
 # Add '-fhandle-exceptions' to CXXFLAGS and remove '-O' from OPTIMIZEFLAGS if your compiler requires it.
-# Add '-DUSE_STDARG_H' if the compiler complains about va_list, va_args or similar.
-# Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
-# Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
-# Add '-DBSD_FP' if the program dies with FPE (floating point exception) on a BSD system.
+# Add '-DSTDC_HEADERS' if the compiler complains about va_list, va_args or similar.
+# Remove '-DHAVE_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
+# Add '-DHAVE_SYS_TIME_H' if the compiler complains about 'timeval'.
+# Add '-DFLOATINGPOINT_H' if the program dies with FPE (floating point exception) on a BSD system.
 
-CXXFLAGS = 
+CXXFLAGS =
+CXXFLAGS += -DHAVE_RLIMIT_NPROC -DRETSIGTYPE='void' -DHAVE_DIRENT_H
+CXXFLAGS += -DHAVE_SYS_WAIT_H -DSTDC_HEADERS
 
 ifdef INSTALLDIR
-CXXFLAGS += -DINSTALLDIR='"$(INSTALLDIR)"' 
+CXXFLAGS += -DROBOTDIR='"$(INSTALLDIR)/Robots"'
+CXXFLAGS += -DARENADIR='"$(INSTALLDIR)/Arenas"'
 endif
 
 OPTIMIZEFLAGS = -O

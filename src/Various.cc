@@ -116,16 +116,16 @@ read_dirs_from_system(GList*& robotdirs, GList*& arenadirs)
   dirs = the_opts.get_s(OPTION_ROBOT_SEARCH_PATH);
   split_colonseparated_dirs(dirs,robotdirs);
 
-#ifdef INSTALLDIR
-  String * str = new String(INSTALLDIR "/Robots/");
+#ifdef ROBOTDIR
+  String * str = new String(ROBOTDIR "/");
   g_list_append(robotdirs,str);
 #endif
 
   dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
   split_colonseparated_dirs(dirs,arenadirs);
 
-#ifdef INSTALLDIR
-  str = new String(INSTALLDIR "/Arenas/");
+#ifdef ARENADIR
+  str = new String(ARENADIR "/");
   g_list_append(arenadirs,str);
 #endif
 }

@@ -22,16 +22,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <iostream.h>
 
-#ifdef USE_SYS_TIME_H
-#include <sys/time.h>
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
 #endif
 
 #include <sys/resource.h>
 #include <sys/stat.h>
-
-#ifdef USE_STDARG_H
 #include <stdarg.h>
-#endif
 
 #include "Gui.h"
 #include "MovingObject.h"
@@ -179,7 +183,7 @@ Robot::start_process()
           
           // Forbid creation of child processes
           
-#ifndef NO_RLIMIT_NPROC
+#ifdef HAVE_RLIMIT_NPROC
           if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
             throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
           
@@ -804,7 +808,7 @@ Robot::get_messages()
                   break;
                 case SIGNAL:
                   *instreamp >> val;
-                  if( val > 0 && val < _NSIG )
+                  if( val > 0 && val < NSIG )
                     {
                       signal_to_send = val;
                       send_usr_signal = true;
@@ -813,7 +817,7 @@ Robot::get_messages()
                     }
                   else
                     {                      
-                      if( val >= _NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
+                      if( val >= NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
                       signal_to_send = 0;
                       send_usr_signal = false;
                     }

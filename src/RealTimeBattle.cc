@@ -21,12 +21,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
-#include <sys/wait.h>
+
+#include <sys/types.h>
+#if HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
+//#include <sys/wait.h>
+
 #include <errno.h>
-#include <getopt.h>
+#ifdef HAVE_GETOPT_H
+# include <getopt.h>
+#else
+# include "getopt.h"
+#endif
+
 #include <iostream.h>
 
-#ifdef BSD_FP
+#ifdef FLOATINGPOINT_H
 #include <floatingpoint.h>
 #endif
 
@@ -87,7 +98,7 @@ update_function(gpointer data)
   return res;
 }
 
-void
+RETSIGTYPE
 sig_handler (int signum)
 {
   int pid;
@@ -257,7 +268,7 @@ main ( int argc, char* argv[] )
 {
 
 
-#ifdef BSD_FP
+#ifdef FLOATINGPOINT_H
   fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
 #endif
 
