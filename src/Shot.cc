@@ -31,7 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gadgets/ShotGadget.h"
 
 Shot::Shot(const Vector2D& c, //const double r, 
-           const Vector2D& vel, const double en, 
+           const Vector2D& vel, 
            ShotGadget& sg, const int shot_id = -1)           
   : MovingObject(c, the_opts.get_d(OPTION_SHOT_RADIUS), vel), my_shotgadget(sg)
 {

@@ -30,7 +30,7 @@ class Shot : public MovingObject
 {
 public:
   Shot(const Vector2D& c, const Vector2D& velocity, 
-       const double energy, ShotGadget& sg, const int shot_id = -1); 
+       ShotGadget& sg, const int shot_id = -1); 
   ~Shot() {}
 
   void move(const double timestep);
