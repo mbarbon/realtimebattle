@@ -269,3 +269,5 @@ template class ListIterator<Robot>;
 template class List<stat_t>;
 template class ListIterator<stat_t>;
 
+template class List<start_tournament_info_t>;
+template class ListIterator<start_tournament_info_t>;
