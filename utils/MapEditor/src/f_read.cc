@@ -3,6 +3,7 @@
 #include <iostream.h>
 #include "Arena.h"
 #include "Gadget.h"
+#include "AllGadgets.h"
 #include "f_read.hh"
 
 #define	BUF_SIZE	1024
@@ -31,7 +32,7 @@ void Arena::Read(char * Name)
 
 int Arena::Read(FILE *fp)
 {
-  Gadget *O;
+  Gadget *Obj;
   char GadgetName[50];
   char Value[50];
   int num_object = 0;
@@ -49,14 +50,32 @@ int Arena::Read(FILE *fp)
 	  printf("Incorrect definition at line %d.\n", line_no);
 	  return (num_object != 0? 0: -1);     // ok if any objects have been read 
 	}
+
       
-      if(!strcmp(Value, "Wall"))    //Maybe we shoud find it in a table
+      Obj = NULL;
+
+      for(int i = 0; AllGadgets[i].theGadget != 0; i++)
 	{
-	  O = new Wall(GadgetName);
-	  O->Next = TheGadgets;
-	  TheGadgets = O;
-	  TheGadgets->Read(fp);
-	  printf("Add a Wall to the list\n");
+	  if(AllGadgets[i].Name == Value)
+	    {
+	      Obj = AllGadgets[i].theGadget->NewInstance();
+	      break;
+	    }
+	}
+      /*
+	if(!strcmp(Value, "Wall"))    //Maybe we shoud find it in a table
+	{
+	Obj = new Wall(GadgetName);
+	Obj->Read(fp);
+	TheGadgets.push_back(Obj);
+	printf("Add a Wall to the list\n");
+	}
+	else
+      */
+      if(Obj)
+	{
+	  Obj->Read(fp);
+	  TheGadgets.push_back(Obj);
 	}
       else
 	{
@@ -108,6 +127,121 @@ int Wall::Read(FILE *fp)
     {
       if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
 	{
+	  
+	  if(!strcmp(type, "InfoString"))
+	    {
+	      info_string = read_info_string(fp);
+	    }
+	  
+	  if(!strcmp(type, "Size"))
+	    {
+	      n = sscanf(buf, "%*s %f", &mySize);
+	      if(n != 1)
+		{
+		  printf("%d\n", n);
+		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
+		}
+	    }
+	  
+	  //Skip a couple of things...
+	  if(!strcmp(type, "Define"))     //There could be an other definition in it...
+	    NbDefine++;
+	  if(!strcmp(type, "EndDefine"))  //This is the end of a definition
+	    NbDefine--;              
+	  
+	  if(NbDefine < 0)                       //This is the end of the unknown object
+	    break;
+	}
+    }
+}
+int ExplosionGadget::Read(FILE *fp)
+{
+  cout<<"Reading a Explosion\n";
+  int n;
+  int NbDefine = 0;
+  while(read_line(fp)>0)
+    {
+      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
+	{
+	  
+	  if(!strcmp(type, "InfoString"))
+	    {
+	      info_string = read_info_string(fp);
+	    }
+	  
+	  if(!strcmp(type, "Size"))
+	    {
+	      n = sscanf(buf, "%*s %f", &mySize);
+	      if(n != 1)
+		{
+		  printf("%d\n", n);
+		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
+		}
+	    }
+	  
+	  //Skip a couple of things...
+	  if(!strcmp(type, "Define"))     //There could be an other definition in it...
+	    NbDefine++;
+	  if(!strcmp(type, "EndDefine"))  //This is the end of a definition
+	    NbDefine--;              
+	  
+	  if(NbDefine < 0)                       //This is the end of the unknown object
+	    break;
+	}
+    }
+}
+int  WeaponGadget::Read(FILE *fp)
+{
+  cout<<"Reading a WeaponGadget\n";
+  int n;
+  int NbDefine = 0;
+  while(read_line(fp)>0)
+    {
+      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
+	{
+	  
+	  if(!strcmp(type, "InfoString"))
+	    {
+	      info_string = read_info_string(fp);
+	    }
+	  
+	  if(!strcmp(type, "Size"))
+	    {
+	      n = sscanf(buf, "%*s %f", &mySize);
+	      if(n != 1)
+		{
+		  printf("%d\n", n);
+		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
+		}
+	    }
+	  
+	  //Skip a couple of things...
+	  if(!strcmp(type, "Define"))     //There could be an other definition in it...
+	    NbDefine++;
+	  if(!strcmp(type, "EndDefine"))  //This is the end of a definition
+	    NbDefine--;              
+	  
+	  if(NbDefine < 0)                       //This is the end of the unknown object
+	    break;
+	}
+    }
+}
+
+int  ShotGadget::Read(FILE *fp)
+{
+  cout<<"Reading a shot gadget\n";
+  int n;
+  int NbDefine = 0;
+  while(read_line(fp)>0)
+    {
+      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
+	{
+	  
+	  if(!strcmp(type, "InfoString"))
+	    {
+	      info_string = read_info_string(fp);
+	    }
+	  
 	  if(!strcmp(type, "Size"))
 	    {
 	      n = sscanf(buf, "%*s %f", &mySize);
@@ -131,6 +265,7 @@ int Wall::Read(FILE *fp)
 }
 
 
+
 int read_line(FILE *fp)
 {
   while (1) 
@@ -139,11 +274,28 @@ int read_line(FILE *fp)
 	return (-1);
       }
       line_no++;
-      if (*buf != ';' && *buf != '\n')          // Skip comments for the moment
-	{	
+      if (*buf != ';' && !blank_line())          
+	// Skip comments for the moment
+	{
 	  return (1);
 	}
     }
+}
+
+bool blank_line()
+{
+  for(int i = 0; i < BUF_SIZE; i++)
+    {
+      if(buf[i] == '\n' || buf[i] == '\0')
+	{
+	  return true;
+	}
+      if(buf[i] != ' ' && buf[i] != '\t') //Not a blank line when it find the first char...
+	{
+	  return false;
+	}
+    }
+  return true;
 }
 
 void skip_line(FILE *fp)
@@ -153,6 +305,28 @@ void skip_line(FILE *fp)
 	if (feof(fp))
 	    return;
     }
+}
+
+string read_info_string(FILE *fp)
+{
+  //TODO :
+  //   Make sure there is a end...
+  //   Accept Multi lines info...
+  string To_return;
+  string tmp = buf;
+  int Start = tmp.find("_(\"");     //  _("
+  int End   = tmp.find("\")");      //      ")
+  if(End == -1) 
+    {
+      //The end is not on this line...
+    }
+  else
+    {
+      cout<<"  info : "<<Start<<" --> "<<End<<endl;
+    }
+  To_return = string(tmp, Start+3, End-(Start+3));
+
+  return To_return;
 }
 
 
