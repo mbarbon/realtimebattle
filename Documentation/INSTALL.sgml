@@ -10,9 +10,9 @@ to <htmlurl name="TODO:mail" url=""> and tell what went wrong.
 <item> Unpack the tar-file
 <p>
 Move RealTimeBattle.tar.gz to an appropriate directory and type 
-<verb>tar -xzvf RealTimeBattle.tar.gz</verb> or 
+<verb>% tar -xzvf RealTimeBattle.tar.gz</verb> or 
 if your <tt>tar</tt> cannot uncompress, 
-<verb>gunzip -c RealTimeBattle.tar.gz | tar -xvf -</verb> and 
+<verb>% gunzip -c RealTimeBattle.tar.gz | tar -xvf -</verb> and 
 the file are extracted to the directory <tt>RealTimeBattle</tt>.
 
 <item> Compile
@@ -24,7 +24,7 @@ installed. You can check this by typing <verb>gtk-config --version</verb>
 
 <item> Install
 <p>
-If you want, you install the program on your system, by typing <verb>make install</verb>. Before you
+If you want, you install the program on your system, by typing <verb># make install</verb>. Before you
 do that, it is a good idea to look at the main <tt>Makefile</tt> and change the install-directories
 to whatever you wish.
 
@@ -45,14 +45,11 @@ export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
 </verb>
 You have to enter 
 <verb>
-source ~/.bashrc</verb> for 
+% source ~/.bashrc</verb> for 
 the change to take effect.
 
 <item> Test it!
 <p>
-Type <verb>RealTimeBattle</verb>
-
-
+Type <verb>% RealTimeBattle</verb>
 </enum>
-
 </notes>
