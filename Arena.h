@@ -423,6 +423,7 @@ public:
   int get_position_this_game() { return position_this_game; }
   double get_total_points();
   int get_last_position();
+  double get_robot_angle() { return robot_angle; }
   void display_energy();
   void display_place();
   void display_last();
