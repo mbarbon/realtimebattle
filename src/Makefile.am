@@ -44,7 +44,9 @@ RealTimeBattle_SOURCES = \
 	Messagetypes.h \
 	MovingObject.h \
 	Options.cc Options.h \
+	Process.cc Process.h \
 	Robot.cc Robot.h \
+	RollingObject.cc RollingObject.h \
 	RealTimeBattle.cc \
 	Shape.cc Shape.h \
 	Shot.cc Shot.h \
