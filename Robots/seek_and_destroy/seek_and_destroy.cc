@@ -280,6 +280,8 @@ check_messages(int sig)
 int 
 main(int argc, char * argv[])
 {
+  sigset_t usr1set;
+
 //robot_rotate = 0.53;
 
   timer = g_timer_new();
@@ -287,6 +289,12 @@ main(int argc, char * argv[])
   srand(time(0));
   //check_messages(SIGUSR1);
   signal(SIGUSR1, check_messages);
+
+  // libpthread seems to block USR1 sometimes for some reason
+  sigemptyset(&usr1set);
+  sigaddset(&usr1set, SIGUSR1);
+  sigprocmask(SIG_UNBLOCK, &usr1set, NULL);
+  
 
   cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
 
