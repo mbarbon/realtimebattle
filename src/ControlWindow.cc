@@ -511,12 +511,12 @@ ControlWindow::replay_tournament( GtkWidget* widget,
       ( the_arena.get_state() != NOT_STARTED &&
         the_arena.get_state() != FINISHED ) )
     {
+      String info_text = _("This action will kill the current tournament.\n"
+                           "Do you want to do that?");
       List<String> string_list;
       string_list.insert_last( new String( _("Yes") ) );
       string_list.insert_last( new String( _("No")  ) );
-      Dialog( (String)_("This action will kill the current tournament.\n"
-                        "Do you want do that?"),
-              string_list,
+      Dialog( info_text, string_list,
               (DialogFunction) ControlWindow::kill_and_open_filesel );
     }
     else
@@ -660,12 +660,13 @@ ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
     if( the_arena.get_state() != NOT_STARTED &&
         the_arena.get_state() != FINISHED )
       {
+        String info_text = _("This action will kill the current tournament.\n"
+                             "Do you want to do that?");
         List<String> string_list;
         string_list.insert_last( new String( _("Yes") ) );
         string_list.insert_last( new String( _("No")  ) );
-        Dialog( (String)_("This action will kill the current tournament.\n"
-                          "Do you want do that?"),
-                string_list, (DialogFunction) ControlWindow::end_tournament );
+        Dialog( info_text, string_list,
+                (DialogFunction) ControlWindow::end_tournament );
       }
 }
 

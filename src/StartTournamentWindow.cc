@@ -563,9 +563,9 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
       String error_msg( _("Error in specified tournament file.") );
       List<String> button_list;
       button_list.insert_last( new String( _(" Ok ") ) );
-      Dialog( String(_("Tournament could not be loaded.")) +
-              String('\n') + error_msg, 
-              button_list, 
+      String info_text = (String)_("Tournament could not be loaded.") + String('\n')
+        + error_msg;
+      Dialog( info_text, button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
     }
 }
@@ -712,8 +712,8 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
         {
           List<String> button_list;
           button_list.insert_last( new String( _(" Ok ") ) );
-          Dialog( (String)_("Tournament could not be saved.") + error_msg,
-                  button_list, 
+          String info_text = (String)_("Tournament could not be saved.") + error_msg;
+          Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
     }
@@ -847,8 +847,8 @@ StartTournamentWindow::start( GtkWidget* widget,
         {
           List<String> button_list;
           button_list.insert_last( new String( _(" Ok ") ) );
-          Dialog( (String)_("Tournament could not be started.") + error_msg,
-                  button_list, 
+          String info_text = _("Tournament could not be started.") + error_msg;
+          Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
         }
     }

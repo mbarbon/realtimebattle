@@ -33,6 +33,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "List.h"
 #include "Options.h"
+#include "String.h"
 
 Gui::Gui()
 {
@@ -149,12 +150,12 @@ Gui::open_starttournamentwindow()
         if( the_arena.get_state() != NOT_STARTED &&
             the_arena.get_state() != FINISHED )
           {
+            String info_text = _("This action will kill the current tournament.\n"
+                                 "Do you want to do that?");
             List<String> string_list;
             string_list.insert_last( new String( "Yes" ) );
             string_list.insert_last( new String( "No"  ) );
-            Dialog( (String)_("This action will kill the current tournament.\n"
-                              "Do you want do that?"),
-                    string_list,
+            Dialog( info_text, string_list,
                     (DialogFunction) Gui::kill_and_start_new_tournament );
           }
         else
