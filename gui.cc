@@ -106,6 +106,13 @@ Gui::Gui()
 
   if(arenadir[arenadir.get_length() - 1] == '/')
     arenadir += '/';
+
+  control_window_size = Vector2D(294,110);
+  start_tournament_window_size = Vector2D(485,410);
+  arena_window_size = Vector2D(400,400);
+  score_window_size = Vector2D(359,374);
+  message_window_size = Vector2D(294,110);
+  statistics_window_size = Vector2D(499,428);
 }
 
 void
@@ -356,6 +363,7 @@ Gui::setup_control_window()
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
+  gtk_widget_set_usize(control_window, (int)control_window_size[0],(int)control_window_size[1]);
 
   vbox = gtk_vbox_new (FALSE, 10);
   gtk_container_add (GTK_CONTAINER (control_window), vbox);
@@ -479,6 +487,7 @@ Gui::setup_score_window()
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
+  gtk_widget_set_usize(score_window, (int)score_window_size[0],(int)score_window_size[1]);
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_EXTENDED);
@@ -553,6 +562,7 @@ Gui::setup_message_window()
   gtk_signal_connect (GTK_OBJECT (message_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(message_window));
   gtk_container_border_width (GTK_CONTAINER (message_window), 12);
+  gtk_widget_set_usize(message_window, (int)message_window_size[0],(int)message_window_size[1]);
 
   // The VBox 
 
@@ -648,13 +658,15 @@ Gui::setup_arena_window( const Vector2D bound[] )
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (vbox), da_scrolled_window);
-  gtk_widget_set_usize(da_scrolled_window,404,404);
+  gtk_widget_set_usize(da_scrolled_window,
+                       (int)arena_window_size[0],(int)arena_window_size[1]);
   gtk_widget_show (da_scrolled_window);
 
   // Drawing Area 
 
   drawing_area = gtk_drawing_area_new ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),400,400);
+  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),
+                         (int)arena_window_size[0] - 4,(int)arena_window_size[1] - 4);
   gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
                       (GtkSignalFunc) redraw_arena, (gpointer) NULL);
   gtk_widget_set_events (drawing_area, GDK_EXPOSURE_MASK);
@@ -676,23 +688,39 @@ Gui::setup_arena_window( const Vector2D bound[] )
 void
 Gui::close_control_window()
 {
+  control_window_size =
+    Vector2D((double)control_window->allocation.width,
+             (double)control_window->allocation.height);
+
   gtk_widget_destroy ( control_window );
 }
 
 void
 Gui::close_score_window()
 {
+  score_window_size =
+    Vector2D((double)score_window->allocation.width,
+             (double)score_window->allocation.height);
+
   gtk_widget_destroy ( score_window );
 }
 
 void
 Gui::close_message_window()
 {
+  message_window_size =
+    Vector2D((double)message_window->allocation.width,
+             (double)message_window->allocation.height);
+
   gtk_widget_destroy ( message_window );
 }
 
 void
 Gui::close_arena_window()
 {
+  arena_window_size =
+    Vector2D((double)da_scrolled_window->allocation.width,
+             (double)da_scrolled_window->allocation.height);
+
   gtk_widget_destroy ( arena_window );
 }

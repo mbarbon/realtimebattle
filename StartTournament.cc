@@ -397,6 +397,8 @@ Gui::setup_start_tournament_window()
   gtk_signal_connect (GTK_OBJECT (start_tournament_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(start_tournament_window));
   gtk_container_border_width (GTK_CONTAINER (start_tournament_window), 12);
+  gtk_widget_set_usize(start_tournament_window, (int)start_tournament_window_size[0],
+                       (int)start_tournament_window_size[1]);
 
   vbox = gtk_vbox_new (FALSE, 5);
   gtk_container_add (GTK_CONTAINER (start_tournament_window), vbox);
@@ -722,6 +724,11 @@ void
 Gui::close_start_tournament_window()
 {
   start_tournament_up = false;
+
+  start_tournament_window_size =
+    Vector2D((double)start_tournament_window->allocation.width,
+             (double)start_tournament_window->allocation.height);
+
   gtk_widget_destroy ( start_tournament_window );
 
   g_list_free(selected_items_in_robot_tournament);
