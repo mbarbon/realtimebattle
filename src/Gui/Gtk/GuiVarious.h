@@ -24,10 +24,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdktypes.h>
 #include <gtk/gtkwidget.h>
 
-struct entry_t;
-
-void entry_handler( GtkWidget * entry, entry_t * entry_info );
-
 GdkColor make_gdk_colour(const long col);
 int long gdk2hex_colour(const GdkColor& col);
 

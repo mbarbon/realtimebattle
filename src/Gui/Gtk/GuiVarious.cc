@@ -54,50 +54,6 @@ gdk2hex_colour(const GdkColor& col)
             ((col.red & 0xff) << 16) );
 }
 
-void
-entry_handler( GtkWidget * entry, entry_t * entry_info )
-{
-  string entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
-  string old_entry_text = entry_text;
-  bool point_found = false;
-
-  for(string::size_type i=0;i<entry_text.length();i++)
-    {
-      switch( entry_info->datatype )
-        {
-        case ENTRY_INT:
-          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') ||
-                (entry_text[i] == '-' && i == 0 && entry_info->allow_sign ))  )
-            entry_text.erase(i);
-          break;
-        case ENTRY_DOUBLE:
-          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') ||
-                (entry_text[i] == '.') ||
-                (entry_text[i] == '-' && i == 0 && entry_info->allow_sign ))  )
-            entry_text.erase(i);
-          if( entry_text[i] == '.' && !point_found )
-            point_found = true;
-          else if( entry_text[i] == '.' && point_found )
-            entry_text.erase(i);
-          break;
-        case ENTRY_HEX:
-          if( !(((entry_text[i] >= '0' && entry_text[i] <= '9') || 
-                 (entry_text[i] >= 'a' && entry_text[i] <= 'f') ||
-                 (entry_text[i] >= 'A' && entry_text[i] <= 'F')) ||
-                (entry_text[i] == '-' && i == 0 ) && entry_info->allow_sign ) )
-            entry_text.erase(i);
-          break;
-        case ENTRY_CHAR:
-          break;
-        case ENTRY_BOOL:
-          break;
-        }
-    }
-
-  if(old_entry_text != entry_text)
-    gtk_entry_set_text(GTK_ENTRY(entry),entry_text.c_str());
-}
-
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
 gint
 int_compare(GtkCList* clist, gconstpointer ptr1, gconstpointer ptr2)
