@@ -25,9 +25,19 @@ createGadgetDef(string GadgetType, const char* Name, Gadget* const p)
 }
 
 GadgetDefinition*
-findGadgetDefinitionFor(string  GadgetName, Gadget* theGadget)
+findGadgetDefinitionFor(string GadgetName, Gadget* theGadget)
 {
   //Try to find in the courant gadget_def or in the parental gadget_def
   cout<<"I try to find a definition for "<<GadgetName<<endl;
+  vector<GadgetDefinition*> *Gadget_def = theGadget->Gadget_def();
+  //TODO : Find the gadget definition...
+  vector<GadgetDefinition*>::iterator i;
+  for(i = Gadget_def->begin(); i != Gadget_def->end(); i++)
+    {
+      if((*i)->Name == GadgetName)
+	{
+	  return (*i);
+	}
+    }
   return NULL;
 }
