@@ -561,10 +561,10 @@ ArenaController::parse_command_line( int argc, char** argv )
 
   if( help_flag || version_flag ) exit( EXIT_SUCCESS );
 
+  main_opts->read_options_from_rtbrc();
   if( option_filename == "" )
     {
-      the_opts.read_options_from_rtbrc();
-      option_filename = ".rtbrc";
+      option_filename = ".rtb_v2/default_rc";
     }
   else
     the_opts.read_options_file( option_filename,true );
