@@ -204,21 +204,15 @@ int  WeaponGadget::Read(FILE *fp)
 	      else
 		{
 		  NbSpace++;
-		  if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) /* != NULL */ )
+		  if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) )
 		    {
-		      /*
-			Obj->Read(fp);
-			GadgetDefinition *GD = new GadgetDefinition
-			gadget_def.push_back(
-			GadgetsDefinition.push_back(Obj);
-			num_object ++;
-		      */
-		      SkipUnknownObject(fp);
+		      gadget_def.push_back(GadgetDef);
 		    }
 		  else
 		    {
 		      SkipUnknownObject(fp);
 		    }
+		  
 		  NbSpace--;
 		}
 	    }
@@ -228,6 +222,11 @@ int  WeaponGadget::Read(FILE *fp)
 	  else if(!strcmp(type, "EndDefine"))
 	    {
 	      break;
+	    }
+	  else if(!strcmp(type, "Shot"))
+	    {
+	      sscanf(buf, "%*s %s", type);
+	      cout<<&type[1]<<endl;
 	    }
 	  else
 	    {

@@ -38,7 +38,7 @@ class WeaponGadget : public Gadget
 
   
 
-  const vector<GadgetDefinition*> gadget_def;
+  vector<GadgetDefinition*> gadget_def;
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
