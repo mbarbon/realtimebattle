@@ -179,8 +179,6 @@ protected:
   double current_timer;
 
   Timer timer;
-  
-  double next_check_time;
 
   int game_nr;
   int games_per_sequence;
@@ -188,8 +186,9 @@ protected:
   int sequences_in_tournament;
 
   int number_of_robots;
-  int robots_left;
   int robots_per_game;
+  int robots_left;
+  int robots_killed_this_round;
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   

@@ -104,6 +104,8 @@ private:
 
   int** robots_in_sequence;
 
+  double next_check_time;
+
   int number_of_arenas;
   int current_arena_nr;
 };
