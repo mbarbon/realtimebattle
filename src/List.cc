@@ -240,7 +240,3 @@ template class List<start_tournament_info_t>;
 
 #include "ArenaReplay.h"
 template class List<ArenaReplay::object_pos_info_t>;
-
-#include "Gui/Gtk/DrawingObjects.h" //TODO: Fix a lot better way to do this
-template class List<DrawingShape>;
-template class List<DrawingRobot>;
