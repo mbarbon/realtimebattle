@@ -62,13 +62,9 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Main boxes
 
-  window_hbox = gtk_hbox_new ( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_p ), window_hbox );
-  gtk_widget_show( window_hbox );
-
-  GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_hbox ), vbox );
-  gtk_widget_show( vbox );
+  GtkWidget* main_vbox = gtk_vbox_new( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_p ), main_vbox );
+  gtk_widget_show( main_vbox );
 
   // The menu
 
@@ -96,9 +92,11 @@ ControlWindow::ControlWindow( const int default_width,
   GtkItemFactoryEntry menu_items[] =
   {
     { "/_" N_("File"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("File") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/"  N_("File") "/" N_("Quit"), "<control>q",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
     { "/_" N_("Tournament"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Tournament") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/"  N_("Tournament") "/" N_("New tournament"), "<control>n",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
     { "/" N_("Tournament") "/" N_("Replay tournament"), "<control>r",
@@ -109,6 +107,7 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Tournament") "/" N_("End"), "<control>e",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
     { "/_" N_("Windows"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Windows") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("Windows") "/" N_("Options"), "<shift>o",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_OPTIONS, "" },
     { "/" N_("Windows") "/" N_("Statistics"), "<shift>s",
@@ -124,6 +123,7 @@ ControlWindow::ControlWindow( const int default_width,
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_SCORE, "<CheckItem>" },
     { "/_" N_("Debug"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Debug") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("Debug") "/" N_("Step"), "t",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP, "" },
     { "/" N_("Debug") "/" N_("End match"), "<control><shift>m",
@@ -132,6 +132,7 @@ ControlWindow::ControlWindow( const int default_width,
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_KILL_MARKED_ROBOT, "" },
     { "/_" N_("Replay"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Replay") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("Replay") "/" N_("Step forward"), "s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_FORWARD, "" },
     { "/" N_("Replay") "/" N_("Step backward"), "<shift>s",
@@ -146,6 +147,7 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Replay") "/" N_("Previous Round"), "<shift>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PREV_ROUND, "" },
     { "/_" N_("Help"), NULL, NULL, 0, "<LastBranch>" },
+    { "/" N_("Help") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("Help") "/" N_("About"), "<shift>a",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_ABOUT, "" }
   };
@@ -164,7 +166,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   GtkWidget* menubar = gtk_item_factory_get_widget( item_factory, "<main>" );
 
-  gtk_box_pack_start( GTK_BOX( vbox ), menubar, FALSE, TRUE, 0 );
+  gtk_box_pack_start( GTK_BOX( main_vbox ), menubar, FALSE, TRUE, 0 );
   gtk_menu_bar_set_shadow_type( GTK_MENU_BAR( menubar ), GTK_SHADOW_OUT );
   gtk_widget_show( menubar );
 
@@ -185,6 +187,18 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
 #endif
 
+  // Boxes
+  // TODO: Remove if unnecessary!
+  window_hbox = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( main_vbox ), window_hbox, FALSE, TRUE, 0 );
+  gtk_widget_show( window_hbox );
+
+  GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_hbox ), vbox );
+  gtk_widget_show( vbox );
+
+  // Blue style
+
   GtkStyle* status_style = gtk_rc_get_style(window_p);
   if( status_style == NULL )
     status_style = gtk_style_new();
@@ -197,7 +211,9 @@ ControlWindow::ControlWindow( const int default_width,
 //      status_style->font = temp_font;
   status_style->fg[GTK_STATE_NORMAL] = make_gdk_colour( 0x1111ee );
 
-  GtkWidget* frame = gtk_frame_new("Game status");
+  // Info frame
+
+  GtkWidget* frame = gtk_frame_new( NULL );
   gtk_container_border_width( GTK_CONTAINER( frame ), 2 );
   gtk_frame_set_shadow_type( GTK_FRAME( frame ), GTK_SHADOW_ETCHED_IN );
   gtk_box_pack_start( GTK_BOX( vbox ), frame, FALSE, TRUE, 0 );
@@ -217,8 +233,8 @@ ControlWindow::ControlWindow( const int default_width,
       heights.push_back( gdk_string_height( status_style->font, infotext.c_str() ) );
     }
 
-  int max_label_width  = *(max_element( widths.begin() , widths.end()  )) + 2;
-  int max_label_height = *(max_element( heights.begin(), heights.end() )) + 2;
+  int max_label_width  = *(max_element( widths.begin() , widths.end()  )) + 4;
+  int max_label_height = *(max_element( heights.begin(), heights.end() )) + 4;
 
   status_label = gtk_label_new("");
   gtk_widget_set_usize( status_label, max_label_width, max_label_height );
@@ -229,141 +245,24 @@ ControlWindow::ControlWindow( const int default_width,
   
   set_status( NO_STATE );
 
-  vseparator = NULL;
-  extra_vbox = NULL;
-  filesel = new FileSelector<ControlWindow>( this );
+  string infotext = get_matchinfo_string( 100000, 1000, 1000, 1000, 1000 );
+  max_label_width  = gdk_string_width( status_style->font, infotext.c_str() ) + 4;
+  max_label_height = gdk_string_height( status_style->font, infotext.c_str() ) + 4;
+  matchinfo_label = gtk_label_new("");
+  gtk_widget_set_style( matchinfo_label, status_style );
+  gtk_widget_set_usize( matchinfo_label, max_label_width, max_label_height );
+  gtk_label_set_justify( GTK_LABEL( matchinfo_label ), GTK_JUSTIFY_CENTER );
+  gtk_box_pack_start( GTK_BOX( vbox2 ), matchinfo_label, TRUE, TRUE, 0 );
+  gtk_widget_set_sensitive( matchinfo_label, FALSE );
+  gtk_widget_show( matchinfo_label );
 
-  remove_replay_widgets();
+  set_matchinfo( 0, 0, 0, 0, 0 );
 
   gtk_widget_show( window_p );
-}
 
-ControlWindow::~ControlWindow()
-{
-  gtk_widget_destroy( window_p );
-}
-
-void
-ControlWindow::remove_replay_widgets()
-{
-//    if( the_arena_controller.game_mode == DEBUG_MODE )
-//      display_debug_widgets();
-//    else
-//      clear_extra_widgets();
-}
-
-void
-ControlWindow::clear_extra_widgets()
-{
-  if( extra_vbox != NULL ) gtk_widget_destroy( extra_vbox );
-  if( vseparator != NULL ) gtk_widget_destroy( vseparator );
-
-  extra_vbox = NULL;
-  vseparator = NULL;
-
-  displayed = NO_WIDGETS;
-}
-
-void
-ControlWindow::display_debug_widgets()
-{
-  clear_extra_widgets();
-  
-  vseparator = gtk_vseparator_new();
-  gtk_box_pack_start( GTK_BOX (window_hbox), vseparator, FALSE, FALSE, 0 );
-  gtk_widget_show( vseparator );
-
-  extra_vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_hbox ), extra_vbox );
-  gtk_widget_show( extra_vbox );
-
-  struct button_t { string label; GtkSignalFunc func; int pack; };
-  struct button_t debug_buttons[] = {
-    { (string)_(" Step "), 
-      (GtkSignalFunc) ControlWindow::step      , TRUE  },
-    { (string)_(" End Game "), 
-      (GtkSignalFunc) ControlWindow::end_game  , TRUE  },
-    { (string)_(" Kill Marked Robot "), 
-      (GtkSignalFunc) ControlWindow::kill_robot, TRUE  } };
-
-  GtkWidget* button_hbox = NULL;
-  for(int i = 0;i < 3; i++)
-    {
-      if( i == 0 || i == 2 )
-        {
-          button_hbox = gtk_hbox_new( FALSE, 10 );
-          gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
-                              FALSE, FALSE, 0);
-          gtk_widget_show( button_hbox );
-        }
-      GtkWidget* button = 
-        gtk_button_new_with_label( debug_buttons[i].label.c_str() );
-      gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                          (GtkSignalFunc) debug_buttons[i].func,
-                          (gpointer) NULL );
-      gtk_box_pack_start( GTK_BOX( button_hbox ), button,
-                          TRUE, debug_buttons[i].pack , 0);
-      gtk_widget_show( button );
-    }
-
-  button_hbox = gtk_hbox_new( FALSE, 10 );
-  gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
-                      FALSE, FALSE, 0);
-  gtk_widget_show( button_hbox );
-
-  GtkWidget* label = gtk_label_new( _(" Debug Level: ") );
-  gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
-  gtk_widget_show( label );
-
-  GtkAdjustment* adj =
-    (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
-                                         max_debug_level, 1, 1, 0 );
-
-  debug_level = gtk_spin_button_new( adj, 0, 0 );
-  gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
-                      (GtkSignalFunc) change_debug_level,
-                      (gpointer) this );
-  gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
-  gtk_widget_show( debug_level );
-
-  displayed = DEBUG_WIDGETS;
-}
-
-void
-ControlWindow::display_replay_widgets()
-{
-  clear_extra_widgets();
-
-  vseparator = gtk_vseparator_new();
-  gtk_box_pack_start( GTK_BOX (window_hbox), vseparator, FALSE, FALSE, 0 );
-  gtk_widget_show( vseparator );
-
-  extra_vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_hbox ), extra_vbox );
-  gtk_widget_show( extra_vbox );
-
-  GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
-  gtk_box_pack_start( GTK_BOX( extra_vbox ), hbox, FALSE, FALSE, 0 );
+  GtkWidget* hbox = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( vbox2 ), hbox, FALSE, TRUE, 0 );
   gtk_widget_show( hbox );
-
-//    current_replay_time_adjustment =
-//      (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
-//                                            the_arena.get_length_of_current_game(),
-//                                            0.1, 1.0, 1.0 );
-
-  gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
-                      (GtkSignalFunc) change_current_replay_time,
-                      (gpointer) this );
-
-  time_control =
-    gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
-  gtk_widget_set_usize( GTK_WIDGET( time_control ), 150, 30 );
-  gtk_range_set_update_policy( GTK_RANGE( time_control ), GTK_UPDATE_DELAYED );
-  gtk_scale_set_value_pos( GTK_SCALE( time_control ), GTK_POS_TOP);
-  gtk_scale_set_digits( GTK_SCALE( time_control ), 0 );
-  gtk_scale_set_draw_value( GTK_SCALE( time_control ), TRUE );
-  gtk_box_pack_start( GTK_BOX( hbox ), time_control, TRUE, TRUE, 0 );
-  gtk_widget_show( time_control );
 
   char* rew_xpm[13] =
   { "18 10 2 1",
@@ -394,95 +293,93 @@ ControlWindow::display_replay_widgets()
     "xxxx     xxxx     ",
     "xx       xx       " };
 
-  struct button_t
-  {
-    char** xpm;
-    string label;
-    GtkSignalFunc clicked_func;
-    GtkSignalFunc pressed_func;
-    GtkSignalFunc released_func;
-  };
+  GtkWidget* vbox3 = gtk_vbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( hbox ), vbox3, FALSE, FALSE, 2 );
+  gtk_widget_show( vbox3 );
 
-  struct button_t replay_buttons[] = {
-    { rew_xpm, (string)"",
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::rewind_pressed,
-      (GtkSignalFunc) ControlWindow::rewind_released },
-    { ffw_xpm, (string)"", 
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::fast_forward_pressed,
-      (GtkSignalFunc) ControlWindow::fast_forward_released },
-    { NULL, (string)_(" Step forward "), 
-      (GtkSignalFunc) ControlWindow::step_forward,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (string)_(" Step backward "), 
-      (GtkSignalFunc) ControlWindow::step_backward,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (string)_(" Next Game "), 
-      (GtkSignalFunc) ControlWindow::next_game,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (string)_(" Prev Game "), 
-      (GtkSignalFunc) ControlWindow::prev_game,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (string)_(" Next Seq "), 
-      (GtkSignalFunc) ControlWindow::next_seq,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy },
-    { NULL, (string)_(" Prev Seq "), 
-      (GtkSignalFunc) ControlWindow::prev_seq,
-      (GtkSignalFunc) ControlWindow::dummy,
-      (GtkSignalFunc) ControlWindow::dummy } };
+  GtkWidget* button = new_button_from_xpm_d( rew_xpm, 32, 19 );
+  gtk_box_pack_start( GTK_BOX( vbox3 ), button, TRUE, FALSE, 0 );
+  gtk_signal_connect( GTK_OBJECT( button ), "pressed",
+                      (GtkSignalFunc) ControlWindow::rewind_pressed,
+                      (gpointer) this );
+  gtk_signal_connect( GTK_OBJECT( button ), "released",
+                      (GtkSignalFunc) ControlWindow::rewind_released,
+                      (gpointer) this );
+  gtk_widget_set_sensitive( button, FALSE );
+  gtk_widget_show( button );
 
-  GtkWidget* button_hbox = NULL;
+  vbox3 = gtk_vbox_new ( FALSE, 0 );
+  gtk_box_pack_end( GTK_BOX( hbox ), vbox3, FALSE, FALSE, 2 );
+  gtk_widget_show( vbox3 );
 
-  for(int i = 0;i < 8; i++)
-    {
-      if( i == 0 || i == 4 )
-        {
-          button_hbox = gtk_hbox_new( FALSE, 10 );
-          gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
-                              FALSE, FALSE, 0);
-          gtk_widget_show( button_hbox );
-        }
-      GtkWidget* button_w = NULL;
-      if( replay_buttons[i].xpm != NULL )
-        {
-          button_w = gtk_button_new();
-          GdkPixmap* pixmap;
-          GdkBitmap* bitmap_mask;
+  button = new_button_from_xpm_d( ffw_xpm, 32, 19 );
+  gtk_box_pack_start( GTK_BOX( vbox3 ), button, TRUE, FALSE, 0 );
+  gtk_signal_connect( GTK_OBJECT( button ), "pressed",
+                      (GtkSignalFunc) ControlWindow::fast_forward_pressed,
+                      (gpointer) this );
+  gtk_signal_connect( GTK_OBJECT( button ), "released",
+                      (GtkSignalFunc) ControlWindow::fast_forward_released,
+                      (gpointer) this );
+  gtk_widget_set_sensitive( button, FALSE );
+  gtk_widget_show( button );
 
-          pixmap = gdk_pixmap_create_from_xpm_d( window_p->window,
-                                                 &bitmap_mask,
-                                                 &(window_p->style->black),
-                                                 replay_buttons[i].xpm );
-          GtkWidget* pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
-          gtk_widget_show( pixmap_widget );
-          gtk_container_add( GTK_CONTAINER( button_w ), pixmap_widget );
-          gtk_widget_set_usize( button_w, 32, 20 );
-        }
-      else
-        button_w = 
-          gtk_button_new_with_label( replay_buttons[i].label.c_str() );
+  current_replay_time_adjustment =
+    (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0, 120.0, 0.1, 1.0, 1.0 );
 
-      gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
-                          (GtkSignalFunc) replay_buttons[i].clicked_func,
-                          (gpointer) NULL );
-      gtk_signal_connect( GTK_OBJECT( button_w ), "pressed",
-                          (GtkSignalFunc) replay_buttons[i].pressed_func,
-                          (gpointer) NULL );
-      gtk_signal_connect( GTK_OBJECT( button_w ), "released",
-                          (GtkSignalFunc) replay_buttons[i].released_func,
-                          (gpointer) NULL );
-      gtk_box_pack_start( GTK_BOX( button_hbox ), button_w,
-                          TRUE, TRUE , 0);
-      gtk_widget_show( button_w );
-    }
+  gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
+                      (GtkSignalFunc) change_current_replay_time,
+                      (gpointer) this );
 
-  displayed = REPLAY_WIDGETS;
+  time_control =
+    gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
+  gtk_widget_set_usize( GTK_WIDGET( time_control ), 50, 30 );
+  gtk_range_set_update_policy( GTK_RANGE( time_control ), GTK_UPDATE_DISCONTINUOUS );
+  gtk_scale_set_draw_value( GTK_SCALE( time_control ), FALSE );
+  gtk_box_pack_start( GTK_BOX( hbox ), time_control, TRUE, TRUE, 2 );
+  gtk_widget_set_sensitive( time_control, FALSE );
+  gtk_widget_show( time_control );
+
+  // TODO: Place this in a good place when in debug_mode
+//    GtkWidget* label = gtk_label_new( _(" Debug Level: ") );
+//    gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
+//    gtk_widget_show( label );
+
+//    GtkAdjustment* adj =
+//      (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
+//                                           max_debug_level, 1, 1, 0 );
+
+//    debug_level = gtk_spin_button_new( adj, 0, 0 );
+//    gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
+//                        (GtkSignalFunc) change_debug_level,
+//                        (gpointer) this );
+//    gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
+//    gtk_widget_show( debug_level );
+
+  filesel = new FileSelector<ControlWindow>( this );
+}
+
+ControlWindow::~ControlWindow()
+{
+  gtk_widget_destroy( window_p );
+}
+
+GtkWidget*
+ControlWindow::new_button_from_xpm_d( char** xpm_data,
+                                      const int xsize, const int ysize )
+{
+  GtkWidget* button_w = gtk_button_new();
+  GdkPixmap* pixmap;
+  GdkBitmap* bitmap_mask;
+
+  pixmap = gdk_pixmap_create_from_xpm_d( window_p->window,
+                                         &bitmap_mask,
+                                         &(window_p->style->black),
+                                         xpm_data );
+  GtkWidget* pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
+  gtk_widget_show( pixmap_widget );
+  gtk_container_add( GTK_CONTAINER( button_w ), pixmap_widget );
+  gtk_widget_set_usize( button_w, xsize, ysize );
+  return button_w;
 }
 
 // ---------------------------------------------------------------------------
@@ -519,25 +416,6 @@ ControlWindow::translate_menu_path( char* pathstr_p )
     }
   return copy_to_c_string( new_path ); // Memory-leak: never deleted
 #endif
-}
-
-void
-ControlWindow::change_time_limitations()
-{
-//    if( displayed == REPLAY_WIDGETS )
-//      {
-//        // Possible memory leak: Do not know how to destroy old adjustment
-//        // possibly destroyed by gtk_range_set_adjustment()
-//        current_replay_time_adjustment =
-//          (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
-//                                                the_arena.get_length_of_current_game(),
-//                                                0.1, 1.0, 1.0 );
-//        gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
-//                            (GtkSignalFunc) change_current_replay_time,
-//                            (gpointer) this );
-//        gtk_range_set_adjustment( GTK_RANGE( time_control ),
-//                                  current_replay_time_adjustment );
-//      }
 }
 
 string
@@ -584,6 +462,29 @@ ControlWindow::set_status( const state_t& state )
 {
   gtk_label_set_text( GTK_LABEL( status_label ),
                       get_status_string( state ).c_str() );
+}
+
+string
+ControlWindow::get_matchinfo_string( const int& time, const int& round_nr,
+                                     const int& number_of_rounds,
+                                     const int& match_nr,
+                                     const int& matches_per_round )
+{
+  string matchinfo_str = (string)_("Time") + ": " + int2string( time ) + " " +
+    _("Round") + ": " + int2string(round_nr) + " (" +
+    int2string(number_of_rounds) + ") " + _("Match") + ": " +
+    int2string(match_nr) + " (" + int2string(matches_per_round) + ")";
+  return matchinfo_str;
+}
+
+void
+ControlWindow::set_matchinfo( const int& time, const int& round_nr,
+                              const int& number_of_rounds, const int& match_nr,
+                              const int& matches_per_round )
+{
+  gtk_label_set_text( GTK_LABEL( matchinfo_label ),
+                      get_matchinfo_string( time, round_nr, number_of_rounds,
+                                            match_nr, matches_per_round ).c_str() );
 }
 
 void
@@ -691,11 +592,31 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
 //    if( the_arena_controller.is_started() )
 //      the_arena.pause_game_toggle();
       break;
+    case MENU_STEP:
+//    if( the_arena_controller.is_started() )
+//      the_arena.step_paused_game();
+      break;
     case MENU_END:
+//    if( the_arena_controller.is_started() )
+//      if( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED )
+//        {
+//          string info_text = _("This action will kill the current tournament.\n"
+//                               "Do you want to do that?");
+//          list<string> string_list;
+//          string_list.push_back( string( _("Yes") ) );
+//          string_list.push_back( string( _("No")  ) );
+//          Dialog( info_text, string_list,
+//                  (DialogFunction) ControlWindow::end_tournament );
+//        }
+//    if( the_arena_controller.is_started() && result == 1 )
+//      the_arena.interrupt_tournament();
       break;
     case MENU_OPTIONS:
+      the_gui.open_optionswindow();
       break;
     case MENU_STATISTICS:
+      the_gui.open_statisticswindow();
       break;
     case MENU_SHOW_ARENA:
       {
@@ -748,27 +669,41 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
           }
       }
       break;
-    case MENU_STEP:
-      break;
     case MENU_END_MATCH:
+//    if( the_arena_controller.is_started() )
+//      if( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED )
+//        the_arena.end_game();
       break;
     case MENU_KILL_MARKED_ROBOT:
-      break;
-    case MENU_REWIND:
-      break;
-    case MENU_FFW:
+//    if( the_arena_controller.is_started() )
+//      if(the_arena.get_state() == GAME_IN_PROGRESS || 
+//         the_arena.get_state() == PAUSED )
+//        {
+//          Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
+//          if( robotp != NULL )
+//            robotp->die();
+//        }
       break;
     case MENU_STEP_FORWARD:
+  //  cout << "Stepping forward" << endl;
+  //  the_arena.step_forward_or_backward( true );  
       break;
     case MENU_STEP_BACKWARD:
+  //  cout << "Stepping backward" << endl;
+  //  the_arena.step_forward_or_backward( false );
       break;
     case MENU_NEXT_MATCH:
+  //  the_arena.change_game( 1, 0 );
       break;
     case MENU_PREV_MATCH:
+  //  the_arena.change_game( -1, 0 );
       break;
     case MENU_NEXT_ROUND:
+  //  the_arena.change_game( 0, 1 );
       break;
     case MENU_PREV_ROUND:
+  //  the_arena.change_game( 0, -1 );
       break;
     case MENU_ABOUT:
       cw_p->show_about();
@@ -788,40 +723,6 @@ ControlWindow::quit_rtb( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
   the_gui.quit( true );
-}
-
-void
-ControlWindow::pause( GtkWidget* widget, class ControlWindow* cw_p )
-{
-}
-
-void
-ControlWindow::step( GtkWidget* widget, gpointer data )
-{
-//    if( the_arena_controller.is_started() )
-//      the_arena.step_paused_game();
-}
-
-void
-ControlWindow::end_game( GtkWidget* widget, gpointer data )
-{
-//    if( the_arena_controller.is_started() )
-//      if( the_arena.get_state() != NOT_STARTED &&
-//          the_arena.get_state() != FINISHED )
-//        the_arena.end_game();
-}
-
-void
-ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
-{
-//    if( the_arena_controller.is_started() )
-//      if(the_arena.get_state() == GAME_IN_PROGRESS || 
-//         the_arena.get_state() == PAUSED )
-//        {
-//          Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
-//          if( robotp != NULL )
-//            robotp->die();
-//        }
 }
 
 void
@@ -872,49 +773,11 @@ ControlWindow::is_scorewindow_checked()
 void
 ControlWindow::replay( const string& filename )
 {
-  if( filename.empty() || filename[filename.length() - 1] == '/' )  
-    return;  // no file is selected
+//    if( filename.empty() || filename[filename.length() - 1] == '/' )  
+//      return;  // no file is selected
 
 //    the_arena_controller.replay_filename = filename;
 //    the_arena_controller.start_replay_arena();
-}
-
-void
-ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
-{
-//    if( the_arena_controller.is_started() )
-//      if( the_arena.get_state() != NOT_STARTED &&
-//          the_arena.get_state() != FINISHED )
-//        {
-//          string info_text = _("This action will kill the current tournament.\n"
-//                               "Do you want to do that?");
-//          list<string> string_list;
-//          string_list.push_back( string( _("Yes") ) );
-//          string_list.push_back( string( _("No")  ) );
-//          Dialog( info_text, string_list,
-//                  (DialogFunction) ControlWindow::end_tournament );
-//        }
-}
-
-void
-ControlWindow::end_tournament( int result )
-{
-//    if( the_arena_controller.is_started() && result == 1 )
-//      the_arena.interrupt_tournament();
-}
-
-void
-ControlWindow::options_clicked( GtkWidget* widget,
-                                class ControlWindow* cw_p )
-{
-  the_gui.open_optionswindow();
-}
-
-void
-ControlWindow::statistics_clicked( GtkWidget* widget,
-                                   class ControlWindow* cw_p )
-{
-  the_gui.open_statisticswindow();
 }
 
 void
@@ -950,50 +813,6 @@ ControlWindow::fast_forward_released( GtkWidget* widget,
 }
 
 void
-ControlWindow::step_forward( GtkWidget* widget,
-                             class ControlWindow* cw_p )
-{
-  //  cout << "Stepping forward" << endl;
-  //  the_arena.step_forward_or_backward( true );  
-}
-
-void
-ControlWindow::step_backward( GtkWidget* widget,
-                              class ControlWindow* cw_p )
-{
-  //  cout << "Stepping backward" << endl;
-  //  the_arena.step_forward_or_backward( false );
-}
-
-void
-ControlWindow::next_game( GtkWidget* widget,
-                          class ControlWindow* cw_p )
-{
-  //  the_arena.change_game( 1, 0 );
-}
-
-void
-ControlWindow::prev_game( GtkWidget* widget,
-                          class ControlWindow* cw_p )
-{
-  //  the_arena.change_game( -1, 0 );
-}
-
-void
-ControlWindow::next_seq( GtkWidget* widget,
-                         class ControlWindow* cw_p )
-{
-  //  the_arena.change_game( 0, 1 );
-}
-
-void
-ControlWindow::prev_seq( GtkWidget* widget,
-                         class ControlWindow* cw_p )
-{
-  //  the_arena.change_game( 0, -1 );
-}
-
-void
 ControlWindow::change_current_replay_time( GtkAdjustment *adj,
                                            class ControlWindow* cw_p )
 {
@@ -1004,4 +823,23 @@ void
 ControlWindow::set_progress_time( const double time )
 {
   gtk_adjustment_set_value( current_replay_time_adjustment, time );
+}
+
+void
+ControlWindow::change_time_limitations()
+{
+//    if( displayed == REPLAY_WIDGETS )
+//      {
+//        // Possible memory leak: Do not know how to destroy old adjustment
+//        // possibly destroyed by gtk_range_set_adjustment()
+//        current_replay_time_adjustment =
+//          (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
+//                                                the_arena.get_length_of_current_game(),
+//                                                0.1, 1.0, 1.0 );
+//        gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
+//                            (GtkSignalFunc) change_current_replay_time,
+//                            (gpointer) this );
+//        gtk_range_set_adjustment( GTK_RANGE( time_control ),
+//                                  current_replay_time_adjustment );
+//      }
 }

@@ -44,8 +44,6 @@ template<class T> class FileSelector;
 class ControlWindow
 {
 public:
-  enum displayed_t { NO_WIDGETS, DEBUG_WIDGETS, REPLAY_WIDGETS };
-
   ControlWindow                    ( const int default_width  = -1,
                                      const int default_height = -1,
                                      const int default_x_pos  = -1,
@@ -54,10 +52,14 @@ public:
 
   void set_status                  ( const state_t& state );
   string get_status_string         ( const state_t& state ) const;
-  void remove_replay_widgets       ();
-  void clear_extra_widgets         ();
-  void display_debug_widgets       ();
-  void display_replay_widgets      ();
+  string get_matchinfo_string      ( const int& time, const int& round_nr,
+                                     const int& number_of_rounds,
+                                     const int& match_nr,
+                                     const int& matches_per_round );
+  void set_matchinfo               ( const int& time, const int& round_nr,
+                                     const int& number_of_rounds,
+                                     const int& match_nr,
+                                     const int& matches_per_round );
   void replay                      ( const string& );
 
   static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
@@ -67,28 +69,7 @@ public:
   static void menu_callback        ( class ControlWindow* cw_p,
                                      guint callback_action, GtkWidget *widget );
 
-  static void pause                ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void step                 ( GtkWidget* widget, gpointer data );
-  static void end_game             ( GtkWidget* widget, gpointer data );
-  static void kill_robot           ( GtkWidget* widget, gpointer data );
   static void change_debug_level   ( GtkAdjustment *adj,
-                                     class ControlWindow* cw_p );
-  static void end_clicked          ( GtkWidget* widget, gpointer data ); 
-  static void end_tournament       ( int result );
-  static void options_clicked      ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void statistics_clicked   ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void new_tournament       ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void replay_tournament    ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void arena_window_toggle  ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void message_window_toggle( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void score_window_toggle  ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void rewind_pressed       ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
@@ -98,27 +79,12 @@ public:
                                      class ControlWindow* cw_p );
   static void fast_forward_released( GtkWidget* widget,
                                      class ControlWindow* cw_p );
-  static void step_forward         ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void step_backward        ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void next_game            ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void prev_game            ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void next_seq             ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void prev_seq             ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void dummy                ( GtkWidget* widget,
-                                     class ControlWindow* cw_p ) {}
   static void change_current_replay_time( GtkAdjustment *adj,
                                           class ControlWindow* cw_p );
 
   static void kill_and_open_filesel( int result );
   void open_replay_filesel         ();
 
-  displayed_t get_displayed        () { return displayed; }
   GtkWidget* get_window_p          () { return window_p; }
 
   bool is_arenawindow_checked      ();
@@ -138,16 +104,20 @@ private:
     MENU_QUIT, MENU_NEW_TOURNAMENT, MENU_REPLAY_TOURNAMENT, MENU_PAUSE,
     MENU_END, MENU_OPTIONS, MENU_STATISTICS, MENU_SHOW_ARENA,
     MENU_SHOW_MESSAGES, MENU_SHOW_SCORE, MENU_STEP, MENU_END_MATCH,
-    MENU_KILL_MARKED_ROBOT, MENU_REWIND, MENU_FFW, MENU_STEP_FORWARD,
-    MENU_STEP_BACKWARD, MENU_NEXT_MATCH, MENU_PREV_MATCH,
-    MENU_NEXT_ROUND, MENU_PREV_ROUND, MENU_ABOUT
+    MENU_KILL_MARKED_ROBOT, MENU_STEP_FORWARD, MENU_STEP_BACKWARD,
+    MENU_NEXT_MATCH, MENU_PREV_MATCH, MENU_NEXT_ROUND,
+    MENU_PREV_ROUND, MENU_ABOUT
   };
+
+  GtkWidget* new_button_from_xpm_d ( char**, const int xsize = -1,
+                                     const int ysize = -1 );
 
   void show_about                  ();
   char* translate_menu_path        ( char* );
 
   GtkWidget* window_p;
   GtkWidget* status_label;
+  GtkWidget* matchinfo_label;
   GtkWidget* debug_level;
 
   GtkWidget* window_hbox;
@@ -164,8 +134,6 @@ private:
 
   GtkWidget* time_control;
   GtkAdjustment* current_replay_time_adjustment;
-
-  displayed_t displayed;
 };
 
 #endif __CONTROL_WINDOW__
