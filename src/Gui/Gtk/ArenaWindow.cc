@@ -20,6 +20,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include <list>
+
 #include "Gui.h"
 #include "ArenaWindow.h"
 #include "IntlDefs.h"
@@ -235,20 +237,20 @@ ArenaWindow::draw_everything()
           return;
         }
       
-      List<DrawingShape>* object_lists;
+      list<DrawingShape*>* object_lists;
 
-      object_lists = the_gui.get_drawing_object_lists();
-      ListIterator<DrawingShape> li;
+      object_lists = the_gui.get_drawing_objects_lists();
 
       // Must begin with innercircles (they are destructive)
       for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
         {
-          for( object_lists[obj_type].first(li); li.ok(); li++ )
+          list<DrawingShape*>::iterator li = object_lists[obj_type].begin();
+          for( ; li != object_lists[obj_type].end(); li++ )
             {
               if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
-                     !( (Extras*)(li()->get_shape()) )->is_alive() ) )
+                     !( (Extras*)((*li)->get_shape()))->is_alive() ) )
                 {
-                  li()->draw_shape( false );
+                  (*li)->draw_shape( false );
                 }
             }
         }
@@ -262,7 +264,7 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
 {
   if( window_shown )
     {
-      List<DrawingShape>* object_lists = the_gui.get_drawing_object_lists();
+      list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
       Robot* robotp;
 
       if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
@@ -272,19 +274,14 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
           return;
         }
 
-      ListIterator<DrawingShape> li;
-      for( object_lists[SHOT].first(li); li.ok(); li++ )
-        if( ((Shot*)(li()->get_shape()))->is_alive() )
-          li()->draw_shape( clear_objects_first );
+      list<DrawingShape*>::iterator li;
+      for( li = object_lists[SHOT].begin(); li != object_lists[SHOT].end(); li++ )
+        if( ((Shot*)((*li)->get_shape()))->is_alive() )
+          (*li)->draw_shape( clear_objects_first );
 
-      for( object_lists[ROBOT].first(li); li.ok(); li++ )
-        {
-          if( ((Robot*)(li()->get_shape()))->is_alive() )
-            {
-              li()->draw_shape( clear_objects_first );
-              ((DrawingCircle*)li())->draw_radar_and_cannon();
-            }
-        }
+      for( li = object_lists[ROBOT].begin(); li != object_lists[SHOT].end(); li++ )
+        if( ((Robot*)((*li)->get_shape()))->is_alive() )
+          (*li)->draw_shape( clear_objects_first );
     }
 }
 

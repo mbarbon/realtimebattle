@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,14 +23,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef NO_GRAPHICS
 
 #include <gtk/gtk.h>
+#include <list>
 
 #include "Messagetypes.h"
-#include "List.h"
+#include "DrawingObjects.h"
 
 class ArenaController;
 class ArenaWindow;
-class DrawingShape;
-class DrawingRobot;
 class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
@@ -51,8 +50,8 @@ public:
   void update_lists                            ();
   void set_colours                             ();
 
-  List<DrawingShape>* get_drawing_object_lists () { return drawing_objects_lists; }
-  List<DrawingRobot>* get_robots_in_tournament () { return &robots_in_tournament; }
+  list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
+  list<DrawingRobot>* get_robots_in_tournament () { return &robots_in_tournament; }
 
   GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
@@ -102,8 +101,8 @@ public:
 
 private:
 
-  List<DrawingShape> drawing_objects_lists[LAST_OBJECT_TYPE];
-  List<DrawingRobot> robots_in_tournament;
+  list<DrawingShape*> drawing_objects_lists[LAST_OBJECT_TYPE];
+  list<DrawingRobot> robots_in_tournament;
 
   long int bg_rgb_colour;
   long int fg_rgb_colour;

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -122,18 +122,20 @@ Gui::update_lists()
   object_lists = the_arena.get_object_lists();
 
   ListIterator<Shape> li;
-  ListIterator<DrawingShape> draw_li;
 
   for( int obj_type=ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
     {
-      drawing_objects_lists[obj_type].first(draw_li);
+      list<DrawingShape*>::iterator draw_li = drawing_objects_lists[obj_type].begin();
       for( object_lists[obj_type].first(li); li.ok(); li++ )
         {
-          if( draw_li.ok() )
+          if( draw_li != drawing_objects_lists[obj_type].end() )
             {
-              if( draw_li()->get_id() != li()->get_id() )
+              if( (*draw_li)->get_id() != li()->get_id() )
                 //TODO: remove the object from arena.
-                drawing_objects_lists[obj_type].remove(draw_li);
+                {
+                  delete (*draw_li);
+                  drawing_objects_lists[obj_type].erase(draw_li);
+                }
               draw_li++;
             }
           else
@@ -143,42 +145,42 @@ Gui::update_lists()
                 case ROBOT:
                   {
                     DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].insert_last( p );
+                    drawing_objects_lists[obj_type].push_back( p );
                   }
                   break;
                 case SHOT:
                   {
                     DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].insert_last( p );
+                    drawing_objects_lists[obj_type].push_back( p );
                   }
                   break;
                 case WALL:
                   if( typeid( *li() ) == typeid( WallLine ) )
                     {
                       DrawingShape* p = (DrawingShape*) new DrawingLine( li() );
-                      drawing_objects_lists[obj_type].insert_last( p );
+                      drawing_objects_lists[obj_type].push_back( p );
                     }
                   else if( typeid( *li() ) == typeid( WallCircle ) )
                     {
                       DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                      drawing_objects_lists[obj_type].insert_last( p );
+                      drawing_objects_lists[obj_type].push_back( p );
                     }
                   else if( typeid( *li() ) == typeid( WallInnerCircle ) )
                     {
                       DrawingShape* p = (DrawingShape*) new DrawingInnerCircle( li() );
-                      drawing_objects_lists[obj_type].insert_last( p );
+                      drawing_objects_lists[obj_type].push_back( p );
                     }
                   break;
                 case COOKIE:
                   {
                     DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].insert_last( p );
+                    drawing_objects_lists[obj_type].push_back( p );
                   }
                   break;
                 case MINE:
                   {
                     DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].insert_last( p );
+                    drawing_objects_lists[obj_type].push_back( p );
                   }
                   break;
                 }

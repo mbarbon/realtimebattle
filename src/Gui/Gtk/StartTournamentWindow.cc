@@ -48,6 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaRealTime.h"
 #include "StartTournamentWindow.h"
 #include "String.h"
+#include "Various.h"
 #include "GuiVarious.h"
 #include "List.h"
 #include "Dialog.h"
@@ -676,7 +677,8 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
         max_value = 10000;
       else
         {
-          max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),robot_number);
+          max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),
+                           (long int)robot_number );
         }
       if(i != 1)
         min_value = 1;
@@ -821,7 +823,8 @@ StartTournamentWindow::start( GtkWidget* widget,
         max_value = 10000;
       else
         {
-          max_value = min(the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),robot_number);
+          max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),
+                           (long int) robot_number );
         }
       if(i != 1)
         min_value = 1;
