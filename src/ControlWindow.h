@@ -76,6 +76,24 @@ public:
                                      class ControlWindow* cw_p );
   static void replay               ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
+  static void rewind               ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void fast_forward         ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void step_forward         ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void step_backward        ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void next_game            ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void prev_game            ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void next_seq             ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void prev_seq             ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void change_current_replay_time( GtkAdjustment *adj,
+                                          class ControlWindow* cw_p );
   static void destroy_filesel      ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void kill_and_open_filesel( int result );
@@ -83,7 +101,10 @@ public:
 
   GtkWidget* get_filesel           () { return filesel; }
   GtkWidget* get_window_p          () { return window_p; }
+
   void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
+
+  void set_progress_time           ( const double time );
 
 private:
 
@@ -94,6 +115,8 @@ private:
   GtkWidget* window_hbox;
   GtkWidget* vseparator;
   GtkWidget* extra_vbox;
+
+  GtkAdjustment* current_replay_time_adjustment;
 };
 
 #endif NO_GRAPHICS

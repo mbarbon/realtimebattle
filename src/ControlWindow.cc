@@ -213,17 +213,109 @@ ControlWindow::display_replay_widgets()
   gtk_box_pack_start( GTK_BOX( extra_vbox ), hbox, FALSE, FALSE, 0 );
   gtk_widget_show( hbox );
 
-  GtkObject* adjustment = gtk_adjustment_new ( 0.0, 0.0,
-                                               the_opts.get_d( OPTION_TIMEOUT ) + 1.0,
-                                               0.1, 1.0, 1.0 );
+  current_replay_time_adjustment =
+    (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
+                                          the_opts.get_d( OPTION_TIMEOUT ) + 1.0,
+                                          0.1, 1.0, 1.0 );
 
-  GtkWidget* scale = gtk_hscale_new( GTK_ADJUSTMENT( adjustment ) );
+  gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
+                      (GtkSignalFunc) change_current_replay_time,
+                      (gpointer) this );
+
+  GtkWidget* scale = gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
   gtk_widget_set_usize( GTK_WIDGET( scale ), 150, 30 );
   gtk_range_set_update_policy( GTK_RANGE( scale ), GTK_UPDATE_DELAYED );
   gtk_scale_set_digits( GTK_SCALE( scale ), 1 );
   gtk_scale_set_draw_value( GTK_SCALE( scale ), TRUE );
   gtk_box_pack_start( GTK_BOX( hbox ), scale, TRUE, TRUE, 0 );
   gtk_widget_show( scale );
+
+  char* rew_xpm[13] =
+  { "18 10 2 1",
+    "       c None",
+    "x      c #000000000000",
+    "       xx       xx",
+    "     xxxx     xxxx",  
+    "   xxxxxx   xxxxxx",
+    " xxxxxxxx xxxxxxxx",
+    "xxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxx",
+    " xxxxxxxx xxxxxxxx",
+    "   xxxxxx   xxxxxx",
+    "     xxxx     xxxx",
+    "       xx       xx" };
+  char* ffw_xpm[13] =
+  { "18 10 2 1",
+    "       c None",
+    "x      c #000000000000",
+    "xx       xx       ",
+    "xxxx     xxxx     ",  
+    "xxxxxx   xxxxxx   ",
+    "xxxxxxxx xxxxxxxx ",
+    "xxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxx",
+    "xxxxxxxx xxxxxxxx ",
+    "xxxxxx   xxxxxx   ",
+    "xxxx     xxxx     ",
+    "xx       xx       " };
+
+  struct button_t { char** xpm; String label; GtkSignalFunc func; int pack; };
+  struct button_t replay_buttons[] = {
+    { rew_xpm, "", 
+      (GtkSignalFunc) ControlWindow::rewind       , TRUE  },
+    { ffw_xpm, "", 
+      (GtkSignalFunc) ControlWindow::fast_forward , TRUE  },
+    { NULL, " Step forward ", 
+      (GtkSignalFunc) ControlWindow::step_forward , TRUE  },
+    { NULL, " Step backward ", 
+      (GtkSignalFunc) ControlWindow::step_backward, TRUE  },
+    { NULL, " Next Game ", 
+      (GtkSignalFunc) ControlWindow::next_game    , TRUE  },
+    { NULL, " Prev Game ", 
+      (GtkSignalFunc) ControlWindow::prev_game    , TRUE  },
+    { NULL, " Next Seq ", 
+      (GtkSignalFunc) ControlWindow::next_seq     , TRUE  },
+    { NULL, " Prev Seq ", 
+      (GtkSignalFunc) ControlWindow::prev_seq     , TRUE  } };
+
+  GtkWidget* button_hbox = NULL;
+
+  for(int i = 0;i < 8; i++)
+    {
+      if( i == 0 || i == 4 )
+        {
+          button_hbox = gtk_hbox_new( FALSE, 10 );
+          gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
+                              FALSE, FALSE, 0);
+          gtk_widget_show( button_hbox );
+        }
+      GtkWidget* button_w;
+      if( replay_buttons[i].xpm != NULL )
+        {
+          button_w = gtk_button_new();
+          GdkPixmap* pixmap;
+          GdkBitmap* bitmap_mask;
+
+          pixmap = gdk_pixmap_create_from_xpm_d( window_p->window,
+                                                 &bitmap_mask,
+                                                 &(window_p->style->black),
+                                                 replay_buttons[i].xpm );
+          GtkWidget* pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
+          gtk_widget_show( pixmap_widget );
+          gtk_container_add( GTK_CONTAINER( button_w ), pixmap_widget );
+          gtk_widget_set_usize( button_w, 32, 20 );
+        }
+      else
+        button_w = 
+          gtk_button_new_with_label( replay_buttons[i].label.chars() );
+
+      gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
+                          (GtkSignalFunc) replay_buttons[i].func,
+                          (gpointer) NULL );
+      gtk_box_pack_start( GTK_BOX( button_hbox ), button_w,
+                          TRUE, replay_buttons[i].pack , 0);
+      gtk_widget_show( button_w );
+    }
 }
 
 ControlWindow::~ControlWindow()
@@ -414,4 +506,64 @@ ControlWindow::statistics_clicked( GtkWidget* widget,
                                    class ControlWindow* cw_p )
 {
   the_gui.open_statisticswindow();
+}
+
+void
+ControlWindow::rewind( GtkWidget* widget,
+                       class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::fast_forward( GtkWidget* widget,
+                             class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::step_forward( GtkWidget* widget,
+                             class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::step_backward( GtkWidget* widget,
+                              class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::next_game( GtkWidget* widget,
+                          class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::prev_game( GtkWidget* widget,
+                          class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::next_seq( GtkWidget* widget,
+                         class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::prev_seq( GtkWidget* widget,
+                         class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::change_current_replay_time( GtkAdjustment *adj,
+                                           class ControlWindow* cw_p )
+{
+}
+
+void
+ControlWindow::set_progress_time( const double time )
+{
+  gtk_adjustment_set_value( current_replay_time_adjustment, time );
 }
