@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "Arena.h"
+#include "Error.h"
 #include "Vector2D.h"
 #include "gui.h"
 
@@ -128,7 +129,7 @@ main ( int argc, char* argv[] )
   try
     {
       the_gui.setup_control_window();
-      the_arena.start_tournament( robotnames, arenanames, nr_robots, 5, 8);
+      the_arena.start_tournament( robotnames, arenanames, 4, 5, 8);
     }
   catch ( Error the_error )
 	 {
