@@ -21,13 +21,24 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __EventRT__
 
 #include "Event.h"
-
+#include "EventHandler.h"
 
 class CheckGUIEvent : public Event
 {
-  CheckGUIEvent() 
-    : Event(0, NULL)  {}
-  //This is your go Ragnar :)
+  CheckGUIEvent(const double time, EventHandler * ev) 
+    : Event(time, ev), NoMoreThan(0) {}
+  CheckGUIEvent(const double time, const double StopAt, EventHandler* ev)
+    : Event(time, ev), refresh(time), NoMoreThan(StopAt) {}
+  CheckGUIEvent(const double time, const double StopAt, const double UpDateDelay, EventHandler* ev)
+    : Event(time, ev), refresh(UpDateDelay), NoMoreThan(StopAt) {}
+
+  void eval() const ;
+
+protected:
+  void NextEvent() const;
+
+  double refresh;           //Time between 2 Update of robot
+  double NoMoreThan;
 };
 
 
