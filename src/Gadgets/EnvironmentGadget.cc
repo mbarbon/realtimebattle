@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include "AllGadgets.h"
 #include "EnvironmentGadget.h"
 #include "Variable.h"
 #include "RobotBodyGadget.h"
@@ -52,20 +53,21 @@ EnvironmentGadget::EnvironmentGadget( const char* name, Gadget* const p )
 }
 
 Gadget* 
-EnvironmentGadget::create_instance( const string & s, const Gadget* build_as )
+EnvironmentGadget::create_instance( const string & s, const Gadget* the_def )
 {
-  /*  cout<<s<<endl;
-  if( equal_strings_nocase( s, "Shot") )
-    {
-      //TODO : dynamic_cast<ShotGadget*> (build_as);
-      cout<<"Here\n";
-      ShotGadget* build_as_shot = (ShotGadget*) build_as;
-      shot  = new ShotGadget( s.c_str(), this );
-      (*shot) = *build_as_shot;
-      return shot;
-    }
-    else*/
-    return NULL;
+  //TODO : make some tests !!!
+  if( s == "AtBegining" || s == "MainLoop" || s == "EndCondition" ) {
+    Script* build_as_script = (Script*) (the_def);
+    Script* new_script = dynamic_cast<Script*> 
+      (AllGadgets::create_gadget_by_stringtype( lowercase( gadget_types[ the_def->get_info().type ] ),
+						s.c_str(), this));
+    (*new_script) = *build_as_script;
+    instance[s] = new_script;
+  
+    my_gadgets.add( instance[s]->get_info() );
+    return instance[s];
+  }
+  return NULL;
 }
 
 void

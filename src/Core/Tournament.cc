@@ -50,7 +50,7 @@ Tournament::Tournament(const tourn_info_t& new_tournament_info ) :
   my_tournament_info(new_tournament_info)
 {
   //Tell to run all the robots !
-  //TODO : Start
+  //TODO : Start 
   //start();
 }
 
@@ -74,6 +74,12 @@ Tournament::Tournament(const string& tournament_file)
     }
 
   cout<<"End of Tournament::Tournament\n";
+}
+
+Tournament::~Tournament()
+{
+  for( set<Robot*>::iterator ri = the_robots.begin(); ri != the_robots.end(); ri++ )
+    delete *ri;
 }
 
 void
@@ -116,7 +122,6 @@ Tournament::set_robots_p_match(int i)
 void
 Tournament::start()
 {
-
   match_nr = 0;
   //create_matches();
   //prepare_for_new_match();  
@@ -144,13 +149,14 @@ Tournament::start()
     {
       if(ai->selected)
 	{
-	  Arena * my_arena = new Arena( ai->directory+ai->filename, the_robots);
-	  delete my_arena;
+	  the_arenap = new Arena( ai->directory+ai->filename, the_robots);
 	  //TODO : load the arena file !
 	  break;
 	}
     }
-  
+
+  Event* next_event = new PrepareForNewMatchEvent(0.2, 25, this);
+  the_eventhandler.insert_RT_event(next_event);
   started = true;
 }
 
@@ -159,14 +165,13 @@ Tournament::connect_to_robot(NetConnection* nc, string& uniqueness_name)
 {
   for( set<Robot*>::iterator ri = the_robots.begin(); ri != the_robots.end(); ri ++ )
     {
-      if((*ri)->get_robot_name() == uniqueness_name && (*ri)->set_connection( nc )) {
-	return *ri;
-      }
+      if((*ri)->get_robot_name() == uniqueness_name && (*ri)->set_connection( nc )) 
+	  return *ri;
     }
   return NULL;
 }
 
-void 
+Match*
 Tournament::prepare_for_new_match()
 {
   // TODO: Startup all robots and remove all robots that failed to startup.
@@ -177,7 +182,8 @@ Tournament::prepare_for_new_match()
   // TODO: Create the_arena
 
   match_nr++;
-  the_eventhandler.insert_RT_event( new StartNewMatchEvent( 1.0, &the_matches[match_nr] ) );
+  return NULL;
+  //the_eventhandler.insert_RT_event( new StartNewMatchEvent( 1.0, &the_matches[match_nr] ) );
 }
 
 

@@ -60,7 +60,7 @@ public:
                                                 const char*       name,
                                                 Gadget* const     p );
   /** Create a gadget that matches the string gadgettype supplied.
-   *  @see    gadget_types
+   *  @see    gadget_t
    *  @param  type The type of Gadget to create, in form of a string.
    *  @param  name The name to be given to this gadget.
    *  @param  p    The parent of the gadget.

@@ -47,6 +47,7 @@ Script::ScriptLine::get_value()
 const Script& 
 Script::operator= (const Script& v) {
   commands = v.commands;
+  return *this;
 }
 
 /*const ShotGadget& 
@@ -90,6 +91,7 @@ Script::run()
           break;
 
         case ACTION:
+	  cout<<*(current_line->str_p)<<endl;
           // eval the string *str_p
           break;
 
@@ -210,4 +212,9 @@ Script::run()
     } 
 
   
+}
+
+void 
+Script::continue_script()
+{
 }

@@ -106,17 +106,6 @@ SensorGadget::SensorGadget( const char* name, Gadget* const p )
 Gadget* 
 SensorGadget::build_in_variable( const string & s, const Gadget* build_as )
 {
-  /*  cout<<s<<endl;
-  if( equal_strings_nocase( s, "Shot") )
-    {
-      //TODO : dynamic_cast<ShotGadget*> (build_as);
-      cout<<"Here\n";
-      ShotGadget* build_as_shot = (ShotGadget*) build_as;
-      shot  = new ShotGadget( s.c_str(), this );
-      (*shot) = *build_as_shot;
-      return shot;
-    }
-    else*/
     return NULL;
 }
 

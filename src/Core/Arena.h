@@ -59,13 +59,16 @@ public:
 
 
   void add_shot(Shot* s, bool from_robot=true);
+  void update();
+  bool is_finished();
+  void start();
   void update_shots() {}
   void update_robots();
 
   void collision( Shape* obj1, Shape* obj2, const double time_to_collsion ) {}
 
   set<Robot*>* get_robot_set() { return &robots; }
-
+  bool all_robots_ready();
 
   void print_to_logfile( const char first_letter ... ) {}
 

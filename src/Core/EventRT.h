@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,26 +23,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Event.h"
 #include <string>
 
-class GuiServerInterface;
 class Match;
 class Tournament;
 class SocketServer;
-
-
-class CheckGUIEvent : public Event
-{
-public:
-  CheckGUIEvent(const double time, const double refresh_time, GuiServerInterface* gp )
-    : Event(time), refresh(refresh_time), gui_p(gp) {}
-
-  void eval() const;
-
-protected:
-
-  double refresh;           //Time between 2 checks
-
-  GuiServerInterface* gui_p;
-};
 
 
 //To check the incoming communications
@@ -58,6 +41,8 @@ class CheckSocketEvent : public Event
   double refresh;
 
   SocketServer* server_p;
+  //TODO : Use a set of NetConnections so that we can have different refresh time
+  //Depending on the factory
 };
 
 
@@ -76,19 +61,17 @@ class StartTournamentEvent : public Event
   string filename;
 };
 
-
-
-
-
 class PrepareForNewMatchEvent : public Event
 {
  public:
-  PrepareForNewMatchEvent( const double time, Tournament* t) 
-    : Event(time), my_tournament(t) {}
+  PrepareForNewMatchEvent( const double time, int cd, Tournament* t) 
+    : Event(time), eval_time(time), count_down(cd), my_tournament(t) {}
 
   void eval() const;
 
 protected:
+  double eval_time;
+  int count_down;
   Tournament* my_tournament;
 };
 

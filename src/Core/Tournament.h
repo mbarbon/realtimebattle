@@ -81,9 +81,9 @@ class Tournament
 
   Tournament(const string& tournament_file);
   
-  ~Tournament() {}
+  ~Tournament();
 
-  void prepare_for_new_match();
+  Match* prepare_for_new_match();
 
   bool load_file( const string & tournament_file ) { return parse_tournament_file(tournament_file); }
 
@@ -95,6 +95,7 @@ class Tournament
   bool set_robots_p_match(int);
 
   Robot* connect_to_robot(NetConnection* nc, string& uniqueness_name);
+  bool all_robots_ready();
 
   set<Robot*>* get_the_robots(){return &the_robots;};
 

@@ -136,9 +136,12 @@ Define Wall Mine
 
    EndDefine Explosion MineExplosion
         
+   Define Script Explode
+       "MineExplosion.Explode"
+   EndDefine
         
-   ActionAtCollision        "MineExplosion.Explode"
-   ActionWhenHit            "MineExplosion.Explode"
+   ActionAtCollision        $Explode
+   ActionWhenHit            $Explode
         
    Temperature              37.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #e02222
@@ -188,8 +191,26 @@ The goal is to kill all other robots.")
    FixedLength              false
    Timeout                 120.0
 
-   Include                  "StdGeometries.include"
+   Include                  "/tmp/roussebe/RealTimeBattle/Arenas/StdGeometries.include"
 
    GeometryList             $PlainSquare $PlainCircle $Circles $Nippon
+
+   Define Script Start
+	"AllRobots.mount FrontDefence"
+	"Arena = GeometryList[rand]"
+	"AllRobots.place rand"
+   EndDefine 
+
+   Define Script End
+        "Timeout == 0 || AllRobots.size == 1"
+   EndDefine
+
+   Define Script Loop
+   EndDefine
+
+   AtBegining  		    $Start
+   MainLoop		    $Loop
+   EndCondition             $End
+
 
 EndDefine

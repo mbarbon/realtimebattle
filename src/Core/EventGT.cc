@@ -30,10 +30,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Script.h"
 
 
-
     ///////////////////////////////////////////////////
    //                                               //
-  //             RobotsUpdateEvent                  //
+  //             RobotsUpdateEvent                 //
  //                                               //
 ///////////////////////////////////////////////////
   
@@ -41,7 +40,7 @@ void
 RobotsUpdateEvent::eval() const 
 {
   the_arena.update_robots();
-  cout<<"RobotsUpdateEvent\n";
+  //  cout<<"RobotsUpdateEvent\n";
   Event* next_event = new RobotsUpdateEvent(eval_time + refresh, refresh );
   the_eventhandler.insert_GT_event(next_event, true);  
 }
@@ -57,7 +56,7 @@ void
 ShotsUpdateEvent::eval() const 
 { 
   the_arena.update_shots();
-  cout<<"ShotsUpdateEvent\n";
+  //cout<<"ShotsUpdateEvent\n";
   Event* next_event = new ShotsUpdateEvent(eval_time + refresh, refresh );
   the_eventhandler.insert_GT_event(next_event, true);
 }

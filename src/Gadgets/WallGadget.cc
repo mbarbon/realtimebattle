@@ -63,8 +63,9 @@ WallGadget::create_instance( const string & s, const Gadget* build_as )
   else 
     {
       //Create a new instance of the defined object !  Maybe this code must be in the Gadget::build_in_variable
-      instance[s] =  AllGadgets::create_gadget_by_stringtype( lowercase( gadget_types[ build_as->get_info().type ] ),
-							      s.c_str(), this);
+      instance[s] = AllGadgets::create_gadget_by_stringtype( lowercase( gadget_types[ build_as->get_info().type ] ),
+							     s.c_str(), this);
+      (*instance[s]) = (*build_as);
       return instance[s];
     }
 

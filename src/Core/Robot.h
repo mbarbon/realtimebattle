@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -81,6 +81,8 @@ public:
 
   double get_health() { return health; }
 
+  bool is_connected() { return connected_to_robot_client; }
+
   bool is_colour_given() { return colour_given; }
   void set_colour_given( const bool c ) { colour_given = c; }
   bool is_name_given() { return name_given; }
@@ -89,8 +91,6 @@ public:
   friend class SocketServer;
 
   Rotation get_robot_angle() { return robot_angle; }
-
-
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);

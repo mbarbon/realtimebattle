@@ -47,6 +47,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Arena::Arena(const string& s, set<Robot*> &S)
 {
+  robots = S;
   load_arena_file(s, gadget_hierarchy);
 }
 
@@ -313,7 +314,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             }
           else if( mode == LAF_SCRIPT_MODE )
             {
-              (dynamic_cast<Script*>(current_gadget))->add_script_lines( wordlist );
+              (dynamic_cast<Script*>(current_gadget))->add_script_line( wordlist[0] );
             }
           else if( mode == LAF_GEOMETRY_MODE )
             {
@@ -458,4 +459,28 @@ Arena::garbage_collector()
          li = static_objects.begin(); li != static_objects.end(); li++ )
     if( (*li)->is_killed() ) { static_objects.erase(li);  delete (*li); }
 
+}
+
+
+bool
+Arena::all_robots_ready()
+{
+  for(set<Robot*>::iterator i = robots.begin();
+      i != robots.end(); i ++ )
+    {
+      if( ! (**i).is_connected() )  return false;
+    }
+  return true;
+}
+
+void
+Arena::start()
+{
+  Script* begining = dynamic_cast<Script*>
+    (gadget_hierarchy.find_by_name( "TheEnvironment" )->find_by_name( "AtBegining" ));
+  if( begining )
+    {
+      cout<<"I have the good script !!!\n";
+      sleep( 1 );
+    }
 }

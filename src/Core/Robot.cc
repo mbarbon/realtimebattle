@@ -58,6 +58,8 @@ Robot::Robot(const string& uniqueness_name, int id) {
   killed = true;
 
   owner = NULL;
+
+  connected_to_robot_client = false;
 }
 
 // Constructor used by ArenaReplay. No process needed.

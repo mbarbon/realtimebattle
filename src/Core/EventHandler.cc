@@ -153,6 +153,7 @@ EventHandler::main_loop()
 void 
 EventHandler::insert_RT_event (Event* ev, bool absolute_time)
 { 
+  //NOTE : Kind of stupid, isn't it ?
   if( !absolute_time ) ev->add_time(current_time);
   RT_event_queue.push( ev );
 }

@@ -21,21 +21,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#include <pthread.h>
 #include <list>
 #include <algorithm>
 
 #include "ArenaController.h"
 #include "EventRT.h"
+#include "EventGT.h"
 #include "EventHandler.h"
 #include "Tournament.h"
 #include "ServerSocket.h"
-
-    ///////////////////////////////////////////////////
-   //                                               //
-  //             CheckGUIEvent                     //
- //                                               //
-///////////////////////////////////////////////////
 
 extern ArenaController the_arena_controller;
 
@@ -72,14 +66,28 @@ void
 PrepareForNewMatchEvent::eval() const
 {
   //cout<<"PrepareForNewMatchEvent::eval() const\n";
-  my_tournament->prepare_for_new_match();
+  assert( count_down >= 0 );
+
+  if( (! the_arenap->all_robots_ready()) && (count_down != 0) )
+    {
+      Event* next_event = new PrepareForNewMatchEvent(eval_time, count_down - 1, my_tournament);
+      the_eventhandler.insert_RT_event(next_event);
+    }
+  else
+    {
+      cout<<"Starting "<<count_down<<endl;
+      the_arenap->start();
+      the_eventhandler.insert_GT_event( new RobotsUpdateEvent( 0, 0.1 ) );
+      the_eventhandler.insert_GT_event( new ShotsUpdateEvent( 0, 0.1 )  );
+    }
+
 }
 
 void
 StartNewMatchEvent::eval() const
 {
-  //cout<<"StartNewMatchEvent::eval() const\n";
-  my_match->start_new_match();
+  cout<<"StartNewMatchEvent::eval() const\n";
+  //my_match->start_new_match();
 }
 
 
