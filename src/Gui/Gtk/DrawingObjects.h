@@ -34,6 +34,7 @@ typedef struct _GtkCList GtkCList;
 struct object_pos_info;
 class Shape;
 class Robot;
+class ArenaDisplay;
 
 // ---------------------------------------------------------------------------
 // class DrawingShape
@@ -45,7 +46,7 @@ public:
   DrawingShape             ( const int _id, const long int rgb_col );
   virtual ~DrawingShape    () {}
 
-  virtual void draw_shape  ( const bool erase ) = 0;
+  virtual void draw_shape  ( ArenaDisplay* display_p ) = 0;
   virtual void set_position( const object_pos_info* pos ) {}
 
   void set_colour          ( const long int colour );
@@ -64,8 +65,6 @@ protected:
 // ---------------------------------------------------------------------------
 // class DrawingLine
 // ---------------------------------------------------------------------------
-// Note that lines should always be at the same position!
-// ---------------------------------------------------------------------------
 
 class DrawingLine : public DrawingShape
 {
@@ -73,7 +72,7 @@ public:
   DrawingLine              ( const int _id, const long int rgb_col );
   ~DrawingLine             () {}
 
-  void draw_shape          ( const bool erase );
+  void draw_shape          ( ArenaDisplay* display_p );
   void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& sp, const Vector2D& dir,
                              const double len, const double th );
@@ -88,8 +87,6 @@ protected:
 // ---------------------------------------------------------------------------
 // class DrawingCircle
 // ---------------------------------------------------------------------------
-// Note that the radius may change (eg. explosions)
-// ---------------------------------------------------------------------------
 
 class DrawingCircle : public DrawingShape
 {
@@ -97,16 +94,13 @@ public:
   DrawingCircle            ( const int _id, const long int rgb_col );
   ~DrawingCircle           () {}
 
-  void draw_shape          ( const bool erase );
+  virtual void draw_shape  ( ArenaDisplay* display_p );
   void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double r );
 
 protected:
   Vector2D center;
   double radius;
-
-  Vector2D last_drawn_center;
-  double last_drawn_radius;
 };
 
 // ---------------------------------------------------------------------------
@@ -119,16 +113,13 @@ public:
   DrawingInnerCircle       ( const int _id, const long int rgb_col );
   ~DrawingInnerCircle      () {}
 
-  void draw_shape          ( const bool erase );
+  virtual void draw_shape  ( ArenaDisplay* display_p );
   void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double r );
 
 protected:
   Vector2D center;
   double radius;
-
-  Vector2D last_drawn_center;
-  double last_drawn_radius;
 };
 
 
@@ -143,7 +134,7 @@ public:
   DrawingArc               ( const int _id, const long int rgb_col );
   ~DrawingArc              () {}
 
-  void draw_shape          ( const bool erase );
+  virtual void draw_shape  ( ArenaDisplay* display_p );
   void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double ir, const double or,
                              const double sa, const double ea );
@@ -154,8 +145,6 @@ protected:
   double outer_radius;
   double start_angle;
   double end_angle;
-
-  Vector2D last_drawn_center;
 };
 
 // ---------------------------------------------------------------------------
@@ -168,8 +157,8 @@ public:
   DrawingWeaponGadget         ( const int _id, const long int rgb_col );
   ~DrawingWeaponGadget        () {}
 
-  void draw_shape             ( const bool erase );
-  void draw_shape             ( const bool erase, const Vector2D& center,
+  virtual void draw_shape     ( ArenaDisplay* display_p );
+  void draw_shape             ( ArenaDisplay* display_p, const Vector2D& center,
                                 const double radius, const double robot_angle );
   void set_angle              ( const double ang ) { angle = ang; }
 
@@ -187,8 +176,8 @@ public:
   DrawingSensorGadget         ( const int _id, const long int rgb_col );
   ~DrawingSensorGadget        () {}
 
-  void draw_shape             ( const bool erase );
-  void draw_shape             ( const bool erase, const Vector2D& center,
+  virtual void draw_shape     ( ArenaDisplay* display_p );
+  void draw_shape             ( ArenaDisplay* display_p, const Vector2D& center,
                                 const double radius, const double robot_angle );
   void set_angle              ( const double ang ) { angle = ang; }
 
@@ -206,7 +195,7 @@ public:
   DrawingRobot                ( const int _id, const long int rgb_col );
   ~DrawingRobot               () {}
 
-  void draw_shape             ( const bool erase );
+  virtual void draw_shape     ( ArenaDisplay* display_p );
 
   const string& get_name      () const { return name; }
   int get_row_in_score_clist  () const { return row_in_score_clist; }
