@@ -22,8 +22,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <fstream.h>
 #include <unistd.h>
-#include "Arena.h"
 #include "Shape.h"
+//#include "Arena.h"
+
 
 // ----------------  MovingObject : ArenaObject  ---------------------
 
@@ -126,14 +127,14 @@ public:
   void add_points(double pts) { points_this_game += pts; total_points += pts; }
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
+  int get_row_in_score_clist() { return row_in_score_clist; }
+  void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
+  void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
   void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
   void reset_last_displayed();
   void display_score();
   void draw_radar_and_cannon();
-
-  void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-  void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
