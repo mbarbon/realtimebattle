@@ -7,6 +7,7 @@
 Robot::Robot(char* filename, Arena* ap)
 {
   velocity = Vector2D(0.0, 0.0);
+  acceleration = 0.0;
   robot_filename = *g_string_new(filename);
   robot_name = *g_string_new("");
   robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
@@ -58,7 +59,8 @@ Robot::start_process()
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for robot ", 
                     robot_filename.str, "Robot::Robot, child");
-      
+
+      // TODO: Restrict resources
       // Restrict different resources
       // E.g. priority, file_access, 
 
@@ -96,7 +98,7 @@ Robot::start_process()
 bool
 Robot::is_process_running()
 {
-  // Check process!
+  // TODO: Check if the process is running
 
   return process_running;   // temporary!
 }
@@ -110,6 +112,7 @@ Robot::end_process()
 void
 Robot::kill_process_forcefully()
 {
+  // TODO: Kill process forcefully
   // kill -9
 }
 
@@ -132,6 +135,7 @@ Robot::update_radar_and_cannon(const double timestep)
 {
   radar_angle += timestep*radar_speed;
   cannon_angle += timestep*cannon_speed;
+  robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
   double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape);
   send_message(RADAR, dist, closest_shape);
@@ -143,12 +147,13 @@ Robot::set_initial_position_and_direction(const Vector2D& pos, double angle, dou
   center = pos;
   robot_angle = angle;
   radius = size;
-  velocity = Vector2D(0.1, 0.0); // Just for testing! 
+  velocity = Vector2D(0.7, 0.0); // Just for testing! 
 }
 
 void
 Robot::move(const double timestep)
 {
+  velocity = 0.99*velocity + timestep*acceleration*Vector2D(cos(robot_angle),sin(robot_angle));  // TODO: acceleration update
   object_type closest_shape;
   double dist = the_arena->get_shortest_distance(center, velocity, radius, closest_shape);
   if( dist > timestep )
@@ -157,7 +162,7 @@ Robot::move(const double timestep)
     }
   else
     {
-      alive = false; // not entirely complete ...
+      alive = false; // TODO: Bouncing et al
     }
 }
 
@@ -194,31 +199,57 @@ void
 Robot::get_messages()
 {
   char buffer[81];
-  strstream ss;
-  char* msg_name;
+  char text[81];
+  char msg_name[81];
   message_from_robot_type msg_t;
 
-  instreamp->getline(buffer, 80, '\n');
-  while( buffer[0] != '\0' )
+  *instreamp >> ws;
+  instreamp->clear();
+  instreamp->peek();
+  while( !instreamp->eof() )
     {
-      ss << buffer;
-      ss >> msg_name;
+      *instreamp >> msg_name;
       msg_t = name2msg_from_robot_type(msg_name);
 
       switch(msg_t)
         {
-        case UNKNOWN:
+        case UNKNOWN_MESSAGE_FROM_ROBOT:
+          cout << "Server: Warning sent for message: " << msg_name << endl;
           send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
+          instreamp->get(buffer, 80, '\n');
+          break;
+        case NAME:
+          *instreamp >> text;
+          g_string_assign(&robot_name, text);
+          // TODO: Tell gui to change name
           break;
         case ROTATE: 
+          int bits;
+          double rot_speed;
+          *instreamp >> bits >> rot_speed;
+          if( bits & 1 == 1) robot_angle_speed = rot_speed;
+          if( bits & 2 == 2) cannon_speed = rot_speed;
+          if( bits & 4 == 4) radar_speed = rot_speed;
           break;
         case PRINT:
+          instreamp->get(text, 80, '\n');
+          cout << "Text read: " << text << endl;
+          the_arena->get_the_gui()->print_to_message_output(robot_name.str, text, colour);
+          break;
+        case SHOOT:
+          // pang!
+          // TODO: Shooting
+          break;
+        case ACCELERATE:
+          // TODO: acceleration
           break;
         default:
           throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
         }
-          
-      instreamp->getline(buffer, 80, '\n');
+
+      *instreamp >> ws;
+      instreamp->clear();
+      instreamp->peek();
     }
 }
 
@@ -230,7 +261,7 @@ Robot::name2msg_from_robot_type(char* msg_name)
       if( strcmp(message_from_robot[i].msg, msg_name) == 0 )
         return (message_from_robot_type)i;
     }
-  return UNKNOWN;
+  return UNKNOWN_MESSAGE_FROM_ROBOT;
 }
 
 void
