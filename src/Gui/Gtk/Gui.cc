@@ -79,7 +79,7 @@ int
 GIMain( GuiInterface* _gi_p )
 {
   int returncode = the_gui.main_loop( _gi_p );
-  //  _gi_p->quit(); //TODO: How do we tell that RTB should Quit?
+  _gi_p->quit( true );
   return returncode;
 }
 
