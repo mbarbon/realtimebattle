@@ -14,7 +14,8 @@ if NO_GRAPHICS
 GRAPHFLAGS = -DNO_GRAPHICS 
 endif
 
-INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl $(PROFFLAGS) $(GRAPHFLAGS) \
+INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl \
+			  $(PROFFLAGS) $(GRAPHFLAGS) $(THREAD_FLAGS) \
            -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
            -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 
@@ -30,8 +31,9 @@ else
 CCMALLOC_O =
 endif
 
-RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) 
-RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS)
+#Note the gui-lib should be taken via configure
+RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(THREAD_LIBS) $(top_srcdir)/src/Gui/Gtk/.libs/libGuiGtk.so 
+RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS) $(top_srcdir)/src/Gui/Gtk/.libs/libGuiGtk.so
 RealTimeBattle_SOURCES = \
 	ArenaBase.cc ArenaBase.h \
 	ArenaController.cc ArenaController.h \
@@ -39,6 +41,7 @@ RealTimeBattle_SOURCES = \
 	ArenaReplay.h ArenaReplay.cc \
 	Extras.cc Extras.h \
 	GeometricalObjects.cc GeometricalObjects.h \
+	GuiInterface.cc GuiInterface.h \
 	IntlDefs.h \
 	List.cc List.h \
 	Messagetypes.h \

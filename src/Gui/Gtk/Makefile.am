@@ -5,7 +5,8 @@ PROFFLAGS = -pg
 endif
 
 INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl -I$(top_srcdir)/src \
-           $(PROFFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
+           $(PROFFLAGS) $(THREAD_FLAGS) \
+			  -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
            -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 
 if ENABLE_CCMALLOC
