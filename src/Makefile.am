@@ -39,6 +39,8 @@ RealTimeBattle_SOURCES = \
 	ArenaController.cc ArenaController.h \
 	ArenaRealTime.cc ArenaRealTime.h \
 	ArenaReplay.h ArenaReplay.cc \
+	Event.h \
+	EventHandler.h EventHandler.cc \
 	Extras.cc Extras.h \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
