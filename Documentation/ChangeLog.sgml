@@ -19,8 +19,13 @@ Various minor improvements to the gui.
 
 Added option <tt>Logging frequency</tt> to make log files less large.
 
-Fixed bug that caused rotate_and_fire_select.cc failed during compile on some
-slackware machines.
+Added two new warning messages: NAME&lowbar;NOT&lowbar;GIVEN and
+COLOUR&lowbar;NOT&lowbar;GIVEN.
+
+Robots does get a random colour instead of black if none is given. 
+
+Fixed bug that caused rotate&lowbar;and&lowbar;fire&lowbar;select.cc
+failed during compile on some slackware machines.
 
 Fixed bug that caused the arena window not to be hidden correctly when hiding it at
 the start of a tournament.
