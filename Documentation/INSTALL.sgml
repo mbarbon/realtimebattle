@@ -1,0 +1,58 @@
+<!doctype linuxdoc system>
+
+<notes>
+<title>Installation
+
+Installing RealTimeBattle should not be too difficult; if you get problems, please send a bug report
+to <htmlurl name="TODO:mail" url=""> and tell what went wrong.
+
+<enum>
+<item> Unpack the tar-file
+<p>
+Move RealTimeBattle.tar.gz to an appropriate directory and type 
+<verb>tar -xzvf RealTimeBattle.tar.gz</verb> or 
+if your <tt>tar</tt> cannot uncompress, 
+<verb>gunzip -c RealTimeBattle.tar.gz | tar -xvf -</verb> and 
+the file are extracted to the directory <tt>RealTimeBattle</tt>.
+
+<item> Compile
+<p>
+Change directory to <tt>RealTimeBattle</tt> and type <verb>make</verb>
+
+Hopefully will everything compile fine. If not, please ensure that <tt>gtk+</tt> is correctly
+installed. You can check this by typing <verb>gtk-config --version</verb>
+
+<item> Install
+<p>
+If you want, you install the program on your system, by typing <verb>make install</verb>. Before you
+do that, it is a good idea to look at the main <tt>Makefile</tt> and change the install-directories
+to whatever you wish.
+
+Note that you normally have to be root to do the installation (unless you change the directories to
+be in your home directory).
+
+If you like, you can do the installation by hand, in fact, the only important file to move is the
+binary <tt>src/RealTimeBattle</tt>, which should be moved to somewhere in your <tt>PATH</tt>.
+
+<item> Configure
+<p>
+Before you start, you have to tell the program where to find the robots and the arenas. This is done
+by setting two environmental variables, <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt>. If you use
+<tt>bash</tt> you can e.g. add the following lines to your <tt>.bashrc</tt> file. 
+<verb>
+export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
+export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
+</verb>
+You have to enter 
+<verb>
+source ~/.bashrc</verb> for 
+the change to take effect.
+
+<item> Test it!
+<p>
+Type <verb>RealTimeBattle</verb>
+
+
+</enum>
+
+</notes>
