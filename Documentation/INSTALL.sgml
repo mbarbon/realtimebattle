@@ -29,7 +29,7 @@ The following options are especially useful:
 
 <verb>
  --prefix=DIR              The root directory for all installed files, 
-                            default: /usr
+                            default: /usr/local
  --exec-prefix=DIR         Root for architecture-dependent files,
                             default: prefix
  --bindir=DIR              Where the RealTimeBattle binary is placed,
@@ -53,6 +53,16 @@ The following options are especially useful:
  --without-gtk           Same as --disable-graphics.
 </verb>
 
+Note that the default --prefix setting has from v0.9.11 been changed to
+<tt>/usr/local</tt> from <tt>/usr</tt> that was the default prior to
+v0.9.11. If you still want to use <tt>/usr</tt>, configure using the
+command
+
+<verb>% ./configure --prefix=/usr</verb>
+
+If you have an old version of RealTimeBattle, it could be necessary to
+remove the old version first (especially if you change the --prefix option).
+
 The <tt>gtk</tt> options can be useful too.
 
 Note that in order to install to directories other than your own, you have to be root.
@@ -60,9 +70,17 @@ Note that in order to install to directories other than your own, you have to be
 If you need to supply extra flags to the c or c++ compiler, you can do this by
 changing <tt>CFLAGS</tt> and <tt>CXXFLAGS</tt> respectively. For example, using bash,
 
-<verb>
-export CXXFLAGS=-Wall
-</verb> 
+<verb>% export CXXFLAGS=-Wall</verb> 
 will add '-Wall' when compiling a c++ program.
+
+It is possible to compile RTB from another directory than the top source
+directory. To do this follow these steps:
+<verb>
+% mkdir /path/to/RTB/builddir
+% cd /path/to/RTB/builddir
+% /path/to/RTB/sourcedir/configure [options]
+% make
+</verb>
+
 
 </notes>
