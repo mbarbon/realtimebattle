@@ -159,6 +159,10 @@ Options::Options()
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x000000, 0x000000, 0xffffff, 6,
                         false, false, "Foreground colour" );
 
+  all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
+    option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x1111ee, 0x000000, 0xffffff, 6,
+                        false, false, "The colour for RealTimeBattle messages" );
+
   all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
                           false, true, "Cookie max energy" );
