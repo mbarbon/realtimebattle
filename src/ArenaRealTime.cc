@@ -80,9 +80,11 @@ ArenaRealTime::~ArenaRealTime()
 }
 
 void
-ArenaRealTime::set_filenames( String& log_fname, const String& statistics_fname, 
+ArenaRealTime::set_filenames( String& log_fname,
+                              const String& statistics_fname, 
                               const String& tournament_fname,
-                              String& message_fname, const String& option_fname )
+                              String& message_fname,
+                              const String& option_fname )
 {
   bool log_stdout = false;
 

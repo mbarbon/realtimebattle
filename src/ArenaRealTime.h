@@ -52,8 +52,8 @@ public:
   void parse_arena_file(String& filename);
   
   void set_filenames( String& log_fname, const String& statistics_fname, 
-                      const String& tournament_fname, String& message_fname,
-                      const String& option_fname );  
+                      const String& tournament_fname,
+                      String& message_fname, const String& option_fname );
 
   void print_to_logfile( const char first_letter ... );
   void print_to_messagefile( const String& messager, const String& text );
