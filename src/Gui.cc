@@ -582,7 +582,7 @@ Gui::setup_control_window()
       gtk_widget_show (button);
 
 
-      button = gtk_button_new_with_label ("Kill Marked Robots");
+      button = gtk_button_new_with_label ("Kill Marked Robot");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (kill_robot_button_callback), (gpointer) NULL);
       gtk_table_attach_defaults (GTK_TABLE(debugtable), button, 0, 10, 1, 2);
