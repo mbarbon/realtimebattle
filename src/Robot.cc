@@ -217,10 +217,11 @@ Robot::start_process()
           if( robotp != this ) robotp->delete_pipes();
         }
 
+      // file access and child process creation are now allowed
+
       //      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
-      if( false )
-        {
-          struct rlimit res_limit;
+      //        {
+          //          struct rlimit res_limit;
 
           //        // Deny file access
           
@@ -236,17 +237,17 @@ Robot::start_process()
 
           // Forbid creation of child processes
           
-#ifdef HAVE_RLIMIT_NPROC
-          if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            Error(true, "Couldn't get proc limits for robot " + robot_filename, 
-                  "Robot::start_process, child");
+//  #ifdef HAVE_RLIMIT_NPROC
+//            if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+//              Error(true, "Couldn't get proc limits for robot " + robot_filename, 
+//                    "Robot::start_process, child");
           
-          res_limit.rlim_cur = 0;
-          if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            Error(true, "Couldn't limit child processes for robot " + robot_filename, 
-                  "Robot::start_process, child");
-#endif
-        }
+//            res_limit.rlim_cur = 0;
+//            if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+//              Error(true, "Couldn't limit child processes for robot " + robot_filename, 
+//                    "Robot::start_process, child");
+//  #endif
+      //        }
 
       // Execute process. Should not return!
       if( execl(robot_filename.chars(), robot_filename.chars(), NULL) == -1 )
@@ -302,59 +303,100 @@ Robot::is_process_running()
 }
 
 void
+Robot::update_cpu_time_used()
+{
+  if( network_robot || !process_running ) return;
+
+  String procfilename = "/proc/" + String(pid) + "/stat";
+  ifstream procfile(procfilename.chars());
+  if( !procfile ) return;
+  
+  char buf[16];
+  
+  // step to the correct value
+  for(int i=0; i<15; i++) 
+    procfile >> buf; 
+  
+  // The next four values should be added to get the correct cpu usage
+  double current_cpu = 0.0;
+  int jiffies;  
+  for(int i=0; i<4; i++)
+    {
+      procfile >> jiffies;  
+      current_cpu += (double)jiffies / 100.0;
+    }
+
+//    if( getrusage( pid, &ru ) != 0 ) return;
+
+//    current_cpu = ((double)( ru->ru_utime.tv_usec + ru->ru_stime.tv_usec )) / 1e6 +
+//      (double)( ru->ru_utime.tv_sec + ru->ru_stime.tv_sec );
+
+  cpu_used += current_cpu - last_cpu;
+
+  last_cpu = current_cpu;
+}
+
+void
+Robot::reset_cpu_time()
+{
+  if( network_robot ) return;
+  
+  update_cpu_time_used();
+  cpu_used = 0;
+}
+
+void
 Robot::check_process()
 {
-  String procfilename = "/proc/" + String(pid) + "/stat";
+  //  String procfilename = "/proc/" + String(pid) + "/stat";
 
-  if( is_process_running() )
-    {
-      ifstream procfile(procfilename.chars());
-      if( !procfile ) 
-        {
-          process_running = false;
-          return;
-        }
+  if( !is_process_running() || !alive || network_robot ) return;
 
-      char buf[16];
+    //    ifstream procfile(procfilename.chars());
+//        if( !procfile ) 
+//          {
+//            process_running = false;
+//            return;
+//          }
 
-      for(int i=0; i<13; i++)
-        procfile >> buf;
+//        char buf[16];
+
+//        for(int i=0; i<13; i++)
+//          procfile >> buf;
       
-      int jiffies;
+//        int jiffies;
       
-      procfile >> jiffies;
+//        procfile >> jiffies;
 
-      double current_cpu = (double)jiffies / 100.0;
+      update_cpu_time_used();
+
       double tot_time = the_arena.get_total_time() + time_survived_in_sequence;
-      if( !alive ) tot_time = time_survived_in_sequence;
-
-      if( current_cpu > cpu_next_limit )
+      if( cpu_used > cpu_limit )
         {
-          if( tot_time >= cpu_timeout )
-            {
-              // add time
-              cpu_warning_limit = cpu_next_limit + 
-                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
+          if( tot_time >= cpu_timeout ) // ok, within time limit
+            { 
+              // add extra time
+              reset_cpu_time();
+              cpu_limit = the_opts.get_d(OPTION_CPU_EXTRA);
+              cpu_warning_limit = cpu_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
               cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
             }
-          else
-            {
-              // cpu limit exceeded, robot disqualified
+          else // cpu limit exceeded, robot disqualified
+            {              
               die();
-              // add time for next game
-              cpu_warning_limit = cpu_next_limit + 
-                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
-              cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
+
+              // restart with full cpu_time next game
+              reset_cpu_time(); 
+              cpu_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
+              cpu_warning_limit = cpu_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+              cpu_timeout = 0.0;
             }
         }
-      else if( current_cpu > cpu_warning_limit && tot_time < cpu_timeout )
+      else if( cpu_used > cpu_warning_limit && tot_time < cpu_timeout )
         {
-          send_message( WARNING, PROCESS_TIME_LOW, String(cpu_next_limit - current_cpu).chars());
-          cpu_warning_limit = cpu_next_limit;
+          send_message( WARNING, PROCESS_TIME_LOW, String(cpu_limit - cpu_used).chars());
+          cpu_warning_limit = cpu_limit; // No more warnings
         }
-    }
 }
 
 
@@ -705,11 +747,11 @@ Robot::update_radar_and_cannon(const double timestep)
       send_message(ROBOT_INFO, rint( en / lvls ) * lvls, 0);
     }
 
-  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 1 )
+  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 1 ) // Relative starting pos
     send_message(COORDINATES, center[0] - start_pos[0], center[1] - start_pos[1], 
                  robot_angle.pos - start_angle);
   
-  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 2 )
+  if( the_opts.get_l(OPTION_SEND_ROBOT_COORDINATES) == 2 ) // Absolute coordinates
     send_message(COORDINATES, center[0], center[1], robot_angle.pos);
 
   send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
@@ -822,10 +864,11 @@ Robot::set_values_at_process_start_up()
 
   if( !network_robot )
     {
-      cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
-      cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+      reset_cpu_time();
+      cpu_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
+      cpu_warning_limit = cpu_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
       cpu_timeout = 0.0;
-    }
+    }  
 
   time_survived_in_sequence = 0.0;
 

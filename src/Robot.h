@@ -66,9 +66,14 @@ public:
                  const bool make_stats);
   bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
   bool is_networked() { return network_robot; }
+
   void start_process();
   bool is_process_running();
+
   void check_process();
+  void update_cpu_time_used();
+  void reset_cpu_time();
+
   void send_signal();
   void end_process();
   void delete_pipes();
@@ -174,9 +179,11 @@ private:
   double time_survived_in_sequence;
   bool dead_but_stats_not_set;
 
-  double cpu_next_limit;
+  double cpu_used;
+  double cpu_limit;
   double cpu_warning_limit;
   double cpu_timeout;
+  double last_cpu;
 
   ifstream* instreamp;
   ofstream* outstreamp;
