@@ -96,6 +96,10 @@ public:
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
   void save_statistics_to_file(String filename);
+  void search_directories( String directory, GList* dir_gl,
+                           const bool check_robots );
+  void check_for_robots_and_arenas( String& word, GList* tour_gl,
+                                    GList* dir_gl, const bool check_robots );
   void parse_tournament_file( String& fname );
   void set_filenames(String& log_fname, const String& statistics_fname, 
                      const String& tournament_fname, const String& option_fname);

@@ -25,6 +25,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iomanip.h>
 #include <stdarg.h>
 
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
+#else
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
+#endif
+
 #include "Gui.h"
 //#include "Arena.h"
 //#include "MovingObject.h"
@@ -179,6 +196,94 @@ Arena::save_statistics_to_file(String filename)
 }
 
 void
+Arena::search_directories( String directory, GList* dir_gl,
+                           const bool check_robots )
+{
+  DIR* dir;
+  if( NULL != ( dir = opendir(directory.chars()) ) )
+    {
+      struct dirent* entry;
+      while( NULL != ( entry = readdir( dir ) ) )
+        {
+          String full_file_name = directory + entry->d_name;
+          bool res = false;
+          if(check_robots)
+            res = check_if_filename_is_robot(full_file_name);
+          else
+            res = check_if_filename_is_arena(full_file_name);
+          if(res)
+            {
+              start_tournament_glist_info_t* info;
+              info = new start_tournament_glist_info_t(0,false,full_file_name,"");
+              g_list_append(dir_gl,info);
+            }
+        }
+    }
+}
+
+void
+Arena::check_for_robots_and_arenas( String& word, GList* tour_gl,
+                                    GList* dir_gl, const bool check_robots )
+{
+  bool found = false;
+  String full_file_name = "";
+
+  if( word.get_length() > 1 )
+    if( get_segment( word, -2, -1 ) == "/*" )
+      {
+        search_directories( get_segment( word, 0, -2 ), tour_gl, check_robots );
+        return;
+      }
+  if( word.get_length() == 1 && word[0] == '*' )
+    {
+      GList* gl;
+      for(gl=g_list_next(dir_gl);gl != NULL; gl=g_list_next(gl))
+        search_directories( *((String*)gl->data), tour_gl, check_robots );
+      return;
+    }
+  if( word.find('/') != -1 )
+    {
+      if((check_robots && check_if_filename_is_robot( word )) ||
+         (!check_robots && check_if_filename_is_arena( word )))
+        {
+          full_file_name = word;
+          found = true;
+        }
+    }
+  if( !found )
+    {
+      GList* gl;
+      for(gl=g_list_next(dir_gl);gl != NULL; gl=g_list_next(gl))
+        {
+          String* current_dir = (String*)gl->data;
+
+          String temp_name = *current_dir + word;
+
+          if((check_robots && check_if_filename_is_robot( temp_name )) ||
+             (!check_robots && check_if_filename_is_arena( temp_name )))
+            {
+              full_file_name= temp_name;
+              found = true;
+              break;
+            }
+        }
+    }
+  if( found )
+    {
+      start_tournament_glist_info_t* info;
+      info = new start_tournament_glist_info_t(0,false,full_file_name,"");
+      g_list_append(tour_gl, info);
+    }
+  else
+    {
+      if(check_robots)
+        cerr << "Couldn't find an executable robot with filename " << word << endl;
+      else
+        cerr << "Couldn't find an arena with filename " << word << endl;
+    }
+}
+
+void
 Arena::parse_tournament_file( String& fname )
 {
   GList* robotdirs;
@@ -239,7 +344,6 @@ Arena::parse_tournament_file( String& fname )
           
           return;
         }
-      //        return;
       if((make_lower_case(word) == "games/sequence:") || (make_lower_case(word) == "g/s:"))
         {
           looking_for = 0;
@@ -272,130 +376,17 @@ Arena::parse_tournament_file( String& fname )
           switch(looking_for)
             {
             case 0:
-              {
-                looking_for = 0;
-                cerr << "Unrecognized keyword in tournament file: " << word << endl;
-              }
+              looking_for = 0;
+              cerr << "Unrecognized keyword in tournament file: " << word << endl;
               break;
             case 1:
-              {
-                bool found_robots = false;
-                String full_file_name = "";
-                start_tournament_glist_info_t* info;
-                info = new start_tournament_glist_info_t(0,false,word,"");
-
-                if( word.find('/') != -1 )
-                  {
-                    if( get_segment( word, -2, -1 ) == "/*" )
-                      {
-                        search_directories( get_segment( word, 0, -2 ), robot_glist, true );
-                        break;
-                      }
-                    else if(check_if_filename_is_robot( word ))
-                      {
-                        full_file_name = word;
-                        found_robots = true;
-                      }
-                  }
-                if( !found_robots )
-                  {
-                    if( word.get_length() == 1 && word[0] == '*' )
-                      {
-                        GList* gl;
-                        for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
-                          search_directories( *((String*)gl->data), robot_glist, true );
-                        break;
-                      }
-                  }
-                if( !found_robots )
-                  {
-                    GList* gl;
-                    for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
-                      {
-                        String* current_dir = (String*)gl->data;
-
-                        String temp_name = *current_dir + word;
-
-                        if(check_if_filename_is_robot( temp_name ))
-                          {
-                            full_file_name= temp_name;
-                            found_robots = true;
-                            break;
-                          }
-                      }
-                  }
-                if( found_robots )
-                  {
-                    info->filename = full_file_name;
-                    g_list_append(robot_glist, info);
-                  }
-                else
-                  {
-                    cerr << "Couldn't find an executable robot with filename " << word << endl;
-                    delete info;
-                  }
-              }
+              check_for_robots_and_arenas( word, robot_glist, robotdirs, true);
               break;
             case 2:
-              {
-                bool found_arenas = false;
-                String full_file_name = "";
-                start_tournament_glist_info_t* info;
-                info = new start_tournament_glist_info_t(0,false,word,"");
-
-                if( word.find('/') != -1 )
-                  {
-                    if( get_segment( word, -2, -1 ) == "/*" )
-                      {
-                        search_directories( get_segment( word, 0, -2 ), arena_glist, false );
-                        break;
-                      }
-                    if(check_if_filename_is_arena( word ))
-                      {
-                        full_file_name = word;
-                        found_arenas = true;
-                      }
-                  }
-                if( !found_arenas )
-                  {
-                    if( word.get_length() == 1 && word[0] == '*' )
-                      {
-                        GList* gl;
-                        for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
-                          search_directories( *((String*)gl->data), arena_glist, false );
-                        break;
-                      }
-                  }
-                if(!found_arenas)
-                  {
-                    GList* gl;
-                    for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
-                      {
-                        String* current_dir = (String*)gl->data;
-
-                        String temp_name = *current_dir + word;
-                        if(check_if_filename_is_arena( temp_name ))
-                          {
-                            full_file_name = temp_name;
-                            break;
-                          }
-                    }
-                  }
-                if( found_arenas )
-                  {     
-                    info->filename = full_file_name;
-                    g_list_append(arena_glist, info);
-                  }
-                else
-                  {
-                    cerr << "Couldn't find a robot with filename " << word << endl;
-                    delete info;
-                  }
-              }
+              check_for_robots_and_arenas( word, arena_glist, arenadirs, false);
               break;
             }
         }
-
     }
 }
 
