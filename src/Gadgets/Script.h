@@ -42,7 +42,7 @@ public:
 
   enum ScriptFunction
   {
-    PUSH, POP, COPY, STORE,
+    PUSH, POP, COPY, STORE, ACTION,
     ADD, SUB, MULT, DIV, INV, NEG,
     SIN, COS, TAN, ATAN, ASIN, ACOS,
     LT, GT, LE, GE, EQ, NE,
@@ -54,9 +54,10 @@ public:
   {
     int line_nr;
     ScriptFunction function;
-    bool is_variable;
+    bool is_variable;  // is the argument a variable?
     Value val;
     Variable* var_p;
+    string* str_p;  // For actions
 
     Value& get_value();
   };

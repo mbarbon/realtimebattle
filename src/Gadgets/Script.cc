@@ -77,6 +77,10 @@ Script::run()
           (*current_line).var_p->assign((*current_line).get_value());
           break;
 
+        case ACTION:
+          // eval the string *str_p
+          break;
+
         case ADD:
           val_stack.top() += (*current_line).get_value();
           break;
