@@ -622,7 +622,10 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         ListIterator<Shape> li;             
         find_object_by_id( object_lists[COOKIE], li, id );
         if( !li.ok() ) 
-          Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line_rewind");
+          {
+            // This happens if it dies the round as it is created
+            //Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line_rewind");
+          }
         else
           {
             ((Cookie*)li())->die();
@@ -638,7 +641,10 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         ListIterator<Shape> li;
         find_object_by_id( object_lists[MINE], li, id );
         if( !li.ok() ) 
-          Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line_rewind");
+          {
+            // This happens if it dies the round as it is created
+            //Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line_rewind");
+          }
         else
           {
             ((Mine*)li())->die();
@@ -655,7 +661,10 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         ListIterator<Shape> li;
         find_object_by_id( object_lists[SHOT], li, id );
         if( !li.ok() )
-          Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line_rewind");
+          {
+            // This happens if it dies the round as it is created
+            //Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line_rewind");
+          }
         else
           {
             ((Shot*)li())->die();
