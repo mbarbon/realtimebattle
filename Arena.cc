@@ -202,6 +202,16 @@ Arena::get_random_position()
 }
 
 void
+Arena::broadcast(const message_to_robot_type msg_type ...)
+{
+  va_list args;
+  va_start(args, msg_type);
+  GList* gl;
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    ((Robot*)gl->data)->send_message(msg_type, args);
+}
+
+void
 Arena::quit_ordered()
 {
   state = EXITING;
@@ -324,6 +334,7 @@ Arena::update_robots()
       ((Robot*)gl->data)->send_signal();
     }
   robots_left -= killed_robots;
+  broadcast(ROBOTS_LEFT, robots_left);
 }
 
 void
@@ -475,6 +486,7 @@ Arena::start_sequence()
 
   state = STARTING_ROBOTS;
   g_timer_reset(timer);
+  update_timer();
   next_check_time = total_time + 1.0;
 }
 

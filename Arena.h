@@ -44,6 +44,7 @@ public:
                         int robots_p_game, 
                         int games_p_sequence);   
 
+  void broadcast(enum message_to_robot_type ...);
   void quit_ordered();
 
   Vector2D get_random_position();
@@ -66,6 +67,7 @@ public:
   double get_slide_friction() { return slide_friction; }
   double get_grav_const() { return grav_const; }
   int get_robots_left() { return robots_left; }
+  double get_total_time() { return (double)total_time; }
   double get_shooting_penalty() { return shooting_penalty / max(1.0, ((double)robots_left)/10.0); }
   state_t get_state() { return state; }
   
