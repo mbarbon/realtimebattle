@@ -50,74 +50,60 @@ Define Weapon Cannon
 
 EndDefine
 
-Define Device Mine
+Define Ball Mine
 
    InfoString               _("Standard exploding mine.")
 
    Size                      0.2
         
-   Define Action Explode
+   Define Explosion MineExplosion
 
-      Define Explosion MineExplosion
+      Function  Explode  default
 
-         Function  Explode  default
+      Size                1.5
+      GrowTime            0.1
+      AtMaxTime           0.1
+      ShrinkTime          2.0
+      Temperature       900.0   ;Note: in degrees (not kelvin), is this right?
+      Damage             10.0
+      AirResistance       0.1
+      Visibility          0.5
+      SoundLevel         10.0
+      Colour             #ff7400
 
-         Size                1.5
-         GrowTime            0.1
-         AtMaxTime           0.1
-         ShrinkTime          2.0
-         Temperature       900.0   ;Note: in degrees (not kelvin), is this right?
-         Damage             10.0
-         AirResistance       0.1
-         Visibility          0.5
-         SoundLevel         10.0
-         Colour             #ff7400
-
-      EndDefine
+   EndDefine Explosion MineExplosion
         
-      Do                    MineExplosion   ;Defualt-function (Explode) is triggered
-
-   EndDefine
         
-   ActionAtCollision        Explode
-   ActionWhenHit            Explode
+   ActionAtCollision        "MineExplosion.Explode"
+   ActionWhenHit            "MineExplosion.Explode"
         
    Temperature              37.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #e02222
 
-EndDefine
+EndDefine Ball Mine
 
-Define Device Cookie
+
+
+Define Ball Cookie
 
    InfoString               _("Standard cookie.")
    Size                      0.2
 
-   Define Action CookieEnergy
+   Define Variable RandomEnergy
 
-      Define Variable RandomEnergy
-
-         Information        false
-         Paramater          false
-         DefaultValue       10.0
-         MinValue           10.0
-         MaxValue           15.0
-         Random             true
-
-      EndDefine
-
-      AddEnergy             RandomEnergy
-      Die                   true          ;Is this that the cookie should die?
+      Information        false
+      Paramater          false
+      DefaultValue       10.0
+      MinValue           10.0
+      MaxValue           15.0
+      Random             true
 
    EndDefine
 
-   Define Action CookieDie
 
-      Die                   true          ;Is this that the cookie should die?
-
-   EndDefine
-
-   ActionAtCollision        CookieEnergy
-   ActionWhenHit            CookieDie
+   ActionAtCollision        "Collider.AddEnergy $RandomEnergy
+                             Die"
+   ActionWhenHit            "Die"
 
    Temperature              20.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #00ff48
