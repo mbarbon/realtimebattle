@@ -893,6 +893,7 @@ Robot::get_messages()
             int bits;
             double rot_speed, rot_end_angle, rot_amount;
             *instreamp >> bits >> rot_speed >> rot_end_angle;
+            rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
             if( bits & 2 )
               {
                 cannon_angle.pos -= rint( (cannon_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
@@ -968,6 +969,8 @@ Robot::get_messages()
             int bits;
             double rot_speed, sweep_left, sweep_right;
             *instreamp >> bits >> rot_speed >> sweep_left >> sweep_right;
+            sweep_left = max(min(sweep_left, infinity), -infinity);
+            sweep_right = max(min(sweep_right, infinity), -infinity);
             rotation_mode_t rot_dir;
             rot_dir = ( rot_speed < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
 
