@@ -111,8 +111,6 @@ public:
   int change_to_pixels_x(const double input);
   int change_to_pixels_y(const double input);
 
-  char ** get_colour_square_xpm( char ** col_sq, const GdkColor& colour );
-
   void clear_area();
   void draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled );
   void draw_line( const Vector2D& start, const Vector2D& end, GdkColor& colour );

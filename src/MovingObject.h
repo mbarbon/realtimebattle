@@ -53,6 +53,20 @@ struct rotation_t
   rotation_mode_t mode;
 };
 
+struct pixmap_t
+{
+  pixmap_t() : pixmap(NULL), window(NULL) {}
+  ~pixmap_t();
+
+  void set_pixmap(GdkColor& col, GdkWindow* win);
+  void get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm);
+
+  GdkPixmap* pixmap;
+  GdkWindow* window;
+  GdkBitmap* bitmap;
+};
+    
+
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
@@ -99,6 +113,9 @@ public:
   void reset_last_displayed();
   void display_score();
   void draw_radar_and_cannon();
+
+  void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
+  void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -158,6 +175,9 @@ private:
   int last_displayed_place;
   int last_displayed_last_place;
   long last_displayed_score;
+
+  pixmap_t score_pixmap;
+  pixmap_t stat_pixmap;
 };
 
 // ---------------------  Shot : MovingObject  ---------------------

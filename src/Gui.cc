@@ -16,26 +16,6 @@
 
 #define call_function(function_name) function_name()
 
-static char * colour_square[] =
-{
-  "14 14 1 1",
-  ".      c #000000000000 ",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  "..............",
-  ".............."
-};
-
 void
 question_yes_callback(GtkWidget * widget, QuestionFunction function_name)
 {
@@ -206,23 +186,6 @@ Gui::print_to_message_output (const String& from_robot, const String& output_tex
   gtk_text_insert(GTK_TEXT(message_output), NULL, &colour, NULL, rname.chars(), -1);
   gtk_text_insert(GTK_TEXT(message_output), NULL, &message_output->style->black, NULL, printed_text.chars(), -1);
   gtk_text_thaw(GTK_TEXT(message_output));
-}
-
-char **
-Gui::get_colour_square_xpm( char ** col_sq, const GdkColor& colour )
-{
-  strstream ss;
-  char str[25];
-
-  ss << ".      c #" << setfill('0') << hex << setw(4) << colour.red
-     << setw(4) << colour.green << setw(4) << colour.blue << ends << endl;
-  ss.getline(str,25,'\n');
-  char* newstr = new char[30];
-  strcpy(newstr, str);
-  colour_square[1] = newstr;
-
-  col_sq = (char **) colour_square;
-  return col_sq;
 }
 
 void
@@ -538,7 +501,7 @@ Gui::setup_score_window()
   gtk_widget_show (score_window);
 }
 
-// This function resets score window and adds all robbots in sequence to the score window
+// This function resets score window and adds all robots in sequence to the score window
 void
 Gui::add_robots_to_score_list()
 {                             
@@ -573,12 +536,8 @@ Gui::add_robots_to_score_list()
 
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
-      char ** col_sq;
 
-      colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
-                                                    the_arena.get_background_colour_p(),
-                                                    get_colour_square_xpm( col_sq, robotp->get_colour() ) );
-      delete [] colour_square[1];
+      robotp->get_score_pixmap(score_window->window, colour_pixmap, bitmap_mask);
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 

@@ -294,7 +294,8 @@ Robot::delete_pipes()
 void
 Robot::live()
 {
-   alive = true; 
+  alive = true; 
+  last_drawn_robot_center = Vector2D(infinity,infinity);
 }
 
 void
@@ -1217,6 +1218,19 @@ Robot::draw_radar_and_cannon()
   
 }
 
+void
+Robot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
+{
+  score_pixmap.get_pixmap( colour, win, pixm, bitm ); 
+}
+
+void
+Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
+{
+  stat_pixmap.get_pixmap( colour, win, pixm, bitm ); 
+}
+
+
 Shot::Shot(const Vector2D& c, const double r, 
            const Vector2D& vel, const double en ) 
   : MovingObject(vel), Circle(c, r)
@@ -1314,4 +1328,48 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
       shot1p->velocity = vel;
       shot1p->energy = en;
     }
+}
+
+pixmap_t::~pixmap_t()
+{
+  if( pixmap != NULL )
+    {
+      gdk_pixmap_unref(pixmap);
+    }
+}
+
+void
+pixmap_t::set_pixmap(GdkColor& col, GdkWindow* win)
+{
+  if( pixmap != NULL )
+    {
+      gdk_pixmap_unref(pixmap);
+      gdk_bitmap_unref(bitmap);
+    }
+  
+  gchar square_bits[] = {
+    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f,
+    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f,
+    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f};
+
+  pixmap = gdk_pixmap_create_from_data( win, square_bits, 16, 16, -1, &col, 
+                                        the_arena.get_background_colour_p() );
+
+  bitmap = gdk_bitmap_create_from_data( win, square_bits, 16, 16 );
+}
+
+void
+pixmap_t::get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
+{
+  if( win != window && pixmap != NULL )
+    {
+      gdk_pixmap_unref(pixmap);
+      pixmap = NULL;
+      gdk_bitmap_unref(bitmap);
+      bitmap = NULL;
+    }
+  if( pixmap == NULL ) set_pixmap(col, win);
+  
+  pixm = pixmap;
+  bitm = bitmap;
 }

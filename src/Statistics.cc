@@ -173,13 +173,10 @@ Gui::add_new_row( void * rp, void * sp, int games_played )
      stat_table_type == STAT_TABLE_SEQUENCE ||
      stat_table_type == STAT_TABLE_TOTAL)
     {
-      char ** col_sq;
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
 
-      colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
-                                                    the_arena.get_background_colour_p(),
-                                                    get_colour_square_xpm( col_sq, robotp->get_colour() ) );
+      robotp->get_stat_pixmap(statistics_window->window, colour_pixmap, bitmap_mask);
 
       gtk_clist_set_pixmap(GTK_CLIST(stat_clist), row, 0, colour_pixmap, bitmap_mask);
       gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, robotp->get_robot_name().non_const_chars());
@@ -387,6 +384,7 @@ Gui::add_the_statistics_to_clist()
   gtk_clist_thaw(GTK_CLIST(stat_clist));
 }
 
+// This function takes the statistics and saves into one file chosen in options
 void
 Gui::save_statistics_to_file()
 {
@@ -466,11 +464,8 @@ Gui::stat_make_title_button()
               {
                 GdkPixmap * colour_pixmap;
                 GdkBitmap * bitmap_mask;
-                char ** col_sq;
 
-                colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
-                                                              the_arena.get_background_colour_p(),
-                                                              get_colour_square_xpm( col_sq, robotp->get_colour() ) );
+                robotp->get_stat_pixmap(statistics_window->window, colour_pixmap, bitmap_mask);
 
                 GtkWidget * pixmap_widget = gtk_pixmap_new( colour_pixmap, bitmap_mask );
                 gtk_box_pack_start (GTK_BOX (stat_title_hbox), pixmap_widget, FALSE, FALSE, 0);
@@ -497,7 +492,7 @@ Gui::setup_statistics_window()
   stat_looking_at_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence()
     + the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
-  statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
+  statistics_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
   gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
