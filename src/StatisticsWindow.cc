@@ -225,8 +225,8 @@ StatisticsWindow::StatisticsWindow( const int default_width,
   gtk_widget_show( scrolled_win );
 #endif
 
-  char * titles[7] = { "",_("  Name"), _("Position"), _("Points"),
-                       _("Games "), _("Survival Time"), _("Total Points") };
+  char * titles[7] = { "",_("Name"), _("Position"), _("Points"),
+                       _("Games"), _("Survival Time"), _("Total Points") };
   clist = gtk_clist_new_with_titles(7, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ), GTK_SELECTION_BROWSE );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
@@ -250,14 +250,22 @@ StatisticsWindow::StatisticsWindow( const int default_width,
                                       GTK_JUSTIFY_RIGHT );
   gtk_clist_set_column_justification( GTK_CLIST( clist ), 6,
                                       GTK_JUSTIFY_RIGHT );
+  gtk_clist_column_title_passive( GTK_CLIST( clist ), 0 );
   gtk_signal_connect( GTK_OBJECT( clist ), "select_row",
                       (GtkSignalFunc) row_selected, this );
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_column_resizeable( GTK_CLIST( clist ), 0, FALSE );
+  gtk_clist_set_column_max_width( GTK_CLIST( clist ), 0, 5 );
+
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_clist_set_compare_func( GTK_CLIST( clist ), float_compare );
   gtk_clist_set_sort_column( GTK_CLIST( clist ), 6 );
   gtk_clist_set_sort_type( GTK_CLIST( clist ), GTK_SORT_DESCENDING );
+
+  for( int i=2; i <=6; i++ )
+    gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), i, TRUE );
+
   gtk_signal_connect( GTK_OBJECT( clist ), "click_column",
                       (GtkSignalFunc) change_sorting_in_clist,
                       (gpointer) this );
@@ -356,7 +364,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_clist_set_column_visibility( GTK_CLIST( clist ),4, TRUE );
 #else
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, _("Games ") );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, _("Games") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 45 );
 #endif
         }
@@ -371,6 +379,13 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
         }
       if(sw_type == STAT_TYPE_ROBOT && info_p->type != STAT_TYPE_ROBOT)
         {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_clist_set_column_resizeable( GTK_CLIST( clist ), 0, FALSE );
+          gtk_clist_set_column_max_width( GTK_CLIST( clist ), 0, 5 );
+
+          gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), 0, FALSE );
+          gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), 1, FALSE );
+#endif
           gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
           gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Name") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
@@ -382,8 +397,15 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
         }
       if(sw_type != STAT_TYPE_ROBOT && info_p->type == STAT_TYPE_ROBOT)
         {
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, _("Seq  ") );
-          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Game  ") );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_clist_set_column_resizeable( GTK_CLIST( clist ), 0, TRUE );
+          gtk_clist_set_column_max_width( GTK_CLIST( clist ), 0, 10000 );
+
+          gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), 0, TRUE );
+          gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), 1, TRUE );
+#endif
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, _("Seq") );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Game") );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 40 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 45 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
@@ -725,6 +747,7 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_clist_sort( GTK_CLIST( clist ) );
+  //  gtk_clist_columns_autosize( GTK_CLIST( clist ) );
 #endif
   gtk_clist_thaw( GTK_CLIST( clist ) );
 }
