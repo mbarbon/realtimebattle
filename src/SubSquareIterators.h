@@ -22,20 +22,33 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Vector2D;
 
+enum direction_t { RIGHT, DOWN, LEFT, UP };
+
+
 class SubSquareLineIterator
 {
 public:
   SubSquareLineIterator() : is_ok(false) {}
+  SubSquareLineIterator(const Vector2D& pos, const Vector2D& vel);
   ~SubSquareLineIterator() {}
 
   void begin(const Vector2D& pos, const Vector2D& vel);
   
+
+  // Moves to the next subsquare
   SubSquareLineIterator& operator++ (int); // postfix increment
+
+  // Moves to the next subsquare in the main direction
+  void move_one(); 
+
+
 
   int x() { assert( is_ok ); return xx; }
   int y() { assert( is_ok ); return yy; }
 
   bool ok() { return is_ok; }
+
+  direction_t get_start_dir_for_sector();
 
 protected:
   
@@ -68,5 +81,42 @@ protected:
   bool is_ok;
 };
 
+class SubSquareSectorIterator
+{
+public:
+  SubSquareSectorIterator(const Vector2D& pos, 
+                          const double left_angle, 
+                          const double right_angle );
+  ~SubSquareSectorIterator() {}
+
+  SubSquareSectorIterator& operator++ (int); // postfix increment
+
+  int x() { assert( is_ok ); return xx; }
+  int y() { assert( is_ok ); return yy; }
+
+  bool ok() { return is_ok; }
+
+protected:
+  
+  // Current subsquare coordinates
+  int xx;
+  int yy;
+
+  int center_x;
+  int center_y;
+
+  SubSquareLineIterator left_line;
+  SubSquareLineIterator right_line;
+
+  // We are examining subsquare with distance 'distance' from center
+  int distance;
+
+  // Moving in direction 'dir'
+  direction_t dir;
+
+
+  // Whether the iterator is activated and pointing to a subsquare
+  bool is_ok;
+};
 
 #endif __SUBSQUARE_ITERATOS__

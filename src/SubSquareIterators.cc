@@ -28,6 +28,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "Vector2D.h"
 
+SubSquareLineIterator::
+SubSquareLineIterator(const Vector2D& pos, const Vector2D& vel)
+{
+  begin(pos, vel);
+}
+
 void
 SubSquareLineIterator::begin(const Vector2D& pos, const Vector2D& vel)
 {
@@ -114,5 +120,97 @@ SubSquareLineIterator::operator++ (int)
       is_ok = false;
     }
 
+  return *this;
+}
+
+void
+SubSquareLineIterator::move_one()
+{
+  s+=d;
+  if( s >= 1.0 )
+    {
+      s-= 1.0;
+      xx += side_x;
+      yy += side_y;
+    }
+  
+  xx += main_x;
+  yy += main_y;
+}
+
+direction_t
+SubSquareLineIterator::get_start_dir_for_sector()
+{
+  if( main_y == 0 )
+    return ( main_x == 1 ? DOWN : UP );
+
+  return ( main_y == 1 ? RIGHT : LEFT );
+}
+
+SubSquareSectorIterator::
+SubSquareSectorIterator(const Vector2D& pos, 
+                        const double left_angle, 
+                        const double right_angle )
+  : left_line(pos, angle2vec(left_angle)),
+    right_line(pos, angle2vec(right_angle))
+  
+{
+  the_arena.get_subsquare_at( pos, xx, yy );
+  center_x = xx;
+  center_y = yy;
+  is_ok = true;
+  distance = 0;
+}
+
+SubSquareSectorIterator&
+SubSquareSectorIterator::operator++(int)
+{
+  do 
+    {
+      if( xx == right_line.x() && yy == right_line.y() )
+        {
+          if( !is_ok ) return *this; // No ok subsq found
+
+          left_line.move_one();
+          right_line.move_one();
+      
+          xx = left_line.x();
+          yy = left_line.y();
+
+          dir = left_line.get_start_dir_for_sector();
+          distance++;
+
+          is_ok = false; // will be true when we find an ok subsq
+        }
+      else
+        {
+          switch( dir )
+            {
+            case RIGHT:
+              xx++;
+              if( xx - center_x == distance ) 
+                dir = DOWN; 
+              break;
+            case DOWN:
+              yy++;
+              if( yy - center_x == distance ) 
+                dir = LEFT; 
+              break;
+            case LEFT:
+              xx--;
+              if( center_x - xx == distance ) 
+                dir = UP; 
+              break;
+            case UP:
+              yy--;
+              if( center_y - yy == distance ) 
+                dir = RIGHT; 
+              break;
+            }
+        }
+    } while ( xx < 0 || xx >= the_arena.get_number_of_subsquares_x() || 
+              yy < 0 || yy >= the_arena.get_number_of_subsquares_y() );
+
+  is_ok = true;
   return *this;
 }
