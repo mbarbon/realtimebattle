@@ -1,6 +1,11 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(src/RealTimeBattle.cc)
 
+
+# Use header file 'config.h'
+AM_CONFIG_HEADER(config.h)
+
+
 # Save this value here, since automake will set cflags later
 cflags_set=${CFLAGS+set}
 
@@ -8,7 +13,7 @@ cflags_set=${CFLAGS+set}
 RTB_MAJOR_VERSION=0
 RTB_MINOR_VERSION=9
 RTB_MICRO_VERSION=6
-RTB_EXTRA_VERSION=test2
+RTB_EXTRA_VERSION=test3
 RTB_RPM_RELEASE=1
 
 RTB_VERSION=$RTB_MAJOR_VERSION.$RTB_MINOR_VERSION.$RTB_MICRO_VERSION$RTB_EXTRA_VERSION
@@ -31,6 +36,8 @@ ROBOTDIR=['${RTB_DIR}/Robots']
 ARENADIR=['${RTB_DIR}/Arenas']
 AC_SUBST(ROBOTDIR)
 AC_SUBST(ARENADIR)
+
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 
 DOCS_DIR=['${RTB_DIR}']
 
@@ -113,8 +120,6 @@ AC_ARG_WITH(rtb_dir, [  --with-rtb-dir=[path]   directory for rtb installation [
    with_rtb_dir=['${prefix}/games/RealTimeBattle'])
 
 RTB_DIR=$with_rtb_dir
-
-dnl CXXFLAGS="$CXXFLAGS -DARENADIR=${ARENADIR} -DROBOTDIR=${ROBOTDIR}"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
