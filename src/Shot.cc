@@ -109,16 +109,19 @@ Shot::move_no_check(const double timestep)
 void
 Shot::die()
 {
-   alive = false;
+  if( alive )
+    {
+      alive = false;
 #ifndef NO_GRAPHICS
-   if (!no_graphics )
-     the_gui.get_arenawindow_p()->
-       draw_circle( last_drawn_center, last_drawn_radius,
-                    *(the_gui.get_bg_gdk_colour_p()), true );
+      if (!no_graphics )
+        the_gui.get_arenawindow_p()->
+          draw_circle( last_drawn_center, last_drawn_radius,
+                       *(the_gui.get_bg_gdk_colour_p()), true );
 #endif
-
-  if( the_arena_controller.is_realtime() )
-    realtime_arena.print_to_logfile('D', (int)'S', id);
+      
+      if( the_arena_controller.is_realtime() )
+        realtime_arena.print_to_logfile('D', (int)'S', id);
+    }
 }
 
 void
@@ -142,7 +145,6 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
       length(vel) < the_opts.get_d(OPTION_SHOT_SPEED) * 0.5 )
     {
       shot1p->die();
-      the_arena.get_object_lists()[SHOT].remove( shot1p );
     }
   else
     {
