@@ -20,10 +20,10 @@ Another common mistake is to forget whitespace between the arguments of a
 message. This problem can be hard to find since the warning message is usually sent
 too late or not at all. 
 
-<tag> I get error-messages when I try to replay a logfile made in
+<tag> I get error-messages when I try to replay a logfile made with
 RealTimeBattle-0.9.7</tag>
 This is due to the fact that there were errors in the logfile-generator in
-RealTimeBattle-0.9.7, thus alla logfiles from versions before 0.9.8 is incompatible
+RealTimeBattle-0.9.7, thus alla logfiles from versions before 0.9.8 are incompatible
 with the replay function.
 </descrip>
 </notes>
