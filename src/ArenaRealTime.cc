@@ -893,9 +893,8 @@ ArenaRealTime::start_sequence()
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
       robotp = li();
-      if( robotp->use_fifo_instead_of_process() )
+      if( robotp->is_networked() )
         {
-          robotp->open_fifos();
           *robotp->get_outstreamp() << "@R" << endl;
           robotp->set_values_at_process_start_up();
         }      
@@ -921,7 +920,7 @@ ArenaRealTime::start_sequence_follow_up()
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
       robotp = li();
-      if( !(robotp->use_fifo_instead_of_process()) &&
+      if( !(robotp->is_networked()) &&
           !(robotp->is_process_running()) ) 
         {
           all_robots_in_sequence.remove(li);
