@@ -235,6 +235,10 @@ RotateAndFire::game_option( const int option, const double value )
     case DEBUG_LEVEL:
       debug_level = value;
       break;
+
+    case SEND_ROBOT_COORDINATES:
+      send_robot_coordinates = (int)rint(value);
+      break;
     }
 }
 
@@ -376,6 +380,18 @@ RotateAndFire::radar_mine( const double dist, const double angle )
   }
   shoot( shot_min_energy );
 }
+
+
+// Information about the position of the robot. Coordinates are given either absolute,
+// relative to the starting position, or not at all, depending on the option
+// SEND_ROBOT_COORDINATES.
+void
+RotateAndFire::coordinates( const double x, const double y, const double rotation)
+{
+  // Doesn't currently use this information
+}
+
+
 
 // Get information about time, speed and cannon_angle
 // Update current time and check how long time has passed since
@@ -637,6 +653,13 @@ RotateAndFire::check_messages( )
                 cout << "Print" << _("Unknown Object seen!") << endl;
                 break;
               }
+          }
+          break;          
+        case COORDINATES:
+          {
+            double x, y, rotation;
+            cin >> x >> y >> rotation;
+            coordinates( x, y, rotation );
           }
           break;
         case INFO:

@@ -57,6 +57,7 @@ public:
   void radar_wall             ( const double dist, const double angle );
   void radar_cookie           ( const double dist, const double angle );
   void radar_mine             ( const double dist, const double angle );
+  void coordinates            ( const double x, const double y, const double rotation);
   void info                   ( const double time, const double speed,
                                 const double cannon_angle );
   void robot_info             ( const double energy, int enemy );
@@ -129,6 +130,7 @@ protected:
   double shot_energy_increase_speed;
   double timeout;
   double debug_level;
+  int send_robot_coordinates;
 };
 
 #endif __ROTATE_AND_FIRE__
