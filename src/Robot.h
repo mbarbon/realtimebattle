@@ -105,6 +105,8 @@ public:
     { if( has_competed ) return true; else { has_competed = true; return false; } }
 
   void set_teamworking(bool team) { teamworking = team; }
+  int get_team_nr() { return bandwidth; }
+  void set_team_nr(const int team_nr) { bandwidth = team_nr; }
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
