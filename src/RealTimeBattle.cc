@@ -347,7 +347,6 @@ main ( int argc, char* argv[] )
 
   gtk_main();
 
-  delete controlwindow_p;
 #else !NO_GRAPHICS
   
   update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
