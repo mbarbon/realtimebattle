@@ -12,6 +12,12 @@ else
 GETOPT_O =
 endif
 
+if ENABLE_CCMALLOC
+CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
+else
+CCMALLOC_O =
+endif
+
 if NO_GRAPHICS
 GRAPHICS_O = 
 CXXFLAGS += -DNO_GRAPHICS 
@@ -25,7 +31,7 @@ GRAPHICS_O = \
 	StartTournamentWindow.o Structs.o
 endif
 
-RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
+RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(CCMALLOC_O) $(GTK_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O)
 RealTimeBattle_SOURCES = \
 	ArenaBase.cc ArenaBase.h \
