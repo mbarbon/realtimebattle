@@ -15,14 +15,14 @@ main(int argc, char * argv[])
   class RotateAndFire raf_obj("Rotate&Fire-blocking", "9977dd");
 
 
-  // STDIN blocks, signals are no used. 
+  // STDIN blocks, signals are not used. 
 
   raf_obj.robot_option( USE_NON_BLOCKING, false );
   //  raf_obj.robot_option( SIGNAL, SIGUSR1 );
 
 
 
-  // STDIN blocks, signals are no used. 
+  // STDIN blocks, signals are not used. 
 
   raf_obj.robot_option( USE_NON_BLOCKING, false );
   //  raf_obj.robot_option( SIGNAL, SIGUSR1 );
