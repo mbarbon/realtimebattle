@@ -20,6 +20,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA__
 #define __ARENA__
 
+#include <string>
+
+#include "Event.h"
+
+class Vector2D;
+class Shape;
+class Gadget;
 
 // The Arena class is string all geometric information of the current 
 // arena. It can determine the closest object and find objects in given 
@@ -32,7 +39,7 @@ public:
   Arena() {}
   ~Arena() {}
 
-  void load_arena_file(const string filename);
+  void load_arena_file( const string& filename, Gadget& hierarchy );
 
   void setup_at_roundstart();
 
@@ -51,11 +58,11 @@ private:
   double get_heat_in_direction( const Vector2D& point, const Vector2D& direction );
 
   
-  
+  // For load_arena_file()
+  string get_first_word_from_string( const string str, string& remainder );
 
 
-
-}
+};
 
 class ShotUpdateEvent : public Event
 {
