@@ -1,11 +1,7 @@
 #CC = gcc
 #CXX = g++
 
-#ifndef DEBUG_MODE
-#DEBUG_MODE=no
-#endif
-
-# Substitute '-O' with '-fhandle-exceptions' in CXXFLAGS if your compiler requires it.
+# Add '-fhandle-exceptions' to CXXFLAGS and remove '-O' from OPTIMIZEFLAGS if your compiler requires it.
 # Add '-DUSE_STDARG_H' if the compiler complains about va_list, va_args or similar.
 # Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
 # Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
