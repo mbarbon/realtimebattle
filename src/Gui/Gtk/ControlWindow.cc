@@ -682,7 +682,7 @@ void
 ControlWindow::options_clicked( GtkWidget* widget,
                                 class ControlWindow* cw_p )
 {
-  the_opts.open_optionswindow();
+  //  the_opts.open_optionswindow();
 }
 
 void
