@@ -37,19 +37,16 @@ template <class T>
 class List
 { 
 public:
-  List ();
+  List<T>::List(const bool resp=true);
   ~List ();
 
   const List& operator= (const List&);
-
-
-
-  T* get_nth(const int n) const;
   
   void print_list(ostream&) const;
     
   bool is_empty() const { return list_head->next == NULL; }
   bool find(const T*, ListIterator<T>&);
+  T* get_nth(const int n) const;
   int  number_of_elements() const;
 
   void first(ListIterator<T>& li) { li.listp = list_head->next; };
@@ -57,18 +54,20 @@ public:
   //  void header(ListIterator<T>& li)  { li.listp = list_head; };
 
 
-  void remove(ListIterator<T>&, bool delete_elements = true);
-  bool remove(const T*, bool delete_elements = true);
-  //  void insert( T* );
+  void remove(ListIterator<T>&);
+  bool remove(const T*);
+
   void insert_first( T* );
   void insert_last( T* );
 
-  void delete_list(bool delete_elements = true);
+  void delete_list();
+
+  void set_deletion_responsibility(const bool r) { responsible_for_deletion = r; }
     
 private:
 
   ListNode<T>*  list_head;
-  //  ListNode<T>*  current_pos;
+  bool responsible_for_deletion;
 };
 
 #endif __LIST__

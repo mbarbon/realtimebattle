@@ -733,7 +733,7 @@ Arena_RealTime::update_robots()
       robotp = (Robot*)li();
       if( !robotp->is_alive() ) 
         {
-          object_lists[ROBOT_T].remove(li, false);
+          object_lists[ROBOT_T].remove(li);
           killed_robots++;
         }
       else
@@ -866,6 +866,9 @@ Arena_RealTime::start_game()
   
   String* filename = arena_filenames.get_nth(current_arena_nr);
 
+  print_to_logfile('G', sequence_nr, 
+                   games_per_sequence - games_remaining_in_sequence + 1);
+
   parse_arena_file(*filename);
 
   int charpos;
@@ -909,7 +912,7 @@ Arena_RealTime::start_game()
       robotp->live();
     }
 
-  print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1);
+  //  print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1);
 
   broadcast(GAME_STARTS);
   broadcast(ROBOTS_LEFT, robots_left);
@@ -1013,7 +1016,7 @@ Arena_RealTime::start_sequence_follow_up()
       robotp = li();
       if( !(robotp->is_process_running()) ) 
         {
-          all_robots_in_sequence.remove(li, false);
+          all_robots_in_sequence.remove(li);
           robots_left--;
         }
       if( !robotp->set_and_get_have_competed() )
@@ -1052,7 +1055,7 @@ Arena_RealTime::end_sequence_follow_up()
       robotp = li();
       if( robotp->is_process_running() ) robotp->kill_process_forcefully();
       robotp->delete_pipes();
-      all_robots_in_sequence.remove(li, false);
+      all_robots_in_sequence.remove(li);
     }
 
   if(sequences_remaining == 0) 

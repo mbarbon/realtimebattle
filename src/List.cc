@@ -9,7 +9,8 @@
 #include "String.h"
 
 template <class T>
-List<T>::List() : list_head(new ListNode<T>)
+List<T>::List(bool resp)
+  : list_head(new ListNode<T>), responsible_for_deletion(resp)
 {
 }
 
@@ -22,7 +23,7 @@ List<T>::~List()
 
 template <class T>
 void
-List<T>::delete_list(bool delete_elements)
+List<T>::delete_list()
 {
   ListNode<T>*  p = list_head->next;  // keep the header node
   ListNode<T>*  temp;  
@@ -30,7 +31,7 @@ List<T>::delete_list(bool delete_elements)
   while ( p != NULL )
     {
       temp = p->next;
-      if( delete_elements && p->element ) delete p->element;
+      if( responsible_for_deletion && p->element ) delete p->element;
       delete p;
       p = temp;
     }
@@ -131,7 +132,7 @@ List<T>::number_of_elements() const
 // current_pos becomes the previous element
 template <class T>
 void
-List<T>::remove(ListIterator<T>& li, bool delete_elements)
+List<T>::remove(ListIterator<T>& li)
 {
   if( li.listp == NULL ) Error(true, "Nothing to remove", "List::remove");
 
@@ -153,19 +154,19 @@ List<T>::remove(ListIterator<T>& li, bool delete_elements)
   else
     list_head->prev = current_pos->prev;
   
-  if( delete_elements && current_pos->element ) delete current_pos->element;
+  if( responsible_for_deletion && current_pos->element ) delete current_pos->element;
   delete current_pos;
 }
 
 
 template <class T>
 bool
-List<T>::remove(const T* x, bool delete_elements)
+List<T>::remove(const T* x)
 {
   ListIterator<T> li;
   if ( find(x, li) )
     {
-      remove(li, delete_elements);
+      remove(li);
       return true;
     }
   
@@ -263,3 +264,8 @@ template class ListIterator<Shape>;
 #include "Robot.h"
 template class List<Robot>;
 template class ListIterator<Robot>;
+
+#include "Structs.h"
+template class List<stat_t>;
+template class ListIterator<stat_t>;
+
