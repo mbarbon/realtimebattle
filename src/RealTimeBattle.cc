@@ -91,30 +91,30 @@ print_help_message()
   cout << _(" Usage: RealTimeBattle [options] ") << endl << endl;
   cout << _(" Options:") << endl;
   cout << _("    --debug_mode,                -d   debug mode") << endl;
-  cout << _("    --debug_level [0-5],         -D   sets the initial debug level. implies -d") << endl;
+  cout << _("    --debug_level [0-5],         -D   sets the initial debug level. Implies -d") << endl;
   cout << _("    --normal_mode,               -n   normal mode (default)") << endl;
   cout << _("    --competition_mode,          -c   competition mode") << endl ;
   cout << endl;
   cout << _("    --no_graphics,               -g   no graphics will be displayed") << endl ;
   cout << _("    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)")  << endl;
   cout << endl;
-  cout << _("    --log_file [file],           -l   make log file, if 'file' is '-'") << endl;
-  cout << _("                                      the log is sent to STDOUT") << endl;
+  cout << _("    --log_file [file],           -l   make log file, if 'file' is '-'\n"
+            "                                      the log is sent to STDOUT") << endl;
   cout << endl;
-  cout << _("    --tournament_file [file],    -t   specify a tournament file to") << endl;
-  cout << _("                                      autostart a tournament") << endl;
+  cout << _("    --tournament_file [file],    -t   specify a tournament file to\n"
+            "                                      autostart a tournament") << endl;
   cout << endl;
-  cout << _("    --statistics_file [file],    -s   file to print the statistics to") << endl;
-  cout << _("                                       when autostarting") << endl;
+  cout << _("    --statistics_file [file],    -s   file to print the statistics to\n"
+            "                                       when autostarting") << endl;
   cout << endl;
-  cout << _("    --message_file [file],       -m   redirect messages to 'file'.") << endl;
-  cout << _("                                      '-' as 'file' is equivalent to STDOUT.") << endl;
-  cout << _("                                      If both log and messages are send") << endl;
-  cout << _("                                      to STDOUT, '-m' will be ignored") << endl;
+  cout << _("    --message_file [file],       -m   redirect messages to 'file'.\n"
+            "                                      With '-' as 'file', STDOUT is used.\n"
+            "                                      If both log and messages are sent\n"
+            "                                      to STDOUT, '-m' will be ignored") << endl;
   cout << endl;
-  cout << _("    --replay [file]              -r   a log file to replay.") << endl;
-  cout << _("                                      if '-' is specified as file,") << endl;
-  cout << _("                                      input is taken from STDIN") << endl;
+  cout << _("    --replay [file]              -r   a log file to replay.\n"
+            "                                      if '-' is specified as file,\n"
+            "                                      input is taken from STDIN") << endl;
   cout << endl;
   cout << _("    --help,                      -h   prints this message") << endl;
   cout << _("    --version,                   -v   prints the version number") << endl;

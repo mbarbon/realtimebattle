@@ -560,10 +560,12 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
                              StartTournamentWindow::new_tournament_from_tournament_file,
                              this, false ) && display_fail_message )
     {
-      String error_msg( _("\nCouldn't parse specified tournament file.") );
+      String error_msg( _("Couldn't parse specified tournament file.") );
       List<String> button_list;
       button_list.insert_last( new String( _(" Ok ") ) );
-      Dialog( (String)_("Tournament could not be loaded.") + error_msg, button_list, 
+      Dialog( String(_("Tournament could not be loaded.")) +
+              String('\n') + error_msg, 
+              button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
     }
 }
@@ -699,12 +701,12 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
       if( display_tour_fail_message )
         {
           if( robot_number <= 1 )
-            error_msg += _("\nThere are too few robots in the tournament.");
+            error_msg += String('\n') + _("There are too few robots in the tournament.");
           if( selected_arena_tournament.is_empty() )
-            error_msg += _("\nThere are no arenas in the tournament.");
+            error_msg += String('\n') + _("There are no arenas in the tournament.");
         }
       if( display_file_fail_message && !file )
-        error_msg += _("\nCould not open file.");
+        error_msg += String('\n') + _("Could not open file.");
 
       if( error_msg != "" )
         {
@@ -837,9 +839,9 @@ StartTournamentWindow::start( GtkWidget* widget,
     {
       String error_msg( "" );
       if( robot_number <= 1 )
-        error_msg += _("\nThere must be at least two robots in the tournament.");
+        error_msg += String('\n') + _("There must be at least two robots in the tournament.");
       if( stw_p->selected_arena_tournament.is_empty() )
-        error_msg += _("\nThere are no arenas in the tournament.");
+        error_msg += String('\n') + _("There are no arenas in the tournament.");
 
       if( error_msg != "" )
         {

@@ -739,10 +739,9 @@ ArenaRealTime::start_game()
   else
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
-  print_message
-    ( "RealTimeBattle", (String)_("Game") + " " + String( game_nr + 1 )
-      + _(" of sequence ") + String( sequence_nr ) + _(" begins on arena ") +
-      current_arena_filename );
+  char msg[64];
+  sprintf(msg, _("Game %d of sequence %d begins on arena"), game_nr+1, sequence_nr);
+  print_message( "RealTimeBattle", String(msg) + " " + current_arena_filename );
 
   // reset some variables
 
