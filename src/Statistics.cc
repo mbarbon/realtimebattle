@@ -244,7 +244,7 @@ Gui::change_sorting_in_clist( const int column )
 }
 
 void
-Gui::change_statistics( int change, bool absolut_change )
+Gui::change_statistics( int change, bool absolute_change )
 {
   int game_nr = the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
@@ -268,14 +268,14 @@ Gui::change_statistics( int change, bool absolut_change )
       break;
     }
 
-  if( absolut_change )
+  if( absolute_change )
     if( change == -1 )
       stat_looking_at_nr = 1;
     else if (change == 1)
       if( max_nr > 0 )
         stat_looking_at_nr = max_nr;
 
-  if( !absolut_change )
+  if( !absolute_change )
     {
       stat_looking_at_nr += change;
       if(stat_looking_at_nr <= 0)
