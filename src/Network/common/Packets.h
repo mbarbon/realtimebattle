@@ -11,6 +11,46 @@
 class SocketServer;
 
 
+/*
+ * SHOULDN'T BE ANYTHINK IN THIS SECTION AS SOON AS POSSIBLE
+ */
+
+#define USE_METASERVER_INITIALIZATION_PACKET
+#define SEND_METASERVER_INITIALIZATION_PACKET
+#define RECV_METASERVER_INITIALIZATION_PACKET
+
+#define USE_METASERVER_ASKINFO_PACKET
+#define SEND_METASERVER_ASKINFO_PACKET
+#define RECV_METASERVER_ASKINFO_PACKET
+
+#define USE_INITIALIZATION_PACKET 
+#define SEND_INITIALIZATION_PACKET 
+#define RECV_INITIALIZATION_PACKET 
+
+#define USE_SUBMIT_PACKET
+#define SEND_SUBMIT_PACKET
+#define RECV_SUBMIT_PACKET
+
+#define USE_METASERVER_DATA_PACKET
+#define SEND_METASERVER_DATA_PACKET
+#define RECV_METASERVER_DATA_PACKET
+
+#define USE_COMMAND_PACKET
+#define SEND_COMMAND_PACKET
+#define RECV_COMMAND_PACKET
+
+#define USE_CHAT_MESSAGE_PACKET
+#define SEND_CHAT_MESSAGE_PACKET
+#define RECV_CHAT_MESSAGE_PACKET
+
+#define USE_SERVER_MESSAGE_PACKET
+#define SEND_SERVER_MESSAGE_PACKET
+#define RECV_SERVER_MESSAGE_PACKET
+
+/*
+ * END OF SECTION
+ */
+
 /* TODO : Continue the definition and put the preprocesor conditions 
  *        on to use only the class we need for each app 
  */
@@ -31,6 +71,51 @@ class SocketServer;
 #  endif
 #  ifdef ROBOT_APP
 #  endif
+#endif
+
+
+/*
+ * Use mean to send and to receive
+ */
+
+#ifdef USE_METASERVER_INITIALIZATION_PACKET
+#  define SEND_METASERVER_INITIALIZATION_PACKET
+#  define RECV_METASERVER_INITIALIZATION_PACKET
+#endif
+
+#ifdef USE_METASERVER_ASKINFO_PACKET
+#  define SEND_METASERVER_ASKINFO_PACKET
+#  define RECV_METASERVER_ASKINFO_PACKET
+#endif
+
+#ifdef USE_INITIALIZATION_PACKET 
+#  define SEND_INITIALIZATION_PACKET 
+#  define RECV_INITIALIZATION_PACKET 
+#endif
+
+#ifdef USE_SUBMIT_PACKET
+#  define SEND_SUBMIT_PACKET
+#  define RECV_SUBMIT_PACKET
+#endif
+
+#ifdef USE_METASERVER_DATA_PACKET
+#  define SEND_METASERVER_DATA_PACKET
+#  define RECV_METASERVER_DATA_PACKET
+#endif
+
+#ifdef USE_COMMAND_PACKET
+#  define SEND_COMMAND_PACKET
+#  define RECV_COMMAND_PACKET
+#endif
+
+#ifdef USE_CHAT_MESSAGE_PACKET
+#  define SEND_CHAT_MESSAGE_PACKET
+#  define RECV_CHAT_MESSAGE_PACKET
+#endif
+
+#ifdef USE_SERVER_MESSAGE_PACKET
+#  define SEND_SERVER_MESSAGE_PACKET
+#  define RECV_SERVER_MESSAGE_PACKET
 #endif
 
 enum packet_t
@@ -83,6 +168,8 @@ protected:
   unsigned int size;
 };
 
+
+#ifdef USE_INITIALIZATION_PACKET
 class InitializationPacket : /* virtual */ public Packet
 {
 public:
@@ -103,7 +190,9 @@ protected:
   client_t client;
   string name;
 };
+#endif USE_INITIALIZATION_PACKET
 
+#ifdef USE_METASERVER_INITIALIZATION_PACKET
 class MetaServerInitializationPacket : public Packet
 {
 public:
@@ -119,7 +208,9 @@ public:
 protected:
   network_protocol_t protocol;
 };
+#endif
 
+#ifdef USE_METASERVER_DATA_PACKET
 class MetaServerDataPacket : public Packet
 {
 public:
@@ -161,7 +252,9 @@ protected:
   string Port_num;
   string Nb_Conn;
 };
+#endif  USE_METASERVER_DATA_PACKET
 
+#ifdef USE_METASERVER_ASKINFO_PACKET
 class MetaServerAskInfoPacket : public Packet
 {
 public:
@@ -169,7 +262,9 @@ public:
   int handle_packet ( void* );
   packet_t packet_type() { return PACKET_META_INFO; };
 };
+#endif
 
+#ifdef USE_COMMAND_PACKET
 class CommandPacket : /* virtual */ public Packet
 {
 public:
@@ -183,7 +278,9 @@ protected:
   string comm;
   vector<string> arg;
 };
+#endif
 
+#ifdef USE_CHAT_MESSAGE_PACKET
 class ChatMessagePacket : public Packet
 {
 public:
@@ -202,8 +299,9 @@ protected:
   string dest;
   string message;
 };
+#endif
 
-
+#ifdef USE_SERVER_MESSAGE_PACKET
 class ServerMessagePacket : public Packet
 {
 public:
@@ -219,6 +317,10 @@ protected:
   string exp;
   string message;
 };
+#endif
+
+
+#ifdef USE_SUBMIT_PACKET
 
 #define Add_Robot 1
 #define Del_Robot 2
@@ -257,8 +359,7 @@ protected:
   int type;
   vector<string> file_name;
 };
-
-
+#endif USE_SUBMIT_PACKET
 
 /*
   class InitializationReplyPacket : virtual public Packet

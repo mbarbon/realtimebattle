@@ -21,9 +21,13 @@ Packet::add_uint8_to_netstring( const unsigned int& val, string& netstr ) const
   return netstr;
 }
 
+/*
+ * THIS TWO FUNCTIONS DON'T WORK ENOUGHT TO BE USED
+ * The problem occurs when there is an 0x00 value in val
+ */
 string&
 Packet::add_uint16_to_netstring( const unsigned int& val, string& netstr ) const
-{
+{ 
   unsigned short x = htons(val);
 
   char buf[3];
@@ -46,27 +50,19 @@ Packet::get_uint8_from_netstring( const string& ns) const
   return ntohs(x);
 }
 
+/* 
+ * Extract a string from a net string.
+ * Useless since the NetConnection::read_data cut the long
+ * socket string into a vector of string
+ */
+
 string
 Packet::get_string_from_netstring( string& netstring ) 
 {
-  if(netstring.length() < 4)  //Bad packet (len or type not read)
-    {
-      return string("");
-    }
-
-  size = get_uint8_from_netstring( netstring.substr(2,2) );
-
-  data = netstring.substr(4, size);
-
-  //Remove data from netstring
-  if (netstring.length() != size+1)
-    {
-      netstring = netstring.substr(size+4, netstring.length() - (size+4) );
-    }
+  if(netstring.length() > 2)
+    data = netstring.substr( 2, netstring.length()-2 );
   else
-    {
-      netstring = "";
-    }
+    data = "";
 
   return netstring;
 }
