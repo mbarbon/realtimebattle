@@ -60,7 +60,7 @@ static const Message message_to_robot[20] =
 
 static const Message message_from_robot[20] = 
 {
-  {"Rotate",       2, {INT,    DOUBLE}},     // first arg: what to rotate, second arg: amount
+  {"Rotate",       2, {INT,    DOUBLE}},     // first arg: what to rotate, second arg: angular velocity (rad/s)
   {"Acceleration", 1, {DOUBLE}},
   {"Shoot",        0, {DOUBLE}},             // arg: amount of energy
   {"Name",         1, {STRING}},
