@@ -7,10 +7,28 @@
 <item> <bf>0.9.7:</bf>
 <p>
 
+Lots of internal changes, the class hierarchy is completely
+redone. Hopefully this will have changed nothing in the behavior of RTB,
+expect for the following.
+
+GTK+ is no longer necessary when compiling without graphics.
+
 It is now possible to redirect messages to a file or STDOUT.
 
-Pressing on a robots name in the statistics window now results in showing
+Clicking on a robots name in the statistics window now results in showing
 statistics for that robot.
+
+Window resizing is working well for gtk 1.1.x and later.
+
+Two new keywords added to the messaging language: DebugLine and 
+DebugCircle. These can be used to draw directly to the arena when running
+at the highest debug level. 
+
+Everything about loading and saving has been removed. It is now legal to
+read and write to files without restriction. Note that it can, however, be
+restricted in competitions if the organizer wants to.
+
+A thin line, marking the angle the robot is facing, is now drawn.
 
 <item> <bf>0.9.6:</bf>
 <p>
@@ -19,7 +37,7 @@ easier to adjust to different systems (thanks to Martin Norb&auml;ck)
 
 Log files of games can now be generated. The only problem is that they tend to be very large ...
 
-Added sorting in the statistics. Only available with Gtk 1.1.x.
+Added sorting in the statistics. Only available with Gtk 1.1.x or later.
 
 It is now possible to clear the message list and view messages from one robot only.
 
