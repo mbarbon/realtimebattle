@@ -1,4 +1,6 @@
-#include "Arena.h"
+#include <iostream.h>
+#include <stdio.h>
+#include "Error.h"
   
 Error::Error(char* strp, char* funcp) 
 { 

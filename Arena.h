@@ -12,11 +12,6 @@
 #include "gui.h"
 #include "Various.h"
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#define max(a,b) ((a) > (b) ? (a) : (b))
-//#define abs(a) ((a) > 0 ? (a) : -(a))
-//#define sgn(a) ((a) > 0 ? 1 : -1)
-
 static const double infinity = 1.0e10;
 static const double eps = 1.0e-2;
 
@@ -506,26 +501,6 @@ public:
 private:
   bool alive;
   double energy;
-};
-
-class Error
-{
-public:
-  Error() {}
-  Error(char* strp, char* funcp);
-  Error(char* strp, char* str2p, char* funcp);
-  Error(char* strp, char ch, char* funcp);
-  ~Error();
-  void print_message();
-  
-  friend class Arena;
-  friend class ArenaObject;
-private:
-
-  GString* error_stringp;
-  GString* error_string2p;
-  GString* function_stringp;
-  gchar c;
 };
 
 #endif __ARENA__
