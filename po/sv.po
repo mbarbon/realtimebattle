@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-10 18:31+0200\n"
+"POT-Creation-Date: 1999-08-14 16:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,7 +58,7 @@ msgstr " Zooma ut "
 msgid "Arena"
 msgstr "Arena"
 
-#: src/ArenaRealTime.cc:756
+#: src/ArenaRealTime.cc:759
 #, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "Spel %d i sekvens %d börjar på arena"
