@@ -3,9 +3,10 @@
 
 BasicGadget AllGadgets[] = 
 {
-  {"Weapon", new WeaponGadget()}, 
-  {"Shot", new ShotGadget()}, 
+  {"Weapon",    new WeaponGadget()}, 
+  {"Shot",      new ShotGadget()}, 
   {"Explosion", new ExplosionGadget()},
+  {"", 0}
 };
 
 

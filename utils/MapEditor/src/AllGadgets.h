@@ -1,10 +1,11 @@
 #ifndef __AllGadgets_hh__
 #define __AllGadgets_hh__
 
-#include "Gadget.h"
 #include <string>
 
-
+#include "Gadget.h"
+#include "ShotGadget.h"
+#include "WeaponGadget.h"
 
 struct BasicGadget
 {
