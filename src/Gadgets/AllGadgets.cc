@@ -68,10 +68,10 @@ AllGadgets::create_gadget_by_stringtype( const string&     type,
 {
   if( new_gadget_functions.empty() )
     init_new_gadget_functions();
-
-  map< string, NewGadgetFunction >::const_iterator ci;
-  if( (ci = new_gadget_functions.find( lowercase( type ) ))
-      != new_gadget_functions.end() )
+    
+  map< string, NewGadgetFunction >::const_iterator 
+   ci = new_gadget_functions.find( lowercase( type ) );
+  if( ci != new_gadget_functions.end() )
     return (*(ci->second))( name, p );
 
   return 0;

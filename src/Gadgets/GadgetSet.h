@@ -30,15 +30,21 @@ class Gadget;
 
 struct GadgetInfo
 {
-  GadgetInfo(Gadget* const gp, long int id_nr, const char* nm, gadget_t tp ) 
-    : gadgetp(gp), id(id_nr), name(nm), type(tp) {}
 
-  GadgetInfo(const string& str ) : gadgetp(NULL), id(0), name(str), type(GAD_NONE) {}
+  GadgetInfo(Gadget* const gp, long int id_nr, const char* nm, gadget_t tp )
+    : gadgetp(gp), id(id_nr), name(nm), type(tp) {}
+ 
+  GadgetInfo(const string& str ) 
+    : gadgetp(NULL), id(0), name(str), type(GAD_NONE) {}
 
   ~GadgetInfo() {}
 
   friend bool operator<(const GadgetInfo& a, const GadgetInfo& b) 
     { return a.name < b.name; }
+  friend bool operator==(const GadgetInfo& a, const GadgetInfo& b)
+  {
+    return a.name == b.name;
+  }
 
   Gadget* gadgetp;
   long int id;

@@ -45,6 +45,13 @@ public:
 
   Variable() {}
   Variable( const char* name, Gadget* const p ) : Gadget(name, p, GAD_VARIABLE) {}
+  /*
+  Variable(const Variable& v)  
+    { vector[0] = v.vector[0]; vector[1] = v.vector[1]; }
+
+  Vector2D& operator=(const Vector2D&);
+  */
+
   ~Variable() {}
 
   static Gadget* new_variable( const char* name, Gadget* const p )
@@ -66,7 +73,13 @@ public:
 
   void set_robot_permissions( const bool read, const bool write );
 
-
+  //Without this function, we lose all the informations in the GadgetInfo info
+  const Variable& operator= (const Variable& v) 
+    {
+      parent = v.parent;
+      info.name = v.info.name;
+      return *this;
+    };
 
   // conversions to/from Value
 

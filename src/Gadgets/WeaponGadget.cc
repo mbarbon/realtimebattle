@@ -26,7 +26,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "RobotBodyGadget.h"
 #include "Shot.h"
 
-
 const VariableDefinition 
 WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 
 {
@@ -39,31 +38,31 @@ WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] =
 
   {"RotateSpeed", DOUBLE_V, 0, 0.0, DBL_MAX,0, false, true, true },
   
-  {"AutoFire", BOOL_V, false,0,0,0,false,true,true}
+  {"AutoFire", BOOL_V, false,0,0,0,false,true,true},
 
-//      "MaxRotateSpeed",
+  {"MaxRotateSpeed", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
 
-//      "SoundLevel",
+  {"SoundLevel", INT_V, 0, 0, INT_MAX, 0, false, true, false},
+  
+  {"MountTime", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
+  {"UnmountTime", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
+  {"MountCost", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
+  {"UnmountCost", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
+  
+  {"UseCostPerTime", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
+  
+  {"AmmoLimit", BOOL_V, false,0,0,0,false,true,true},
+  {"StartAmmo", BOOL_V, false,0,0,0,false,true,true},
+  {"ReloadTime", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
 
-//      "MountTime",
-//      "UnmountTime",
-//      "MountCost",
-//      "UnmountCost",
+  {"TemperaturePerDamage", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
+  {"MaxTemperature", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
 
-//      "UseCostPerTime",
+  {"CoolDownPerTime", DOUBLE_V, 0, -DBL_MAX, DBL_MAX, false, true, false },
 
-//      "AmmoLimit",
-//      "StartAmmo",
-//      "ReloadTime",
-
-//      "TemperaturePerDamage",
-//      "MaxTemperature",
-
-//      "CoolDownPerTime",
-
-//      "Colour",
-//      "Price",
-//      "Mass"
+  {"Colour", INT_V, 0, 0, INT_MAX, false, true, false },
+  {"Price", DOUBLE_V, 0, 0, DBL_MAX, false, true, false },
+  {"Mass", DOUBLE_V, 0, 0, DBL_MAX, false, true, false }
 };
 
 

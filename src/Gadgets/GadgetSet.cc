@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GadgetSet.h"
 
-
 void Error(const bool fatal, const string& error_msg, const string& function_name);
+
+#include "Gadget.h"
 
 void
 GadgetSet::add(const GadgetInfo& gi)
@@ -45,7 +46,6 @@ GadgetSet::remove(const GadgetInfo& gi)
     {
       Error(true, "No elements removed", "GagdetSet::remove");
     }
-    
 }
 
 set_iterator

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,14 +26,14 @@ struct FunctionDefinition
   bool enabled;
 };
 
-
 class Function : public Gadget
 {
 public:
   Function() {}
-  Function(const char* name, Gadget* const p ) : Gadget(name, p, GAD_FUNCTION) {}
+  Function(const char* name, Gadget* const p) 
+    : Gadget(name, p, GAD_FUNCTION), activated(false) {}
   Function(const char* name, Gadget* const p, const int fcn ) 
-    : Gadget(name, p, GAD_FUNCTION), fcn_nr(fcn) {}
+    : Gadget(name, p, GAD_FUNCTION), fcn_nr(fcn), activated(false) {}
 
   ~Function() {}
 
@@ -44,13 +44,27 @@ public:
 
   //void operator() () { parent->eval_function(fcn_nr); }
 
-  int get_fcn_nr() { return fcn_nr; }
+  //Without this function, we lose all the informations in the GadgetInfo info
+  const Function& operator= (const Function& f) 
+    {
+      parent = f.parent;
+      info.name = f.info.name;
+      return *this; 
+    }
 
+
+  int get_fcn_nr() { return fcn_nr; }
   void set(const int fcn) { fcn_nr = fcn; }
+
+  void set_enable( const bool a = true ) 
+    { activated = a; }
+  bool is_enable() 
+    { return activated; }
 
 private:
 
   int fcn_nr;
+  bool activated;
 
 };
 

@@ -42,8 +42,6 @@ struct FunctionDefinition;
 class Gadget
 {
 public:
-
-
   Gadget() : 
     info(this, 0, "", GAD_NONE), 
     variables(NULL), functions(NULL) {}
@@ -70,6 +68,7 @@ public:
   void eval_function(const int fcn) {}
 
   const Variable* get_variables() const { return variables; }
+  const Function* get_functions() const { return functions; }
 
 protected:
 
