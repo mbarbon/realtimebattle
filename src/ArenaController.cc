@@ -68,8 +68,10 @@ ArenaController::~ArenaController()
 }
 
 int
-ArenaController::rtb_main( int argc, char** argv )
+ArenaController::init( int argc, char** argv )
 {
+  parse_command_line( argc, argv );
+
   if( tournament_filename != "" )
     start_realtime_arena();
   else if( replay_filename != "" )
