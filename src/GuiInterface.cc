@@ -21,25 +21,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GuiInterface.h"
 #include "ArenaBase.h"
+#include "ArenaController.h"
 
 GuiInterface::GuiInterface()
 {
-  pthread_create(gi->get_thread_p(), NULL, GIMain_pre, (void*)gi);
-  pthread_mutex_init( &gi_mutex, NULL );
+  pthread_create(&thread, NULL, GIMain_pre, (void*)this);
+  pthread_mutex_init( gi_mutex, NULL );
 }
 
 GuiInterface::~GuiInterface()
 {
-  pthread_mutex_destroy( &gi_mutex );
+  pthread_mutex_destroy( gi_mutex );
   //TODO: thread should be joined or whatever is appropriate
 }
 
-void
+int
 GuiInterface::get_game_nr()
 {
-  pthread_mutex_lock( &gi_mutex );
-  the_arena.get_game_nr();
-  pthread_mutex_unlock( &gi_mutex );
+  pthread_mutex_lock( gi_mutex );
+  int res = the_arena.get_game_nr();
+  pthread_mutex_unlock(gi_mutex );
+  return res;
 }
 
 // PreMain function
