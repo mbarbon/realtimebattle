@@ -618,6 +618,7 @@ Robot::get_total_points()
   else     // Replaying
     {
       ListIterator<stat_t> li=get_current_game_stats();
+      if( !li.ok() ) return 0.0;
 
       if( is_alive() )
         {          
@@ -680,7 +681,8 @@ Robot::get_current_game_stats()
               return current_game_stats;
             }          
         }
-      Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
+      //Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
+      return NULL;
     }
 
   return current_game_stats;

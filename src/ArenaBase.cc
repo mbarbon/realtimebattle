@@ -442,12 +442,20 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession, doub
 
       vec0 = current_pos;
 
-      char c;
+      char c, c2;
       double len, angle, start_angle, end_angle, tmp;
       bool finish = false;
       do
         {
           file >> c;
+
+          // if it is a replay-file we need to remove the first 'A'
+          if( c == 'A' ) 
+            {
+              c2 = file.peek();
+              if( c2 >= 'A' && c2 <= 'Z' )
+                file >> c;
+            }
           
           switch( c )
             {
