@@ -10,6 +10,11 @@
 #include "NetConnection.h"
 #include "ServerSocket.h"
 #include "TournamentAgreementPackets.h"
+#include "TournamentPackets.h"
+
+#include "Tournament.h"
+#include "EventHandler.h"
+#include "ServerSocket.h"
 
 #include "Robot.h"
 #include "Arena.h"
@@ -19,7 +24,10 @@
 //TODO : remove the robots added by a closed connection ...
 
 TournamentAgreementPacketFactory::TournamentAgreementPacketFactory()
+  : PacketFactory()
 {
+  accept_new_connection = true;
+
   //Use local arenas and distant robots !
   /*
     TODO : Uncomment this code ...
@@ -49,9 +57,9 @@ TournamentAgreementPacketFactory::TournamentAgreementPacketFactory()
     }
   */
 
-  my_tournament.arenas.push_back(arena_info_t("Arena1", "/arenas"));
-  my_tournament.arenas.push_back(arena_info_t("Arena2", "/arenas"));
-  my_tournament.arenas.push_back(arena_info_t("Arena3", "/arenas"));
+  my_tournament.arenas.push_back(arena_info_t("Arena1", "/arenas/"));
+  my_tournament.arenas.push_back(arena_info_t("Arena2", "/arenas/"));
+  my_tournament.arenas.push_back(arena_info_t("Arena3", "/arenas/"));
 }
 
 Packet*
@@ -70,14 +78,14 @@ TournamentAgreementPacketFactory::MakePacket( string& netstr )
 }
 
 void 
-TournamentAgreementPacketFactory::add_connection( NetConnection* nc )
+TournamentAgreementPacketFactory::add_connection( NetConnection* nc, string more_arg )
 {
   //Send all the arenas I have to the players...
   for( list<arena_info_t>::iterator ai = my_tournament.arenas.begin();
        ai != my_tournament.arenas.end(); ai ++ )
     {
       ostrstream os;
-      os<<"InitArn "<<ai->filename<<" "<<ai->directory<<" "<<ai->id<<" "<<ai->selected;
+      os<<"InitArn "<<ai->directory<<" "<<ai->filename<<" "<<ai->id<<" "<<ai->selected;
       TournamentCommitChangePacket P( os.str() );
       nc->send_data( P.make_netstring() );
     }
@@ -169,15 +177,42 @@ TournamentAgreementPacketFactory::start_tournament(bool check_everybody_ready = 
 
   if( all_true )  //Everything is ok to start
     {
-      Packet* P = new StartTournamentPacket( true );
-      broadcast( P );
-      delete P;
+      accept_new_connection = false;
+      Tournament *T = new Tournament ( my_tournament );
 
-      //TODO : new Tournament;
-      //TODO : Create an other channel for the tournament (to be created)
-      //TODO : indicate
-      //TODO : release the connections ! (find a way to do it !!!)
-      //TODO : Close me !
+      PacketFactory * View; PacketFactory * Robot;
+      //Create a Robot PacketFactory
+      int robot_channel = my_socketserver.open_channel( Robot = new TournamentRobotPacketFactory( T ) );
+
+      //Create a View PacketFactory
+      int view_channel  = my_socketserver.open_channel( View = new TournamentViewPacketFactory( T ) );
+
+      T->set_packet_factories((TournamentRobotPacketFactory *) Robot,
+			      (TournamentViewPacketFactory *)  View);
+
+      //Tell them to start and where to connect !
+      Packet* P    = new StartTournamentPacket( true );
+      Packet* FI_1 = new FactoryInfoPacket( Robot->Protocol(), robot_channel );
+      Packet* FI_2 = new FactoryInfoPacket( View->Protocol(), view_channel );
+
+      broadcast( P );
+      broadcast( FI_1 );
+      broadcast( FI_2 );
+
+      delete P;
+      delete FI_1;
+      delete FI_2;      
+
+      T->start();
+      
+      //Release the connections !
+      my_socketserver.uninitialize_connections( my_connections );
+
+      
+      //Close me !
+      my_connections.clear();
+
+      the_eventhandler.set_tournament( T );
     }
 }
 
@@ -207,15 +242,14 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
   is >> type_init;
   if(type_init.substr(3, 6) == "Rob")
     {
-      cout<<"Modification on a robot\n";
-      cout<<type_init.substr(3, 6)<<endl;
+      //cout<<type_init.substr(3, 6)<<endl;
     }
   if(type_init == "AddRob")
     {
       string dir, name;
       int team, id;
       is >> dir >> name >> team >> id;
-      cout<<"Add the following robot : "<<dir<<name<<", "<<team<<"  id : "<<id<<endl;
+      cout<<"Add robot : "<<dir<<name<<", "<<team<<"  id : "<<id<<endl;
       
       robot_info_t the_robot(dir, name, team, nc);
       tourn_p->robots.push_back(the_robot);
@@ -230,7 +264,7 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
       string dir, name;
       int team, id;
       is >> dir >> name >> team >> id;
-      cout<<"Remove the following robot : "<<dir<<name<<", "<<team<<"  id : "<<id<<endl;
+      cout<<"Remove robot : "<<dir<<name<<", "<<team<<"  id : "<<id<<endl;
       
       for(list<robot_info_t>::iterator ri = tourn_p->robots.begin();
 	  ri != tourn_p->robots.end(); ri ++ )
@@ -250,8 +284,8 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
     {
       string dir, name;
       int id;
-      is >> dir >> name >> id;
-      cout<<"Switch the following arena : "<<dir<<name<<", id : "<<id<<endl;
+      is >> dir >> name >> id ;
+      cout<<"Switch arena : "<<dir<<name<<", id : "<<id<<endl; //Not such a good idea !
       
       for(list<arena_info_t>::iterator ai = tourn_p->arenas.begin();
 	  ai != tourn_p->arenas.end(); ai ++ )

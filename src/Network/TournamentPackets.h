@@ -25,9 +25,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Packets.h"
 #include "Structs.h"
 
+#include "Tournament.h"
+
 class TournamentRobotPacketFactory: public PacketFactory {
  public:
-  TournamentRobotPacketFactory();
+  TournamentRobotPacketFactory( Tournament* T ) 
+    : my_tournament( T ) {};
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_ROBOT ;};
   //void add_connection( NetConnection* );
   //void set_start(NetConnection*, bool);
@@ -37,13 +40,15 @@ class TournamentRobotPacketFactory: public PacketFactory {
 
   Packet* MakePacket(string &); 
  protected:
+  Tournament* my_tournament;
   //tourn_info_t my_tournament;
   //map<NetConnection*, bool> ready_to_start;
 };
 
 class TournamentViewPacketFactory: public PacketFactory {
  public:
-  TournamentViewPacketFactory();
+  TournamentViewPacketFactory( Tournament* T ):
+    my_tournament( T ) {};
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_VIEW ;};
   //void add_connection( NetConnection* );
   //void set_start(NetConnection*, bool);
@@ -53,6 +58,7 @@ class TournamentViewPacketFactory: public PacketFactory {
 
   Packet* MakePacket(string &); 
  protected:
+  Tournament* my_tournament;
   //tourn_info_t my_tournament;
   //map<NetConnection*, bool> ready_to_start;
 };

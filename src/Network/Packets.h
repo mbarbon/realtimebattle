@@ -40,6 +40,7 @@ enum packet_t
   PACKET_META_INFO,
 
   PACKET_COMMAND,
+  PACKET_FACTORY_INFO,
   PACKET_SERVER_COMMAND,
 
   PACKET_SIGNAL,
@@ -94,11 +95,12 @@ ostream & operator<<(ostream&, const Packet&);
 //This class have to be virtual (we can build a plug-in loader around it) 
 class PacketFactory {
  public:
+  PacketFactory() : close_me( false ) {};
   virtual ~PacketFactory() {};
   virtual string Protocol() {return "NoProtocol";};
   virtual Packet* MakePacket(string & s) {return NULL;};
 
-  virtual void add_connection( NetConnection* );
+  virtual void add_connection( NetConnection*, string = string("") );
   virtual void remove_connection( NetConnection* );
 
   void broadcast( Packet* );
@@ -106,6 +108,7 @@ class PacketFactory {
  protected:
   //TODO : set< NetConnection* >
   list<NetConnection*> my_connections;
+  bool close_me;
 };
 
 #endif // __PACKETS_H__

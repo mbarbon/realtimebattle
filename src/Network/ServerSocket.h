@@ -103,15 +103,7 @@ public:
   int open_channel(PacketFactory*);  //ask to open a channel using a channel number
   void close_channel(int);
   string channel_protocol(int channel) { return packet_factory(channel)->Protocol(); }
-  /* NOTE : Maybe we can create a class NetService which will help every service in this way :
-     class NetService {
-       NetService(string Protocol) { channel = open_channel(Protocol); }
-       read (NetConnection) { my_socketserver.read(channel, NetConnection); }
-       write( Packet, NetConnection ) { my_socketserver.write(Packet, NetConnection, nc_channel);}
-       map<NetConnection, int> client channel; //Establish during connection
-     }
-     and then use it as class Tournament : public NetService (Or something similaire, just not to bother about channels
-  */
+  void uninitialize_connections( list<NetConnection*> & list_conn );
 
 
   bool channel_is_used(int);          //Is a channel used or not

@@ -13,6 +13,7 @@ libRTB_Network_a_SOURCES = \
 	NetConnection.h     ServerSocket.h  \
 	Packets.cc          ServerPackets.cc        SimpleProcess.cc\
 	Packets.h           ServerPackets.h         SimpleProcess.h\
-	TournamentAgreementPackets.cc TournamentAgreementPackets.h
+	TournamentAgreementPackets.cc TournamentAgreementPackets.h \
+	TournamentPackets.cc	TournamentPackets.h
 
 

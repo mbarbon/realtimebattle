@@ -22,6 +22,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __TOURN_AGREE_PACKET_H__
 #define __TOURN_AGREE_PACKET_H__
 
+#include <map>
+#include <list>
+#include <vector>
+
 #include "Packets.h"
 #include "Structs.h"
 
@@ -29,7 +33,7 @@ class TournamentAgreementPacketFactory: public PacketFactory {
  public:
   TournamentAgreementPacketFactory();
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_AGREEMENT ;};
-  void add_connection( NetConnection* );
+  void add_connection( NetConnection*, string = string("") );
   void set_start(NetConnection*, bool);
   void reset_start();
   void remove_connection( NetConnection* );
@@ -38,6 +42,7 @@ class TournamentAgreementPacketFactory: public PacketFactory {
   Packet* MakePacket(string &); 
  protected:
   tourn_info_t my_tournament;
+  bool accept_new_connection;
   map<NetConnection*, bool> ready_to_start;
 };
 

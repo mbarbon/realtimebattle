@@ -103,16 +103,21 @@ InitializationPacket::handle_packet(void* p_void)
   if(type_init == "Connect") //He is already connected and he wants to open a other channel
     {
       is >> channel;
-      cout<<"He wants to connect to protocol "<<protocol<<" on channel "<<channel<<endl;
 
       PacketFactory* factory =  my_socketserver.packet_factory( channel );
       if(factory && factory->Protocol() == protocol)
 	{
+	  string more_arg;
+	  is >> more_arg;
+
 	  nc->set_type(channel);
 
-	  factory->add_connection( nc );
+	  factory->add_connection( nc, more_arg );
+	  my_socketserver.packet_factory( 0 )->remove_connection( nc );
+
 	  my_socketserver. connection_factory[ nc ] = factory;
-	  cout<<factory->Protocol()<<endl;
+
+	  cout<<"New connection to "<<factory->Protocol()<<" on channel "<<channel<<endl;
 
 	  return 1;
 	}
@@ -233,6 +238,36 @@ CommandPacket::handle_packet(void* p_void)
 
   return 1;
 }
+
+
+string 
+FactoryInfoPacket::make_netstring() const
+{
+  ostrstream data_stream;
+  data_stream << protocol <<" "<<channel;
+
+  string n_str;
+  n_str = "FI";
+
+  n_str += data_stream.str();
+  
+  return n_str;
+}
+
+int 
+FactoryInfoPacket::handle_packet(void* p_void)
+{  
+  NetConnection* cc = (NetConnection*) p_void;
+
+  cout<<data<<endl;
+
+  istrstream is(data.c_str());
+  is >> protocol >> channel;
+
+  //Anything else to do ?
+  return 0;
+}
+
 
 
 /*

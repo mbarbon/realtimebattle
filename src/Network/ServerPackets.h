@@ -75,6 +75,21 @@ protected:
   vector<string> arg;
 };
 
+class FactoryInfoPacket : /* virtual */ public Packet
+{
+public:
+  FactoryInfoPacket()
+    : protocol("No_Protocol"), channel( 0 ) {}
+  FactoryInfoPacket( const string& p, int c)
+    : protocol( p ), channel( c ) {}
+  string make_netstring() const;
+  int handle_packet( void* );
+  packet_t packet_type() { return PACKET_FACTORY_INFO; };
+protected:
+  string protocol;
+  int channel;
+};
+
 
 class SubmitListPacket : public Packet
 {

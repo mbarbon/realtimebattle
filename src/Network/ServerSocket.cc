@@ -329,6 +329,17 @@ SocketServer::open_channel(PacketFactory* PF) {
   return 0;
 }
 
+void
+SocketServer::uninitialize_connections( list<NetConnection*> & list_conn )
+{
+  for(list<NetConnection*>::iterator li = list_conn.begin();
+      li != list_conn.end(); li ++)
+    {
+      connection_factory[ *li ] = packet_factories[ 0 ];
+      packet_factories[ 0 ]->add_connection( *li );
+    }
+}
+
 NetConnection*
 SocketServer::connect_to_an_other_server( string hostname, int port_nb = 0 )
 {

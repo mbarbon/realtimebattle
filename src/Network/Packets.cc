@@ -36,7 +36,7 @@ ostream& operator<<(ostream& ost, const Packet& P)
 }
 
 void
-PacketFactory::add_connection( NetConnection* nc )
+PacketFactory::add_connection( NetConnection* nc, string more_arg )
 {
   my_connections.push_back( nc );
 }
