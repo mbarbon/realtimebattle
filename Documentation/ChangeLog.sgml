@@ -7,13 +7,17 @@ Change log
 
 <item> <bf>0.9.9:</bf>
 <p>
-Added support for internationalization. If it does not work for you configure with the
-command:
-%./configue --disable-nls
+Added support for internationalization. If you do not want native language support
+configure with the command:
+<verb>%./configure --disable-nls</verb>
 
 Messages are now displayed much faster in the message-window.
 
+More dialogs to inform when something goes wrong (i.e. could not start tournament etc.)
+
 Various minor improvements to the gui.
+
+Added option <tt>Logging frequency</tt> to make log files less large.
 
 Fixed bug that caused rotate_and_fire_select.cc failed during compile on some
 slackware machines.
