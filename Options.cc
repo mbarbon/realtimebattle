@@ -145,6 +145,18 @@ Options::Options()
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
 
+  all_double_options[OPTION_CPU_START_LIMIT] = 
+    option_info_t<double>(ENTRY_DOUBLE, 0.5, 0.01, 100000000.0, 12, "Start CPU time [s]", NULL);
+
+  all_double_options[OPTION_CPU_EXTRA] = 
+    option_info_t<double>(ENTRY_DOUBLE, 0.3, 0.01, 100000000.0, 12, "Extra CPU time [s]", NULL);
+
+  all_double_options[OPTION_CPU_PERIOD] = 
+    option_info_t<double>(ENTRY_DOUBLE, 60.0, 1.0, 100000000.0, 12, "Minimum time to wait for more CPU time [s]", NULL);
+
+  all_double_options[OPTION_CPU_WARNING_PERCENT] = 
+    option_info_t<double>(ENTRY_DOUBLE, 0.9, 0.1, 1.0, 12, "CPU time warning percentage", NULL);
+
   all_string_options[OPTION_STATISTICS_SAVE_FILE] =
     option_info_t<String>(ENTRY_CHAR, "statistics.txt", "", "", 100, "File to save the statistics", NULL);
 

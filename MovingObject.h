@@ -69,7 +69,8 @@ public:
   void check_name_uniqueness();
   void get_messages();
   void send_message(enum message_to_robot_type ...);
-  void set_initial_values(const Vector2D& pos, double angle);
+  void set_values_before_game(const Vector2D& pos, double angle);
+  void set_values_at_process_start_up();
   void set_stats(int robots_killed_same_time);
   void start_process();
   bool is_process_running();
@@ -137,6 +138,11 @@ private:
   double total_points;
   double points_this_game;
   int position_this_game;
+  double time_survived_in_sequence;
+
+  double cpu_next_limit;
+  double cpu_warning_limit;
+  double cpu_timeout;
 
   ifstream* instreamp;
   ofstream* outstreamp;

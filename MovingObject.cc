@@ -1,7 +1,5 @@
 #include <fcntl.h>
-//#include <errno.h>
 #include <unistd.h>
-//#include <strstream.h>
 #include <signal.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -59,15 +57,12 @@ Robot::start_process()
 {
   int pipe_in[2], pipe_out[2];
   if (pipe (pipe_in))
-    throw Error("Couldn't setup pipe_in for robot ", 
-                robot_filename, "Robot::Robot");
+    throw Error("Couldn't setup pipe_in for robot ", robot_filename, "Robot::Robot");
   if (pipe (pipe_out))
-    throw Error("Couldn't setup pipe_out for robot ", 
-                robot_filename, "Robot::Robot");
+    throw Error("Couldn't setup pipe_out for robot ", robot_filename, "Robot::Robot");
 
   if( (pid = fork()) < 0 )
-    throw Error("Couldn't fork childprocess for robot ", 
-                robot_filename, "Robot::Robot");
+    throw Error("Couldn't fork childprocess for robot ", robot_filename, "Robot::Robot");
 
   if(pid == 0)   // Child process, to be the new robot
     {
@@ -186,20 +181,8 @@ Robot::start_process()
 
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
-
-      if( g_list_next(statistics) == NULL )
-        {
-          send_message(INITIALIZE, 1);        // first sequence !
-        }
-      else
-        {
-          send_message(INITIALIZE, 0);        // not first sequence !
-          send_message(YOUR_NAME, robot_name.chars());
-          send_message(YOUR_COLOUR, gdk2hex_colour(colour));
-        } 
     }
-  process_running = true;
-  have_saved = false;
+  set_values_at_process_start_up();
 }
 
 bool
@@ -233,8 +216,36 @@ Robot::check_process()
       
       procfile >> jiffies;
 
-      //      cerr << robot_name << " time usage: " << (double)jiffies / 100.0 << endl;
-      //  TODO: check if used to much CPU
+      double current_cpu = (double)jiffies / 100.0;
+      double tot_time = the_arena.get_total_time() + time_survived_in_sequence;
+      if( !alive ) tot_time = time_survived_in_sequence;
+
+      if( current_cpu > cpu_next_limit )
+        {
+          if( tot_time >= cpu_timeout )
+            {
+              // add time
+              cpu_warning_limit = cpu_next_limit + 
+                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
+              cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
+            }
+          else
+            {
+              // cpu limit exceeded, robot disqualified
+              die();
+              // add time for next game
+              cpu_warning_limit = cpu_next_limit + 
+                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
+              cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
+            }
+        }
+      else if( current_cpu > cpu_warning_limit && tot_time < cpu_timeout )
+        {
+          send_message( WARNING, PROCESS_TIME_LOW, String(cpu_next_limit - current_cpu).chars());
+          cpu_warning_limit = cpu_next_limit;
+        }
     }
 }
 
@@ -303,6 +314,8 @@ Robot::set_stats(int robots_killed_same_time)
   int adjust = robots_killed_same_time - 1;
   position_this_game = the_arena.get_robots_left() - adjust;
   add_points( 1.0 + ((double)adjust) * 0.5 );
+
+  time_survived_in_sequence += the_arena.get_total_time();
 
   display_score();
 
@@ -487,7 +500,7 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
 }
 
 void
-Robot::set_initial_values(const Vector2D& pos, const double angle)
+Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
   center = pos;
   robot_angle.set (angle, 0.0, -infinity, infinity, NORMAL_ROT);
@@ -501,6 +514,28 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   points_this_game = 0.0;
   break_percent = 0.0;
   acceleration = 0.0;
+}
+
+void
+Robot::set_values_at_process_start_up()
+{
+  process_running = true;
+  have_saved = false;
+  time_survived_in_sequence = 0.0;
+  cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
+  cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+  cpu_timeout = 0.0;
+
+  if( g_list_next(statistics) == NULL )
+    {
+      send_message(INITIALIZE, 1);        // first sequence !
+    }
+  else
+    {
+      send_message(INITIALIZE, 0);        // not first sequence !
+      send_message(YOUR_NAME, robot_name.chars());
+      send_message(YOUR_COLOUR, gdk2hex_colour(colour));
+    } 
 }
 
 void
