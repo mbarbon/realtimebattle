@@ -64,7 +64,7 @@ public:
 
   // conversions to/from double
 
-  operator double() { return get_value(); }
+  operator double() const { return get_value(); }
   //  double operator() () { return get_value(); }
 
   const Variable& operator= (const double val) { assign(val); return *this; }
@@ -74,7 +74,7 @@ public:
 private:
   
   void assign(const double val);
-  double get_value();
+  double get_value() const;
 
 
   variable_type my_type;

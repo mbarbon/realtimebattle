@@ -112,7 +112,7 @@ Variable::assign(const double val)
 
 
 double
-Variable::get_value()
+Variable::get_value() const
 {
   if( constant ) return value;
 
