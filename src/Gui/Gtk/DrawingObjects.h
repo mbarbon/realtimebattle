@@ -19,14 +19,15 @@
 
 // DrawingRobot is separate
 
-
-// --------- DrawingShape -----------
-
 #include "Vector2D.h"
 #include "GuiStructs.h"
 
 class Shape;
 class Robot;
+
+// ---------------------------------------------------------------------------
+// class DrawingShape
+// ---------------------------------------------------------------------------
 
 class DrawingShape
 {
@@ -50,7 +51,9 @@ protected:
   Shape* shape_p;
 };
 
-// --------- DrawingLine -----------
+// ---------------------------------------------------------------------------
+// class DrawingLine
+// ---------------------------------------------------------------------------
 
 class DrawingLine : public DrawingShape
 {
@@ -67,7 +70,9 @@ protected:
   double last_drawn_thickness;
 };
 
-// --------- DrawingCircle -----------
+// ---------------------------------------------------------------------------
+// class DrawingCircle
+// ---------------------------------------------------------------------------
 
 class DrawingCircle : public DrawingShape
 {
@@ -82,7 +87,9 @@ protected:
   double last_drawn_radius;
 };
 
-// --------- DrawingCircle -----------
+// ---------------------------------------------------------------------------
+// class DrawingInnerCircle
+// ---------------------------------------------------------------------------
 
 class DrawingInnerCircle : public DrawingShape
 {
@@ -97,7 +104,9 @@ protected:
   double last_drawn_radius;
 };
 
-// --------- DrawingRobot -----------
+// ---------------------------------------------------------------------------
+// class DrawingRobot
+// ---------------------------------------------------------------------------
 
 class DrawingRobot
 {
