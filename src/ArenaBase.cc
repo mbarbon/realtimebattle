@@ -214,7 +214,7 @@ void
 ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
 {
   char text[20];
-  double radie, radie2, bounce_c, hardn, thickness;
+  double radius, radius2, bounce_c, hardn, thickness;
   int vertices;
 
   Vector2D vec1, vec2, vec0, center;
@@ -270,9 +270,9 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> bounce_c;
       file >> hardn;
       file >> vec1;
-      file >> radie;
+      file >> radius;
       
-      wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radie, bounce_c, hardn);
+      wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radius, bounce_c, hardn);
       object_lists[WALL].insert_first( wall_inner_circlep );
     }
   else if( strcmp(text, "circle" ) == 0 )
@@ -284,8 +284,8 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> bounce_c;
       file >> hardn;
       file >> vec1;
-      file >> radie;
-      wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
+      file >> radius;
+      wall_circlep = new WallCircle(scale*vec1, scale*radius, bounce_c, hardn);
       object_lists[WALL].insert_last(wall_circlep);
     }
   else if( strcmp(text, "arc" ) == 0 )
@@ -298,12 +298,12 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> bounce_c;
       file >> hardn;
       file >> center;
-      file >> radie;
-      file >> radie2;
+      file >> radius;
+      file >> radius2;
       file >> angle1;
       file >> angle2;
       
-      wall_arcp = new WallArc(scale*center, scale*radie, scale*radie2, 
+      wall_arcp = new WallArc(scale*center, scale*radius, scale*radius2, 
                               angle1 * M_PI / 180.0, angle2 * M_PI / 180.0,
                               bounce_c, hardn);
       object_lists[WALL].insert_last(wall_arcp);
@@ -402,6 +402,114 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
                                 scale*thickness, bounce_c , hardn);      
       object_lists[WALL].insert_last( wall_linep );
     }
+
+  else if( strcmp(text, "poly_curve" ) == 0 )
+    {
+      if( succession < 3 ) 
+        Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", 
+              "ArenaBase::parse_arena_line");
+      succession = 4;
+      file >> bounce_c;
+      file >> hardn;
+      file >> thickness;
+      thickness *= 0.5;
+
+      Vector2D current_pos, direction;
+      file >> current_pos;      // first point
+      wall_circlep = new WallCircle(scale*current_pos, scale*thickness, bounce_c, hardn);
+      object_lists[WALL].insert_last( wall_circlep );
+
+      file >> direction;      // start direction      
+      
+      direction.normalize();
+
+      if( lengthsqr(direction) < 0.01 ) 
+        Error(true, "Error in arenafile: directions must not be zero", 
+              "ArenaBase::parse_arena_line");
+
+      vec0 = current_pos;
+
+      char c;
+      double len, angle, start_angle, end_angle, tmp;
+      bool finish = false;
+      do
+        {
+          file >> c;
+          
+          switch( c )
+            {
+            case 'L':  // line
+              file >> len;
+              if( len <= 0.0 )
+                Error(true, "Error in arenafile: Line in poly_curve must be positive", 
+                      "ArenaBase::parse_arena_line");
+                
+              wall_linep = new WallLine(scale*current_pos, direction, 
+                                        scale*len, 
+                                        scale*thickness, bounce_c , hardn);      
+              object_lists[WALL].insert_last( wall_linep );
+
+              current_pos += len * direction;
+              wall_circlep = new WallCircle(scale*current_pos, scale*thickness, 
+                                            bounce_c, hardn);
+              object_lists[WALL].insert_last( wall_circlep );
+              
+              break;
+            case 'A':  // Arc
+              file >> angle;
+              file >> radius;
+
+              angle *= M_PI / 180.0;
+              center = current_pos - rotate90( direction ) * radius * sgn( angle );
+              start_angle = vec2angle( current_pos - center );
+              current_pos = center + radius * angle2vec( start_angle - angle );
+              end_angle = vec2angle( current_pos - center );
+
+              if( angle > 0.0 )
+                { tmp = start_angle; start_angle = end_angle; end_angle = tmp; }
+
+              wall_arcp = new WallArc(scale*center, scale*(radius - thickness), 
+                                      scale*(radius + thickness), 
+                                      start_angle, end_angle,
+                                      bounce_c, hardn);
+
+              object_lists[WALL].insert_last(wall_arcp);              
+
+
+              direction = rotate(direction, -angle);
+
+              wall_circlep = new WallCircle(scale*current_pos, scale*thickness, 
+                                            bounce_c, hardn);
+              object_lists[WALL].insert_last( wall_circlep );
+              break;
+
+            case 'T':  // Turn
+              file >> angle;              
+              direction = rotate( direction, -angle*M_PI/180.0 );
+
+              break;
+              
+            case 'C':   // connect to start point and quit
+              if( length(vec0 - current_pos ) == 0.0 ) 
+                Error(true, "Error in arenafile: Last line in poly_curve of zero length", 
+                      "ArenaBase::parse_arena_line");
+              
+              wall_linep = new WallLine(scale*current_pos, unit(vec0-current_pos), 
+                                        scale*length(vec0-current_pos), 
+                                        scale*thickness, bounce_c , hardn);      
+              object_lists[WALL].insert_last( wall_linep );              
+
+              finish = true;
+              break;
+            case 'Q':   // quit
+              finish = true;
+              break;
+
+            }
+        }
+      while( !finish );
+    }
+
   else if( text[0] != '\0' )
     Error(true, "Incorrect arenafile: unknown keyword" + (String)text, 
           "ArenaBase::parse_arena_line");
