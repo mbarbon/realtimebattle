@@ -569,19 +569,19 @@ void
 StartTournamentWindow::load_tournament_file( const string& full_filename,
                                              bool display_fail_message )
 {
-  if(!parse_tournament_file( full_filename,
-                             (StartTournamentFunction)
-                             StartTournamentWindow::new_tournament_from_tournament_file,
-                             this, false ) && display_fail_message )
-    {
-      string error_msg( _("Error in specified tournament file.") );
-      list<string> button_list;
-      button_list.push_back( string( _(" Ok ") ) );
-      string info_text = (string)_("Tournament could not be loaded.") + string("\n")
-        + error_msg;
-      Dialog( info_text, button_list, 
-              (DialogFunction) StartTournamentWindow::dummy_result );
-    }
+//    if(!parse_tournament_file( full_filename,
+//                               (StartTournamentFunction)
+//                               StartTournamentWindow::new_tournament_from_tournament_file,
+//                               this, false ) && display_fail_message )
+//      {
+//        string error_msg( _("Error in specified tournament file.") );
+//        list<string> button_list;
+//        button_list.push_back( string( _(" Ok ") ) );
+//        string info_text = (string)_("Tournament could not be loaded.") + string("\n")
+//          + error_msg;
+//        Dialog( info_text, button_list, 
+//                (DialogFunction) StartTournamentWindow::dummy_result );
+//      }
 }
 
 void
