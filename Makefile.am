@@ -49,6 +49,7 @@ tar:
 	RealTimeBattle/VERSION \
 	RealTimeBattle/RealTimeBattle.xpm \
 	RealTimeBattle/src/*.cc \
+	RealTimeBattle/src/getopt.c \
 	RealTimeBattle/src/*.h \
 	RealTimeBattle/src/Makefile.{am,in} \
 	RealTimeBattle/Documentation/RealTimeBattle*.html \
