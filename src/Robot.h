@@ -34,6 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Structs.h"
 #include "MovingObject.h"
 #include "String.h"
+#include "List.h"
 
 class Robot : public MovingObject
 {
@@ -70,7 +71,7 @@ public:
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
   pid_t get_pid() { return pid; }
-  GList* get_statistics() { return statistics; }
+  List<stat_t>* get_statistics() { return &statistics; }
   ofstream* get_outstreamp() { return outstreamp; }  
   int get_position_this_game() { return position_this_game; }
   double get_total_points() { return total_points; }
@@ -127,7 +128,7 @@ private:
   double last_drawn_radar_angle;
   double last_drawn_cannon_angle;
 
-  GList* statistics;
+  List<stat_t> statistics;
 
   int robot_name_uniqueness_number;
   class String plain_robot_name;

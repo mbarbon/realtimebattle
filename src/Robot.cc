@@ -72,7 +72,6 @@ Robot::Robot(const String& filename)
   robot_name = "";
   robot_name_uniqueness_number = 0;
   //  robot_dir= getenv("RTB_ROBOTDIR");
-  statistics = g_list_alloc();
   extra_air_resistance = 0.0;
   process_running = false;
 
@@ -98,18 +97,6 @@ Robot::~Robot()
 {
   if( is_process_running() ) kill_process_forcefully();
   delete_pipes();
-
-  stat_t* statp;
-  for(GList* gl=g_list_next(statistics); gl != NULL; )
-    {
-      statp = (stat_t*)(gl->data);
-      delete statp;
-      gl=g_list_next(gl);
-      g_list_remove(statistics, statp);
-    }
-  g_list_free(statistics);
-
-  
 } 
 
 void
@@ -423,7 +410,7 @@ Robot::set_stats(int robots_killed_same_time)
      total_points
      );
 
-  g_list_append(statistics, statp);
+  statistics.insert_last( statp );
 }
 
 void
@@ -458,20 +445,24 @@ Robot::check_name_uniqueness()
       robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
 }
 
-// double
-// Robot::get_total_points()
-// {
-//   stat_t* sp = (stat_t*)g_list_last(statistics)->data;
-//   return( sp != NULL ? sp->total_points + points : points );
-// }
+//  double
+//  Robot::get_total_points()
+//  {
+//    ListIterator<stat_t> li;
+//    statistics.last(li);
+//    stat_t* sp = li();
+//    return( sp != NULL ? sp->total_points + points : points );
+//  }
 
 int
 Robot::get_last_position()
 {
-  return( the_arena.get_games_per_sequence() -
-          the_arena.get_games_remaining_in_sequence() != 1 
-          ? ((stat_t*)g_list_last(statistics)->data)->position
-          : 0 );
+  if( the_arena.get_games_per_sequence() - 
+      the_arena.get_games_remaining_in_sequence() == 1 ) return 0; // first game
+
+  ListIterator<stat_t> li;
+  statistics.last(li);
+  return li()->position;
 }
 
 bool
@@ -651,7 +642,7 @@ Robot::set_values_at_process_start_up()
   cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
   cpu_timeout = 0.0;
 
-  if( g_list_next(statistics) == NULL )
+  if( statistics.is_empty() )
     {
       send_message(INITIALIZE, 1);        // first sequence !
     }
