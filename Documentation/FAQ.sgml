@@ -27,6 +27,10 @@ environmental variable <tt>GTK_CONFIG</tt> if, for example, the name of
 The problem is probably that you have used degrees instead of radians. Multiply the angle with
 pi/180 to make it work correctly.
 
+<tag>The robot stops getting messages after a while when using signals</tag>
+<p>
+Your robot is probably only fetching one message per signal, but RTB does
+usually send more messages at once before sending a signal. 
 
 
 <tag>My robot doesn't work as I expect</tag>
