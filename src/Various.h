@@ -56,4 +56,11 @@ void reorder_pointer_array(void** array, int size);
 
 void entry_handler( GtkWidget * entry, entry_t * entry_info );
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+gint int_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
+gint float_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
+gint string_case_sensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
+gint string_case_insensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
+#endif
+
 #endif __VARIOUS__

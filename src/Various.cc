@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iostream.h>
 
 #include "Various.h"
@@ -142,3 +143,181 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
   if(old_entry_text != entry_text)
     gtk_entry_set_text(GTK_ENTRY(entry),entry_text.chars());
 }
+
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+gint
+int_compare(GtkCList* clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  char* text1 = NULL;
+  char* text2 = NULL;
+
+  GtkCListRow* row1 = (GtkCListRow*) ptr1;
+  GtkCListRow* row2 = (GtkCListRow*) ptr2;
+
+  switch (row1->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text1 = GTK_CELL_TEXT (row1->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text1 = GTK_CELL_PIXTEXT (row1->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+ 
+  switch (row2->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text2 = GTK_CELL_TEXT (row2->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text2 = GTK_CELL_PIXTEXT (row2->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+
+  if (!text2)
+    return (text1 != NULL);
+
+  if (!text1)
+    return -1;
+
+  return (str2int(text1) - str2int(text2));
+}
+
+gint
+float_compare(GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  char* text1 = NULL;
+  char* text2 = NULL;
+
+  GtkCListRow* row1 = (GtkCListRow*) ptr1;
+  GtkCListRow* row2 = (GtkCListRow*) ptr2;
+
+  switch (row1->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text1 = GTK_CELL_TEXT (row1->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text1 = GTK_CELL_PIXTEXT (row1->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+ 
+  switch (row2->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text2 = GTK_CELL_TEXT (row2->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text2 = GTK_CELL_PIXTEXT (row2->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+
+  if (!text2)
+    return (text1 != NULL);
+
+  if (!text1)
+    return -1;
+
+  double n1 = str2dbl(text1);
+  double n2 = str2dbl(text2);
+
+  if(n1 > n2)
+    return 1;
+  else if(n2 > n1)
+    return -1;
+
+  return 0;
+}
+
+gint
+string_case_sensitive_compare(GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  char *text1 = NULL;
+  char *text2 = NULL;
+
+  GtkCListRow *row1 = (GtkCListRow *) ptr1;
+  GtkCListRow *row2 = (GtkCListRow *) ptr2;
+
+  switch (row1->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text1 = GTK_CELL_TEXT (row1->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text1 = GTK_CELL_PIXTEXT (row1->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+ 
+  switch (row2->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text2 = GTK_CELL_TEXT (row2->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text2 = GTK_CELL_PIXTEXT (row2->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+
+  if (!text2)
+    return (text1 != NULL);
+
+  if (!text1)
+    return -1;
+
+  return strcmp (text1, text2);
+}
+
+gint
+string_case_insensitive_compare(GtkCList *clist, gconstpointer ptr1, gconstpointer ptr2)
+{
+  char *text1 = NULL;
+  char *text2 = NULL;
+
+  GtkCListRow *row1 = (GtkCListRow *) ptr1;
+  GtkCListRow *row2 = (GtkCListRow *) ptr2;
+
+  switch (row1->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text1 = GTK_CELL_TEXT (row1->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text1 = GTK_CELL_PIXTEXT (row1->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+ 
+  switch (row2->cell[clist->sort_column].type)
+    {
+    case GTK_CELL_TEXT:
+      text2 = GTK_CELL_TEXT (row2->cell[clist->sort_column])->text;
+      break;
+    case GTK_CELL_PIXTEXT:
+      text2 = GTK_CELL_PIXTEXT (row2->cell[clist->sort_column])->text;
+      break;
+    default:
+      break;
+    }
+
+  if (!text2)
+    return (text1 != NULL);
+
+  if (!text1)
+    return -1;
+
+  return strcasecmp (text1, text2);
+}
+#endif
