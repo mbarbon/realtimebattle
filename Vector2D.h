@@ -20,7 +20,7 @@ public:
   friend Vector2D operator*(const Vector2D&, const double);  
   friend Vector2D operator*(const double, const Vector2D&);  
   friend ostream& operator<<(ostream&, const Vector2D&);  
-  friend istream& operator>>(istream&, const Vector2D&);  
+  friend istream& operator>>(istream&, Vector2D&);  
 
   Vector2D& operator+=(const Vector2D&);
   Vector2D& operator-=(const Vector2D&);

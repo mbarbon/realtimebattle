@@ -109,9 +109,9 @@ operator<<(ostream& os, const Vector2D& vec)
 }
 
 istream&
-operator>>(istream& is, const Vector2D& vec)
+operator>>(istream& is, Vector2D& vec)
 {
-  is >> ws >> vec.vector[0] >> ws >> vec.vector[1];
+  is >> vec.vector[0] >> vec.vector[1];
   return( is );
 }
 
