@@ -124,7 +124,7 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
      d = fabs( vel[1] / subsquare_size[1] / ( vel[0] / subsquare_size[0] ) );
 
      s = ( vel[1] >= 0.0 ? p_y : 1-p_y );
-     l = ( vel[0] >= 0.0 ? 1-p_x : 1-p_x );
+     l = ( vel[0] >= 0.0 ? p_x : 1-p_x );
    }
  else
    {
@@ -136,17 +136,23 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
      d = fabs( vel[0] / subsquare_size[0] / ( vel[1] / subsquare_size[1] ) );
 
      s = ( vel[0] >= 0.0 ? p_x : 1-p_x );
-     l = ( vel[1] >= 0.0 ? 1-p_y : 1-p_y );
+     l = ( vel[1] >= 0.0 ? p_y : 1-p_y );
    }
-
-
- // Now we can step through the subsquares until we find something
-
- double dist = 0.0;
  
  assert( d >= 0.0 && d <= 1.0 );
  assert( l >= 0.0 && l <= 1.0 );
  assert( s >= 0.0 && s <= 1.0 );
+
+ s -= l;
+
+ // Now we can step through the subsquares until we find something
+
+ double dist = 0.0;
+
+ dist = subsquares[x][y].get_shortest_distance(pos, vel, size, closest_shape, 
+                                               colliding_object, the_robot );
+ 
+ if( dist < DBL_MAX/2.0 ) return dist;
 
  do
    {
@@ -174,10 +180,8 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
 
      dist = subsquares[x][y].get_shortest_distance(pos, vel, size, closest_shape, 
                                                     colliding_object, the_robot );
-
-     if( dist < DBL_MAX/2.0 ) break;
    }
- while( true );
+ while( dist > DBL_MAX/2.0 );
 
  return dist;
 }
