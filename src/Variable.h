@@ -27,13 +27,17 @@ class Variable : public Gadget
 
 public:
   
-  Variable() {}
+  Variable( const string& name ) : Gadget(name) {}
   ~Variable() {}
 
   enum var_type { BOOL, INT, DOUBLE };
 
   void make_bool( const double val=double(false) );
-  void make_int ( const double val, const double min_val, const double max_val );
+
+  void make_int ( const double val, 
+                  const double min_val = INT_MIN, 
+                  const double max_val= INT_MAX );
+
   void make_double( const double val, const double min_val, const double max_val,
                     const double inaccuracy = 0.0 );
 
@@ -47,7 +51,7 @@ public:
   // conversions to/from double
 
   operator double() { return get_value(); }
-  //  double operator() { return get_value(); }
+  //  double operator() () { return get_value(); }
 
   const Variable& operator= (const double val) { assign(val); return *this; }
 

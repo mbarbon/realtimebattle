@@ -21,11 +21,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __WEAPON_GADGET__
 
 #include "Gadget.h"
+#include "Variable.h"
+
 
 class WeaponGadget : public Gadget
 {
 public:
 
+  WeaponGadget( const string& name, const int ammo=0 );
 
 private:
   
