@@ -20,13 +20,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ScoreWindow.h"
+#include "ControlWindow.h"
 #include "ArenaController.h"
 #include "Robot.h"
+
+extern class ControlWindow* controlwindow_p;
 
 //
 // The constructor. The window will be set up here.
 //
-
 ScoreWindow::ScoreWindow( const int default_width,
                           const int default_height,
                           const int default_x_pos,
@@ -104,15 +106,15 @@ ScoreWindow::ScoreWindow( const int default_width,
 #endif
   gtk_widget_show( clist );
 
-  gtk_widget_show( window_p );
-  window_shown = true;
+  if( window_shown = ( controlwindow_p->is_scorewindow_checked() ) )
+    gtk_widget_show( window_p );
+
   selected_robot = NULL;
 }
 
 //
 // The destructor
 //
-
 ScoreWindow::~ScoreWindow()
 {
   gtk_widget_destroy( window_p );
@@ -122,7 +124,6 @@ ScoreWindow::~ScoreWindow()
 // Sets the window title in the form of:
 // Score   Seq: 1 (2)  Game: 3 (4)  Time: 56
 //
-
 void
 ScoreWindow::set_window_title()
 {
@@ -141,8 +142,8 @@ ScoreWindow::set_window_title()
 
 //
 // This function hides the window
+// Warning: event can be NULL, do not use event!
 //
-
 void
 ScoreWindow::hide_window( GtkWidget* widget, GdkEvent* event,
                           class ScoreWindow* scorewindow_p )
@@ -151,13 +152,21 @@ ScoreWindow::hide_window( GtkWidget* widget, GdkEvent* event,
     {
       gtk_widget_hide( scorewindow_p->get_window_p() );
       scorewindow_p->set_window_shown( false );
+      if( controlwindow_p->is_scorewindow_checked() )
+        {
+          GtkWidget* checkbutton = controlwindow_p->get_show_score_checkbutton();
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#else
+          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#endif
+        }
     }
 }
 
 //
 // This function shows the window again
 //
-
 void
 ScoreWindow::show_window( GtkWidget* widget,
                           class ScoreWindow* scorewindow_p )
@@ -173,7 +182,6 @@ ScoreWindow::show_window( GtkWidget* widget,
 // This function is called whenever the user selects a robot in
 // the clist. Remebers this robot as the selected one.
 //
-
 void
 ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
                                  GdkEventButton *event,
@@ -197,7 +205,6 @@ ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
 // This function resets score window and adds all robots in sequence
 // to the score window. Sets the selected robot to the first one.
 //
-
 void
 ScoreWindow::add_robots()
 {

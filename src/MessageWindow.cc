@@ -21,13 +21,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "MessageWindow.h"
 #include "ScoreWindow.h"
+#include "ControlWindow.h"
 #include "Gui.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
 #include "String.h"
 #include "Robot.h"
 
-
+extern class ControlWindow* controlwindow_p;
 
 MessageWindow::MessageWindow( const int default_width,
                               const int default_height,
@@ -129,8 +130,8 @@ MessageWindow::MessageWindow( const int default_width,
 #endif
   gtk_widget_show( clist );
 
-  gtk_widget_show( window_p );
-  window_shown = true;
+  if( window_shown = ( controlwindow_p->is_messagewindow_checked() ) )
+    gtk_widget_show( window_p );
 }
 
 MessageWindow::~MessageWindow()
@@ -202,6 +203,7 @@ MessageWindow::set_window_shown( bool win_shown )
   window_shown = win_shown;
 }
 
+// Warning: event can be NULL, do not use event!
 void
 MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
                             class MessageWindow* messagewindow_p )
@@ -210,6 +212,15 @@ MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
     {
       gtk_widget_hide( messagewindow_p->get_window_p() );
       messagewindow_p->set_window_shown( false );
+      if( controlwindow_p->is_messagewindow_checked() )
+        {
+          GtkWidget* checkbutton = controlwindow_p->get_show_message_checkbutton();
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#else
+          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#endif
+        }
     }
 }
 

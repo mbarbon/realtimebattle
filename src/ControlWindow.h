@@ -76,6 +76,12 @@ public:
                                      class ControlWindow* cw_p );
   static void replay_tournament    ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
+  static void arena_window_toggle  ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void message_window_toggle( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void score_window_toggle  ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
   static void replay               ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void rewind_pressed       ( GtkWidget* widget,
@@ -111,6 +117,14 @@ public:
   GtkWidget* get_filesel           () { return filesel; }
   GtkWidget* get_window_p          () { return window_p; }
 
+  bool is_arenawindow_checked      ();
+  bool is_messagewindow_checked    ();
+  bool is_scorewindow_checked      ();
+
+  GtkWidget* get_show_arena_checkbutton() { return show_arena_checkbutton; }
+  GtkWidget* get_show_message_checkbutton() { return show_message_checkbutton; }
+  GtkWidget* get_show_score_checkbutton() { return show_score_checkbutton; }
+
   void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
 
   void set_progress_time           ( const double time );
@@ -124,6 +138,10 @@ private:
   GtkWidget* window_hbox;
   GtkWidget* vseparator;
   GtkWidget* extra_vbox;
+
+  GtkWidget* show_arena_checkbutton;
+  GtkWidget* show_message_checkbutton;
+  GtkWidget* show_score_checkbutton;
 
   GtkAdjustment* current_replay_time_adjustment;
 

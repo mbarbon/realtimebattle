@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaBase.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
+#include "ControlWindow.h"
 #include "Extras.h"
 #include "Robot.h"
 #include "Shot.h"
@@ -31,6 +32,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Vector2D.h"
 
 #define GDK_360_DEGREES 23040     // 64 * 360 degrees
+
+extern class ControlWindow* controlwindow_p;
 
 ArenaWindow::ArenaWindow( const int default_width,
                           const int default_height,
@@ -121,13 +124,15 @@ ArenaWindow::ArenaWindow( const int default_width,
 #endif
   gtk_widget_show( drawing_area );
 
-  gtk_widget_show( window_p  );
-  window_shown = true;
+  window_shown = controlwindow_p->is_arenawindow_checked();
 
+  zoom = 1;
+
+  // TODO: A good way of mark arena window as hidden before game starts.
+  gtk_widget_show( window_p );
   gdk_window_set_background( drawing_area->window,
                              the_gui.get_bg_gdk_colour_p() );
   gdk_window_clear( drawing_area->window );
-  zoom = 1;
 }
 
 ArenaWindow::~ArenaWindow()
@@ -149,6 +154,7 @@ ArenaWindow::set_window_shown( bool win_shown )
   window_shown = win_shown;
 }
 
+// Warning: event can be NULL, do not use event!
 void
 ArenaWindow::hide_window( GtkWidget* widget, GdkEvent* event,
                           class ArenaWindow* arenawindow_p )
@@ -157,6 +163,15 @@ ArenaWindow::hide_window( GtkWidget* widget, GdkEvent* event,
     {
       gtk_widget_hide( arenawindow_p->get_window_p() );
       arenawindow_p->set_window_shown( false );
+      if( controlwindow_p->is_arenawindow_checked() )
+        {
+          GtkWidget* checkbutton = controlwindow_p->get_show_arena_checkbutton();
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#else
+          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), FALSE );
+#endif
+        }
     }
 }
 
@@ -175,18 +190,21 @@ ArenaWindow::show_window( GtkWidget* widget,
 void
 ArenaWindow::clear_area()
 {
-  GdkGC * colour_gc;
+  if( window_shown )
+    {
+      GdkGC * colour_gc;
 
-  colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, the_gui.get_bg_gdk_colour_p() );
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, the_gui.get_bg_gdk_colour_p() );
 
-  gdk_draw_rectangle( drawing_area->window,
-                      colour_gc,
-                      true,
-                      0, 0, drawing_area->allocation.width,
-                      drawing_area->allocation.height );
+      gdk_draw_rectangle( drawing_area->window,
+                          colour_gc,
+                          true,
+                          0, 0, drawing_area->allocation.width,
+                          drawing_area->allocation.height );
 
-  gdk_gc_destroy( colour_gc );
+      gdk_gc_destroy( colour_gc );
+    }
 }
 
 void

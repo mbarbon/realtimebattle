@@ -20,6 +20,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ControlWindow.h"
+#include "ArenaWindow.h"
+#include "MessageWindow.h"
 #include "ScoreWindow.h" 
 #include "StatisticsWindow.h" 
 #include "Gui.h"
@@ -105,6 +107,50 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_box_pack_start( GTK_BOX( button_hbox ), button,
                           TRUE, buttons[i].pack , 0 );
       gtk_widget_show( button );
+    }
+
+  GtkWidget* vsep = gtk_vseparator_new();
+  gtk_box_pack_start( GTK_BOX (window_hbox), vsep, FALSE, FALSE, 0 );
+  gtk_widget_show( vsep );
+
+  GtkWidget* win_control_vbox = gtk_vbox_new( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_hbox ), win_control_vbox );
+  gtk_widget_show( win_control_vbox );
+
+  struct button_t check_buttons[] = {
+    { (String)" Show arena window ",
+      (GtkSignalFunc) ControlWindow::arena_window_toggle, TRUE  },
+    { (String)" Show message window ",
+      (GtkSignalFunc) ControlWindow::message_window_toggle, TRUE  },
+    { (String)" Show score window ",
+      (GtkSignalFunc) ControlWindow::score_window_toggle, TRUE  } };
+  
+  for( int i = 0;i < 3; i++ )
+    {
+      GtkWidget* checkbutton =
+        gtk_check_button_new_with_label( check_buttons[i].label.chars() );
+      gtk_box_pack_start( GTK_BOX( win_control_vbox ), checkbutton, TRUE, TRUE, 0 );
+      gtk_signal_connect( GTK_OBJECT( checkbutton ), "toggled",
+                          check_buttons[i].func, (gpointer) this );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( checkbutton ), TRUE );
+#else
+      gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( checkbutton ), TRUE );
+#endif
+      gtk_widget_show( checkbutton );
+
+      switch( i )
+        {
+        case 0:
+          show_arena_checkbutton = checkbutton;
+          break;
+        case 1:
+          show_message_checkbutton = checkbutton;
+          break;
+        case 2:
+          show_score_checkbutton = checkbutton;
+          break;
+        }
     }
 
   gtk_widget_show( window_p );
@@ -490,6 +536,82 @@ ControlWindow::kill_and_open_filesel( int result )
     }
 }
 
+
+void
+ControlWindow::arena_window_toggle( GtkWidget* widget,
+                                    class ControlWindow* cw_p )
+{
+  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+
+  if( the_gui.is_arenawindow_up() )
+    {
+      if( active )
+        the_gui.get_arenawindow_p()->
+          show_window( the_gui.get_arenawindow_p()->get_window_p(),
+                       the_gui.get_arenawindow_p() );
+      else
+        the_gui.get_arenawindow_p()->
+          hide_window( the_gui.get_arenawindow_p()->get_window_p(),
+                       NULL, the_gui.get_arenawindow_p() );
+    }
+}
+
+bool
+ControlWindow::is_arenawindow_checked()
+{
+  return GTK_TOGGLE_BUTTON( show_arena_checkbutton )->active;
+}
+
+void
+ControlWindow::message_window_toggle( GtkWidget* widget,
+                                      class ControlWindow* cw_p )
+{
+  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+
+  if( the_gui.is_messagewindow_up() )
+    {
+      if( active )
+        the_gui.get_messagewindow_p()->
+          show_window( the_gui.get_messagewindow_p()->get_window_p(),
+                       the_gui.get_messagewindow_p() );
+      else
+        the_gui.get_messagewindow_p()->
+          hide_window( the_gui.get_messagewindow_p()->get_window_p(),
+                       NULL, the_gui.get_messagewindow_p() );
+    }
+}
+
+bool
+ControlWindow::is_messagewindow_checked()
+{
+  return GTK_TOGGLE_BUTTON( show_message_checkbutton )->active;
+}
+
+void
+ControlWindow::score_window_toggle( GtkWidget* widget,
+                                    class ControlWindow* cw_p )
+{
+  bool active = GTK_TOGGLE_BUTTON( widget )->active;
+
+  if( the_gui.is_scorewindow_up() )
+    {
+      if( active )
+        the_gui.get_scorewindow_p()->
+          show_window( the_gui.get_scorewindow_p()->get_window_p(),
+                       the_gui.get_scorewindow_p() );
+      else
+        the_gui.get_scorewindow_p()->
+          hide_window( the_gui.get_scorewindow_p()->get_window_p(),
+                       NULL, the_gui.get_scorewindow_p() );
+    }
+}
+
+bool
+ControlWindow::is_scorewindow_checked()
+{
+  return GTK_TOGGLE_BUTTON( show_score_checkbutton )->active;
+}
+
 void
 ControlWindow::replay( GtkWidget* widget,
                        class ControlWindow* cw_p )
@@ -624,6 +746,3 @@ ControlWindow::set_progress_time( const double time )
 {
   gtk_adjustment_set_value( current_replay_time_adjustment, time );
 }
-
-
-
