@@ -1,12 +1,12 @@
 #
-# spec file for package RealTimeBattle (Version 0.9.11)
+# spec file for package RealTimeBattle (for version see below)
 # 
 # Author: CW Zuckschwerdt <zany@triq.net>, Nov 1999 
 #
 
 %define prefix  /usr
 %define name    RealTimeBattle
-%define version 1.0.0
+%define version 1.0.1
 %define release 1
 
 Summary:     RealTimeBattle, a robot programming game for Unix
