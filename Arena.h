@@ -36,7 +36,7 @@ public:
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, enum object_type& closest_shape, 
-                               void*& colliding_object );
+                               void*& colliding_object, const class Robot* the_robot = NULL );
 
   bool space_available(const Vector2D& pos, const double margin);
 
