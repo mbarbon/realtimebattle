@@ -22,7 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <article>
 <titlepag>
 <title>RealTimeBattle User Manual, version 1.0.0pre1 rev 1
-<author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
+<author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
 <date> 24 December 1999
 
 <!-- <abstract> -->
@@ -141,7 +141,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <p>
 If you find anything in this package which doesn't work, appears strange, is missing, is
 spellt wrong or is just confusing, don't hesitate to send in a bug report to the 
-<url name="authors" url="mailto: realtimebattle@telia.com">. But please check first the
+<url name="authors" url="mailto:rtb@users.sourceforge.net">. But please check first the
 included bug list and the 
 <url name="bug list on the homepage" url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html">.
 
