@@ -40,6 +40,11 @@ ArenaWindow::create( const int&  default_width,
                      const int&  default_x_pos,
                      const int&  default_y_pos )
 {
+  // Check that the window isn't already created
+
+  if( is_window_shown() )
+    return;
+
   // Create the window.
 
   Window::create( GTK_WINDOW_TOPLEVEL,
@@ -68,8 +73,6 @@ ArenaWindow::create( const int&  default_width,
   GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
   gtk_container_add( GTK_CONTAINER( window_p ), vbox );
   gtk_widget_show( vbox );
-
-  // Zoom buttons
 
   // Zoom buttons
 
