@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
+#include "ArenaReplay.h"
 #include "Robot.h"
 #include "Options.h"
 #include "String.h"
@@ -263,24 +264,48 @@ ControlWindow::display_replay_widgets()
     "xxxx     xxxx     ",
     "xx       xx       " };
 
-  struct button_t { char** xpm; String label; GtkSignalFunc func; int pack; };
+  struct button_t
+  {
+    char** xpm;
+    String label;
+    GtkSignalFunc clicked_func;
+    GtkSignalFunc pressed_func;
+    GtkSignalFunc released_func;
+  };
+
   struct button_t replay_buttons[] = {
-    { rew_xpm, "", 
-      (GtkSignalFunc) ControlWindow::rewind       , TRUE  },
+    { rew_xpm, "",
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::rewind_pressed,
+      (GtkSignalFunc) ControlWindow::rewind_released },
     { ffw_xpm, "", 
-      (GtkSignalFunc) ControlWindow::fast_forward , TRUE  },
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::fast_forward_pressed,
+      (GtkSignalFunc) ControlWindow::fast_forward_released },
     { NULL, " Step forward ", 
-      (GtkSignalFunc) ControlWindow::step_forward , TRUE  },
+      (GtkSignalFunc) ControlWindow::step_forward,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy },
     { NULL, " Step backward ", 
-      (GtkSignalFunc) ControlWindow::step_backward, TRUE  },
+      (GtkSignalFunc) ControlWindow::step_backward,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy },
     { NULL, " Next Game ", 
-      (GtkSignalFunc) ControlWindow::next_game    , TRUE  },
+      (GtkSignalFunc) ControlWindow::next_game,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy },
     { NULL, " Prev Game ", 
-      (GtkSignalFunc) ControlWindow::prev_game    , TRUE  },
+      (GtkSignalFunc) ControlWindow::prev_game,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy },
     { NULL, " Next Seq ", 
-      (GtkSignalFunc) ControlWindow::next_seq     , TRUE  },
+      (GtkSignalFunc) ControlWindow::next_seq,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy },
     { NULL, " Prev Seq ", 
-      (GtkSignalFunc) ControlWindow::prev_seq     , TRUE  } };
+      (GtkSignalFunc) ControlWindow::prev_seq,
+      (GtkSignalFunc) ControlWindow::dummy,
+      (GtkSignalFunc) ControlWindow::dummy } };
 
   GtkWidget* button_hbox = NULL;
 
@@ -314,10 +339,16 @@ ControlWindow::display_replay_widgets()
           gtk_button_new_with_label( replay_buttons[i].label.chars() );
 
       gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
-                          (GtkSignalFunc) replay_buttons[i].func,
+                          (GtkSignalFunc) replay_buttons[i].clicked_func,
+                          (gpointer) NULL );
+      gtk_signal_connect( GTK_OBJECT( button_w ), "pressed",
+                          (GtkSignalFunc) replay_buttons[i].pressed_func,
+                          (gpointer) NULL );
+      gtk_signal_connect( GTK_OBJECT( button_w ), "released",
+                          (GtkSignalFunc) replay_buttons[i].released_func,
                           (gpointer) NULL );
       gtk_box_pack_start( GTK_BOX( button_hbox ), button_w,
-                          TRUE, replay_buttons[i].pack , 0);
+                          TRUE, TRUE , 0);
       gtk_widget_show( button_w );
     }
 
@@ -515,15 +546,35 @@ ControlWindow::statistics_clicked( GtkWidget* widget,
 }
 
 void
-ControlWindow::rewind( GtkWidget* widget,
-                       class ControlWindow* cw_p )
+ControlWindow::rewind_pressed( GtkWidget* widget,
+                               class ControlWindow* cw_p )
 {
+  cout << "rewinding ... " << endl;
+  replay_arena.change_speed( false, true );
 }
 
 void
-ControlWindow::fast_forward( GtkWidget* widget,
-                             class ControlWindow* cw_p )
+ControlWindow::rewind_released( GtkWidget* widget,
+                                class ControlWindow* cw_p )
 {
+  cout << "until released" << endl;
+  replay_arena.change_speed( false, false );
+}
+
+void
+ControlWindow::fast_forward_pressed( GtkWidget* widget,
+                                     class ControlWindow* cw_p )
+{
+  cout << "forwarding ... " << endl;
+  replay_arena.change_speed( true, true );
+}
+
+void
+ControlWindow::fast_forward_released( GtkWidget* widget,
+                                      class ControlWindow* cw_p )
+{
+  cout << "until released" << endl;
+  replay_arena.change_speed( true, false );
 }
 
 void
@@ -548,6 +599,7 @@ void
 ControlWindow::prev_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
+  replay_arena.search_backwards( 'G' );
 }
 
 void
