@@ -49,14 +49,14 @@ public:
                                          const bool lo, const char* r,
                                          const char* t ) :
     group(g), broadcast_option(br), log_option(lo), rc_label(r),
-    translated_label(t) {}
+    description(t) {}
   Option::~Option                      () {}
 
   const option_group_t get_group       () const { return group; }
   const bool broadcast                 () const { return broadcast_option; }
   const bool log                       () const { return log_option; }
   const string& get_rc_label           () const { return rc_label; }
-  const string& get_translated_label   () const { return translated_label; }
+  const string& get_description   () const { return description; }
   
 private:
 
@@ -66,7 +66,7 @@ private:
   bool log_option;
 
   string rc_label;
-  string translated_label;
+  string description;
 };
 
 // ---------------------------------------------------------------------------
