@@ -334,7 +334,8 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
-  the_gui->setup_control_window( this );
+  the_gui->setup_score_window( this );
+  the_gui->setup_message_window();
   the_gui->setup_arena_window( boundary );
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
@@ -487,6 +488,8 @@ void
 Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_p_game, int games_p_sequence)
 {
   // Create robot classes and to into the list all_robots_in_tournament
+
+  the_gui->setup_control_window();
 
   Robot* robotp;
 

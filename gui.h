@@ -15,7 +15,9 @@ public:
   Gui();
   ~Gui() {}
 
-  void setup_control_window( void * the_arenap );
+  void setup_control_window();
+  void setup_score_window( void * the_arenap );
+  void setup_message_window();
   void setup_arena_window( Vector2D bound[] );
   void quit_event( GtkWidget * widget, GdkEvent * event );
 

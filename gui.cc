@@ -175,28 +175,14 @@ Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 }
 
 void
-Gui::setup_control_window( void * the_arenap )
+Gui::setup_control_window()
 {
-  int robot_number=0;
-
   GtkWidget *window;
   GtkWidget *button;
-  GtkWidget *toptable,*messagetable,*bottomtable,*rltable,*rhtable;
-  GtkWidget *label;
-  GtkWidget *vbox,*scr_vbox,*hbox, *robothbox;
-  GtkWidget *scrolled_window;
-  GtkWidget * vscrollbar;
-  GdkColormap *cmap;
+  GtkWidget *toptable,*bottomtable;
+  GtkWidget *vbox;
 
-  GList** object_lists;
-  GList* gl;
-  Robot* robotp;
-
-  object_lists = ((Arena *)the_arenap)->get_object_lists();
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
-    robot_number++;
-
-  /* Window */
+  // Window 
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Control Window");
@@ -208,12 +194,12 @@ Gui::setup_control_window( void * the_arenap )
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show (vbox);
 
-  /* Top Table */
+  // Top Table 
 
   toptable = gtk_table_new (2, 10, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), toptable, FALSE, FALSE, 0);
 
-  /* Topmost buttons */
+  // Topmost buttons 
 
   button = gtk_button_new_with_label ("New Tournament");
   //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
@@ -257,24 +243,59 @@ Gui::setup_control_window( void * the_arenap )
   gtk_table_set_col_spacing (GTK_TABLE(toptable), 8, 10);
   gtk_widget_show (toptable);
 
-  /* Scrolled Window */
+  // Bottom Table 
 
-  scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
-                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (vbox), scrolled_window);
-  gtk_widget_set_usize(scrolled_window,260,62);
-  // Y=ANTAL_ROBOTAR*30 + 14
-  gtk_widget_show (scrolled_window);
+  bottomtable = gtk_table_new (1, 4, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), bottomtable, FALSE, FALSE, 0);
 
-  /* VBox in Scrolled Window */
+  // Quit Button 
+
+  button = gtk_button_new_with_label ("Quit");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (delete_event), this);
+  gtk_table_attach_defaults (GTK_TABLE(bottomtable), button, 1, 3, 0, 1);
+  gtk_widget_show (button);
+  gtk_widget_show (bottomtable);
+
+  gtk_widget_show (window);
+}
+
+void
+Gui::setup_score_window( void * the_arenap )
+{
+  int robot_number=0;
+  GtkWidget * window;
+  GtkWidget * rltable, * rhtable;
+  GtkWidget * hbox, * scr_vbox, * robothbox;
+  GtkWidget * label;
+  GtkWidget * widget_energy;
+  GtkWidget * widget_place;
+  GtkWidget * widget_score;
+
+  GList** object_lists;
+  GList* gl;
+  Robot* robotp;
+
+  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    robot_number++;
+
+  // Window 
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Score Window");
+  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
+                      GTK_SIGNAL_FUNC (delete_event), this);
+  gtk_container_border_width (GTK_CONTAINER (window), 12);
+
+  // VBox in Scrolled Window 
 
   scr_vbox = gtk_vbox_new (FALSE, 10);
   gtk_container_border_width (GTK_CONTAINER (scr_vbox), 10);
-  gtk_container_add (GTK_CONTAINER (scrolled_window), scr_vbox);
+  gtk_container_add (GTK_CONTAINER (window), scr_vbox);
   gtk_widget_show (scr_vbox);
 
-  /* Robot Tables */
+  // Robot Tables 
 
   robothbox = gtk_hbox_new (FALSE, 10);
   gtk_container_add (GTK_CONTAINER (scr_vbox), robothbox);
@@ -286,11 +307,7 @@ Gui::setup_control_window( void * the_arenap )
   rhtable = gtk_table_new (robot_number, 1, TRUE);
   gtk_box_pack_start (GTK_BOX (robothbox), rhtable, FALSE, FALSE, 0);
 
-  /* Robots */
-
-  GtkWidget * widget_energy;
-  GtkWidget * widget_place;
-  GtkWidget * widget_score;
+  // Robots 
 
   int i = 0;
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
@@ -304,7 +321,7 @@ Gui::setup_control_window( void * the_arenap )
       gtk_table_attach_defaults (GTK_TABLE(rhtable), hbox, 0, 1, i, i + 1);
       gtk_widget_show (hbox);
 
-      /* Robot Buttons */
+      // Robot Buttons 
 
       label = gtk_label_new (robotp->get_robotname() );
       gtk_table_attach_defaults (GTK_TABLE(rltable), label, 0, 1, i, i + 1);
@@ -354,25 +371,51 @@ Gui::setup_control_window( void * the_arenap )
   gtk_widget_show (rhtable);
   gtk_widget_show (rltable);
 
-  /* Message Table */
+  gtk_widget_show (window);
+}
+
+void
+Gui::setup_message_window()
+{
+  GtkWidget * window;
+  GtkWidget * vbox;
+  GtkWidget * messagetable;
+  GtkWidget * vscrollbar;
+  GdkColormap * cmap;
+
+  // Window 
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Message Window");
+  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
+                      GTK_SIGNAL_FUNC (delete_event), this);
+  gtk_container_border_width (GTK_CONTAINER (window), 12);
+
+  // The VBox 
+
+  vbox = gtk_vbox_new (FALSE, 10);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_widget_show (vbox);
+
+  // Message Table 
 
   messagetable = gtk_table_new (2, 2, FALSE);
   gtk_table_set_row_spacing (GTK_TABLE (messagetable), 0, 2);
   gtk_table_set_col_spacing (GTK_TABLE (messagetable), 0, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), messagetable, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), messagetable, TRUE, TRUE, 0);
   gtk_widget_show (messagetable);
 
-  /* Message Text */
+  // Message Text 
 
   message_output = gtk_text_new (NULL, NULL);
   gtk_text_set_editable (GTK_TEXT (message_output), FALSE);
   gtk_table_attach (GTK_TABLE (messagetable), message_output, 0, 1, 0, 1,
                     GTK_EXPAND | GTK_SHRINK | GTK_FILL,
                     GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
-  gtk_widget_set_usize(message_output, 160,63);
+  gtk_widget_set_usize(message_output, 250,100);
   gtk_widget_show(message_output);
 
-  /* Message VScrollBar */
+  // Message VScrollBar 
 
   vscrollbar = gtk_vscrollbar_new (GTK_TEXT (message_output)->vadj);
   gtk_table_attach (GTK_TABLE (messagetable), vscrollbar, 1, 2, 0, 1,
@@ -387,20 +430,6 @@ Gui::setup_control_window( void * the_arenap )
   gtk_widget_realize (message_output);
   gtk_text_freeze (GTK_TEXT (message_output));
 
-  /* Bottom Table */
-
-  bottomtable = gtk_table_new (1, 4, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), bottomtable, FALSE, FALSE, 0);
-
-  /* Quit Button */
-
-  button = gtk_button_new_with_label ("Quit");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (delete_event), this);
-  gtk_table_attach_defaults (GTK_TABLE(bottomtable), button, 1, 3, 0, 1);
-  gtk_widget_show (button);
-  gtk_widget_show (bottomtable);
-
   gtk_widget_show (window);
 }
 
@@ -412,7 +441,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   boundary[0] = bound[0];
   boundary[1] = bound[1];
 
-  /* Window */
+  // Window 
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Arena Window");
@@ -420,7 +449,7 @@ Gui::setup_arena_window( Vector2D bound[] )
                       GTK_SIGNAL_FUNC (delete_event), this);
   gtk_container_border_width (GTK_CONTAINER (window), 12);  
 
-  /* Scrolled Window */
+  // Scrolled Window 
 
   da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
@@ -429,7 +458,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   gtk_widget_set_usize(da_scrolled_window,204,204);
   gtk_widget_show (da_scrolled_window);
 
-  /* Drawing Area */
+  // Drawing Area 
 
   drawing_area = gtk_drawing_area_new ();
   gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),
@@ -440,7 +469,7 @@ Gui::setup_arena_window( Vector2D bound[] )
 
   gtk_widget_show (window);  
 
-  /* Background Colour */
+  // Background Colour 
 
   colormap = gdk_window_get_colormap (drawing_area->window);
   background_colour.red = 64255;
