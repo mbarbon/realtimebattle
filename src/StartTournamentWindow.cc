@@ -127,6 +127,11 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           tour_title = new char*( _("Arenas in Tournament") );
           dir_title  = new char*( _("Arenas in Directory") );
           robot = false;
+
+          // Make a horizontal ruler between robots and arenas
+          GtkWidget* hsep = gtk_hseparator_new();
+          gtk_box_pack_start( GTK_BOX( vbox ), hsep, FALSE, FALSE, 0 );
+          gtk_widget_show( hsep );
         }
 
       GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
@@ -222,6 +227,10 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
         }
     }
 
+  GtkWidget* hsep = gtk_hseparator_new();
+  gtk_box_pack_start( GTK_BOX( vbox ), hsep, FALSE, FALSE, 0 );
+  gtk_widget_show( hsep );
+
   // Choose Number of games per sequence, Number of robots per sequence
   // and Number of sequences
 
@@ -233,7 +242,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_show (hbox2);
 
   GtkWidget * internal_hbox = gtk_hbox_new( FALSE, 10 );
-  gtk_box_pack_start (GTK_BOX (hbox2), internal_hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox2), internal_hbox, TRUE, FALSE, 0);
   gtk_widget_show (internal_hbox);
 
   GtkWidget * description_table = gtk_table_new( 3, 1, TRUE );
@@ -336,6 +345,10 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_show( entry_table );
   gtk_widget_show( button_table );
 
+  GtkWidget* vsep = gtk_vseparator_new();
+  gtk_box_pack_start( GTK_BOX( hbox2 ), vsep, FALSE, FALSE, 0 );
+  gtk_widget_show( vsep );
+
   GtkWidget* vbox2 = gtk_vbox_new( FALSE, 10 );
   gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, FALSE, 0);
   gtk_widget_show (vbox2);
@@ -359,7 +372,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   }  
 
   vbox2 = gtk_vbox_new( FALSE, 10 );
-  gtk_box_pack_end( GTK_BOX(hbox2), vbox2, FALSE, FALSE, 0);
+  gtk_box_pack_end( GTK_BOX(hbox2), vbox2, TRUE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
