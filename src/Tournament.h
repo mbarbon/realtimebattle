@@ -24,11 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "Gadgets/ArenaGadget.h"
-//#include "Event.h"
-//#include "Various.h"
-
-class Robot;
-class ArenaGadget;
+#include "Robot.h"
 
 
 class Match
@@ -37,7 +33,7 @@ public:
   Match() {}
   ~Match() {}
 
-  //  friend class Tournament;
+  friend class Tournament;
 
   void start_new_match() {}
   void end_match() {}
@@ -48,7 +44,7 @@ private:
   string log_file_name;
   string stats_file_name;
 
-  int* robot_ids;
+  vector<int> robot_ids;
 };
 
 
@@ -60,14 +56,12 @@ class Tournament
 {
 public:
 
-  Tournament(const int rounds_p_match,
-             const int robots_p_match,
-             const int number_o_matches,
-             const vector<Robot*>& robots,
-             const vector<ArenaGadget>& arenas);
+//    Tournament(const int robots_p_match,
+//               const int number_o_matches,
+//               const vector<Robot*>& robots,
+//               const vector<ArenaGadget>& arenas);
 
-  Tournament(const int rounds_p_match,
-             const int robots_p_match,
+  Tournament(const int robots_p_match,
              const int number_o_matches,
              const vector<string>& robot_filenames,
              const vector<string>& arena_filenames);
@@ -82,12 +76,12 @@ public:
 
 private:
 
+  void start();
+
   void create_matches();
 
   bool parse_tournament_file( const string& tournament_file );
 
-  int round_nr;
-  int rounds_per_match;
 
   int total_number_of_robots;
   int robots_per_match;
@@ -97,7 +91,7 @@ private:
 
   
   vector<Match> the_matches;
-  vector<Robot*> the_robots;
+  vector<Robot> the_robots;
 
   vector<ArenaGadget> the_arenagadgets;
   
