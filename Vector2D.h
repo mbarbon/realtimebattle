@@ -29,8 +29,9 @@ public:
 
   double operator[](int) const;
 
-  friend double    length(const Vector2D&);  
-  friend double    lengthsqr(const Vector2D&);  
+  friend double length(const Vector2D&);  
+  friend double lengthsqr(const Vector2D&);  
+  friend double angle(const Vector2D&);
   Vector2D& normalize();  
   friend Vector2D unit(const Vector2D&);  
   friend double vedge(const Vector2D&, const Vector2D&);  

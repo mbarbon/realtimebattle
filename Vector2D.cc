@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Vector2D.h"
 
 Vector2D::Vector2D()
@@ -179,6 +180,12 @@ length(const Vector2D& vec)
 {
   return( sqrt(vec.vector[0]*vec.vector[0] + 
                vec.vector[1]*vec.vector[1]) );
+}
+
+double
+angle(const Vector2D& vec)
+{
+  return atan2(vec.vector[0], vec.vector[1]);
 }
 
 
