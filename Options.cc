@@ -137,7 +137,10 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, 1.0, 0.001, 1000, 12, "Arena scale", NULL);
 
   all_double_options[OPTION_MAX_TIMESTEP] = 
-    option_info_t<double>(ENTRY_DOUBLE, 0.5, 0.05, 1.0, 12, "Max timestep", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, 0.1, 0.001, 1.0, 12, "Max timestep", NULL);
+
+  all_double_options[OPTION_TIMESCALE] = 
+    option_info_t<double>(ENTRY_DOUBLE, 1.0, 0.01, 100.0, 12, "Timescale", NULL);
 
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
