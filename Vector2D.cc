@@ -117,7 +117,7 @@ operator<<(ostream& os, const Vector2D& vec)
 {
   os.setf(ios::fixed , ios::floatfield);
   os.precision(6);
-  os << "( " << vec.vector[0] << " ; " << vec.vector[1] << " )";
+  os << "( " << vec.vector[0] << " , " << vec.vector[1] << " )";
   return( os );
 }
 

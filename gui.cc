@@ -3,7 +3,7 @@
 #include "gui.h"
 #include "Vector2D.h"
 
-#define GDK_VARV 23040
+#define GDK_VARV 23040     // 64 * 360 degrees
 
 void
 delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
