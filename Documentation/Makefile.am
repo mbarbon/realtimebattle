@@ -54,9 +54,10 @@ realclean:
 	@if [ -f $< ]; then \
 		echo "sgml2html --split=0 -c latin $<"; \
 		sgml2html --split=0 -c latin $<; \
-	elif [ ! -f $@ ]; then \
-		echo "Error: $@ is missing and cannot be generated"; \
 	fi
+#	elif [ ! -f $@ ]; then \
+#		echo "Error: $@ is missing and cannot be generated"; \
+#	fi
 
 RealTimeBattle%.html: RealTimeBattle.sgml
 	@if [ -f $< ]; then \
@@ -112,9 +113,10 @@ RealTimeBattle%.html: RealTimeBattle.sgml
 		sgml2txt --filter -D table=char -c latin $<; \
 #		echo "lynx -dump -nolist $< > $@"; \
 #		lynx -dump -nolist $< > $@; \
-	elif [ ! -f $@ ]; then \
-		echo "Error: $@ is missing and cannot be generated"; \
 	fi
+#	elif [ ! -f $@ ]; then \
+#		echo "Error: $@ is missing and cannot be generated"; \
+#	fi
 
 ../%: %.sgml
 	@if [ -f $< ]; then \
