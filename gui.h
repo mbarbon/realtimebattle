@@ -63,7 +63,6 @@ private:
   GtkWidget * message_output;
   GtkWidget * drawing_area;
   GtkWidget * da_scrolled_window;
-  GtkWidget * da_zoom;
 
   GtkWidget * control_window;
   GtkWidget * score_window;
