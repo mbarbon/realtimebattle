@@ -26,21 +26,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 GuiInterface::GuiInterface()
 {
   pthread_create(&thread, NULL, GIMain_pre, (void*)this);
-  pthread_mutex_init( gi_mutex, NULL );
+  pthread_mutex_init( &gi_mutex, NULL );
 }
 
 GuiInterface::~GuiInterface()
 {
-  pthread_mutex_destroy( gi_mutex );
+  pthread_mutex_destroy( &gi_mutex );
   //TODO: thread should be joined or whatever is appropriate
 }
 
 int
 GuiInterface::get_game_nr()
 {
-  pthread_mutex_lock( gi_mutex );
+  pthread_mutex_lock( &gi_mutex );
   int res = the_arena.get_game_nr();
-  pthread_mutex_unlock(gi_mutex );
+  pthread_mutex_unlock( &gi_mutex );
   return res;
 }
 

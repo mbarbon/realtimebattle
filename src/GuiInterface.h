@@ -113,7 +113,7 @@ private:
   pthread_t thread;
 
   // Mutexes
-  pthread_mutex_t* gi_mutex;
+  pthread_mutex_t gi_mutex;
   // There should be many mutexes so server and gui isn't unnecessarily stopped.
   // Mutexes should not be a part of the GuiInterface, so all guis and the server
   // have good access to the mutexes.
