@@ -26,6 +26,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 
+#include "Structs.h"
+
+static const int max_debug_level = 5;
+
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
@@ -47,7 +51,7 @@ public:
                                      const int default_y_pos  = -1 );
   ~ControlWindow                   ();
 
-  void set_window_title            ( const string& text );
+  void set_window_title            ( const state_t state );
   void remove_replay_widgets       ();
   void clear_extra_widgets         ();
   void display_debug_widgets       ();

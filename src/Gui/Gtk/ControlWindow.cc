@@ -30,13 +30,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StatisticsWindow.h" 
 #include "Gui.h"
 #include "Dialog.h"
-#include "ArenaController.h"
-#include "Arena.h"
-#include "Robot.h"
 #include "OptionHandler.h"
+#include "Structs.h"
 
-extern class Gui* gui_p;
-extern class ControlWindow* controlwindow_p;
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -49,7 +45,7 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_set_name( window_p, "RTB Control" );
   gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
 
-  set_window_title( "RealTimeBattle" );
+  set_window_title( NO_STATE );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
@@ -168,10 +164,10 @@ ControlWindow::ControlWindow( const int default_width,
 void
 ControlWindow::remove_replay_widgets()
 {
-  if( the_arena_controller.game_mode == DEBUG_MODE )
-    display_debug_widgets();
-  else
-    clear_extra_widgets();
+//    if( the_arena_controller.game_mode == DEBUG_MODE )
+//      display_debug_widgets();
+//    else
+//      clear_extra_widgets();
 }
 
 void
@@ -238,7 +234,7 @@ ControlWindow::display_debug_widgets()
   gtk_widget_show( label );
 
   GtkAdjustment* adj =
-    (GtkAdjustment*) gtk_adjustment_new( the_arena_controller.debug_level, 0,
+    (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
                                          max_debug_level, 1, 1, 0 );
 
   debug_level = gtk_spin_button_new( adj, 0, 0 );
@@ -432,10 +428,43 @@ ControlWindow::~ControlWindow()
 }
 
 void
-ControlWindow::set_window_title( const string& text)
+ControlWindow::set_window_title( const state_t state )
 {
-  string title = text;
-  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
+  string infotext;
+  switch( state )
+    {
+    case NO_STATE:
+    case NOT_STARTED:
+      infotext = "RealTimeBattle";
+      break;
+    case STARTING_ROBOTS:
+      infotext = "RTB  " + (string)_("*Starting robots*");
+      break;
+    case SHUTTING_DOWN_ROBOTS:
+      infotext = "RTB  " + (string)_("*Shutting down robots*");
+      break;
+    case BEFORE_GAME_START:
+    case GAME_IN_PROGRESS:
+      infotext = "RealTimeBattle  " + (string)_("*Running*");
+      //                  if( pause_after_next_game )
+      //                    infotext = "RTB  " + (string)_("*Pausing after game*");
+      break;
+    case PAUSING_BETWEEN_GAMES:
+    case PAUSED:
+      infotext = "RealTimeBattle  " + (string)_("*Paused*");
+      break;
+    case EXITING:
+      infotext = "RealTimeBattle  " + (string)_("*Exiting*");
+      break;
+    case FINISHED:
+      infotext = "RealTimeBattle  " + (string)_("*Finished*");
+      break;
+
+    default:
+      Error(true, "Unknown state", "ArenaBase::set_state");
+    }
+
+  gtk_window_set_title( GTK_WINDOW( window_p ), infotext.c_str() );
 }
 
 void
@@ -550,7 +579,7 @@ ControlWindow::kill_and_open_filesel( int result )
 //    if( the_arena_controller.is_started() && result == 1 )
 //      {
 //        the_arena.interrupt_tournament();
-//        controlwindow_p->open_replay_filesel();
+//        the_controlwindow.open_replay_filesel();
 //      }
 }
 
