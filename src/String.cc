@@ -260,7 +260,9 @@ get_segment(const String& str, const int start, const int end)
   String segment;
   int st = ( start < 0 ? str.length + start : start );
   int en = ( end < 0 ? str.length + end : end );
-  if( st < 0 || st > str.length || en < 0 || en > str.length || st > en ) throw String::Range();
+  if( st < 0 || st > str.length || en < 0 || en > str.length || st > en + 1 ) throw String::Range();
+
+  if( st == en + 1 ) return segment;
 
   segment.length = en - st + 1;
   segment.enlarge_array(segment.length);
