@@ -36,7 +36,6 @@ class List
 { 
 public:
   List<T>::List(const bool resp=true);
-  List<T>::List(const int antal, const bool resp=true,  ... );
   ~List ();
 
   const List& operator= (const List&);
