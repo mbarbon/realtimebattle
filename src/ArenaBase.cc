@@ -51,6 +51,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //#include "Gui.h"
 #include "ArenaBase.h"
+#include "ArenaController.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
@@ -66,8 +67,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "MessageWindow.h"
 extern class ControlWindow* controlwindow_p;
 #endif NO_GRAPHICS
-
-extern int global_debug_level;
 
 ArenaBase::ArenaBase()
 {
@@ -509,13 +508,13 @@ ArenaBase::move_shots_no_check(const double time_period)
 }
 
 void 
-ArenaBase::set_game_mode( const enum game_mode_t gm)
+ArenaBase::set_game_mode( const enum game_mode_t gm )
 {
   game_mode = gm; 
   if( game_mode == DEBUG_MODE )
     {
       if( debug_level == 0 )
-        set_debug_level( global_debug_level );
+        set_debug_level( the_arena_controller.debug_level );
     }
   else
     {

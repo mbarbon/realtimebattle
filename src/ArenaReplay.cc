@@ -32,18 +32,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ScoreWindow.h"
 #include "Robot.h"
 
-extern class String global_replay_fname;
-extern class String global_message_fname;
-extern int global_game_mode;
-
 ArenaReplay::ArenaReplay()
 {
   reset_timer();
   state = NOT_STARTED;
   next_check_time = 0.0;
 
-  set_game_mode( (ArenaBase::game_mode_t)global_game_mode );
-  set_filenames( global_replay_fname, global_message_fname );
+  set_game_mode( (ArenaBase::game_mode_t)the_arena_controller.game_mode );
+  set_filenames( the_arena_controller.replay_filename,
+                 the_arena_controller.message_filename,
+                 the_arena_controller.statistics_filename,
+                 the_arena_controller.option_filename );
 }
 
 ArenaReplay::~ArenaReplay()
@@ -87,7 +86,7 @@ ArenaReplay::timeout_function()
       break;
 
     case FINISHED:
-      if(auto_start_and_end)
+      if( the_arena_controller.auto_start_and_end )
         {
           if( statistics_file_name != "" )
             save_statistics_to_file( statistics_file_name );
@@ -396,7 +395,9 @@ ArenaReplay::parse_log_line()
 }
 
 void
-ArenaReplay::set_filenames( String& replay_fname, String& message_fname )
+ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
+                            const String& statistics_fname,
+                            const String& option_fname )
 {
   if( replay_fname != "-" )
     log_file.open( replay_fname.chars() );
@@ -422,4 +423,7 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname )
         }
       
     }
+
+  statistics_file_name = statistics_fname;
+  option_file_name = option_fname;
 }

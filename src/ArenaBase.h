@@ -131,7 +131,7 @@ public:
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
   enum game_mode_t get_game_mode() { return game_mode; }
-  void set_game_mode( const enum game_mode_t gm);
+  void set_game_mode( const enum game_mode_t gm );
 
   int get_debug_level() { return debug_level; }
   bool is_max_debug_level() { return debug_level == max_debug_level; }
@@ -165,8 +165,9 @@ protected:
   List<String> arena_filenames;               // list of Strings
 
   String statistics_file_name;
-
-  bool auto_start_and_end;
+  String option_file_name;
+  ofstream message_file;
+  bool use_message_file;
 
   int robot_count;
   int shot_count;
@@ -199,9 +200,6 @@ protected:
 
   bool halt_next;
   bool pause_after_next_game;
-
-  ofstream message_file;
-  bool use_message_file;
 };
 
 

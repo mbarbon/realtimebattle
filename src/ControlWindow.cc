@@ -31,9 +31,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 extern class ControlWindow* controlwindow_p;
-extern class String global_replay_fname;
-extern int global_game_mode;
-extern int global_debug_level;
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -113,7 +110,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Debug-mode buttons
 
-  if( global_game_mode == ArenaBase::DEBUG_MODE )
+  if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
     {
       GtkWidget* vseparator = gtk_vseparator_new();
       gtk_box_pack_start( GTK_BOX (hbox), vseparator, FALSE, FALSE, 0 );
@@ -160,7 +157,7 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_widget_show( label );
 
       GtkAdjustment* adj =
-        (GtkAdjustment*) gtk_adjustment_new( global_debug_level, 0,
+        (GtkAdjustment*) gtk_adjustment_new( the_arena_controller.debug_level, 0,
                                              max_debug_level, 1, 1, 0 );
 
       debug_level = gtk_spin_button_new( adj, 0, 0 );
@@ -313,7 +310,7 @@ void
 ControlWindow::replay( GtkWidget* widget,
                        class ControlWindow* cw_p )
 {
-  global_replay_fname =
+  the_arena_controller.replay_filename =
     gtk_file_selection_get_filename
     ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
   the_arena_controller.start_replay_arena();

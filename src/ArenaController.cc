@@ -29,6 +29,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ArenaController::ArenaController()
 {
   started = false;
+
+  option_filename = "";
+  statistics_filename = "";
+  log_filename = "";
+  tournament_filename = "";
+  message_filename = "";
+  replay_filename = "";
+
+  game_mode = ArenaBase::NORMAL_MODE;
+  debug_level = 1;
+  auto_start_and_end = false;
 }
 
 ArenaController::~ArenaController()

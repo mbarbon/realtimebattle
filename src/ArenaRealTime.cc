@@ -49,6 +49,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //#include "Gui.h"
 #include "ArenaRealTime.h"
+#include "ArenaController.h"
 #include "ArenaWindow.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
@@ -69,19 +70,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern class ControlWindow* controlwindow_p;
 #endif
 
-extern class String global_option_fname;
-extern class String global_statistics_fname;
-extern class String global_log_fname;
-extern class String global_tournament_fname;
-extern class String global_message_fname;
-extern int global_game_mode;
-
 ArenaRealTime::ArenaRealTime()
 {
-  set_game_mode( (ArenaBase::game_mode_t)global_game_mode );
-  set_filenames( global_log_fname, global_statistics_fname,
-                 global_tournament_fname, global_message_fname,
-                 global_option_fname );
+  set_game_mode( (ArenaBase::game_mode_t)the_arena_controller.game_mode );
+  set_filenames( the_arena_controller.log_filename,
+                 the_arena_controller.statistics_filename,
+                 the_arena_controller.tournament_filename,
+                 the_arena_controller.message_filename,
+                 the_arena_controller.option_filename );
 
   robots_in_sequence = NULL;
 }
@@ -176,7 +172,6 @@ ArenaRealTime::set_filenames( String& log_fname,
   statistics_file_name = statistics_fname;
 
   tournament_file_name = tournament_fname;
-  auto_start_and_end = ( tournament_file_name != "" );
 
   option_file_name = option_fname;
 }
@@ -617,12 +612,12 @@ ArenaRealTime::timeout_function()
   switch(state)
     {
     case NOT_STARTED:
-      if(auto_start_and_end)
+      if( the_arena_controller.auto_start_and_end )
         parse_tournament_file(tournament_file_name);
       break;
 
     case FINISHED:
-      if(auto_start_and_end)
+      if( the_arena_controller.auto_start_and_end )
         {
           if( statistics_file_name != "" )
             save_statistics_to_file( statistics_file_name );

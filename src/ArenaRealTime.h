@@ -97,8 +97,6 @@ private:
   void end_sequence_follow_up();
   void end_tournament();
 
-  String option_file_name;
-
   String tournament_file_name;
   
   ofstream LOG_FILE;

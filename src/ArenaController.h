@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaBase.h"
 
+class String;
+
 class ArenaController
 {
 public:
@@ -43,6 +45,18 @@ private:
   bool realtime;
 
   ArenaBase* my_arena;
+
+public: // global names etc.
+  String option_filename;
+  String statistics_filename;
+  String log_filename;
+  String tournament_filename;
+  String message_filename;
+  String replay_filename;
+
+  int game_mode;
+  int debug_level;
+  bool auto_start_and_end;
 };
 
 #endif __ARENA_CONTROLLER__

@@ -75,15 +75,6 @@ class ControlWindow* controlwindow_p;
 
 bool no_graphics;
 
-class String global_option_fname("");
-class String global_statistics_fname("");
-class String global_log_fname("");
-class String global_tournament_fname("");
-class String global_message_fname("");
-class String global_replay_fname("");
-int global_game_mode=ArenaBase::NORMAL_MODE;
-int global_debug_level=1;
-
 void 
 print_help_message()
 {
@@ -185,10 +176,13 @@ parse_command_line(int argc, char **argv)
     {"version", 0, &version_flag, true},
     {"help", 0, &help_flag, true},
 
-    {"debug_mode", 0, &global_game_mode, ArenaBase::DEBUG_MODE},
+    {"debug_mode", 0, &the_arena_controller.game_mode,
+     ArenaBase::DEBUG_MODE},
     {"debug_level", 1, 0, 0},
-    {"normal_mode", 0, &global_game_mode, ArenaBase::NORMAL_MODE},
-    {"competition_mode", 0, &global_game_mode, ArenaBase::COMPETITION_MODE},
+    {"normal_mode", 0, &the_arena_controller.game_mode,
+     ArenaBase::NORMAL_MODE},
+    {"competition_mode", 0, &the_arena_controller.game_mode,
+     ArenaBase::COMPETITION_MODE},
     {"option_file", 1, 0, 0},
     {"log_file", 1, 0, 0},
     {"statistics_file", 1, 0, 0},
@@ -225,26 +219,27 @@ parse_command_line(int argc, char **argv)
           switch( option_index )
             {
             case 3:
-              global_debug_level = str2int( optarg );
-              global_game_mode = ArenaBase::DEBUG_MODE;
+              the_arena_controller.debug_level = str2int( optarg );
+              the_arena_controller.game_mode = ArenaBase::DEBUG_MODE;
               break;
             case 6: 
-              global_option_fname = (String)optarg;
+              the_arena_controller.option_filename = (String)optarg;
               break;
             case 7:
-              global_log_fname = (String)optarg;
+              the_arena_controller.log_filename = (String)optarg;
               break;
             case 8:
-              global_statistics_fname = (String)optarg;
+              the_arena_controller.statistics_filename = (String)optarg;
               break;
             case 9:
-              global_tournament_fname = (String)optarg;
+              the_arena_controller.tournament_filename = (String)optarg;
+              the_arena_controller.auto_start_and_end = true;
               break;
             case 10:
-              global_message_fname = (String)optarg;
+              the_arena_controller.message_filename = (String)optarg;
               break;
             case 11:
-              global_replay_fname = (String)optarg;
+              the_arena_controller.replay_filename = (String)optarg;
               break;
             default:
               Error( true, "Bad error, this shouldn't happen",
@@ -255,20 +250,20 @@ parse_command_line(int argc, char **argv)
 
 
         case 'd':
-          global_game_mode = ArenaBase::DEBUG_MODE;
+          the_arena_controller.game_mode = ArenaBase::DEBUG_MODE;
           break;
 
         case 'D':
-          global_debug_level = str2int( optarg );
-          global_game_mode = ArenaBase::DEBUG_MODE;
+          the_arena_controller.debug_level = str2int( optarg );
+          the_arena_controller.game_mode = ArenaBase::DEBUG_MODE;
           break;
 
         case 'n':
-          global_game_mode = ArenaBase::NORMAL_MODE;
+          the_arena_controller.game_mode = ArenaBase::NORMAL_MODE;
           break;
 
         case 'c':
-          global_game_mode = ArenaBase::COMPETITION_MODE;
+          the_arena_controller.game_mode = ArenaBase::COMPETITION_MODE;
           break;
 
         case 'v':
@@ -280,27 +275,28 @@ parse_command_line(int argc, char **argv)
           break;
 
         case 'o':
-          global_option_fname = (String)optarg;
+          the_arena_controller.option_filename = (String)optarg;
           break;
 
         case 'l':
-          global_log_fname = (String)optarg;
+          the_arena_controller.log_filename = (String)optarg;
           break;
 
         case 's':
-          global_statistics_fname = (String)optarg;
+          the_arena_controller.statistics_filename = (String)optarg;
           break;
 
         case 't':
-          global_tournament_fname = (String)optarg;
+          the_arena_controller.tournament_filename = (String)optarg;
+          the_arena_controller.auto_start_and_end = true;
           break;
 
         case 'm':
-          global_message_fname = (String)optarg;
+          the_arena_controller.message_filename = (String)optarg;
           break;
 
         case 'r':
-          global_replay_fname = (String)optarg;
+          the_arena_controller.replay_filename = (String)optarg;
           break;
 
         case 'g':
@@ -313,8 +309,10 @@ parse_command_line(int argc, char **argv)
         }
     }
 
-  if( global_debug_level > max_debug_level ) global_debug_level = 5;
-  if( global_debug_level < 0 ) global_debug_level = 0;
+  if( the_arena_controller.debug_level > max_debug_level )
+    the_arena_controller.debug_level = 5;
+  if( the_arena_controller.debug_level < 0 )
+    the_arena_controller.debug_level = 0;
 
   if(optind != argc) 
     {
@@ -330,13 +328,17 @@ parse_command_line(int argc, char **argv)
 
   if( help_flag || version_flag ) exit( EXIT_SUCCESS );
 
-  if( global_option_fname == "" )
+  if( the_arena_controller.option_filename == "" )
     {
       the_opts.get_options_from_rtbrc();
-      global_option_fname = ".rtbrc";
+      the_arena_controller.option_filename = ".rtbrc";
     }
   else
-    the_opts.read_options_file( global_option_fname,true );
+    the_opts.read_options_file( the_arena_controller.option_filename,true );
+
+  the_arena_controller.auto_start_and_end
+    = ( ( the_arena_controller.tournament_filename != "" ) ||
+        ( the_arena_controller.replay_filename != "" ) );
 
   no_graphics = !graphics_flag;
 }
@@ -357,9 +359,9 @@ main ( int argc, char* argv[] )
 
   parse_command_line(argc, argv);
 
-  if( global_tournament_fname != "" )
+  if( the_arena_controller.tournament_filename != "" )
     the_arena_controller.start_realtime_arena();
-  else if( global_replay_fname != "" )
+  else if( the_arena_controller.replay_filename != "" )
     the_arena_controller.start_replay_arena();
 
   signal(SIGCHLD, sig_handler);
