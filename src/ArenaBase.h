@@ -158,6 +158,8 @@ protected:
 
   void find_object_by_id(const List<Shape>& obj_list, 
                          ListIterator<Shape>& li, const int obj_id);
+  void find_object_by_id(const List<Robot>& obj_list, 
+                         ListIterator<Robot>& li, const int obj_id);
 
   List<Shape> object_lists[LAST_OBJECT_TYPE];
   

@@ -603,4 +603,19 @@ ArenaBase::find_object_by_id( const List<Shape>& obj_list,
       if( li()->get_id() == obj_id ) 
         return;
     }
+
+  Error(false, "Object not found", " ArenaBase::find_object_by_id <Shape>");
+}
+
+void
+ArenaBase::find_object_by_id( const List<Robot>& obj_list, 
+                              ListIterator<Robot>& li,
+                              const int obj_id )
+{
+  for( obj_list.first(li); li.ok(); li++)
+    {
+      if( li()->get_id() == obj_id ) 
+        return;
+    }
+  Error(false, "Object not found", " ArenaBase::find_object_by_id <Robot>");
 }
