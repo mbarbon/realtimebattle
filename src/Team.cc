@@ -17,44 +17,33 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <string>
+#include <algorithm>
+
+#include <assert.h>
+
+
 #include "Team.h"
+#include "Robot.h"
 
-Team::Team()
+void Team::insert(Robot* robot)
 {
-  for (int i = 0; i < 10; i++)
-    My_Team[i].empty();
+  // The robot should not be in the list already.
+  assert( find(the_robots.begin(), the_robots.end(), robot) 
+          == the_robots.end() );  
+
+  the_robots.push_back(robot);
+
+  size = the_robots.size();
 }
 
-Team::~Team()
+void Team::remove(Robot* robot)
 {
-  for (int i = 0; i < 10; i++)
-    My_Team[i].clear();
+  the_robots.remove(robot);
+  size = the_robots.size();
 }
 
-void Team::insert(const int target, const Robot *source)
-{
-  My_Team[target - 1].insert(My_Team[target - 1].begin(), source);
-  source -> set_team_nr( target );
-}
 
-void Team::remove(const Robot *target)
-{
-  My_Team[target -> get_team_nr()].remove(target);
-  target -> set_team_nr( 0 );
-}
-
-void Team::change(const int target, const Robot *source)
-{
-  My_Team[source -> get_team_nr()].remove(source);
-  insert(target, source);
-}
-
-void Team::change(const Robot *source)
-{
-//  My_Team[source -> get_team_nr()].remove(source);
-//  insert(target, source);
-}
-
-void Team::send(const int team_nr)
+void Team::broadcast(const string message, const Robot& from)
 {
 }

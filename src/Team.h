@@ -18,31 +18,26 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <list>
+#include <string>
 
 #include "Robot.h"
-
-class Robot;
 
 class Team
 {
 public:
+
   Team();
   ~Team();
   
-  int get_quantity();	// ??? Really needed ???
-  
-  void insert(const int target, const Robot *source);
-            		// Which robot should be inserted in which team.
-  void remove(const Robot *target);
-                	// 
-  void change(const int target, const Robot *source);
+  void insert(Robot* robot);
+  void remove(Robot* robot);
 
-  void change(const Robot *source);
   
-  void send(const int team_nr);
+  void broadcast(const string message, const Robot& from);
 
 protected:
-  list<Robot*> My_Team[9];
-  int quantity;
-  
+
+  list<Robot*> the_robots;  
+
+  int size;  // Number of robots in the team
 };

@@ -103,9 +103,6 @@ public:
   bool set_and_get_has_competed() 
     { if( has_competed ) return true; else { has_competed = true; return false; } }
 
-  void set_teamworking(bool team) { teamworking = team; }
-  int get_team_nr() { return bandwidth; }
-  void set_team_nr(const int team_nr) { bandwidth = team_nr; }
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -148,15 +145,6 @@ private:
 
   list<stat_t>::const_iterator current_game_stats;
 
-  // for Teamwork
-
-  bool teamworking;		// supports teamworking
-  
-  int bandwidth;		// frequenz to communicate with his team
-                                // (maybe teamnumber too)
-  double range;			// dependent from akt communicator
-  bool directional;		// active communicate mode
-  
 };
 
 #endif __ROBOT__
