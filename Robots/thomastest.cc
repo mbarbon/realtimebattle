@@ -64,7 +64,7 @@ check_messages(int sig)
           //          cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Sweep 6 " << M_PI/2.0 << " " << -M_PI/2.0 << " " << M_PI/2.0 << endl;
           acceleration = 0.4;
-          cout << "Acceleration " << acceleration << endl;
+          cout << "Accelerate " << acceleration << endl;
           break;
         case GAME_FINISHES:
           break;
@@ -114,7 +114,7 @@ check_messages(int sig)
                 cout << "RotateAmount 1 " << robot_rotate << " " << radar_angle << endl;
                 cout << "RotateTo 6 " << -robot_rotate << " " << 0.0 << endl;
                 cout << "Shoot " << energy << endl;
-                cout << "Acceleration " << acceleration << endl;
+                cout << "Accelerate " << acceleration << endl;
 
                 //cout << "Print kill" << endl;
                 break;
@@ -168,7 +168,7 @@ check_messages(int sig)
                         
                     }
                     cout << "Rotate 1 " << robot_rotate << endl;
-                    cout << "Acceleration " << acceleration << endl;
+                    cout << "Accelerate " << acceleration << endl;
                     
                 }
                 break;
@@ -180,7 +180,7 @@ check_messages(int sig)
                   }
                 else
                   robot_rotate = 3.0*slumprotate;
-                cout << "Acceleration " << acceleration << endl;
+                cout << "Accelerate " << acceleration << endl;
                 cout << "Rotate 1 " << robot_rotate << endl;
                 //cout << "Print Help me!" << endl;
                 //                cout << "Print A shot is approaching!" << endl;
@@ -192,7 +192,7 @@ check_messages(int sig)
                 else
                   acceleration = 0.0;
                 cout << "Rotate 1 " << robot_rotate << endl;
-                cout << "Acceleration " << acceleration << endl;
+                cout << "Accelerate " << acceleration << endl;
                 
                 //                cout << "Print Yummy! A cookie" << endl;
                 break;
@@ -205,7 +205,7 @@ check_messages(int sig)
                     if (speed > 0.4)
                       cout << "Break 1" << endl;
                     cout << "Shoot 0.5" << endl;
-                    cout << "Acceleration " << acceleration << endl;
+                    cout << "Accelerate " << acceleration << endl;
                     cout << "Rotate 1 " << robot_rotate << endl;
                   }
                 //cout << "Print Avoid this mine" << endl;
@@ -233,7 +233,7 @@ check_messages(int sig)
                     acceleration = -0.5;
                     robot_rotate = 5.0*slumprotate;
                   }
-                cout << "Acceleration " << acceleration << endl; 
+                cout << "Accelerate " << acceleration << endl; 
                 cout << "Rotate 1 " << robot_rotate << endl;
                 break;
               case SHOT:
@@ -246,7 +246,7 @@ check_messages(int sig)
                     robot_rotate = 5.0*slumprotate;
                   }
                 cout << "Rotate 1 " << robot_rotate << endl;
-                cout << "Acceleration " << acceleration << endl; 
+                cout << "Accelerate " << acceleration << endl; 
                 break;
               case MINE: 
                 cout << "Print Oh no! A mine!" << endl; 
@@ -256,7 +256,7 @@ check_messages(int sig)
                 break;
               case WALL:
                 acceleration = 0.0;
-                cout << "Acceleration " << acceleration << endl; 
+                cout << "Accelerate " << acceleration << endl; 
                 break;
               }
             //if( enegry_diff != 0 ) cout << "Print energy changed by " << enegry_diff << endl;

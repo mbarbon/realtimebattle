@@ -55,7 +55,7 @@ check_messages(int sig)
           cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Rotate 6 1.5" << endl;
           acceleration = 0.54;
-          cout << "Acceleration " << acceleration << endl;
+          cout << "Accelerate " << acceleration << endl;
           break;
         case RADAR:
           {
@@ -78,7 +78,7 @@ check_messages(int sig)
                     acceleration = 1.0;
 
                   if( old_acc != acceleration )
-                    cout << "Acceleration " << acceleration << endl;
+                    cout << "Accelerate " << acceleration << endl;
                 }
                 break;
               case SHOT:

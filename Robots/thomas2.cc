@@ -66,7 +66,7 @@ check_messages(int sig)
           //          cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/2.0 << " " << M_PI/2.0 << endl;
           acceleration = 0.4;
-          cout << "Acceleration " << acceleration << endl;
+          cout << "Accelerate " << acceleration << endl;
           break;
         case GAME_FINISHES:
           break;
@@ -139,7 +139,7 @@ check_messages(int sig)
                 else
                   acceleration = 0.0;
                 cout << "RotateAmount 1 " << robotmaxrotate << radar_angle << endl;
-                cout << "Acceleration " << acceleration << endl;
+                cout << "Accelerate " << acceleration << endl;
                 cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
                 cout << "Shoot 2" << endl;
                 cout << "Break " << broms << endl;
@@ -180,7 +180,7 @@ check_messages(int sig)
                               }
                           }
                       }
-                    cout << "Acceleration " << acceleration << endl;
+                    cout << "Accelerate " << acceleration << endl;
                   }
                 else
                   {
@@ -188,7 +188,7 @@ check_messages(int sig)
                     {
                       acceleration = 0.0;
                       broms = 1.0-abs(radar_angle);
-                      cout << "Acceleration " << acceleration << endl;
+                      cout << "Accelerate " << acceleration << endl;
                       cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
                     }
                   }
@@ -207,7 +207,7 @@ check_messages(int sig)
                 cout << "RotateAmount 1 " << robotmaxrotate << radar_angle << endl;
                 rotend = tid + radar_angle/robotmaxrotate;
                 rotating = 1;
-                cout << "Acceleration " << acceleration << endl;
+                cout << "Accelerate " << acceleration << endl;
                 cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
                 cout << "Break " << broms << endl;
                 break;
