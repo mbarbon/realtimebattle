@@ -21,13 +21,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "MessageWindow.h"
+#include "DrawingObjects.h"
 #include "IntlDefs.h"
 #include "ScoreWindow.h"
 #include "ControlWindow.h"
 #include "Gui.h"
-#include "ArenaController.h"
-#include "Arena.h"
-#include "Robot.h"
 #include "GuiVarious.h"
 #include "String.h"
 
@@ -188,7 +186,7 @@ MessageWindow::set_window_title()
 {
   string title = (string)_("Messages");
   if( viewed_robot != NULL )
-    title += "  -  " + viewed_robot->get_robot_name();
+    title += "  -  " + viewed_robot->get_name();
   else
     title += "  -  " + (string)_(" All ");
 
@@ -203,7 +201,7 @@ MessageWindow::add_message( const string& name_of_messager,
     {
       //      gtk_clist_freeze( GTK_CLIST( clist ) );
       if( viewed_robot != NULL &&
-          viewed_robot->get_robot_name() != name_of_messager &&
+          viewed_robot->get_name() != name_of_messager &&
           name_of_messager != "RealTimeBattle" )
         return;
 
@@ -257,7 +255,7 @@ MessageWindow::thaw_clist()
 }
 
 void
-MessageWindow::set_viewed_robot( class Robot* robot_p )
+MessageWindow::set_viewed_robot( class DrawingRobot* robot_p )
 {
   viewed_robot = robot_p;
 }

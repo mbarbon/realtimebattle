@@ -31,6 +31,7 @@ typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
 typedef union _GdkEvent GdkEvent;
 
+class DrawingRobot;
 
 class MessageWindow
 {
@@ -61,7 +62,7 @@ public:
   void freeze_clist              ();
   void thaw_clist                ();
 
-  void set_viewed_robot          ( class Robot* robot_p );
+  void set_viewed_robot          ( class DrawingRobot* robot_p );
   void set_window_shown          ( bool win_shown );
 
   GtkWidget* get_window_p        () { return window_p; }
@@ -72,7 +73,7 @@ private:
 
   GtkWidget* window_p;
   GtkWidget* clist;
-  Robot* viewed_robot;
+  DrawingRobot* viewed_robot;
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   GtkStyle* rtb_message_row_style;
