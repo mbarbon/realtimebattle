@@ -986,21 +986,21 @@ Robot::draw_radar_and_cannon()
   // Draw Cannon
   the_gui.draw_line( center,
                      angle2vec(cannon_angle.pos+robot_angle.pos),
-                     the_opts.get_d(OPTION_ROBOT_RADIUS) - the_opts.get_d(OPTION_SHOT_RADIUS),
+                     radius - the_opts.get_d(OPTION_SHOT_RADIUS),
                      the_opts.get_d(OPTION_SHOT_RADIUS),
                      *(the_arena.get_foreground_colour_p()) );
 
   // Draw radar lines
   Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
-  the_gui.draw_line( center - the_opts.get_d(OPTION_ROBOT_RADIUS) * 0.25 * radar_dir,
+  the_gui.draw_line( center - radius * 0.25 * radar_dir,
                      rotate( radar_dir, M_PI / 4.0 ),
-                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 1.5,
-                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 20.0,
+                     radius / 1.5,
+                     radius / 20.0,
                      *(the_arena.get_foreground_colour_p()) );
-  the_gui.draw_line( center - the_opts.get_d(OPTION_ROBOT_RADIUS) * 0.25 * radar_dir,
+  the_gui.draw_line( center - radius * 0.25 * radar_dir,
                      rotate( radar_dir, - (M_PI / 4.0) ),
-                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 1.5,
-                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 20.0,
+                     radius / 1.5,
+                     radius / 20.0,
                      *(the_arena.get_foreground_colour_p()) );
   
 }

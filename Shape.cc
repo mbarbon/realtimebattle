@@ -47,19 +47,30 @@ Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double
 inline double
 Line::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
 {
+  double det, s, t, d, t_middle;
+
   Vector2D y = start_point - pos;
-  double v,w,det,s1,s2;
-  det = 1.0/vedge(direction, vel);
-  s1 = ((v=vedge(vel,y)) + (w=((size + thickness) * dot(vel, direction))))*det;
-  s2 = (v-w)*det;
-  if( ( s1 < 0 || s1 > length ) && ( s2 < 0 || s2 > length ) ) return infinity;
-  double t1,t2;
-  s1 < 0.0 || s1 > length ? t1 = infinity : t1 = (vedge(direction, y) + (size+thickness))*det;
-  s2 < 0.0 || s2 > length ? t2 = infinity : t2 = (vedge(direction, y) - (size+thickness))*det;
-  
-  t1 = min(t1,t2);
-  if ( t1 <= 0.0 ) t1 = infinity;
-  return t1;
+
+  det = 1.0 / vedge(direction, vel);  
+  t_middle = vedge(direction, y) * det;
+
+  if( t_middle < 0 ) return infinity;
+
+  d = size + thickness;
+  if( det > 0 )
+    {
+      t = (vedge(direction, y) - d) * det;
+      s = (vedge(vel,y) - d * dot(vel, direction)) * det;
+    }
+  else
+    {
+      t = (vedge(direction, y) + d) * det;
+      s = (vedge(vel,y) + d * dot(vel, direction)) * det;
+    }
+  if( s < 0 || s > length ) return infinity;
+  if( t < 0 && ((d=-dot(y, direction)) < 0.0 || d > length ) ) return infinity;
+
+  return t;
 }
 
 Vector2D
@@ -119,9 +130,10 @@ inline double
 Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
 {
   Vector2D y = center - pos;
-  double speedsqr = vel[0]*vel[0] + vel[1]*vel[1];
+  double speedsqr = lengthsqr(vel);
   double dt = dot(vel, y);
-  double c = dt*dt + speedsqr*((size+radius)*(size+radius) - lengthsqr(y));
+  double r = size+radius;
+  double c = dt*dt + speedsqr * (r*r - lengthsqr(y));
   if( c < 0.0 || dt <= 0.0) return infinity;
   return (dt - sqrt(c))/speedsqr;
 }
