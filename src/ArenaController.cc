@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ArenaController::ArenaController()
 {
-  started = false;
+  //  started = false;
 
   option_filename = "";
   statistics_filename = "";
@@ -66,7 +66,7 @@ ArenaController::ArenaController()
 
 ArenaController::~ArenaController()
 {
-  if( started ) close_arena();
+  //  if( started ) close_arena();
 
   list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
@@ -94,9 +94,10 @@ ArenaController::init( int argc, char** argv )
     (*li)->startup();
 
   if( tournament_filename != "" )
-    start_arena();
+    ; // Create a StartNewTournamentEvent
+
   else if( replay_filename != "" )
-    start_arena(); // TODO: start replaying: How?
+      ;    //  Create a StartReplayEvent
 
   return EXIT_SUCCESS; // TODO: what should be returned here?
 }
@@ -419,26 +420,26 @@ ArenaController::quit_gui( GuiServerInterface* gui_p, bool exit_program )
 
 }
 
-void
-ArenaController::start_arena()
-{
-  if( started ) close_arena();
+//  void
+//  ArenaController::start_arena()
+//  {
+//    if( started ) close_arena();
 
-  my_arena = new Arena();
+//    my_arena = new Arena();
   
-  started = true;
-}
+//    started = true;
+//  }
 
-void
-ArenaController::close_arena()
-{
-  if( started )
-    {
-      delete my_arena;
-    }
+//  void
+//  ArenaController::close_arena()
+//  {
+//    if( started )
+//      {
+//        delete my_arena;
+//      }
 
-  started = false;
-}
+//    started = false;
+//  }
 
 void
 ArenaController::parse_command_line( int argc, char** argv )

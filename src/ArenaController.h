@@ -50,8 +50,8 @@ public:
 
   void quit_gui( GuiServerInterface* gui_p, bool exit_program );
   
-  void start_arena();
-  void close_arena();
+  //  void start_arena();
+  //  void close_arena();
 
 
   OptionHandler* get_main_opts() const { return main_opts; }
@@ -59,7 +59,7 @@ public:
 
   Arena* get_my_arena() { return my_arena; }
 
-  bool is_started() { return started; }
+  //  bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
 private:
@@ -67,7 +67,7 @@ private:
   void initialize_options();
   void print_help_message();
 
-  bool started;
+  //  bool started;
   bool realtime;
 
   list<GuiServerInterface*> gui_list;
