@@ -22,7 +22,7 @@ Arena::Arena()
   grav_const = 9.82;
   for(int i=ROBOT; i<=EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
-  the_gui = new Gui;
+  the_gui = new Gui(this);
 }
 
 Arena::~Arena()
@@ -191,6 +191,12 @@ Arena::get_random_position()
                    (double)rand()/(double)RAND_MAX );
 }
 
+void
+Arena::quit_ordered()
+{
+  state = EXITING;
+}
+
 gint
 Arena::timeout_function()
 {
@@ -244,7 +250,7 @@ Arena::update()
   //update_explosions();
   move_shots();
   update_robots();
-  the_gui->draw_objects( this );
+  the_gui->draw_objects();
 }
 
 void
@@ -358,7 +364,7 @@ Arena::start_game()
     }
 
   the_gui->setup_arena_window( boundary );
-  the_gui->setup_score_window( this );
+  the_gui->setup_score_window();
 
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;

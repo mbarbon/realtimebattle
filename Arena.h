@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include "Vector2D.h"
 #include "messagetypes.h"
-#include "gui.h"
 
 #ifndef __ARENA__
 #define __ARENA__
+
+#include "gui.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -42,6 +43,8 @@ public:
                         char** arenafilenamelist, // NULL terminated lists
                         int robots_p_game, 
                         int games_p_sequence);   
+
+  void quit_ordered();
 
   Vector2D get_random_position();
 

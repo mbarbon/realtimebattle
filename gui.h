@@ -1,6 +1,9 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include "Vector2D.h"
+#ifndef __ARENA__
+#include "Arena.h"
+#endif
 
 #ifndef __GUI__
 #define __GUI__
@@ -12,11 +15,11 @@ void delete_event( GtkWidget * widget, GdkEvent * event, gpointer data );
 class Gui
 {
 public:
-  Gui();
+  Gui(class Arena * arenap);
   ~Gui() {}
 
   void setup_control_window();
-  void setup_score_window( void * the_arenap );
+  void setup_score_window();
   void setup_message_window();
   void setup_arena_window( Vector2D bound[] );
 
@@ -24,10 +27,10 @@ public:
   void close_score_window();
   void close_message_window();
   void close_arena_window();
-  void quit_event( GtkWidget * widget, GdkEvent * event );
+  void quit_event();
 
   void print_to_message_output( char * from_robot, char * text, GdkColor colour);
-  void draw_objects( void * the_arenap );
+  void draw_objects();
 
   int change_to_pixels_x(double input);
   int change_to_pixels_y(double input);
@@ -55,6 +58,8 @@ private:
   GdkColor background_colour;
 
   Vector2D boundary[2];
+
+  class Arena * the_arena;
 };
 
 #endif

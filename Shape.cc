@@ -19,14 +19,18 @@ Line::Line()
   direction = Vector2D(0.0, 0.0);
   length = 0.0;
   thickness = 0.0;
+  last_drawn_start_point = Vector2D(-infinity,-infinity);
+  last_drawn_direction = Vector2D(-infinity,-infinity);
+  last_drawn_length = 0.1;
+  last_drawn_thickness = 0.1;
 }
 
 Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th)
 {
-  start_point = sp;
-  direction = d;
-  length = len;
-  thickness = th;
+  last_drawn_start_point = start_point = sp;
+  last_drawn_direction = direction = d;
+  last_drawn_length = length = len;
+  last_drawn_thickness = thickness = th;
 }
 
 inline double
@@ -78,12 +82,14 @@ Circle::Circle()
 {
   center = Vector2D(0.0, 0.0);
   radius = 0.0;
+  last_drawn_center = Vector2D(-infinity,-infinity);
+  last_drawn_radius = 0.1;
 }
 
 Circle::Circle(const Vector2D& c, const double r)
 {
-  center = c;
-  radius = r;
+  last_drawn_center = center = c;
+  last_drawn_radius = radius = r;
 }
 
 inline double

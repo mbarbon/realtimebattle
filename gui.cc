@@ -2,18 +2,18 @@
 #include <math.h>
 #include "gui.h"
 #include "Vector2D.h"
-#include "Arena.h"
 
 #define GDK_VARV 23040
 
 void
 delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
 {
-  ((Gui *)guip)->quit_event( widget, event );
+  ((Gui *)guip)->quit_event();
 }
 
-Gui::Gui()
+Gui::Gui(Arena * arenap)
 {
+  the_arena = arenap;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
 }
@@ -48,13 +48,13 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor co
 }
 
 void
-Gui::draw_objects( void * the_arenap )
+Gui::draw_objects()
 {
   GList** object_lists;
   GList* gl;
   Robot* robotp;
 
-  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  object_lists = the_arena->get_object_lists();
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
@@ -167,9 +167,9 @@ Gui::draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled 
   gdk_gc_destroy( colour_gc );
 }
 void
-Gui::quit_event (GtkWidget *widget, GdkEvent *event)
+Gui::quit_event()
 {
-  gtk_main_quit ();
+  the_arena->quit_ordered();
 }
 
 void
@@ -258,7 +258,7 @@ Gui::setup_control_window()
 }
 
 void
-Gui::setup_score_window( void * the_arenap )
+Gui::setup_score_window()
 {
   int robot_number=0;
   GtkWidget * rltable, * rhtable;
@@ -272,7 +272,7 @@ Gui::setup_score_window( void * the_arenap )
   GList* gl;
   Robot* robotp;
 
-  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  object_lists = the_arena->get_object_lists();
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
