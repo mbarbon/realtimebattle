@@ -1,5 +1,24 @@
 <!doctype linuxdoc system>
 
+<!--
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+-->
+
 <article>
 <titlepag>   
 <title>RealTimeBattle User Manual
@@ -62,14 +81,14 @@ on other Unixes too. Running in <ref id="Command line options" name="competition
 only possible in Linux, because of the need to read the <tt>/proc</tt> directory for information on
 CPU usage.
 
-The only software requirement is <htmlurl url="http://www.gtk.org" name="gtk+">, which is used for
+The only software requirement is <url url="http://www.gtk.org" name="gtk+">, which is used for
 the graphical user interface.
 
 
 <sect1>Background<label id="Background">
 <p>
 The project started in August 1998. Inspiration came from 
-<htmlurl url="http://www.robotbattle.com/" name="RobotBattle">, a very interesting game, which
+<url url="http://www.robotbattle.com/" name="RobotBattle">, a very interesting game, which
 however suffers from two major drawbacks: 
 
 <itemize>
@@ -85,8 +104,9 @@ features of a modern OS.
 
 <sect1>License<label id="License">
 <p>
-RealTimeBattle is distributed under the <htmlurl url="http:// TODO: find GPL address" name="General Public License">, in
-the spirit of the <htmlurl url="http://www.linux.org" name="Linux"> community. Official versions of
+RealTimeBattle is distributed under the 
+<url url="http:// TODO: find GPL address" name="General Public License">, in
+the spirit of the Linux community. Official versions of
 RealTimeBattle will be released by the authors.
 
 Copyright (C) 1998  Erik Ouchterlony and Ragnar Ouchterlony
@@ -109,8 +129,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <p>
 If you find anything in this package which doesn't work, appear strange, is missing, is spellt wrong
 or is just confusing, don't hesitate to send in a bug report to the 
-<htmlurl name="authors" url="mailto: TODO: mail address">. But please check first the include bug
-list and the <htmlurl name="bug list in the homepage" url="TODO: homepage address/BUGS.html">. 
+<url name="authors" url="mailto: TODO: mail address">. But please check first the include bug
+list and the <url name="bug list in the homepage" url="TODO: homepage address/BUGS.html">.
 
 
 <!--   ################         Usage          ##################   -->
