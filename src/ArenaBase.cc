@@ -508,7 +508,7 @@ ArenaBase::reset_timer()
 
 
 void
-ArenaBase::move_shots()
+ArenaBase::move_shots(const double time_period)
 {
   Shot* shotp;
 
@@ -518,7 +518,7 @@ ArenaBase::move_shots()
     {
       shotp = (Shot*)li();
 
-      if( shotp->is_alive() ) shotp->move(timestep);
+      if( shotp->is_alive() ) shotp->move(time_period);
 
       if( !shotp->is_alive() ) object_lists[SHOT].remove(li);
     }
