@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <map>
 #include <list>
+#include <vector>
 #include <fstream.h>
 #include <assert.h>
 
@@ -38,7 +39,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class OptionHandler
 {
 public:
-  OptionHandler                          ( const string&, map<string,Option*>& );
+  OptionHandler                          ( const string&, map<string,Option*>&,
+                                           vector<string>& );
 
   ~OptionHandler                         ();
 
@@ -75,9 +77,8 @@ private:
 
   string section_name;
 
-  string group_names[LAST_GROUP];
-
   map<string,Option*> all_options;
+  vector<string> group_names;
 };
 
 void Error(const bool fatal, const string& error_msg, const string& function_name);

@@ -23,16 +23,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include <string>
 
-enum option_group_t
+enum option_value_t
 {
-  GROUP_ENVIRONMENT,
-  GROUP_ROBOT,
-  GROUP_SHOT,
-  GROUP_EXTRAS,
-  GROUP_TIME,
-  GROUP_SIZE_OF_WINDOWS,
-  GROUP_MISC,
-  LAST_GROUP
+  OPTION_VALUE_LONG,
+  OPTION_VALUE_DOUBLE,
+  OPTION_VALUE_STRING
 };
 
 // ---------------------------------------------------------------------------
@@ -45,35 +40,38 @@ class Option
 {
 public:
   Option::Option                       () {}
-  Option::Option                       ( option_group_t g, const bool br,
-                                         const bool lo, const char* r,
-                                         const char* t ) :
-    group(g), broadcast_option(br), log_option(lo), rc_label(r),
-    description(t) {}
+  Option::Option                       ( option_value_t v, const int g,
+                                         const bool br, const bool lo, const char* t )
+    : group(g), broadcast_option(br), log_option(lo), description(t) {}
+
+//   const char* r,
+//   rc_label(r),
   virtual Option::~Option              () {}
 
   virtual const string get_string_val  () const = 0;
-  const option_group_t get_group       () const { return group; }
+  const option_value_t get_value_type  () const { return value_type; }
+  const int get_group                  () const { return group; }
   const bool broadcast                 () const { return broadcast_option; }
   const bool log                       () const { return log_option; }
-  const string& get_rc_label           () const { return rc_label; }
+//    const string& get_rc_label           () const { return rc_label; }
   const string& get_description        () const { return description; }
 
   virtual const bool change_value      ( const string&, const bool def = false ) = 0;
+  //virtual const bool is_string_correct_value ( const string& ) const = 0;
   
 private:
-
-  option_group_t group;
+  option_value_t value_type;
+  const int group;
 
   bool broadcast_option;
   bool log_option;
 
-  string rc_label;
+//    string rc_label;
   string description;
 };
 
 // ---------------------------------------------------------------------------
-// class IntOption
+// class LongOption
 // ---------------------------------------------------------------------------
 // Options that consists of an integer.
 // User might see the value as hexadecimal.
@@ -83,16 +81,17 @@ class LongOption : public Option
 {
 public:
   LongOption::LongOption               () {}
-  LongOption::LongOption               ( option_group_t g, const long int val,
+  LongOption::LongOption               ( const int g, const long int val,
                                          const long int mn, const long int mx,
                                          const bool br, const bool lo,
-                                         const char* r, const char* t,
-                                         const bool hex = false ) :
-    Option(g,br,lo,r,t), value(val), default_value(val),
+//                                           const char* r,
+                                         const char* t,
+                                         const bool hex = false )
+    : Option(OPTION_VALUE_LONG,g,br,lo,t), value(val), default_value(val),
     min_value(mn), max_value(mx), hexadecimal(hex) {}
   LongOption::~LongOption              () {}
 
-  const int operator()                 () const { return value; }
+  const long int get_value             () const { return value; }
   const string get_string_val          () const;
   void reset_value                     ();
   const bool is_value_accepted         ( const long int ) const;
@@ -120,15 +119,16 @@ class DoubleOption : public Option
 {
 public:
   DoubleOption::DoubleOption           () {}
-  DoubleOption::DoubleOption           ( option_group_t g, const double val,
+  DoubleOption::DoubleOption           ( const int g, const double val,
                                          const double mn, const double mx,
                                          const bool br, const bool lo,
-                                         const char* r, const char* t ) :
-    Option(g,br,lo,r,t), value(val), default_value(val),
+//                                           const char* r,
+                                         const char* t )
+    : Option(OPTION_VALUE_DOUBLE,g,br,lo,t), value(val), default_value(val),
     min_value(mn), max_value(mx) {}
   DoubleOption::~DoubleOption          () {}
 
-  const double& operator()             () const { return value; }
+  const double& get_value              () const { return value; }
   const string get_string_val          () const;
   void reset_value                     ();
   const bool is_value_accepted         ( const double ) const;
@@ -154,14 +154,16 @@ class StringOption : public Option
 {
 public:
   StringOption::StringOption           () {}
-  StringOption::StringOption           ( option_group_t g, const string& val,
+  StringOption::StringOption           ( const int g, const string& val,
                                          const unsigned int mc,
                                          const bool br, const bool lo,
-                                         const char* r, const char* t ) :
-    Option(g,br,lo,r,t), value(val), default_value(val), max_chars(mc) {}
+//                                           const char* r,
+                                         const char* t )
+    : Option(OPTION_VALUE_STRING,g,br,lo,t), value(val),
+      default_value(val), max_chars(mc) {}
   StringOption::~StringOption          () {}
 
-  const string& operator()             () const { return value; }
+  const string& get_value              () const { return value; }
   const string get_string_val          () const { return value; }
   void reset_value                     ();
   const bool change_value              ( const string&, const bool def = false );

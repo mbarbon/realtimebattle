@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <fstream>
 #include <ctype.h>
@@ -41,11 +42,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // Optionarrays are deleted when OptionHandler is destructed.
 OptionHandler::OptionHandler( const string& _section_name,
-                              map<string,Option*>& opts )
-//                                list<string>& _group_names)
-  : section_name(_section_name), all_options(opts) //, group_names(_group_names)
+                              map<string,Option*>& opts,
+                              vector<string>& _group_names )
+  : section_name(_section_name), all_options(opts), group_names(_group_names)
 {
-  initialize_groups();
 }
 
 OptionHandler::~OptionHandler()
@@ -54,18 +54,6 @@ OptionHandler::~OptionHandler()
   for( mi = all_options.begin(); mi != all_options.end(); mi++ )
     delete (mi->second);
   all_options.clear();
-}
-
-void
-OptionHandler::initialize_groups()
-{
-  group_names[GROUP_ENVIRONMENT] = _("Environment");
-  group_names[GROUP_ROBOT] = _("Robot");
-  group_names[GROUP_SHOT] = _("Shot");
-  group_names[GROUP_EXTRAS] = _("Extras");
-  group_names[GROUP_TIME] = _("Time");
-  group_names[GROUP_SIZE_OF_WINDOWS] = _("Window sizes");
-  group_names[GROUP_MISC] = _("Misc");
 }
 
 void
