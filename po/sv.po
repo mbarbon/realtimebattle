@@ -141,7 +141,7 @@ msgstr " Nästa spel "
 
 #: src/ControlWindow.cc:347
 msgid " Prev Game "
-msgstr " Föreg spel"
+msgstr " Föreg spel "
 
 #: src/ControlWindow.cc:351
 msgid " Next Seq "
@@ -149,7 +149,7 @@ msgstr " Nästa sekv "
 
 #: src/ControlWindow.cc:355
 msgid " Prev Seq "
-msgstr " Föreg sekv"
+msgstr " Föreg sekv "
 
 #: src/ControlWindow.cc:515 src/ControlWindow.cc:664
 msgid "Yes"
