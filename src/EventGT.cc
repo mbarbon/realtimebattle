@@ -29,8 +29,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "Gadgets/Script.h"
 
-extern EventHandler* the_eventhandler;
-extern Arena* the_arena;
 
 
     ///////////////////////////////////////////////////
@@ -42,10 +40,10 @@ extern Arena* the_arena;
 void
 RobotsUpdateEvent::eval() const 
 {
-  the_arena->update_robots();
+  the_arena.update_robots();
   
-  Event* next_event = new RobotsUpdateEvent(eval_time + refresh, gui_p, refresh );
-  the_event_handler->insert_GT_event(next_event);  
+  Event* next_event = new RobotsUpdateEvent(eval_time + refresh, refresh );
+  the_eventhandler.insert_GT_event(next_event);  
 }
 
 
@@ -58,10 +56,10 @@ RobotsUpdateEvent::eval() const
 void
 ShotsUpdateEvent::eval() const 
 { 
-  the_arena->update_shots();
+  the_arena.update_shots();
 
-  Event* next_event = new ShotsUpdateEvent(eval_time + refresh, gui_p, refresh );
-  the_event_handler->insert_GT_event(next_event);  
+  Event* next_event = new ShotsUpdateEvent(eval_time + refresh, refresh );
+  the_eventhandler.insert_GT_event(next_event);
 }
 
 
