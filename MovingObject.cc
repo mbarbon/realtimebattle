@@ -423,7 +423,7 @@ bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& norma
 {
   double h, p, b;
   
-  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
+  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
     {
       h = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
       b = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
@@ -453,7 +453,7 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   double h1, h2, p1, p2, b1, b2;
   Vector2D dir1_2 = unit(robot2.center - robot1.center);
   
-  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
+  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
     {
       h1 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
       b1 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
@@ -466,7 +466,7 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
       p1 = the_opts.get_d(OPTION_ROBOT_PROTECTION);
     }
 
-  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
+  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
     {
       h2 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
       b2 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
@@ -883,6 +883,13 @@ Robot::get_messages()
           {
             instreamp->get(text, 80, '\n');
             the_gui.print_to_message_output(robot_name, text, colour);
+          }
+          break;
+        case DEBUG:
+          {
+            instreamp->get(text, 80, '\n');
+            if( the_arena.get_game_mode() == Arena::DEBUG_MODE )
+              the_gui.print_to_message_output(robot_name, text, colour);
           }
           break;
         case SHOOT:
