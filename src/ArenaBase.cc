@@ -468,6 +468,8 @@ ArenaBase::update_timer(const double factor)
   timestep = min( (current_timer - last_timer) * timescale, 
                   the_opts.get_d(OPTION_MAX_TIMESTEP) );
   total_time += timestep*factor;
+
+  total_time = max(total_time, 0.0);
 }
 
 void
