@@ -288,6 +288,11 @@ Options::Options()
                           false, false, "CPU time warning percentage",
                           _("CPU time warning percentage") );
 
+  all_long_options[OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL] =
+    option_info_t<long>(ENTRY_INT, PAGE_TIME, 5, 1, 1000, 5,
+                        false, false, "Logging frequency [Each n:th update interval]",
+                        _("Logging frequency [Each n:th update interval]") );
+
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
                           false, false, "Robot search path", _("Robot search path") );

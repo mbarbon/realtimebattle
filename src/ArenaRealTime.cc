@@ -207,6 +207,14 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
 
   va_list args;
   va_start(args, first_letter);
+
+  // log 'R' only each OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL
+  if( update_count_for_logging != 0 && first_letter == 'R' )
+    {
+      va_end(args);
+      return;
+    }
+
   LOG_FILE << first_letter;
 
   int prec = 2;
@@ -493,6 +501,10 @@ ArenaRealTime::update()
       the_gui.get_messagewindow_p()->thaw_clist();
     }
 #endif
+
+  update_count_for_logging++;
+  if( update_count_for_logging == the_opts.get_l(OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL) )
+    update_count_for_logging = 0;
 }
 
 void
@@ -791,6 +803,7 @@ ArenaRealTime::start_game()
   the_opts.broadcast_opts();
 
 
+  update_count_for_logging = 0;
   print_to_logfile('T', 0.0);
 
   ListIterator<Shape> li2;

@@ -96,6 +96,7 @@ private:
   
   ofstream LOG_FILE;
   bool use_log_file;
+  int update_count_for_logging;
 
   int** robots_in_sequence;
 
