@@ -532,7 +532,8 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
 }
 
 String
-ArenaReplay::search_forward( const String& search_letters )
+ArenaReplay::search_forward( const String& search_letters,
+                             streampos& strpos )
 {
   if( log_from_stdin )
     return "";
@@ -541,6 +542,7 @@ ArenaReplay::search_forward( const String& search_letters )
   char buffer[400];
   while( search_letters.find( letter ) == -1 && !log_file.eof() )
     {
+      strpos = log_file.tellg();
       log_file.get( buffer, 400, '\n' );
       log_file >> ws;
       letter = log_file.peek();
@@ -563,7 +565,8 @@ ArenaReplay::search_forward( const String& search_letters )
 // Returns the first line which begins with any of the search_strings.
 // Returns the empty string at failure.
 String
-ArenaReplay::search_forward( const List<String>& search_strings )
+ArenaReplay::search_forward( const List<String>& search_strings, 
+                             streampos& strpos )
 {
   if( log_from_stdin ) return "";
 
@@ -574,10 +577,12 @@ ArenaReplay::search_forward( const List<String>& search_strings )
 
   while( !log_file.eof() && !found )
     {
+      log_file.clear();
       log_file >> ws;
+      strpos = log_file.tellg();
       log_file.get( buffer, 400, '\n' );
 
-      for( search_strings.first(li); li.ok(); li++ )
+      for( search_strings.first(li); li.ok() && !found; li++ )
         {
           found = true;
           for( i=0; i < li()->get_length(); i++ )
@@ -665,16 +670,17 @@ ArenaReplay::make_statistics_from_file()
   streampos strpos;
   streampos old_pos;
 
-  old_pos = strpos = log_file.tellg();
-  String buffer = search_forward( str_list );
+  old_pos = log_file.tellg() + 1;//temporary!!
+  String buffer = search_forward( str_list, strpos );
+
+  cout << "make_statistics_from_file" << endl;
 
   do
     {
       if( !buffer.is_empty() )
         {
-          cout << log_file.tellg() << " " << strpos << endl;
-          log_file.seekg(strpos); // Note that strpos can't be zero!
-          cout << log_file.tellg() << endl;
+          log_file.seekg(strpos+1); // Note that strpos can't be zero!
+
           switch( buffer[0] )
             {
             case 'D':
@@ -695,6 +701,7 @@ ArenaReplay::make_statistics_from_file()
                 log_file >> robot_id >> ws;
                 log_file.get( robot_colour, 7, ' ');
                 long int col = str2hex( (String)robot_colour );
+                log_file >> ws;
                 log_file.get( name, 200, '\n' );
                 Robot* robotp = new Robot( robot_id, col, (String)name );
                 object_lists[ROBOT].insert_last(robotp); // array better?
@@ -704,7 +711,7 @@ ArenaReplay::make_statistics_from_file()
             
             case 'G':
               log_file >> sequence_nr >> game_nr;
-              game_position_in_log[sequence_nr][game_nr] = strpos;
+              game_position_in_log[sequence_nr-1][game_nr-1] = strpos;
               break;
             
             case 'T':
@@ -721,6 +728,8 @@ ArenaReplay::make_statistics_from_file()
               log_file >> games_per_sequence >> robots_per_game 
                        >> sequences_in_tournament >> number_of_robots;
               
+              game_position_in_log = new streampos*[sequences_in_tournament];
+
               for( int i=0; i<sequences_in_tournament; i++ )
                 game_position_in_log[i] = new streampos[games_per_sequence];
               
@@ -732,9 +741,8 @@ ArenaReplay::make_statistics_from_file()
               break;
             }
         }
-
-      strpos = log_file.tellg();
-      buffer = search_forward( str_list );
+      
+      buffer = search_forward( str_list, strpos );
     } while( !log_file.eof() );
 
   log_file.seekg( old_pos );  // Note that old_pos can't be zero!
@@ -753,14 +761,16 @@ ArenaReplay::get_time_positions_in_game()
 
   streampos strpos;
   streampos old_pos;
-  old_pos = strpos = log_file.tellg();
-  String buffer = search_forward( letter_list );
+  old_pos = strpos = log_file.tellg() + 1; //temporary!!
+  String buffer = search_forward( letter_list, strpos );
+
+  cout << "get_time_positions_in_game" << endl;
 
   while( !log_file.eof() )
     {
       if( !buffer.is_empty() )
         {
-          log_file.seekg(strpos); // Note that strpos can't be zero!
+          log_file.seekg(strpos+1); // Note that strpos can't be zero!
           switch( buffer[0] )
             {
             case 'T':
@@ -791,6 +801,7 @@ ArenaReplay::get_time_positions_in_game()
 
       strpos = log_file.tellg();
       buffer = search_forward( letter_list );
+      log_file.clear();
     }
 
   log_file.seekg( old_pos ); // Note that old_pos can't be zero!

@@ -40,8 +40,10 @@ public:
                                   const String& statistics_fname,
                                   const String& option_fname );
   void change_speed             ( const bool forward, const bool fast );
-  String search_forward         ( const String& search_letters );
-  String search_forward         ( const List<String>& search_strings );
+  String search_forward         ( const String& search_letters,
+                                  streampos& strpos );
+  String search_forward         ( const List<String>& search_strings, 
+                                  streampos& strpos );
   String search_backwards       ( const String& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
