@@ -16,13 +16,9 @@ to describe the system you are using, including the version of RealTimeBattle.
 <p>
 System dependent problems are present. We need help with bug-reports to overcome this.
 
-<tag>Problem when using more robots in the tournament than in the sequence</tag>
-<p> 
-This should be fixed in 0.9.3.
-
 <tag>Gtk+ 1.1 doesn't work</tag>
 <p>
-Fixed in version 0.9.4 (hopefully). 
+Fixed in version 0.9.4 and improved in version 0.9.5. 
 
 <tag>Windows resizing</tag>
 <p> 

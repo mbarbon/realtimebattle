@@ -2,7 +2,7 @@
 
 <!--
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>   
 <title>RealTimeBattle User Manual, version 0.9.5 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 16 January 1999
+<date> 17 January 1999
 
 <!-- <abstract> -->
 
@@ -127,7 +127,7 @@ RealTimeBattle is distributed under the
 the spirit of the Linux community. Official versions of
 RealTimeBattle will be released by the authors.
 
-Copyright (C) 1998  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -281,29 +281,14 @@ start.
 
 <sect1>Robots and arena directories<label id="robot_and_arena_directories">
 <p>
-In order for the program to find the robots and arenas you have set two environmental variables,
-<tt>RTB&lowbar;ROBOTDIR</tt> and <tt>RTB&lowbar;ARENADIR</tt>. 
-The directories <tt>/usr/games/RealTimeBattle/Robots</tt> and
-<tt>/usr/games/RealTimeBattle/Arenas</tt> are always searched, regardless of the environmental
-variables, but if you create a new directory, or if you installed RealTimeBattle in some other
-directory, you need to set these variables.
-
-If you use <tt>bash</tt> you can e.g. add the following lines to your <tt>.bashrc</tt> file. 
-<verb>
-export RTB&lowbar;ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
-export RTB&lowbar;ARENADIR="$HOME/RealTimeBattle/Arenas/"
-</verb>
-In <tt>tcsh</tt>, add e.g.
-<verb>
-setenv RTB&lowbar;ROBOTDIR "$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
-setenv RTB&lowbar;ARENADIR "$HOME/RealTimeBattle/Arenas/"
-</verb>
-to the <tt>.cshrc</tt> file.
-
-Type
-<verb>% source ~/.bashrc</verb> or
-<verb>% source ~/.cshrc</verb> for for 
-the change to take effect.
+In order for the program to find the robots and arenas you have set two options
+<ref name="Robot search path" id="Robot search path"> and
+<ref name="Arena search path" id="Arena search path">.
+The subdirectories <tt>Robots</tt> and <tt>Arenas</tt> in the directory 
+<tt>INSTALLDIR</tt> (default: <tt>/usr/games/RealTimeBattle</tt>), specified at compile-time in the
+main Makefile, are always searched, regardless of the 
+options, but if you create a new directory, or if you installed RealTimeBattle in some other
+directory, you need to set these options.
 
 <sect1>Arena window<label id="Arena_window">
 <p>
@@ -316,7 +301,8 @@ In this window the robots playing in the current sequence are listed.
 
 <sect1>Message window<label id="Message window">
 <p>
-Here are messages sent by the robots using <ref id="Print" name="Print and Debug"> displayed.
+Here are messages sent by the robots using <ref id="Print" name="Print and Debug"> displayed. The
+most recent messages are displayed at the top.
 
 <sect1>Options window<label id="Options_window">
 <p>
@@ -951,6 +937,14 @@ will decide how often the program will check for CPU usage.
 
 </descrip>
 
+<sect1>Window sizes<label id="Window sizes">
+<p>
+Here you can set the initial sizes for some different window, namely 
+the <ref name="arena window" id="Arena_window">,
+the <ref name="message window" id="Message window">,
+the <ref name="score window" id="Score window"> and
+the <ref name="statistics window" id="Statistics window">
+
 <sect1>Miscellaneous options<label id="Miscellaneous options">
 <p>
 <descrip>
@@ -962,10 +956,12 @@ double sidelength, i.e. four times bigger area.
 
 <tag>Foreground colour:</tag> foreground colour for the arena.
 
-<tag>Statistics savefile:</tag> File to store <ref id="Statistics window" name="statistics">.
+<label id="Robot search path">
+<tag>Robot search path:</tag> This is a colon-separated list of directories which will be searched
+for robots when a <ref name="new tournament" id="Start new tournament window"> is started.
 
-<label id="OptionsSavefile">
-<tag>Options savefile:</tag> File to store options.
+<label id="Arena search path">
+<tag>Arena search path:</tag> Same as above, but for arena files instead of robots.
 
 </descrip>
 

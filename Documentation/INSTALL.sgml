@@ -29,8 +29,7 @@ Now change directory and compile <verb>% cd RealTimeBattle
 If you would like to debug RealTimeBattle, type instead '<tt>make DEBUG=true</tt>'.
 
 Hopefully everything will compile well. If not, please ensure that <tt>gtk+</tt> is correctly
-installed. You can check this by typing <verb>% gtk-config --version</verb>. Currently only version 
-1.0.x of <tt>gtk+</tt> will work.
+installed. You can check this by typing <verb>% gtk-config --version</verb>. 
 
 If it doesn't compile as it should, please first look in the makefiles <tt>src/Makefile</tt> and 
 <tt>Robots/Makefile</tt>, and read the comments. Maybe you can find a solution there.
@@ -55,24 +54,11 @@ be in your home directory).
 If you like, you can do the installation by hand, in fact, the only important file to move is the
 binary <tt>src/RealTimeBattle</tt>, which should be moved to somewhere in your <tt>PATH</tt>.
 
-<item> Configure
-<p>
-Before you start, you have to tell the program where to find the robots and the arenas. This is done
-by setting two environmental variables, <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt>. If you use
-<tt>bash</tt> you can e.g. add the following lines to your <tt>.bashrc</tt> file. 
-<verb>
-export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
-export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
-</verb>
-The directories <tt>INSTALLDIR/Robots</tt> and
-<tt>INSTALL/Arenas</tt> are always searched, regardless of the environmental
-variables. You have to enter 
-<verb>
-% source ~/.bashrc</verb> for 
-the change to take effect.
-
 <item> Test it!
 <p>
 Type <verb>% RealTimeBattle</verb>
+
+You may have to change the options <tt>Robots search path</tt> and <tt>Arena search path</tt> to
+make the program to find your robots and arenas. Read the manual for more details!
 </enum>
 </notes>

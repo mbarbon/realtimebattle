@@ -17,7 +17,7 @@ options. Place your default directories in your <tt>.rtbrc</tt> for permanent op
 
 Added some buttons to the options window.
 
-Load and Save buttons now uses the gtk fileselector.
+Load and Save buttons now uses the gtk file-selector.
 
 The savefile-options is removed
 
@@ -32,7 +32,8 @@ within a number of releases and certainly before 1.0.
 
 Long command line options are now available.
 
-The Message Output is now changed into a clist.
+The Message output is changed into a clist and new messages are put at the top of the
+list. Hopefully this is more readable.
 
 Bugfixes:
 
