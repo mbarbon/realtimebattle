@@ -427,6 +427,12 @@ Robot::update_radar_and_cannon(const double timestep)
     get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
                           0.0, closest_shape, col_obj, this);
   send_message(RADAR, dist, closest_shape, radar_angle.pos);
+  if( closest_shape == ROBOT )
+    {
+      double lvls = (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS);
+      double en = ((Robot*)col_obj)->get_energy();
+      send_message(ROBOT_INFO, rint( en / lvls ) * lvls, 0);
+    }
   send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
 }
 

@@ -15,6 +15,7 @@ enum message_to_robot_type
   GAME_STARTS,
   RADAR,
   INFO,
+  ROBOT_INFO,
   ENERGY,
   ROBOTS_LEFT,
   COLLISION,
@@ -126,6 +127,7 @@ static const struct Message message_to_robot[20] =
                                                        // third arg: radar_angle
                                                        // TODO: fourth arg: if robot, its energylevel ??
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
+  {"RobotInfo",  2, {DOUBLE, INT,    NONE,   NONE}},   // first arg: Other robots energylevel, second arg: enemy - 0, teammate - 1
   {"Energy",     1, {DOUBLE, NONE,   NONE,   NONE}},   // arg: energylevel
   {"RobotsLeft", 1, {INT,    NONE,   NONE,   NONE}},   // arg: robots left
   {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: collision angle

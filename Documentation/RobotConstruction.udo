@@ -69,15 +69,20 @@ of messages, warning types, objects, game options and robot options.
    !item [GameStarts] This message is sent when the game starts (surprise!)
          
    !item [Radar [distance (double)!] [observed object type (int)!] [radar angle (double)!]]
-# [energy level (int)!]] 
          This message given information each turn from the radar. Remember that the radar-angle is
          relative to the robot front; it is given in radians.
          
    !item [Info [time (double)!] [speed (double)!] [cannon angle (double)!]]
-         The (!T)info(!t) message does always follow the (!T)radar(!t) message. It gives more
+         The (!B)Info(!b) message does always follow the (!B)Radar(!b) message. It gives more
          general information on the state of the robot. The time is the game-time elapsed since the
          start of the game. This is not necessarily the same as the real time elapsed, due to 
          (!link [timescale][TimeScale]) and (!link [max timestep] [MaxTimestep]).
+
+   !item [RobotInfo [energy level (double)!] [enemy? (int)!]]
+         If you detect a robot with your radar, this message will follow, giving some information on
+         the robot. The opponents enery level will be given in the same manner as your own energy
+         (see below). The second argument is only interestning i team-mode (which current isn't
+         implemented), 1 means a team-mate and 0 an enemy.
 
    !item [Energy [energy level!]]
          The end of each round the robot will get to know its energy level. It will not, however,
@@ -155,11 +160,12 @@ of messages, warning types, objects, game options and robot options.
          (!link [Robot (cannon/radar) max rotate speed][RobotMaxRotateSpeed]). 
 
    !item [RotateTo [what to rotate (int)!] [angular velocity (double)!] [end angle (double)!]] 
-         As (!B)rotate(!b), but will rotate to a given angle. Note that radar and cannon angles are
-         relative to the robot angle.
+         As (!B)Rotate(!b), but will rotate to a given angle. Note that radar and cannon angles are
+         relative to the robot angle. You cannot use this command to rotate the robot itself, use
+         (!B)RotateAmount(!b) instead!
 
    !item [RotateAmount [what to rotate (int)!] [angular velocity (double)!] [angle (double)!]] 
-         As (!B)rotate(!b), but will rotate relative the current angle.
+         As (!B)Rotate(!b), but will rotate relative the current angle.
 
    !item [Sweep [what to rotate (int)!] [angular velocity (double)!] [left angle (double)!] [right angle (double)!]] 
          As (!B)rotate(!b), but sets the radar and/or the cannon (not available for the robot
