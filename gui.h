@@ -47,7 +47,7 @@ struct start_tournament_glist_info_t
   start_tournament_glist_info_t(int r, bool s, char * t) :
     row(r), selected(s)
     {
-      text = new char[strlen(t)+1];
+      filename = new char[strlen(t)+1];
       strcpy(filename,t);
     }
   int row;
@@ -127,6 +127,8 @@ public:
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget * get_score_clist() { return score_clist; }
+  char * get_robotdir() { return robotdir; }
+  char * get_arenadir() { return arenadir; }
 
 private:
   void clear_area();
@@ -161,6 +163,9 @@ private:
   GList * selected_items_in_robot_directory;
   GList * selected_items_in_arena_tournament;
   GList * selected_items_in_arena_directory;
+
+  char * robotdir;
+  char * arenadir;
 
   int zoomfactor;
   Vector2D boundary[2];

@@ -65,6 +65,27 @@ Gui::Gui()
   statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
+  if(NULL != getenv("RTB_ROBOTDIR"))
+    {
+      robotdir = new char[strlen(getenv("RTB_ROBOTDIR"))+ 1];
+      strcpy(robotdir, getenv("RTB_ROBOTDIR"));
+    }
+  else
+    {
+      robotdir = new char[strlen("Robots/") + 1];
+      strcpy(robotdir, "Robots/");
+    }
+
+  if(NULL != getenv("RTB_ARENADIR"))
+    {
+      arenadir = new char[strlen(getenv("RTB_ARENADIR")) + 1];
+      strcpy(arenadir,getenv("RTB_ARENADIR"));
+    }
+  else
+    {
+      arenadir = new char[strlen("Arenas/") +1 ];
+      strcpy(arenadir,"Arenas/");
+    }
 }
 
 double
