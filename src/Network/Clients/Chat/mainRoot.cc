@@ -25,7 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <signal.h>
 
-#include "ClientSocket.h"
+#include "ChatSocket.h"
 #include "Console.h"
 
 #define RTB_NAME_VERSION "RTB v2"
@@ -38,7 +38,7 @@ main( int argc, char* argv[] )
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
   
-  my_socketclient = new SocketClient;
+  my_socketclient = new SocketChat;
 
   my_socketclient->my_cons.write(C_VERSION, "This is the client for %s", RTB_NAME_VERSION);
   my_socketclient->my_cons.write(C_COMMENT, "You can learn a lot about RealTimeBattle at %s",

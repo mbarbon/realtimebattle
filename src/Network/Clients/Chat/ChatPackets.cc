@@ -18,13 +18,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 
-#include "ChatPackets.h"
-
 #include <netinet/in.h>
 #include <string>
 #include <iostream.h>
 #include <stdarg.h>
 #include <unistd.h>
+
+#include "ChatPackets.h"
+#include "ChatSocket.h"
 
 #include "NetConnection.h"
 #include "Packets.h"
@@ -317,7 +318,7 @@ MetaServerAskInfoPacket::make_netstring() const
 }
 
 int
-LaunchRobotPacket::handle_packet( void* )
+LaunchRobotPacket::handle_packet( void* client_net_connection)
 {
   cout<<"Launch the robot : "<<data<<endl;
   int pid;
@@ -330,8 +331,10 @@ LaunchRobotPacket::handle_packet( void* )
 
   if( pid == 0 ) //Child process, to be the new robot client
     {
-      
-      if( execl("rtbrobot", "rtbrobot", "/bin/usr/local/w3c/...", "localhost", "1234", NULL) == -1 )
+      char s_port[8];
+      sprintf(s_port, "%d", my_socketclient->s_port);
+
+      if( execl("rtbrobot", "rtbrobot", data.c_str(), my_socketclient->s_add.c_str(), s_port, NULL) == -1 )
 	{
 	  cerr<<"Couldn't open rtbrobot\n";
 	  exit( 0 );

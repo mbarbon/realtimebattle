@@ -27,8 +27,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "MetaServerPackets.h"
 #include "String.h"
 
-extern MetaServerSocket* my_metaserversocket;
-
 Packet*
 make_packet( string& netstr )
 {
@@ -141,7 +139,6 @@ MetaServerDataPacket::handle_packet ( void* p_void)
 	    msnc->language = wordlist[4];
 	    msnc->summary  = "";
 	    msnc->is_server = true;
-	    //cout<<"There is a new server in the server list\n"; //In fact not in all cases
 	}
     }
 
@@ -161,12 +158,6 @@ MetaServerAskInfoPacket::handle_packet( void* nc )
     {
       if((*i)->is_server)
 	{
-	  /*
-	    string temp = MetaServerDataPacket( (*i)->name, (*i)->version, 
-	    (*i)->address, (*i)->port_number, 
-	    (*i)->nb_conn, (*i)->language ).make_netstring();
-	    cout<<temp.substr(4, temp.length() - 4)<<endl;
-	  */
 	  msnc->send_data(  MetaServerDataPacket( (*i)->name, (*i)->version, 
 						  (*i)->address, (*i)->port_number, 
 						  (*i)->nb_conn, (*i)->language ).make_netstring() );

@@ -29,6 +29,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ClientSocket.h"
 
+#define USE_INITIALIZATION_PACKET 
+#  define SEND_INITIALIZATION_PACKET 
+
+#include "Packets.h"
+
 void
 SocketClient::connect_to_server( string hostname, int port )
 {
@@ -36,10 +41,10 @@ SocketClient::connect_to_server( string hostname, int port )
   struct hostent* hostinfo;
   long address;
   int the_socket;
-
+  
   if( port == 0 )
     port = server_port;
-
+  
   if( hostname.empty() )
     hostname = "localhost";
 
@@ -81,9 +86,45 @@ SocketClient::connect_to_server( string hostname, int port )
 
   nc.the_socket = the_socket;
   nc.make_nonblocking();
-
   nc.connected = true;
-  nc.address = hostname;
+
+  s_port = port;
+  s_add = hostname;
 }
 
+
+
+void
+SocketClient::close_connection()
+{
+  close( nc.the_socket );
+  nc.connected = false;
+  nc.the_socket = -1;
+}
+
+bool
+SocketClient::is_connected()
+{
+  return !nc.is_not_connected();
+}
+
+void
+SocketClient::initialize( const string& name, const client_t& c )
+{
+//    string str = (string)( (char)(RTB_NETPROTOCOL_V1 & 0xff) ) + name;
+
+//    int len = str.length();
+//    string send_string = (string)( (char)(PACKET_INIT & 0xff) )
+
+  InitializationPacket IP(  RTB_NETPROTOCOL_V1, 
+			    c, name );
+  nc.name = name;
+  nc.send_data( IP.make_netstring() );
+}
+
+void
+exit_cleanly(int Sign)
+{
+  quit();
+}
 

@@ -28,23 +28,26 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class SocketClient
 {
-public:
+ public:
+  SocketClient() {};
+  virtual ~SocketClient() {};
   void connect_to_server( string hostname, int port = 0 );
   
-  void check_connection();
+  virtual void check_connection() {};
   //  void write_to_server( const string& str );
   void initialize( const string&, const client_t& ); // RTBv2 initialization
   void close_connection();
-  void ask_for_info_to_metaserver();
 
   bool is_connected();
   Console my_cons;
 
-private:
-  NetConnection nc;
-};
+  friend LaunchRobotPacket;
 
-extern SocketClient *my_socketclient;
+ protected:
+  NetConnection nc;
+  int s_port;
+  string s_add;
+};
 
 void exit_cleanly(int Sign);
 void quit();

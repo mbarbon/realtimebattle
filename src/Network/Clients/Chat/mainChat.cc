@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <signal.h>
 
-#include "ClientSocket.h"
+#include "ChatSocket.h"
 
 #define RTB_NAME_VERSION "RTB v2"
 #define WEBSITE_URL      "http://"
