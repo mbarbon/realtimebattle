@@ -210,9 +210,9 @@ Arena::parse_tournament_file( String& fname )
           int arenas_counted = 0;
 
           GList* gl;
-          for(gl=g_list_next(robot_glist); gl != NULL; gl=g_list_next(gl))  
+          for(gl=g_list_next(robot_glist); gl != NULL; gl=g_list_next(gl))
             robots_counted++;
-          for(gl=g_list_next(arena_glist); gl != NULL; gl=g_list_next(gl))  
+          for(gl=g_list_next(arena_glist); gl != NULL; gl=g_list_next(gl))
             arenas_counted++;
 
 
@@ -279,35 +279,54 @@ Arena::parse_tournament_file( String& fname )
               break;
             case 1:
               {
+                bool found_robots = false;
                 String full_file_name = "";
                 start_tournament_glist_info_t* info;
                 info = new start_tournament_glist_info_t(0,false,word,"");
 
                 if( word.find('/') != -1 )
                   {
-                    if(check_if_filename_is_robot( word ))
-                      full_file_name = word;
+                    if( get_segment( word, -2, -1 ) == "/*" )
+                      {
+                        search_directories( get_segment( word, 0, -2 ), robot_glist, true );
+                        break;
+                      }
+                    else if(check_if_filename_is_robot( word ))
+                      {
+                        full_file_name = word;
+                        found_robots = true;
+                      }
                   }
-                if( full_file_name == "" )
+                if( !found_robots )
+                  {
+                    if( word.get_length() == 1 && word[0] == '*' )
+                      {
+                        GList* gl;
+                        for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
+                          search_directories( *((String*)gl->data), robot_glist, true );
+                        break;
+                      }
+                  }
+                if( !found_robots )
                   {
                     GList* gl;
                     for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
                       {
                         String* current_dir = (String*)gl->data;
 
-                        String temp_name = *current_dir + info->filename;
+                        String temp_name = *current_dir + word;
 
                         if(check_if_filename_is_robot( temp_name ))
                           {
                             full_file_name= temp_name;
+                            found_robots = true;
                             break;
                           }
                       }
                   }
-                if( full_file_name != "" )
+                if( found_robots )
                   {
                     info->filename = full_file_name;
-                    info->selected = true;
                     g_list_append(robot_glist, info);
                   }
                 else
@@ -319,23 +338,42 @@ Arena::parse_tournament_file( String& fname )
               break;
             case 2:
               {
+                bool found_arenas = false;
                 String full_file_name = "";
                 start_tournament_glist_info_t* info;
                 info = new start_tournament_glist_info_t(0,false,word,"");
 
                 if( word.find('/') != -1 )
                   {
+                    if( get_segment( word, -2, -1 ) == "/*" )
+                      {
+                        search_directories( get_segment( word, 0, -2 ), arena_glist, false );
+                        break;
+                      }
                     if(check_if_filename_is_arena( word ))
-                      full_file_name = word;
+                      {
+                        full_file_name = word;
+                        found_arenas = true;
+                      }
                   }
-                if(full_file_name == "")
+                if( !found_arenas )
+                  {
+                    if( word.get_length() == 1 && word[0] == '*' )
+                      {
+                        GList* gl;
+                        for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
+                          search_directories( *((String*)gl->data), arena_glist, false );
+                        break;
+                      }
+                  }
+                if(!found_arenas)
                   {
                     GList* gl;
                     for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
                       {
                         String* current_dir = (String*)gl->data;
 
-                        String temp_name = *current_dir + info->filename;
+                        String temp_name = *current_dir + word;
                         if(check_if_filename_is_arena( temp_name ))
                           {
                             full_file_name = temp_name;
@@ -343,11 +381,9 @@ Arena::parse_tournament_file( String& fname )
                           }
                     }
                   }
-
-                if( full_file_name != "" )
+                if( found_arenas )
                   {     
                     info->filename = full_file_name;
-                    info->selected = true;
                     g_list_append(arena_glist, info);
                   }
                 else
