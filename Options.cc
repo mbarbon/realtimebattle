@@ -25,11 +25,11 @@ Options::Options()
   all_double_options[OPTION_SLIDE_FRICTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,"Slide/break friction", NULL);
 
-  all_double_options[OPTION_MAX_ACCELERATION] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 2.0, 0.1, 10.0, 12,"Max acceleration", NULL);
+  all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,"Max acceleration", NULL);
 
-  all_double_options[OPTION_MIN_ACCELERATION] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, -0.5, -10.0, 0.0, 12,"Min acceleration", NULL);
+  all_double_options[OPTION_ROBOT_MIN_ACCELERATION] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, -0.5, -10.0, 0.0, 12,"Min acceleration", NULL);
     
   all_double_options[OPTION_ROBOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.1, 10.0, 12, "Robot radius", NULL);
@@ -46,12 +46,6 @@ Options::Options()
   all_double_options[OPTION_ROBOT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12, "Robot protection coefficient", NULL);
 
-  all_double_options[OPTION_ROBOT_START_ENERGY] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 100.0, 0.01, 10000.0, 12, "Robot start energy", NULL);
-
-  all_double_options[OPTION_ROBOT_MAX_ENERGY] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 120.0, 0.01, 10000.0, 12, "Robot max energy", NULL);
-
   all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12, "Robot front bounce coefficient", NULL);
 
@@ -63,6 +57,12 @@ Options::Options()
 
   all_double_options[OPTION_ROBOT_COS_FRONTSIZE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, cos(M_PI/6.0), -1.0, 1.0, 12, "Robot frontsize (cos(front angle))", NULL);
+
+  all_double_options[OPTION_ROBOT_START_ENERGY] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 100.0, 0.01, 10000.0, 12, "Robot start energy", NULL);
+
+  all_double_options[OPTION_ROBOT_MAX_ENERGY] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 120.0, 0.01, 10000.0, 12, "Robot max energy", NULL);
 
   all_double_options[OPTION_ROBOT_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 8.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0, 12, "Robot max rotate speed [rad/s]", NULL);
@@ -95,7 +95,7 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 30.0, 0.0, 100000000.0, 12, "Shot max energy", NULL);
 
   all_double_options[OPTION_SHOT_ENERGY_INCREASE_SPEED] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.0, 100000000.0, 12, "Shot energy increase speed [energypoints/s]", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.0, 100000000.0, 12, "Shot energy increase speed [energy/s]", NULL);
 
   all_long_options[OPTION_BACKGROUND_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0xfaf0e6, 0x000000, 0xffffff, 6, "Background colour", NULL);
@@ -110,7 +110,7 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 10.0, 0.0, 100000000.0, 12, "Cookie min energy", NULL);
 
   all_double_options[OPTION_COOKIE_FREQUENCY] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 1.0/30.0, 0.0, 100000000.0, 12, "Cookie frequency [cookies per second]", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.03, 0.0, 100000000.0, 12, "Cookie frequency [cookies per second]", NULL);
 
   all_double_options[OPTION_COOKIE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12, "Cookie radius", NULL);
@@ -125,7 +125,7 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12, "Mine min energy", NULL);
 
   all_double_options[OPTION_MINE_FREQUENCY] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 1.0/15.0, 0.0, 100000000.0, 12, "Mine frequency [mines per second]", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.06, 0.0, 100000000.0, 12, "Mine frequency [mines per second]", NULL);
 
   all_double_options[OPTION_MINE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12, "Mine radius", NULL);
@@ -172,6 +172,9 @@ Options::broadcast_opts()
   the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ROTATE, get_d(OPTION_ROBOT_MAX_ROTATE));
   the_arena.broadcast( GAME_OPTION, ROBOT_CANNON_MAX_ROTATE, get_d(OPTION_ROBOT_CANNON_MAX_ROTATE));
   the_arena.broadcast( GAME_OPTION, ROBOT_RADAR_MAX_ROTATE, get_d(OPTION_ROBOT_RADAR_MAX_ROTATE));
+
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ACCELERATION, get_d(OPTION_ROBOT_MAX_ACCELERATION));
+  the_arena.broadcast( GAME_OPTION, ROBOT_MIN_ACCELERATION, get_d(OPTION_ROBOT_MIN_ACCELERATION));
 
   the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY, get_d(OPTION_ROBOT_START_ENERGY));
   the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY, get_d(OPTION_ROBOT_MAX_ENERGY));
