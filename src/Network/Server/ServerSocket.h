@@ -4,12 +4,8 @@
 #include <list>
 #include <string>
 
-#include "Packets.h"
+#include "ServerPackets.h"
 #include "NetConnection.h"
-
-static const int server_port = 4147;
-static const int metaserver_port = 4146;
-static const int max_number_connections = 10;
 
 void exit_cleanly(int);
 void quit();

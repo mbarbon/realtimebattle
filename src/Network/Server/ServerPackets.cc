@@ -1,5 +1,3 @@
-#include "Packets.h"
-
 #include <netinet/in.h>
 #include <string>
 #include <iostream.h>
@@ -8,7 +6,8 @@
 #include "NetConnection.h"
 #include "ServerNetConnection.h"
 #include "ServerSocket.h"
-#include "Packets.h"
+#include "ServerPackets.h"
+
 #include "String.h"
 
 Packet*
@@ -16,7 +15,7 @@ make_packet( string& netstr )
 {
   string type = netstr.substr(0,2);
 
-  /* How to use the get_8uint_from_netstring???
+  /*
     switch(type)
     {
     case PACKET_INIT : return new InitializationPacket(); break;
@@ -46,18 +45,15 @@ make_packet( string& netstr )
   return 0;
 }
 
-
-
-
 int 
 InitializationPacket::handle_packet(void* p_void)
 {
   NetConnection* nc = (NetConnection*) p_void;
-  //cout<<"In InitializationPacket : "<<data<<endl;
+
   if( data != "" )  //Have to find a way not to do that
     {
       vector<string> wordlist;
-      //cout<<data<<endl;
+
       wordlist = split_string( data, wordlist ); //This function is buggy
 
       if(wordlist.size() == 3)
@@ -65,7 +61,6 @@ InitializationPacket::handle_packet(void* p_void)
 	  if(wordlist[0] == "RTBNetV1")
 	    {
 	      nc->name = wordlist[2];
-	      //cout<<"--> " <<wordlist[1]<<endl;
 
 	      // This is the good protocol
 	      if( wordlist[1] == "Root" )
@@ -85,12 +80,6 @@ InitializationPacket::handle_packet(void* p_void)
     }
   //something wrong...
   return (client_t)UNINITIALIZED;
-}
-
-string 
-InitializationPacket::make_netstring() const
-{ /* Should be used by the server */ 
-  return "";
 }
 
 CommandPacket::CommandPacket( const string& c /* , unsigned n, ... */ )
@@ -121,9 +110,8 @@ CommandPacket::make_netstring() const
   */
 
   string n_str;
-  // add_uint8_to_netstring( PACKET_COMMAND, n_str );
   n_str = "@C";
-  add_uint16_to_netstring( datastring.length() + 3, n_str );
+
   n_str += datastring;
   
   return n_str;
@@ -138,12 +126,6 @@ CommandPacket::handle_packet(void* p_void)
   else
     cc->close_socket();
   return 1;
-}
-
-string 
-ChatMessagePacket::make_netstring() const
-{ /* Should be used by the server */ 
-  return "";
 }
 
 int 
@@ -176,12 +158,6 @@ ServerMessagePacket::make_netstring() const
   n_str += datastring;
   
   return n_str; 
-}
-
-int 
-ServerMessagePacket::handle_packet( void* p_void ) 
-{
-  return 1;
 }
 
 SubmitPacket::SubmitPacket( int T , const vector<string>& FN)
@@ -235,22 +211,15 @@ SubmitPacket::SubmitPacket( int T, string& s1,
 string 
 SubmitPacket::make_netstring() const
 {
-
   string datastring;
-  
 
   for(unsigned int i = 0; i < file_name.size(); i++)
     {
       datastring += "<" + file_name[i]  + ">";
     }
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
+
   n_str = "S";  //maybe use a small "s"
   if( type == Add_Arena)
     n_str += "A";
@@ -261,7 +230,6 @@ SubmitPacket::make_netstring() const
   else if (type == Del_Arena)
     n_str += "A";
 
-  //add_uint16_to_netstring( datastring.length() + 3, n_str );
   n_str += datastring;
   
   return n_str; 
@@ -290,80 +258,39 @@ SubmitPacket::handle_packet( void* )
 string 
 MetaServerInitializationPacket::make_netstring() const
 {
-  string datastring;
+  string n_str;
+
+  n_str = "MI";
 
   if (protocol ==   RTB_NETPROTOCOL_V1)
     {
-      datastring = "RTBNetV1";
+      n_str += "RTBNetV1";
     }
   else
     {
-      datastring = "RTBNetUnknown";
+      n_str += "RTBNetUnknown";
     }
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
-  string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
-  n_str = "MI";
-  //add_uint16_to_netstring( datastring.length(), n_str );
-  n_str += datastring;
-  
   return n_str;
-}
-
-int 
-MetaServerInitializationPacket::handle_packet( void* ) 
-{
-  return 0;
 }
 
 string
 MetaServerDataPacket::make_netstring() const
 {
-  string datastring;
-
-  datastring = name  + " " + version 
-    + " " + Port_num + " " + Nb_Conn + " " + language;
-  
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
-  n_str = "MD";
-  //add_uint16_to_netstring( datastring.length(), n_str );
-  n_str += datastring;
+  n_str = "MD" 
+    + name  + " " + version 
+    + " " + Port_num + " " + Nb_Conn + " " + language;
   
   return n_str;
 } 
 
-
-int MetaServerDataPacket::handle_packet ( void* )
-{
-  return 0;
-}
-
 string
 MetaServerAskInfoPacket::make_netstring() const
 {
-  string datastring;  //To do it quickly
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
+
   n_str = "MA";
-  //add_uint16_to_netstring( datastring.length(), n_str );
-  n_str += datastring;
   
   return n_str;   
-}
-
-int 
-MetaServerAskInfoPacket::handle_packet ( void* )
-{
-  return 0;
 }
