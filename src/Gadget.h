@@ -28,16 +28,25 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Variable;
 class Function;
 
+struct VariableDefinition;
+struct FunctionDefinition;
+
 class Gadget
 {
 public:
 
 
-  Gadget() : info(this, 0, "") {}
-  Gadget( const char* name, Gadget* const p ) 
-    : info(this, last_id_used++, name), parent(p) {}
+  Gadget() : 
+    info(this, 0, ""), 
+    variables(NULL), functions(NULL) {}
 
-  ~Gadget() {}
+  Gadget( const char* name, Gadget* const p ) : 
+    info(this, last_id_used++, name), 
+    parent(p), 
+    variables(NULL), functions(NULL) {}
+
+  ~Gadget();
+
 
   long int get_unique_id() { return info.id; }
   string& get_name() { return info.name; }
@@ -53,6 +62,9 @@ public:
 
 protected:
 
+  void init_variables( const VariableDefinition* var_def, const int last_var );
+  void init_functions( const FunctionDefinition* fcn_def, const int last_fcn );
+
   GadgetInfo info;
 
 
@@ -63,6 +75,10 @@ protected:
   //  Gadget* defining_gadget;
 
   GadgetSet my_gadgets;
+
+  Variable* variables;
+  Function* functions;
+
 
 public:
   static int last_id_used;

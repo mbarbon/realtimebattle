@@ -48,7 +48,7 @@ private:
 
   const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
-  Variable variables[LAST_WEAPONVAR];
+
 
   enum WeaponFcns
   {
@@ -57,18 +57,13 @@ private:
 
   const static FunctionDefinition function_def[LAST_WEAPONFCN];
 
-  Function functions[LAST_WEAPONFCN];
 
   void shoot() {}
   
   void eval_function(const int fcn);
   
 
-
-
   //  ShotGadget* shot;
-
-
 
 };
 

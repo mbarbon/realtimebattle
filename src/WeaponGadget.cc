@@ -79,35 +79,8 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
   : Gadget(name, p)
 {
-  for( int var_nr = 0; var_nr<LAST_WEAPONVAR; var_nr++)
-    {
-      const VariableDefinition* v = &variable_def[var_nr];
-      variables[var_nr] = Variable( v->name, this );
-      
-      variables[var_nr].set_robot_permissions( v->readable, v->writable );
-      switch( v->type)
-        {
-        case BOOL_V:
-          variables[var_nr].make_bool( v->value );
-          if( v->random ) variables[var_nr].make_random( 0, 1, false );
-          break;
-
-        case INT_V:
-          variables[var_nr].make_int( v->value, v->min_val, v->max_val );
-          if( v->random ) variables[var_nr].make_random( v->min_val, v->max_val, false );
-          break;
-
-        case DOUBLE_V:
-          variables[var_nr].make_double( v->value, v->min_val, v->max_val, v->inaccuracy );
-          if( v->random ) variables[var_nr].make_random( v->min_val, v->max_val, true );
-          break;
-        }
-    }
-
-  for( int fcn_nr = 0; fcn_nr<LAST_WEAPONFCN; fcn_nr++)
-    {
-      functions[fcn_nr] = Function( function_def[fcn_nr].name, this );
-    }
+  init_variables(variable_def, LAST_WEAPONVAR);
+  init_functions(function_def, LAST_WEAPONFCN);
 }
 
 void
