@@ -46,10 +46,10 @@ language. In bash for example, use this:
 <verb>% export LANG=en_US</verb>
 Note that en_US is to be replaced with the language code that you want to use.
 
-<tag>Which languages is available for RealTimeBattle?</tag>
+<tag>Which languages are available for RealTimeBattle?</tag>
 <p>
-There are, at this moment, four translations apart from english:
-Polish, Portuguese, German and Swedish.
+There are, at this moment, five translations apart from english:
+Polish, Portuguese, German, Swedish and Japanese.
 
 </descrip>
 </notes>
