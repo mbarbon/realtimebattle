@@ -68,6 +68,8 @@ public:
   const map<string,Option*>& get_options () const { return all_options; }
   const vector<string>& get_group_names  () const { return group_names; }
 
+  string get_section_name                () const { return section_name; }
+
   const bool is_option_existing          ( const string& option_name ) const;
 
 private:
