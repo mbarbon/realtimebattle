@@ -34,6 +34,11 @@ String::String(const char c)
 
 String::String(const int n)
 {
+  String((long)n);
+}
+
+String::String(const long int n)
+{
   buf_size = 0;
   length = 15;
   allocate_array(15);

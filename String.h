@@ -13,6 +13,7 @@ public:
   String(const char* str);
   String(const char c);
   String(const int);
+  String(const long int);
   String(const double, const int digits=10, const bool exp_form = false);
   ~String();
 
