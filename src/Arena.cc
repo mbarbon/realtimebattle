@@ -87,10 +87,10 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
                              const class Shape* from_shape = NULL )
 {
   
-  SubSquareLineIterator ss_it;
+  SubSquareLineIterator ss_it(pos, vel);
   double dist;
 
-  for( ss_it.begin(pos, vel); ss_it.ok(); ss_it++ )
+  for( ; ss_it.ok(); ss_it++ )
    {
      
      dist = subsquares[ss_it.x()][ss_it.y()].
