@@ -72,9 +72,10 @@ struct rotation_t
 enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
-struct start_tournament_glist_info_t
+struct start_tournament_info_t
 {
-  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
+  start_tournament_info_t(const int r, const bool s,
+                          const class String& fn, const class String& dir) :
     row(r), selected(s), filename(fn), directory(dir) {}
   int row;
   bool selected;
