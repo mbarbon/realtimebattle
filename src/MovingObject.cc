@@ -184,6 +184,15 @@ Robot::start_process()
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
     }
+
+  // wait some time to let process has started up
+
+  struct timeval timeout;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 40000;  //  1/25 s 
+
+  select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
+  
   set_values_at_process_start_up();
 }
 
