@@ -23,6 +23,14 @@ enum stat_button_t
   STAT_BUTTON_LAST
 };
 
+enum stat_table_t
+{
+  STAT_TABLE_TOTAL,
+  STAT_TABLE_SEQUENCE,
+  STAT_TABLE_GAME,
+  STAT_TABLE_ROBOT
+};
+
 void statistics_button_callback(GtkWidget *widget, gpointer guip);
 void delete_event( GtkWidget * widget, gpointer guip );
 void no_zoom_callback(GtkWidget *widget, gpointer guip);
@@ -35,8 +43,6 @@ void buttons_in_statistics_callback(GtkWidget *widget, gpointer button_info_p);
 class Gui
 {
 public:
-  enum stat_table_t { STAT_TABLE_TOTAL, STAT_TABLE_SEQUENCE, STAT_TABLE_GAME, STAT_TABLE_ROBOT };
-
   Gui(class Arena * arenap);
   ~Gui() {}
 
@@ -69,7 +75,9 @@ public:
                   const double thickness, GdkColor& colour );
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
+  void change_stat_type( stat_table_t type );
   void change_statistics( int change, bool absoult_change );
+  void add_new_row( void * rp, void * sp );
   void add_the_statistics_to_clist();
 
   int get_robot_nr( void * robotp, GList * robot_list );
