@@ -344,7 +344,7 @@ parse_command_line(int argc, char **argv)
 
   the_arena_controller.auto_start_and_end
     = ( ( the_arena_controller.tournament_filename != "" ) ||
-        ( the_arena_controller.replay_filename != "" ) );
+        ( the_arena_controller.replay_filename == "-" ) );
 
   no_graphics = !graphics_flag;
 }
