@@ -16,15 +16,12 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 libdirs = -L/usr/lib -L/usr/X11R6/lib
 libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = robot.o Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
+objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
 
 all: RealTimeBattle $(ROBOTDIR)/empty
 
 RealTimeBattle: $(objects)
 	g++ $(cxxoptions) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
-
-robot.o: robot.cc robot.h Vector2D.h
-	g++ $(cxxoptions) -c robot.cc
 
 Vector2D.o: Vector2D.cc Vector2D.h
 	g++ $(cxxoptions) -c Vector2D.cc
