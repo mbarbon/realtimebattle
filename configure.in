@@ -132,16 +132,16 @@ RealTimeBattle options:
 
 changequote(,)dnl
 if test "x$enable_debug" = "xno"; then
-   CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-g //"`
-   CFLAGS=`echo "$CFLAGS " | sed "s/-g //"`
+   CXXFLAGS=`echo "$CXXFLAGS -Wall " | sed "s/-g //"`
+   CFLAGS=`echo "$CFLAGS -Wall " | sed "s/-g //"`
 else
    case " $CXXFLAGS " in
    *[\ \	]-g[\ \	]*) ;;
-   *) CXXFLAGS="$CXXFLAGS -g" ;;
+   *) CXXFLAGS="$CXXFLAGS -Wall -g " ;;
    esac
    case " $CFLAGS " in
    *[\ \	]-g[\ \	]*) ;;
-   *) CFLAGS="$CFLAGS -g" ;;
+   *) CFLAGS="$CFLAGS -Wall -g " ;;
    esac
    CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
    CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
