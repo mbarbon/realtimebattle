@@ -55,6 +55,7 @@ RealTimeBattle_SOURCES = \
 	RealTimeBattle.cc \
 	Robot.cc Robot.h \
 	RollingObject.cc RollingObject.h \
+	Rotation.cc Rotation.h \
 	Shape.cc Shape.h \
 	Shot.cc Shot.h \
 	String.cc String.h \
