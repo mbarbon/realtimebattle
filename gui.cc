@@ -64,9 +64,10 @@ Gui::draw_objects( void * the_arenap )
     }
 
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-      ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
+    ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
 
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    if( ((Shot*)gl->data)->is_alive() )
       ((Shot*)gl->data)->draw_shape( *this , true ); // Strange, but it works!
 }
 
