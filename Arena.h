@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "Vector2D.h"
 #include "messagetypes.h"
+#include "gui.h"
 
 #ifndef __ARENA__
 #define __ARENA__
@@ -40,6 +41,7 @@ public:
   Vector2D get_random_position();
   GList** get_object_lists() { return object_lists; }
   
+  friend class Gui;
 
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };

@@ -80,7 +80,7 @@ main ( int argc, char* argv[] )
       return EXIT_FAILURE;
     }
     
-  Gui gui( nr_robots, robotnames, 1000, 1000);
+  Gui gui( nr_robots, robotnames, DEFAULT_WIDTH, DEFAULT_HEIGHT);
   Arena the_arena;
   the_arena.start_tournament( robotnames, arenanames, 1, 3);
 

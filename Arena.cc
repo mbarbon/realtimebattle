@@ -1,5 +1,6 @@
+#include <math.h>
+
 #include "Arena.h"
-#include "math.h"
 
 Arena::Arena()
 {

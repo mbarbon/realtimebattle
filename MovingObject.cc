@@ -197,6 +197,8 @@ Robot::get_messages()
           break;
         case ROTATE: 
           break;
+        case PRINT:
+          break;
         default:
           throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
         }
