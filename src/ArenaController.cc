@@ -80,6 +80,7 @@ ArenaController::~ArenaController()
 void
 ArenaController::exit_all_guis()
 {
+  cout << "gui_list.size() " << gui_list.size() << endl;
   list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
@@ -150,224 +151,199 @@ ArenaController::initialize_options()
   const int GROUP_TIME = 4;
   const int GROUP_MISC = 5;
 
-//    DoubleOption* all_double_options =
-//      new DoubleOption[LAST_DOUBLE_OPTION];
-//    LongOption* all_long_options =
-//      new LongOption[LAST_LONG_OPTION];
-//    StringOption* all_string_options =
-//      new StringOption[LAST_STRING_OPTION];
-
   // ---------- Environment ----------
 
   all_options["Gravity"] = (Option*) new 
     DoubleOption( GROUP_ENVIRONMENT, 9.82, 0.2, 20.0, false, true,
                   _("Gravitational Constant") );
 
-//    all_double_options[OPTION_AIR_RESISTANCE] = 
+//    all_options["Air resistance"] = (Option*) new 
 //      DoubleOption( GROUP_ENVIRONMENT, 0.005, 0.0, 1.0, false, true,
-//                    "Air resistance", _("Air resistance") );
+//                    _("Air resistance") );
 
-//    all_double_options[OPTION_ROLL_FRICTION] = 
+//    all_options["Roll friction"] = (Option*) new 
 //      DoubleOption( GROUP_ENVIRONMENT, 0.002, 0.0, 1.0, false, true,
-//                    "Roll friction", _("Roll friction") );
+//                    _("Roll friction") );
 
-//    all_double_options[OPTION_SLIDE_FRICTION] = 
+//    all_options["Slide friction"] = (Option*) new 
 //      DoubleOption( GROUP_ENVIRONMENT, 0.1, 0.0, 5.0, false, true,
-//                    "Slide/brake friction", _("Slide/brake friction") );
+//                    _("Slide/brake friction") );
 
-//    // ---------- Robot ----------
+  // ---------- Robot ----------
 
-//    all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
+//    all_options["Max acceleration" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 2.0, 0.1, 10.0, true, true,
-//                    "Robot max acceleration", _("Robot max acceleration") );
+//                    _("Robot max acceleration") );
 
-//    all_double_options[OPTION_ROBOT_MIN_ACCELERATION] = 
+//    all_options["Min acceleration" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, -0.5, -10.0, 0.0, true, true,
-//                    "Robot min acceleration", _("Robot min acceleration") );
+//                    _("Robot min acceleration") );
     
-//    all_double_options[OPTION_ROBOT_RADIUS] = 
-//      DoubleOption( GROUP_ROBOT, 0.5, 0.1, 10.0, false, true,
-//                    "Robot radius", _("Robot radius") );
+//    all_options["Robot radius" ] = (Option*) new 
+//      DoubleOption( GROUP_ROBOT, 0.5, 0.1, 10.0, false, true, _("Robot radius") );
 
-//    all_double_options[OPTION_ROBOT_MASS] = 
-//      DoubleOption( GROUP_ROBOT, 1.0, 0.01, 100.0, false, true,
-//                    "Robot mass", _("Robot mass") );
+//    all_options["Robot mass" ] = (Option*) new 
+//      DoubleOption( GROUP_ROBOT, 1.0, 0.01, 100.0, false, true, _("Robot mass") );
 
-//    all_double_options[OPTION_ROBOT_BOUNCE_COEFF] = 
+//    all_options["Robot Bounce coeff" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.7, 0.0, 1.0, false, true,
-//                    "Robot bounce coefficient", _("Robot bounce coefficient") );
+//                    _("Robot bounce coefficient") );
 
-//    all_double_options[OPTION_ROBOT_HARDNESS] = 
+//    all_options["Robot hardness" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.5, 0.0, 1.0, false, true,
-//                    "Robot hardness coefficient", _("Robot hardness coefficient") );
+//                    _("Robot hardness coefficient") );
 
-//    all_double_options[OPTION_ROBOT_PROTECTION] = 
+//    all_options["Robot proection" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.5, 0.0, 1.0, false, true,
-//                    "Robot protection coefficient", _("Robot protection coefficient") );
+//                    _("Robot protection coefficient") );
 
-//    all_double_options[OPTION_ROBOT_FRONTSIZE] = 
+//    all_options["Robot frontsize" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, M_PI/3.0, 0.0, M_PI*2.0, false, true,
-//                    "Robot frontsize [radians]", _("Robot frontsize [radians]") );
+//                    _("Robot frontsize [radians]") );
 
-//    all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
+//    all_options["Robot front bounce coeff" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.7, 0.0, 1.0, false, true,
-//                    "Robot front bounce coefficient",
 //                    _("Robot front bounce coefficient") );
 
-//    all_double_options[OPTION_ROBOT_FRONT_HARDNESS] = 
+//    all_options["Robot front hardness" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.9, 0.0, 1.0, false, true,
-//                    "Robot front hardness coefficient",
 //                    _("Robot front hardness coefficient") );
 
-//    all_double_options[OPTION_ROBOT_FRONT_PROTECTION] = 
+//    all_options["Robot front protection" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 0.9, 0.0, 1.0, false, true,
-//                    "Robot front protection coefficient",
 //                    _("Robot front protection coefficient") );
 
-//    all_double_options[OPTION_ROBOT_START_ENERGY] = 
+//    all_options["Start energy" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 100.0, 0.01, 10000.0, true, true,
-//                    "Robot start energy", _("Robot start energy") );
+//                    _("Robot start energy") );
 
-//    all_double_options[OPTION_ROBOT_MAX_ENERGY] = 
+//    all_options["Robot max energy" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 120.0, 0.01, 10000.0, true, true,
-//                    "Robot max energy", _("Robot max energy") );
+//                    _("Robot max energy") );
 
-//    all_double_options[OPTION_ROBOT_MAX_ROTATE] = 
+//    all_options["Robot max rotate" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 2.0*M_PI / 8.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0,
-//                            true, true, "Robot max rotate speed [rad/s]",
-//                            _("Robot max rotate speed [rad/s]") );
+//                    true, true,  _("Robot max rotate speed [rad/s]") );
 
-//    all_double_options[OPTION_ROBOT_CANNON_MAX_ROTATE] = 
+//    all_options["Cannon max rotate" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 2.0*M_PI / 4.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0,
-//                            true, true, "Robot cannon max rotate speed [rad/s]",
-//                            _("Robot cannon max rotate speed [rad/s]") );
+//                    true, true, _("Robot cannon max rotate speed [rad/s]") );
 
-//    all_double_options[OPTION_ROBOT_RADAR_MAX_ROTATE] = 
+//    all_options["Radar max rotate" ] = (Option*) new 
 //      DoubleOption( GROUP_ROBOT, 2.0*M_PI / 3.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0,
-//                            true, true, "Robot radar max rotate speed [rad/s]",
-//                            _("Robot radar max rotate speed [rad/s]") );
+//                    true, true, _("Robot radar max rotate speed [rad/s]") );
 
-//    all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
-//      LongOption( GROUP_ROBOT, 10, 1, 100, true, true,
-//                  "Robot energy levels", _("Robot energy levels") );
+  all_options["energy_levels" ] = (Option*) new 
+    LongOption( GROUP_ROBOT, 10, 1, 100, true, true, _("Robot energy levels") );
 
-//    // ---------- Shot ----------
+  // ---------- Shot ----------
 
-//    all_double_options[OPTION_SHOT_RADIUS] = 
-//      DoubleOption( GROUP_SHOT, 0.1, 0.01, 1.0, false, true,
-//                    "Shot radius", _("Shot radius") );
+  all_options["Shot radius" ] = (Option*) new 
+    DoubleOption( GROUP_SHOT, 0.1, 0.01, 1.0, false, true, _("Shot radius") );
 
-//    all_double_options[OPTION_SHOT_SPEED] = 
-//      DoubleOption( GROUP_SHOT, 10.0, 0.1, 100.0, true, true,
-//                    "Shot speed", _("Shot speed") );
+//    all_options["Shot speed" ] = (Option*) new 
+//      DoubleOption( GROUP_SHOT, 10.0, 0.1, 100.0, true, true, _("Shot speed") );
 
-//    all_double_options[OPTION_SHOOTING_PENALTY] = 
+//    all_options["Shooting penalty" ] = (Option*) new 
 //      DoubleOption( GROUP_SHOT, 0.075, 0.0, 1.0, false, true,
-//                    "Shooting penalty (times shot energy)",
 //                    _("Shooting penalty (times shot energy)") );
 
-//    all_double_options[OPTION_SHOT_MIN_ENERGY] = 
+//    all_options["Shot min energy" ] = (Option*) new 
 //      DoubleOption( GROUP_SHOT, 0.5, 0.0, 100.0, true, true,
-//                    "Shot min energy", _("Shot min energy") );
+//                    _("Shot min energy") );
 
-//    all_double_options[OPTION_SHOT_MAX_ENERGY] = 
+//    all_options["Shot max energy" ] = (Option*) new 
 //      DoubleOption( GROUP_SHOT, 30.0, 0.0, 100000000.0, true, true,
-//                    "Shot max energy", _("Shot max energy") );
+//                    _("Shot max energy") );
 
-//    all_double_options[OPTION_SHOT_ENERGY_INCREASE_SPEED] = 
+//    all_options["Shot energy increase speed" ] = (Option*) new 
 //      DoubleOption( GROUP_SHOT, 10.0, 0.0, 100000000.0, true, true,
-//                    "Shot energy increase speed [energy/s]",
 //                    _("Shot energy increase speed [energy/s]") );
 
-//    // ---------- Extras ----------
+  // ---------- Extras ----------
 
-//    all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
+//    all_options["Cookie max energy" ] = (Option*) new 
 //      DoubleOption( GROUP_EXTRAS, 15.0, 0.0, 100000000.0, false, true,
-//                    "Cookie max energy", _("Cookie max energy") );
+//                    _("Cookie max energy") );
 
-//    all_double_options[OPTION_COOKIE_MIN_ENERGY] = 
+//    all_options["Cookie min energy" ] = (Option*) new 
 //      DoubleOption( GROUP_EXTRAS, 10.0, 0.0, 100000000.0, false, true,
-//                    "Cookie min energy", _("Cookie min energy") );
+//                    _("Cookie min energy") );
 
-//    all_double_options[OPTION_COOKIE_FREQUENCY] = 
-//      DoubleOption( GROUP_EXTRAS, 0.03, 0.0, 100000000.0, false, true,
-//                    "Cookie frequency [cookies per second]",
-//                    _("Cookie frequency [cookies per second]") );
+  all_options["Cookie frequency" ] = (Option*) new 
+    DoubleOption( GROUP_EXTRAS, 0.03, 0.0, 100000000.0, false, true,
+                  _("Cookie frequency [cookies per second]") );
 
-//    all_double_options[OPTION_COOKIE_RADIUS] = 
-//      DoubleOption( GROUP_EXTRAS, 0.3, 0.01, 1.0, false, true,
-//                    "Cookie radius", _("Cookie radius") );
+//    all_options["Cookie radius" ] = (Option*) new 
+//      DoubleOption( GROUP_EXTRAS, 0.3, 0.01, 1.0, false, true, _("Cookie radius") );
 
-//    all_long_options[OPTION_COOKIE_COLOUR] = 
+//    all_options["Cookie colour" ] = (Option*) new 
 //      LongOption( GROUP_EXTRAS, 0x35d715, 0x000000, 0xffffff, false, false,
-//                  "Cookie colour", _("Cookie colour"), true );
+//                  _("Cookie colour"), true );
 
-//    all_double_options[OPTION_MINE_MAX_ENERGY] = 
+//    all_options["Mine max energy" ] = (Option*) new 
 //      DoubleOption( GROUP_EXTRAS, 25.0, 0.0, 100000000.0, false, true,
-//                    "Mine max energy", _("Mine max energy") );
+//                    _("Mine max energy") );
 
-//    all_double_options[OPTION_MINE_MIN_ENERGY] = 
+//    all_options["Mine min energy" ] = (Option*) new 
 //      DoubleOption( GROUP_EXTRAS, 15.0, 0.0, 100000000.0, false, true,
-//                    "Mine min energy", _("Mine min energy") );
+//                    _("Mine min energy") );
 
-//    all_double_options[OPTION_MINE_FREQUENCY] = 
-//      DoubleOption( GROUP_EXTRAS, 0.06, 0.0, 100000000.0, false, true,
-//                    "Mine frequency [mines per second]",
-//                    _("Mine frequency [mines per second]") );
+  all_options["Mine frequency" ] = (Option*) new 
+    DoubleOption( GROUP_EXTRAS, 0.06, 0.0, 100000000.0, false, true,
+                  _("Mine frequency [mines per second]") );
 
-//    all_double_options[OPTION_MINE_RADIUS] = 
-//      DoubleOption( GROUP_EXTRAS, 0.3, 0.01, 1.0, false, true,
-//                    "Mine radius", _("Mine radius") );
+//    all_options["Mine radius" ] = (Option*) new 
+//      DoubleOption( GROUP_EXTRAS, 0.3, 0.01, 1.0, false, true, _("Mine radius") );
 
-//    all_long_options[OPTION_MINE_COLOUR] = 
+//    all_options["Mine colour" ] = (Option*) new 
 //      LongOption( GROUP_EXTRAS, 0xff0000, 0x000000, 0xffffff, false, false,
-//                  "Mine colour", _("Mine colour"), true );
+//                  _("Mine colour"), true );
 
-//    // ---------- Time ----------
+  // ---------- Time ----------
 
-//    all_double_options[OPTION_CHECK_INTERVAL] = 
-//      DoubleOption( GROUP_TIME, 1.0, 0.01, 1000000, false, false,
-//                    "Process check interval", _("Process check interval") );
+  all_options["Check interval" ] = (Option*) new 
+    DoubleOption( GROUP_TIME, 1.0, 0.01, 1000000, false, false,
+                  _("Process check interval") );
     
-//    all_double_options[OPTION_TIMEOUT] = 
+//    all_options["Timeout" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 120.0, 1.0, 100000000.0, false, true,
-//                    "Timeout [s]", _("Timeout [s]") );
+//                    _("Timeout [s]") );
 
-//    all_double_options[OPTION_MAX_TIMESTEP] = 
+//    all_options["Max timestep" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 0.1, 0.001, 1.0, false, false,
-//                    "Max timestep", _("Max timestep") );
+//                    _("Max timestep") );
 
-//    all_double_options[OPTION_TIMESCALE] = 
+//    all_options["Timescale" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 1.0, 0.01, 100.0, false, false,
-//                    "Timescale", _("Timescale") );
+//                    _("Timescale") );
 
-//    all_double_options[OPTION_UPDATE_INTERVAL] = 
+//    all_options["Update interval" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 0.050, 0.010, 1.0, false, false,
-//                    "Update interval [s]", _("Update interval [s]") );
+//                    _("Update interval [s]") );
 
-//    all_double_options[OPTION_ROBOT_STARTUP_TIME] = 
+//    all_options["Robot startup time" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 1.0, 0.050, 1000000.0, false, false,
-//                    "Robot startup time [s]", _("Robot startup time [s]") );
+//                    _("Robot startup time [s]") );
 
-//    all_double_options[OPTION_CPU_START_LIMIT] = 
+//    all_options["CPU start limit" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 5.0, 0.01, 100000000.0, false, false,
-//                    "Start CPU time [s]", _("Start CPU time [s]") );
+//                    _("Start CPU time [s]") );
 
-//    all_double_options[OPTION_CPU_EXTRA] = 
+//    all_options["CPU Extra" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 2.5, 0.01, 100000000.0, false, false,
-//                    "Extra CPU time [s]", _("Extra CPU time [s]") );
+//                    _("Extra CPU time [s]") );
 
-//    all_double_options[OPTION_CPU_PERIOD] = 
+//    all_options["CPU Period" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 60.0, 1.0, 100000000.0, false, false,
-//                    "Extra CPU period [s]", _("Extra CPU period [s]") );
+//                    _("Extra CPU period [s]") );
 
-//    all_double_options[OPTION_CPU_WARNING_PERCENT] = 
+//    all_options["CPU warning percent" ] = (Option*) new 
 //      DoubleOption( GROUP_TIME, 0.9, 0.1, 1.0, false, false,
-//                    "CPU time warning percentage", _("CPU time warning percentage") );
+//                    _("CPU time warning percentage") );
 
-//    all_long_options[OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL] =
+//    all_options["Logging frequency" ] = (Option*) new
 //      LongOption( GROUP_TIME, 1, 1, 1000, false, false,
-//                  "Logging frequency [Each nth update interval]",
 //                  _("Logging frequency [Each n:th update interval]") );
 
   // ---------- Misc ----------
@@ -384,39 +360,30 @@ ArenaController::initialize_options()
     LongOption( GROUP_MISC, 0x1111ee, 0x000000, 0xffffff, false, false,
                 _("Colour for RTB messages"), true );
 
-
-//    all_double_options[OPTION_ARENA_SCALE] = 
+//    all_options["Arena scale" ] = (Option*) new 
 //      DoubleOption( GROUP_MISC, 1.0, 0.001, 1000, false, true,
-//                    "Arena scale", _("Arena scale") );
+//                    _("Arena scale") );
 
-//    all_double_options[OPTION_FAST_FORWARD_FACTOR] = 
+//    all_options["Fast forward factor" ] = (Option*) new 
 //      DoubleOption( GROUP_MISC, 5.0, 0.001, 1000, false, false,
-//                    "Fast forward factor", _("Fast forward factor") );
+//                    _("Fast forward factor") );
 
-//    all_long_options[OPTION_MAX_ROBOTS_ALLOWED] =
+//    all_options["max_robots" ] = (Option*) new
 //      LongOption( GROUP_MISC, 120, 1, 10000, false, false,
-//                  "Max robots allowed simultaneously",
 //                  _("Max robots allowed simultaneously") );
 
-//    all_string_options[OPTION_ROBOT_SEARCH_PATH] =
-//      StringOption( GROUP_MISC, "", 1000, false, false,
-//                    "Robot search path", _("Robot search path") );
+  all_options["Robot search path" ] = (Option*) new
+    StringOption( GROUP_MISC, "", 1000, false, false, _("Robot search path") );
 
-//    all_string_options[OPTION_ARENA_SEARCH_PATH] =
-//      StringOption( GROUP_MISC, "", 1000, false, false,
-//                    "Arena search path", _("Arena search path") );
+  all_options["Arena search path" ] = (Option*) new
+    StringOption( GROUP_MISC, "", 1000, false, false, _("Arena search path") );
 
-//    all_string_options[OPTION_TMP_RTB_DIR] =
-//      StringOption( GROUP_MISC, "/tmp/rtb", 1000, false, false,
-//                    "Directory for temporary files", _("Directory for temporary files") );
+  all_options["RTB dir" ] = (Option*) new
+    StringOption( GROUP_MISC, "/tmp/rtb", 1000, false, false,
+                  _("Directory for temporary files") );
 
 
   main_opts = new OptionHandler( "RealTimeBattle", all_options, group_names );
-//    main_opts = new OptionHandler( "RealTimeBattle",
-//                                   all_double_options, all_long_options,
-//                                   all_string_options,
-//                                   LAST_DOUBLE_OPTION, LAST_LONG_OPTION,
-//                                   LAST_STRING_OPTION );
 }
 
 void
