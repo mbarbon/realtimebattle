@@ -19,6 +19,7 @@ enum message_from_robot_type
   ACCELERATE,
   SHOOT,
   NAME,
+  COLOUR,
   PRINT,
 };
 
@@ -27,7 +28,8 @@ enum argument_type
   NONE,
   STRING,
   DOUBLE,
-  INT
+  INT,
+  HEX
 };
 
 enum warnings
@@ -61,6 +63,7 @@ static const Message message_from_robot[20] =
   {"Acceleration", 1, {DOUBLE}},
   {"Shoot",        0, {DOUBLE}},             // arg: amount of energy
   {"Name",         1, {STRING}},
+  {"Colour",       2, {HEX, HEX}},
   {"Print",        1, {STRING}},
   {"",             0, {}}
 };

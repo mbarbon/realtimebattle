@@ -21,9 +21,6 @@ main(int argc, char * argv[])
   char text[81];
   message_to_robot_type msg_t;
 
-  cout << "Print Starting" << endl;
-  cout << "Print Start ing" << endl;
-  cout << "Print I_am_ready" << endl;
   for(;;sleep(1))
     {
       cin.clear();
@@ -34,13 +31,11 @@ main(int argc, char * argv[])
           switch(msg_t)
             {
             case INITIALIZE:
-              cerr << "Fire: Got message: INITIALIZE" << endl;
               cout << "Name Fire" << endl;
+              cout << "Colour 2877ea 33ca11" << endl;
               break;
             case GAME_STARTS:
-              cerr << "Fire: Got message: GAME_STARTS" << endl;
-              cout << "Print I_am_ready" << endl;
-              cout << "Print I_am_ready" << endl;
+              cout << "Print I am ready" << endl;
               break;
             case RADAR:
               //              cerr << "Fire: Got message: RADAR" << endl;

@@ -223,6 +223,13 @@ Robot::get_messages()
           g_string_assign(&robot_name, text);
           // TODO: Tell gui to change name
           break;
+        case COLOUR:
+          long robot_colour;
+          *instreamp >> hex >> robot_colour >> dec;
+          // TODO: check if other robots have the same colour and then set the away colour
+          set_colour( robot_colour );
+          *instreamp >> hex >> robot_colour >> dec;  // Away colour
+          break;
         case ROTATE: 
           int bits;
           double rot_speed;
