@@ -131,23 +131,26 @@ Robot::start_process()
 
       // Deny file access
 
-      struct rlimit res_limit;
-
-      if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-        throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
-
-      //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
-      if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-        throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
-
-      // Forbid creation of child processes
-
-      if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-        throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
-
-      res_limit.rlim_cur = 0;
-      if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-        throw Error("Couldn't limit child processes for robot ", robot_filename, "Robot::Robot, child");
+      if( the_arena.get_game_mode() != Arena::DEBUG_MODE )
+        {
+          struct rlimit res_limit;
+          
+          if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+            throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
+          
+          //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
+          if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+            throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
+          
+          // Forbid creation of child processes
+          
+          if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+            throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
+          
+          res_limit.rlim_cur = 0;
+          if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+            throw Error("Couldn't limit child processes for robot ", robot_filename, "Robot::Robot, child");
+        }
 
       // Execute process. Should not return!
       if( execl(robot_filename.chars(), robot_filename.chars(), NULL) == -1 )
