@@ -2,10 +2,10 @@
 
 Arenas/Original.arena
 Arenas/StdGeometries.include
-src/ArenaController.cc
-src/OptionHandler.cc
-src/RealTimeBattle.cc
-src/Various.cc
+src/Core/ArenaController.cc
+src/Common/OptionHandler.cc
+src/Core/RealTimeBattle.cc
+src/Common/Various.cc
 src/Gui/Gtk/ArenaWindow.cc
 src/Gui/Gtk/ControlWindow.cc
 src/Gui/Gtk/Dialog.cc
