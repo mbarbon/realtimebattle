@@ -41,7 +41,7 @@ public:
                                   const String& option_fname );
   void   change_speed           ( const bool forward, const bool fast );
   void   change_game            ( const int inc_game, const int inc_seq );
-  void   step_forward           ( const int n_o_steps );
+  bool   step_forward           ( const int n_o_steps, const bool clear_time = true );
   void   change_replay_time     ( const double time );
 
   char   search_forward         ( const String& search_letters );
@@ -60,6 +60,7 @@ private:
 
   char parse_log_line           ();
   void parse_this_interval      ();
+  void parse_this_time_index    ();
   void beginning_of_prev_line   ();
   void beginning_of_current_line();
 

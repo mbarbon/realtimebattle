@@ -72,10 +72,9 @@ ArenaReplay::~ArenaReplay()
 bool
 ArenaReplay::timeout_function()
 {
-  if( ( state == GAME_IN_PROGRESS || state == BEFORE_GAME_START ) && 
-      fast_forward_factor > 0.0)
+  if( ( state == GAME_IN_PROGRESS || state == BEFORE_GAME_START ) )
     update_timer( fast_forward_factor );
-  else if( state == PAUSED || fast_forward_factor <= 0.0 )
+  else if( state == PAUSED )
     update_timer( 0.0 );
 
   switch( state )
@@ -147,7 +146,11 @@ ArenaReplay::parse_this_interval()
       }
   else
     {
-      //      search_backwards( "T" );
+    while( !log_file.eof() && total_time <= current_replay_time )
+      {
+        step_forward(-1, false);
+        parse_this_time_index();
+      }
     }
   
   if( log_file.eof() )
@@ -161,6 +164,28 @@ ArenaReplay::parse_this_interval()
         }
 #endif
     }
+}
+
+void
+ArenaReplay::parse_this_time_index()
+{
+  if( log_file.peek() == 'T' )
+    parse_log_line();
+
+  double last_replay_time = current_replay_time;
+  streampos strpos;
+
+  while( current_replay_time == last_replay_time )
+    {
+      strpos = log_file.tellg();
+      parse_log_line();
+    }
+
+  // We have read the next 'T'-line, which we shouldn't: Step back!
+
+  log_file.seekg(strpos);
+  log_file.clear();
+  current_replay_time = last_replay_time;
 }
   
 void 
@@ -609,27 +634,34 @@ ArenaReplay::change_game( const int inc_game, const int inc_seq )
   cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
 }
 
-void   
-ArenaReplay::step_forward( const int n_o_steps )
+bool   
+ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
 {
   if( !log_from_stdin )
     {
       int index = find_streampos_for_time( current_replay_time );
       
-      index += n_o_steps - 1;
+      index += n_o_steps;
 
       cout << "Stepping to index: " << index << endl;
       
       if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
         {
           current_replay_time = time_position_in_log[index].time;
-          total_time = time_position_in_log[index].time + 0.00001;
-          update_timer(0.0);
           log_file.seekg( time_position_in_log[index].pos );
-     
-          parse_this_interval();
+
+          if( clear_time )
+            {
+              total_time = time_position_in_log[index].time + 0.00001;
+              update_timer(0.0);  
+              parse_this_time_index();
+            }
+          return true;
         }
-    }  
+      else
+        return false;
+    }
+  return true;
 }
 
 void
