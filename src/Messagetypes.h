@@ -122,7 +122,9 @@ enum robot_option_type
   SEND_ROTATION_REACHED=1,    // 0 - no messages
                               // 1 - messages when RotateTo and RotateAmount finished
                               // 2 - messages also when sweep direction is changed
-  USE_NON_BLOCKING=3          // 0 - false, 1 - true (default=true)
+
+  USE_NON_BLOCKING=3          // 0 - false, 1 - true 
+                              // This option should always be sent as soon as possible
 };
 
 enum object_type 
