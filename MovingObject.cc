@@ -18,6 +18,7 @@ Robot::Robot(char* filename, Arena* ap)
   the_arena = ap;
   instreamp = NULL;
   outstreamp = NULL;
+  last_drawn_robot_center = Vector2D(infinity,infinity);
 }
 
 Robot::~Robot()
@@ -540,6 +541,31 @@ Robot::set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidge
   widget_place = pl;
   widget_last = la;
   widget_score = sc;
+}
+
+void
+Robot::draw_radar_and_cannon( Gui& the_gui )
+{
+  // Draw Cannon
+  the_gui.draw_line( center,
+                     Vector2D(cos(cannon_angle),sin(cannon_angle)),
+                     the_arena->get_robot_radius() - the_arena->get_shot_radius(),
+                     the_arena->get_shot_radius(),
+                     *(the_arena->get_foreground_colour_p()) );
+
+  // Draw radar lines
+  Vector2D radar_dir( cos(radar_angle),sin(radar_angle) );
+  the_gui.draw_line( center - the_arena->get_robot_radius() * 0.25 * radar_dir,
+                     rotate( radar_dir, M_PI / 4.0 ),
+                     the_arena->get_robot_radius() / 1.5,
+                     the_arena->get_robot_radius() / 20.0,
+                     *(the_arena->get_foreground_colour_p()) );
+  the_gui.draw_line( center - the_arena->get_robot_radius() * 0.25 * radar_dir,
+                     rotate( radar_dir, - (M_PI / 4.0) ),
+                     the_arena->get_robot_radius() / 1.5,
+                     the_arena->get_robot_radius() / 20.0,
+                     *(the_arena->get_foreground_colour_p()) );
+  
 }
 
 Shot::Shot(const Vector2D& c, const double r, 

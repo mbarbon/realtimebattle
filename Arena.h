@@ -400,6 +400,7 @@ public:
   void display_last();
   void display_score();
   void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc );
+  void draw_radar_and_cannon( Gui& the_gui );
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -418,6 +419,10 @@ private:
   double robot_angle;
   double robot_angle_speed;
   double acceleration;
+
+  Vector2D last_drawn_robot_center;
+  double last_drawn_radar_angle;
+  double last_drawn_cannon_angle;
 
   double protection_coeff;
 

@@ -71,11 +71,11 @@ Gui::change_zoom( const zoom_t type )
       zoomfactor = 1;
       break;
     case ZOOM_IN:
-      if(zoomfactor > 1)
-        zoomfactor--;
+      zoomfactor++;
       break;
     case ZOOM_OUT:
-      zoomfactor++;
+      if(zoomfactor > 1)
+        zoomfactor--;
       break;
     }
   gtk_widget_set_usize(drawing_area,
@@ -125,7 +125,10 @@ Gui::draw_objects()
       robotp = (Robot*)(gl->data);
       if( robotp->get_object_type() == ROBOT )
         if( robotp->is_alive() )
+          {
             robotp->draw_shape( *this , true );
+            robotp->draw_radar_and_cannon( *this );
+          }
     }
 
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
