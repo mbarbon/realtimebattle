@@ -90,15 +90,7 @@ gint
 update_function(gpointer data)
 {  
   gint res = 0;
-  try
-    {
-      res = the_arena.timeout_function();
-    }
-  catch ( Error the_error )
-	 {
-		the_error.print_message();
-      gtk_main_quit();
-	 }
+  res = the_arena.timeout_function();
 
   return res;
 }
@@ -113,7 +105,8 @@ sig_handler (int signum)
       pid = waitpid (WAIT_ANY, &status, WNOHANG);
       if (pid < 0)
         {
-          if( errno != ECHILD ) throw Error("waidpid failed", "RealTimeBattle.cc:sigchld_handler");
+          if( errno != ECHILD ) 
+            Error(true, "waidpid failed", "RealTimeBattle.cc:sigchld_handler");
           break;
         }
       if (pid == 0)
@@ -288,33 +281,18 @@ main ( int argc, char* argv[] )
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
 
-  try
-    {
+
 #ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          the_arena.set_colours();
-          the_gui.setup_control_window();
-        }
+  if( !no_graphics )
+    {
+      the_arena.set_colours();
+      the_gui.setup_control_window();
+    }
 #endif
       
-      timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
-    }
-  catch ( Error the_error )
-	 {
-		the_error.print_message();
-      return EXIT_FAILURE;
-	 }
+  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
 
-  try
-    {
-      gtk_main();
-    }
-  catch ( Error the_error )
-	 {
-		the_error.print_message();
-      gtk_main_quit();
-	 }
+  gtk_main();
 
   return EXIT_SUCCESS;
 }

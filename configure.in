@@ -120,12 +120,6 @@ AC_C_INLINE
 AC_TYPE_PID_T
 AC_HEADER_TIME
 
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([if exception handling is enabled] )
-AC_TRY_COMPILE( ,void test () { try { int i=0; } },[handlexc=no], [handlexc=yes])
-AC_MSG_RESULT($handlexc)
-AM_CONDITIONAL(HANDLE_EXCEPTIONS, test x$handlexc = xno)
-
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(select)

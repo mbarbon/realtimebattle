@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <ctype.h>
 
 #include "String.h"
+#include "Error.h"
 
 String::String()
 {
@@ -203,7 +204,7 @@ operator!=(const String& str1, const String& str2)
 char
 String::operator[](int pos) const
 {
-  if( pos < 0 || pos > length ) throw Range();
+  if( pos < 0 || pos > length ) Error(true, "String out of range", "String::operator[]");
 
   return array[pos];
 }
@@ -211,7 +212,7 @@ String::operator[](int pos) const
 String&
 String::erase(const int pos, const int size)
 {
-  if( pos < 0 || pos + size > length || size <= 0 ) throw Range();
+  if( pos < 0 || pos + size > length || size <= 0 ) Error(true, "String out of range", "String::erase");
 
   strcpy(&array[pos], &array[pos+size]); // ???
   length -= size;
@@ -222,7 +223,7 @@ String::erase(const int pos, const int size)
 String&
 String::insert(const String& str, const int pos)
 {
-  if( pos < 0 || pos > length ) throw Range();
+  if( pos < 0 || pos > length ) Error(true, "String out of range", "String::insert");
 
   char temp[length - pos + 1];
   strcpy(temp, &array[pos]);
@@ -261,7 +262,8 @@ get_segment(const String& str, const int start, const int end)
   String segment;
   int st = ( start < 0 ? str.length + start : start );
   int en = ( end < 0 ? str.length + end : end );
-  if( st < 0 || st > str.length || en < 0 || en > str.length || st > en + 1 ) throw String::Range();
+  if( st < 0 || st > str.length || en < 0 || en > str.length || st > en + 1 ) 
+    Error(true, "String out of range", "String::get_segment");
 
   if( st == en + 1 ) return segment;
 

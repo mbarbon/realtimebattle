@@ -98,13 +98,14 @@ void
 Robot::start_process()
 {
   int pipe_in[2], pipe_out[2];
-  if (pipe (pipe_in))
-    throw Error("Couldn't setup pipe_in for robot ", robot_filename, "Robot::Robot");
-  if (pipe (pipe_out))
-    throw Error("Couldn't setup pipe_out for robot ", robot_filename, "Robot::Robot");
+  if (pipe (pipe_in)) 
+    Error(true, "Couldn't setup pipe_in for robot " + robot_filename, "Robot::start_process");
+
+  if (pipe (pipe_out)) 
+    Error(true, "Couldn't setup pipe_out for robot " + robot_filename, "Robot::start_process");
 
   if( (pid = fork()) < 0 )
-    throw Error("Couldn't fork childprocess for robot ", robot_filename, "Robot::Robot");
+    Error(true, "Couldn't fork childprocess for robot " + robot_filename, "Robot::start_process");
 
   if(pid == 0)   // Child process, to be the new robot
     {
@@ -119,44 +120,45 @@ Robot::start_process()
       // Make the pipes non-blocking
       int pd_flags;
       if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for pipe_out in robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
+              "Robot::start_process, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for pipe_out in robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
+              "Robot::start_process, child");
 
       // Should the robots outputpipe be NON_BLOCKING ?
 
       if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for pipe_in in robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
+              "Robot::start_process, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for pipe_in in robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
+              "Robot::start_process, child");
       
       // Check file attributes
 
       struct stat filestat;
       if( 0 != stat( robot_filename.chars(), &filestat ) ) 
-        throw Error("Couldn't get stats for robot ", robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't get stats for robot " + robot_filename, "Robot::start_process, child");
       if( !S_ISREG( filestat.st_mode) )
-        throw Error("Robot file isn't regular, error for robot ", robot_filename, "Robot::Robot, child");
+        Error(true, "Robot file isn't regular, error for robot " + robot_filename, 
+              "Robot::start_process, child");
       if( !(filestat.st_mode & S_IXOTH) )
-        throw Error("Robot file isn't executable for user, error for robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Robot file isn't executable for user, error for robot " + robot_filename, 
+              "Robot::start_process, child");
       if( (filestat.st_mode & S_ISUID) )
-        throw Error("Set user ID is not allowed, error for robot ", 
-                    robot_filename, "Robot::Robot, child");
+        Error(true, "Set user ID is not allowed, error for robot " + robot_filename, 
+              "Robot::start_process, child");
 
       // Lower priority by one
      
       int old;
       if( (old = getpriority (PRIO_PROCESS, 0)) == -1 )
-        throw Error("Couldn't get priority for robot ", robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't get priority for robot " + robot_filename, "Robot::start_process, child");
       if( setpriority (PRIO_PROCESS, 0, old + 1) == -1)
-        throw Error("Couldn't set priority for robot ", robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't set priority for robot " + robot_filename, "Robot::start_process, child");
       
       // Close all pipes not belonging to the robot
       
@@ -175,30 +177,34 @@ Robot::start_process()
           struct rlimit res_limit;
           
           if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-            throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
+            Error(true, "Couldn't get file limits for robot " + robot_filename, 
+                  "Robot::start_process, child");
           
           //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
           if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-            throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
+            Error(true, "Couldn't limit file access for robot " + robot_filename, 
+                  "Robot::start_process, child");
           
           // Forbid creation of child processes
           
 #ifdef HAVE_RLIMIT_NPROC
           if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
+            Error(true, "Couldn't get proc limits for robot " + robot_filename, 
+                  "Robot::start_process, child");
           
           res_limit.rlim_cur = 0;
           if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            throw Error("Couldn't limit child processes for robot ", robot_filename, "Robot::Robot, child");
+            Error(true, "Couldn't limit child processes for robot " + robot_filename, 
+                  "Robot::start_process, child");
 #endif
         }
 
       // Execute process. Should not return!
       if( execl(robot_filename.chars(), robot_filename.chars(), NULL) == -1 )
-        throw Error("Couldn't open robot ", robot_filename, "Robot::Robot, child");
+        Error(true, "Couldn't open robot " + robot_filename, "Robot::start_process, child");
 
-      throw Error("Robot didn't execute, SHOULD NEVER HAPPEN!, error for ", 
-                  robot_filename, "Robot::Robot, child");
+      Error(true, "Robot didn't execute, SHOULD NEVER HAPPEN!, error for " + robot_filename, 
+            "Robot::start_process, child");
     }
   else
     {
@@ -211,19 +217,19 @@ Robot::start_process()
       // Make the pipes non-blocking
       int pd_flags;
       if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for pipe_in in robot ", 
-                    robot_filename, "Robot::Robot, parent");
+        Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
+              "Robot::start_process, parent");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for pipe_in in robot ", 
-                    robot_filename, "Robot::Robot, parent");
+        Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
+              "Robot::start_process, parent");
       if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for pipe_out in robot ", 
-                    robot_filename, "Robot::Robot, parent");
+        Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
+              "Robot::start_process, parent");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for pipe_out in robot ", 
-                    robot_filename, "Robot::Robot, parent");
+        Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
+              "Robot::start_process, parent");
 
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
@@ -722,7 +728,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
           }
           break;
         default:
-          throw Error("Collided with unknown object", "Robot::move");
+          Error(true, "Collided with unknown object", "Robot::move");
           break;
         }
       
@@ -730,7 +736,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
       //if( iterstep % 10 == 0 ) 
       //  cout << "Iterstep: " << iterstep << "   time_remaining: " << time_remaining
       //       << "  Collided on: " << closest_shape << "   time_to_col: " << time_to_collision << endl;
-      if( iterstep > 65 ) throw Error("Too many bounces, must be a bug!", "Robot::move");
+      if( iterstep > 65 ) Error(true, "Too many bounces, must be a bug!", "Robot::move");
       if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1, eps );
     }
 }
@@ -746,7 +752,7 @@ Robot::send_message(const message_to_robot_type msg_type ...)
       switch(message_to_robot[msg_type].arg_type[i])
         {
         case NONE: 
-          throw Error("Couldn't send message, no arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, no arg_type", "Robot::send_message");
           break;
         case INT:
           *outstreamp << va_arg(args, int) << " ";
@@ -761,7 +767,7 @@ Robot::send_message(const message_to_robot_type msg_type ...)
           *outstreamp << hex << va_arg(args, int) << " ";
           break;
         default:
-          throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, unknown arg_type", "Robot::send_message");
         }
     }
   *outstreamp << endl;
@@ -1052,7 +1058,7 @@ Robot::get_messages()
                       //cerr << "Shot has space available after all?" <<  endl;
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
                       cerr << "col_shape: " << cl_shape << endl; 
-                      throw Error("Shot has space available after all?", "Robot::get_messages");                  
+                      Error(true, "Shot has space available after all?", "Robot::get_messages");                  
                     }
                   switch(cl_shape)
                     {
@@ -1086,7 +1092,7 @@ Robot::get_messages()
                       }
                       break;
                     default:
-                      throw Error("Shot on unknown object", "Robot::get_messages");
+                      Error(true, "Shot on unknown object", "Robot::get_messages");
                     }
                 }
               change_energy(-en * the_arena.get_shooting_penalty() );
@@ -1144,7 +1150,7 @@ Robot::get_messages()
             }
           break;
         default:
-          throw Error("Message_type not implemented, ", msg_name, "Robot::get_messages");
+          Error(true, "Message_type not implemented, " + (String)msg_name, "Robot::get_messages");
         }
 
       *instreamp >> ws;
@@ -1197,7 +1203,7 @@ Robot::save_data(const bool binary, const bool append)
 
   ofstream file(filename.chars(), mode);
 
-  if( !file ) throw Error("Couldn't open file ", filename, "Robot::save_bin_data");
+  if( !file ) Error(true, "Couldn't open file " + filename, "Robot::save_bin_data");
 
   if( binary )
     {
@@ -1441,7 +1447,7 @@ Shot::move(const double timestep)
           }
           break;
         default:
-          throw Error("Collided with unknown object", "Robot::move");
+          Error(true, "Collided with unknown object", "Robot::move");
           break;
         }
     }

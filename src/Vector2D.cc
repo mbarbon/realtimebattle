@@ -19,6 +19,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <math.h>
 #include "Vector2D.h"
+#include "Error.h"
 
 Vector2D::Vector2D()
 {
@@ -162,7 +163,7 @@ double
 Vector2D::operator[](int index) const
 {
   if( index >= 0 && index <= 1 ) return( vector[index] );
-  throw Range();
+  Error(true, "Vector index out of range", "Vector2D::operator[]");
 }
 
 Vector2D&

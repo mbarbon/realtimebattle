@@ -472,7 +472,8 @@ Arena::print_to_logfile(const char first_letter ... )
       break;
 
     default:
-      throw Error("Unrecognized first letter in logfile", "Arena::print_to_logfile");
+      Error(true, "Unrecognized first letter in logfile", "Arena::print_to_logfile");
+      break;
     }
 
   LOG_FILE << endl;
@@ -499,7 +500,7 @@ Arena::parse_file(istream& file)
       file.get(text, 20, ' ');
       if( strcmp(text, "scale" ) == 0 )
         {
-          if( succession != 1 ) throw Error("'scale' not first", "Arena::parsefile");
+          if( succession != 1 ) Error(true, "Error in arenafile: 'scale' not first", "Arena::parsefile");
           succession = 2;
           double scl;
           file >> scl;
@@ -507,7 +508,8 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "boundary" ) == 0 )
         {
-          if( succession > 2 ) throw Error("'boundary' after wallpieces or duplicate", "Arena::parsefile");
+          if( succession > 2 ) 
+            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parsefile");
           succession = 3;
           double b1, b2;
           file >> b1;
@@ -517,18 +519,19 @@ Arena::parse_file(istream& file)
           file >> b2;
           boundary[1] = Vector2D(scale*b1, scale*b2);
           if( boundary[1][0] - boundary[0][0] <= 0 || boundary[1][1] - boundary[0][1] <= 0 ) 
-            throw Error("'boundary' negative", "Arena::parsefile");
+            Error(true, "Error in arenafile: 'boundary' negative", "Arena::parsefile");
         }
       else if( strcmp(text, "exclusion_point" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'boundary' after wallpieces or duplicate", "Arena::parsefile");
+          if( succession < 3 ) 
+            Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", "Arena::parsefile");
           file >> vec1;
           Vector2D* excl_p = new Vector2D(scale*vec1);
           g_list_append(exclusion_points, excl_p);
         }
       else if( strcmp(text, "inner_circle" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'inner_circle' before boundary", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'inner_circle' before boundary", "Arena::parsefile");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -539,7 +542,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'circle' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'circle' before 'boundary'", "Arena::parsefile");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -553,7 +556,7 @@ Arena::parse_file(istream& file)
 //         }
       else if( strcmp(text, "line" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'line' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'line' before 'boundary'", "Arena::parsefile");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -563,7 +566,7 @@ Arena::parse_file(istream& file)
           file >> vec2;      // end_point
 
 
-          if( length(vec2-vec1) == 0.0 ) throw Error("Zero length line", "Arena::parsefile");
+          if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line", "Arena::parsefile");
 
           wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                     scale*thickness, bounce_c , hardn);      
@@ -571,7 +574,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "polygon" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'polygon' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'polygon' before 'boundary'", "Arena::parsefile");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -587,7 +590,7 @@ Arena::parse_file(istream& file)
               vec2 = vec1;
               file >> vec1;      // next point
 
-              if( length(vec2-vec1) == 0.0 ) throw Error("Zero length line in polygon", "Arena::parsefile");
+              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Zero length line in polygon", "Arena::parsefile");
 
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
@@ -598,7 +601,7 @@ Arena::parse_file(istream& file)
         }
       else if( strcmp(text, "closed_polygon" ) == 0 )
         {
-          if( succession < 3 ) throw Error("'closed_polygon' before 'boundary'", "Arena::parsefile");
+          if( succession < 3 ) Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", "Arena::parsefile");
           succession = 4;
           file >> bounce_c;
           file >> hardn;
@@ -615,7 +618,7 @@ Arena::parse_file(istream& file)
               vec2 = vec1;
               file >> vec1;      // next point
 
-              if( length(vec2-vec1) == 0.0 ) throw Error("Line in closed_polygon of zero length", "Arena::parsefile");
+              if( length(vec2-vec1) == 0.0 ) Error(true, "Error in arenafile: Line in closed_polygon of zero length", "Arena::parsefile");
           
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
@@ -624,14 +627,13 @@ Arena::parse_file(istream& file)
               g_list_append(object_lists[WALL], wall_circlep);
             }
 
-          if( length(vec0-vec1) == 0.0 ) throw Error("Last line in closed_polygon of zero length", "Arena::parsefile");
+          if( length(vec0-vec1) == 0.0 ) Error(true, "Error in arenafile: Last line in closed_polygon of zero length", "Arena::parsefile");
           wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                     scale*thickness, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wall_linep);
         }
       else if( text[0] != '\0' )
-        throw Error("Incorrect arenafile, unknown keyword", 
-                    text, "Arena::parsefile");
+        Error(true, "Incorrect arenafile: unknown keyword" + (String)text, "Arena::parsefile");
         
     } while( text[0] != '\0' );
 }
@@ -768,7 +770,7 @@ Arena::broadcast(const message_to_robot_type msg_type ...)
       switch(message_to_robot[msg_type].arg_type[i])
         {
         case NONE: 
-          throw Error("Couldn't send message, no arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, no arg_type", "Robot::send_message");
           break;
         case INT:
           str += (String)va_arg(args, int) + ' ';
@@ -783,7 +785,7 @@ Arena::broadcast(const message_to_robot_type msg_type ...)
           str += hex2str(va_arg(args, int)) + ' ';
           break;
         default:
-          throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, unknown arg_type", "Robot::send_message");
         }
     }
   str += '\n';
@@ -874,7 +876,7 @@ Arena::timeout_function()
       return false;
       
     case NO_STATE:
-      throw Error("Arena state is NO_STATE, shouldn't ever happen!", "Arena::timeout_function");
+      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "Arena::timeout_function");
     }
 
   if( halt_next )
@@ -937,7 +939,7 @@ Arena::add_cookie()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) throw Error("Couldn't find space for cookie", "Arena::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
   g_list_append(object_lists[COOKIE], cookiep);
 
@@ -960,7 +962,7 @@ Arena::add_mine()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) throw Error("Couldn't find space for mine", "Arena::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for mine", "Arena::timeout_function");
   Mine* minep = new Mine(pos, r, en);
   g_list_append(object_lists[MINE], minep);
 
@@ -1125,7 +1127,7 @@ Arena::find_free_colour(const long home_colour, const long away_colour, const Ro
           if( is_colour_allowed(tmp_colour, min_dist*2, robotp) ) return tmp_colour;
         }                  
     }
-   throw Error("Impossible to find colour", "Arena::find_free_colour");
+   Error(true, "Impossible to find colour", "Arena::find_free_colour");
 }
 
 void 
@@ -1285,7 +1287,7 @@ Arena::start_game()
   
   String* filename = (String*)g_list_nth(arena_filenames, current_arena_nr)->data;
   ifstream file(filename->chars());
-  if( !file ) throw Error("Couldn't open arena file", *filename, "Arena::start_game");
+  if( !file ) Error(true, "Couldn't open arena file" + *filename, "Arena::start_game");
 
   parse_file(file);
 
@@ -1293,7 +1295,7 @@ Arena::start_game()
   if( (charpos = filename->find('/',0,true)) != -1 )
     current_arena_filename = get_segment(*filename, charpos+1, -1);
   else
-    throw Error("Incomplete arena file path", *filename, "Arena::start_game");
+    Error(true, "Incomplete arena file path" + *filename, "Arena::start_game");
 
   // reset some variables
 
@@ -1321,8 +1323,7 @@ Arena::start_game()
           found_space = space_available(pos, the_opts.get_d(OPTION_ROBOT_RADIUS)*1.2);
         }
 
-      if( !found_space )
-        throw Error("Couldn't find space for all robots", "Arena::start_game");
+      if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
       g_list_append(object_lists[ROBOT], gl->data);
@@ -1401,16 +1402,7 @@ Arena::start_sequence()
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
-      try
-        {
-          ((Robot*)gl->data)->start_process();
-        }
-      catch ( Error the_error )
-        {
-          the_error.print_message();
-          exit( EXIT_FAILURE );
-        }
-
+      ((Robot*)gl->data)->start_process();
     }
   
   // wait a second before checking
@@ -1560,8 +1552,8 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
           while( current_sequence[k] == number_of_robots + 1 - robots_per_game + k )
             k--;
 
-          if( k < 0 ) throw Error("Problem generating list of participants, k < 0", 
-                                  "Arena::start_tournament");
+          if( k < 0 ) Error(true, "Problem generating list of participants, k < 0", 
+                            "Arena::start_tournament");
 
           current_sequence[k]++;
           for(j=k+1; j<robots_per_game; j++) current_sequence[j] = current_sequence[j-1]+1;

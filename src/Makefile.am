@@ -19,15 +19,10 @@ else
 GRAPHICS_O = Gui.o Statistics.o StartTournament.o
 endif
 
-if HANDLE_EXCEPTIONS
-CXXFLAGS += -fhandle-exceptions
-endif
-
 RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O)
 RealTimeBattle_SOURCES = \
 	Arena.cc Arena.h \
-	Error.cc Error.h \
 	Extras.cc Extras.h \
 	Gui.h \
 	Messagetypes.h \
