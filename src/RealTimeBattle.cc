@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/wait.h>
 #include <errno.h>
 
-#ifdef __USE_BSD
+#ifdef BSD_FP
 #include <floatingpoint.h>
 #endif
 
@@ -101,7 +101,7 @@ main ( int argc, char* argv[] )
 {
 
 
-#ifdef __USE_BSD
+#ifdef BSD_FP
   fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
 #endif
 
