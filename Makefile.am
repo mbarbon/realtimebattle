@@ -4,7 +4,7 @@ rtbstddocsdir = $(DOCS_DIR)
 rtbstddocs_DATA = BUGS FAQ TODO README INSTALL ChangeLog
 
 rtbextradir = $(RTB_DIR)
-rtbextra_DATA RealTimeBattle.xpm 
+rtbextra_DATA = RealTimeBattle.xpm 
 
 EXTRA_DIST = $(rtbextra_DATA) $(rtbstddocs_DATA)
 
@@ -31,10 +31,13 @@ html_docs:
 docs:
 	cd Documentation && $(MAKE) docs
 
-tar: docs
+tar:
 	cd .. && tar -cf RealTimeBattle/RealTimeBattle.tar \
-	RealTimeBattle/Makefile.am \
+	RealTimeBattle/Makefile.{am,in} \
 	RealTimeBattle/configure \
+	RealTimeBattle/aclocal.m4 \
+	RealTimeBattle/install-sh \
+	RealTimeBattle/mkinstalldirs \
 	RealTimeBattle/configure.in \
 	RealTimeBattle/BUGS \
 	RealTimeBattle/COPYING \
@@ -47,17 +50,17 @@ tar: docs
 	RealTimeBattle/RealTimeBattle.xpm \
 	RealTimeBattle/src/*.cc \
 	RealTimeBattle/src/*.h \
-	RealTimeBattle/src/Makefile.am \
+	RealTimeBattle/src/Makefile.{am,in} \
 	RealTimeBattle/Documentation/RealTimeBattle*.html \
 	RealTimeBattle/Documentation/*.gif \
 	RealTimeBattle/Documentation/RealTimeBattle.dvi \
 	RealTimeBattle/Documentation/RealTimeBattle.info \
-	RealTimeBattle/Documentation/Makefile.am \
+	RealTimeBattle/Documentation/Makefile.{am,in} \
 	RealTimeBattle/Arenas/*.arena \
-	RealTimeBattle/Arenas/Makefile.am \
-	RealTimeBattle/Robots/Makefile.am \
+	RealTimeBattle/Arenas/Makefile.{am,in} \
+	RealTimeBattle/Robots/Makefile.{am,in} \
 	RealTimeBattle/Robots/*/*.c* \
-	RealTimeBattle/Robots/*/Makefile.am
+	RealTimeBattle/Robots/*/Makefile.{am,in}
 
 tar.gz: 
 	$(MAKE) tar; \
@@ -67,12 +70,8 @@ tar.bz2:
 	$(MAKE) tar; \
 	bzip2 -f RealTimeBattle.tar
 
-
-#rpm-install:
-#	$(MAKE) -f Makefile.rpm rpm-install
-
-#rpm: tar.gz
-#	$(MAKE) -f Makefile.rpm rpm
+html_clean:
+	cd HTML && $(MAKE) -fMakefile.rtb clean
 
 website: html_docs
 	cd HTML && $(MAKE) -fMakefile.rtb
@@ -80,7 +79,7 @@ website: html_docs
 tar-website: 
 	cd HTML && $(MAKE) -fMakefile.rtb tar-website
 
-website_download: tar.bz2 tar.gz docs
+website_download: docs tar.bz2 tar.gz
 	cd HTML && $(MAKE) -fMakefile.rtb website_download
 
 website_all: html_clean website website_download
@@ -100,7 +99,7 @@ rpm: tar.gz
 	cp RealTimeBattle.tar.gz $(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//") && \
 	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RTB_RPM_RELEASE)/" RealTimeBattle.spec > $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
 	rpm -ba $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
-	cp $(shell rpm --showrc | grep "^rpmdir" | sed "s/rpmdir[  ]*: *//")/$(shell rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).$(shell rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//").rpm . && \
+	cp $(shell rpm --showrc | grep "^rpmdir" | sed "s/rpmdir[  ]*: *//")/$(shell rpm --showrc | grep "^build arch" | sed "s/build arch[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).$(shell rpm --showrc | grep "^build arch" | sed "s/build arch[  ]*: *//").rpm . && \
 	cp $(shell rpm --showrc | grep "^srcrpmdir" | sed "s/srcrpmdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).src.rpm . 
 
 

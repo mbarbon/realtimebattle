@@ -37,6 +37,10 @@ DOCS_DIR=['${RTB_DIR}']
 
 AC_SUBST(DOCS_DIR)
 
+
+INSTALL_INFO=yes
+AC_SUBST(INSTALL_INFO)
+
 # Save this value here, since automake will set cflags later
 cflags_set=${CFLAGS+set}
 
@@ -58,29 +62,44 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(fcntl.h strings.h sys/time.h unistd.h floatingpoint.h) 
 AC_EGREP_HEADER(RLIMIT_NPROC, sys/resource.h, AC_DEFINE(HAVE_RLIMIT_NPROC))
+
+AC_CHECK_PROG(install_info, install-info, yes, no)
+
+if test "x$install_info" = "xno"; then
+	INSTALL_INFO=no
+fi
+
 dnl AC_ARG_ENABLE(bsd-fp, [  --enable-bsd-fp         use this if program dies with FPE on a bsd system], AC_DEFINE(BSD_FP))
 
-AC_ARG_ENABLE(rpm, [ --enable-rpm=[opts]            use rpm optimization], , enable_rpm=no)
+AC_ARG_ENABLE(rpm, [  --enable-rpm=[opts]     use rpm optimization], use_rpm=yes, use_rpm=no)
 
 changequote(,)dnl
-if test "x$enable_rpm" != "xno"; then
-	CXXFLAGS="$enable_rpm"
+if test "x$use_rpm" = "xyes"; then
+   CXXFLAGS="$enable_rpm" 	
+   CFLAGS="$enable_rpm" 	
 	DOCS_DIR=['${prefix}/doc/RealTimeBattle-${VERSION}']
+	INSTALL_INFO=no
 fi
 changequote([,])dnl
-AM_CONDITIONAL(ENABLE_RPM, test x$enable_rpm = xyes)
+AM_CONDITIONAL(ENABLE_RPM, test x$use_rpm = xyes)
 
 AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging],, enable_debug=no)
 
 changequote(,)dnl
 if test "x$enable_debug" = "xno"; then
    CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-g //"`
+   CFLAGS=`echo "$CXXFLAGS " | sed "s/-g //"`
 else
    case " $CXXFLAGS " in
    *[\ \	]-g[\ \	]*) ;;
    *) CXXFLAGS="$CXXFLAGS -g" ;;
    esac
+   case " $CFLAGS " in
+   *[\ \	]-g[\ \	]*) ;;
+   *) CXXFLAGS="$CFLAGS -g" ;;
+   esac
    CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
+   CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
 fi
 changequote([,])dnl
 

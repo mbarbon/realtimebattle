@@ -13,35 +13,37 @@ EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
 
 install-data-local:
-	gzip $(rtbinfodir)/RealTimeBattle.info; \
+	gzip -f $(rtbinfodir)/RealTimeBattle.info; \
+	if test "x$(INSTALL_INFO)" = "xyes"; then \
 	install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
-                --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz
+                --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
+	fi
 
 uninstall-local:
 	install-info --delete --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
 	rm $(rtbinfodir)/RealTimeBattle.info.gz
 
-docs: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt note-files note-files.html
+docs: RTB.html RTB.dvi RTB.info RTB.txt note-files note-files.html
 
-html_docs: RealTimeBattle.html note-files.html
+html_docs: RTB.html note-files.html
 
 note-files: ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO
 
 note-files.html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
 
-RealTimeBattle.html: RealTimeBattle.sgml
+RTB.html: RealTimeBattle.sgml
 	sgml2html --imagebuttons RealTimeBattle.sgml
 
-RealTimeBattle.dvi: RealTimeBattle.sgml
+RTB.dvi: RealTimeBattle.sgml
 	sgml2latex -p $(PAPER_SIZE) -o dvi RealTimeBattle.sgml
 
-RealTimeBattle.ps: RealTimeBattle.sgml
+RTB.ps: RealTimeBattle.sgml
 	sgml2latex -p $(PAPER_SIZE) -o ps RealTimeBattle.sgml
 
-RealTimeBattle.info: RealTimeBattle.sgml
+RTB.info: RealTimeBattle.sgml
 	sgml2info RealTimeBattle.sgml
 
-RealTimeBattle.txt: RealTimeBattle.sgml
+RTB.txt: RealTimeBattle.sgml
 	sgml2txt RealTimeBattle.sgml
 
 
