@@ -83,6 +83,8 @@ private:
   bool parse_tournament_file( const string& tournament_file );
 
 
+  void reorder_matches(const int start, const int end);
+
   int total_number_of_robots;
   int robots_per_match;
 

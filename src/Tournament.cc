@@ -93,6 +93,70 @@ Tournament::prepare_for_new_match()
 }
 
 
+// reorders the matches, so that all robots have almost the
+//  same number of played matches after each match.
+void
+Tournament::reorder_matches(const int start, int end)
+{
+  int matchnr, i, j;
+  
+  int best_match;
+  double best_score;
+  double mean_matches;
+  double score;
+
+  int matches_for_robot[total_number_of_robots];
+  for( i=0; i<total_number_of_robots; i++) matches_for_robot[i] = 0;
+
+  for( matchnr = start; matchnr<end; matchnr++)
+    {
+      best_match = -1;
+      best_score = 10000;
+      mean_matches = robots_per_match * ( matchnr - start + 1) / total_number_of_robots;
+
+      // For each of the remaining matches, find the match which gives the
+      // smallest variation in the number of matches for each robot.
+
+      for( i = matchnr; i<=end; i++ )
+        {
+          // Add a match for robots in the match i temporary
+          for(j=0; j<robots_per_match; j++) 
+            matches_for_robot[the_matches[i].robot_ids[j]]++;
+
+          // Caluclate score as the sum of the distances to the mean
+          score = 0.0;         
+          for(j=0; j<total_number_of_robots; j++)
+            score += abs( matches_for_robot[j] - mean_matches );
+
+          for(j=0; j<robots_per_match; j++) 
+            matches_for_robot[the_matches[i].robot_ids[j]]--;
+
+          // Lowest score is stored
+          if( score < best_score )
+            {
+              best_score = score;
+              best_match = i;
+            }
+        }
+      
+      assert( best_match != -1 );
+
+      // Add a match for robots in the match found
+      for(j=0; j<robots_per_match; j++) 
+        matches_for_robot[the_matches[best_match].robot_ids[j]]++;
+
+
+      // Swap the matches
+      if( best_match != matchnr )
+        {
+          Match tmp = the_matches[best_match];
+          the_matches[best_match] = the_matches[matchnr];
+          the_matches[matchnr] = tmp;
+        }        
+    }
+
+}
+
 void 
 Tournament::create_matches()
 {
@@ -141,13 +205,13 @@ Tournament::create_matches()
 
           current_match++;
         }
-      //      reorder_pointer_array((void**)robots_in_sequence, rounds_per_match);
 
-      // TODO: reorder the matches, so that all robots have almost the
-      //       same number of played matches after each match.
+      reorder_matches(current_match - matches_per_round, current_match - 1);
     }
 
   // the remaining games will be randomly chosen
+
+  int first_of_remaining_games = current_match;
 
   int robot_matches_played[total_number_of_robots];
   for(int i=0; i<total_number_of_robots; i++) robot_matches_played[i] = 0;
@@ -180,6 +244,8 @@ Tournament::create_matches()
         }      
       current_match++;
     }
+
+  reorder_matches(first_of_remaining_games, current_match - 1);
 
   prepare_for_new_match();
 }
