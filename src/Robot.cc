@@ -21,27 +21,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
-#include <fcntl.h>
-#include <unistd.h>
+//  #include <fcntl.h>
+//  #include <unistd.h>
 #include <signal.h>
 #include <iostream.h>
 #include <math.h>
 
-#ifdef TIME_WITH_SYS_TIME 
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+//  #ifdef TIME_WITH_SYS_TIME 
+//  # include <sys/time.h>
+//  # include <time.h>
+//  #else
+//  # if HAVE_SYS_TIME_H
+//  #  include <sys/time.h>
+//  # else
+//  #  include <time.h>
+//  # endif
+//  #endif
 
-#include <sys/resource.h>
-#include <sys/stat.h>
-#include <stdarg.h>
-#include <stdio.h>
+//  #include <sys/resource.h>
+//  #include <sys/stat.h>
+//  #include <stdarg.h>
+//  #include <stdio.h>
 
 #include "Robot.h"
 #include "String.h"
@@ -62,25 +62,25 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Robot::Robot(const String& filename)
 {
-  velocity = Vector2D(0.0, 0.0);
-  acceleration = 0.0;
-  robot_filename = filename;
+  //  velocity = Vector2D(0.0, 0.0);
+  //  acceleration = 0.0;
+  //  robot_filename = filename;
   
-  int nr;
-  if( ( nr = robot_filename.find( '/', 0, true) ) == -1 )
-    robot_plain_filename = robot_filename;
-  else
-    robot_plain_filename = get_segment(robot_filename, nr+1, -1);
+  //  int nr;
+//    if( ( nr = robot_filename.find( '/', 0, true) ) == -1 )
+//      robot_plain_filename = robot_filename;
+//    else
+//      robot_plain_filename = get_segment(robot_filename, nr+1, -1);
 
   plain_robot_name = "";
   robot_name = "";
   robot_name_uniqueness_number = 0;
   //  robot_dir= getenv("RTB_ROBOTDIR");
   extra_air_resistance = 0.0;
-  process_running = false;
+//    process_running = false;
 
-  send_usr_signal = false;
-  signal_to_send = 0;
+//    send_usr_signal = false;
+//    signal_to_send = 0;
   send_rotation_reached = 0;
   alive = false;
   dead_but_stats_not_set = false;
@@ -90,14 +90,17 @@ Robot::Robot(const String& filename)
 
   id = the_arena.increase_robot_count();
 
-  instreamp = NULL;
-  outstreamp = NULL;
-  pipes[0] = -1;  
-  pipes[1] = -1;
-  pid = -1;
+//    instreamp = NULL;
+//    outstreamp = NULL;
+
+  process = new Process( filename, this );
+
+//    pipes[0] = -1;  
+//    pipes[1] = -1;
+//    pid = -1;
   //  last_drawn_robot_center = Vector2D(infinity,infinity);
 
-  use_non_blocking = get_default_non_blocking_state();
+  //  use_non_blocking = get_default_non_blocking_state();
 }
 
 // Constructor used by ArenaReplay. No process needed.
@@ -108,7 +111,8 @@ Robot::Robot(const int r_id, const long int col, const String& name)
   robot_name = name;
   set_colour( col );
 
-  process_running = false;
+  //  process_running = false;
+  process = NULL;
   alive = false;
   //  total_points = 0.0;
   
@@ -121,274 +125,11 @@ Robot::Robot(const int r_id, const long int col, const String& name)
 
 Robot::~Robot()
 {
-  if( the_arena_controller.is_realtime() )
+  if( process != NULL )
     {
-      if( is_process_running() ) kill_process_forcefully();
-      delete_pipes();
+      delete process;
     }
 } 
-
-void
-Robot::start_process()
-{
-  int pipe_in[2], pipe_out[2];
-  if (pipe (pipe_in)) 
-    Error(true, "Couldn't setup pipe_in for robot " + robot_filename, "Robot::start_process");
-
-  if (pipe (pipe_out)) 
-    Error(true, "Couldn't setup pipe_out for robot " + robot_filename, "Robot::start_process");
-
-  if( (pid = fork()) < 0 )
-    Error(true, "Couldn't fork childprocess for robot " + robot_filename, "Robot::start_process");
-
-  if(pid == 0)   // Child process, to be the new robot
-    {
-      // Make pipe_out the standard input for the robot
-      close(pipe_out[1]);
-      dup2(pipe_out[0], STDIN_FILENO);
-
-      // Make pipe_in the standard output
-      dup2(pipe_in[1],STDOUT_FILENO);
-      close(pipe_in[0]);
-
-      // Make the pipes non-blocking
-
-      if( use_non_blocking )
-        {
-          int pd_flags;
-          if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
-            Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
-                  "Robot::start_process, child");
-          pd_flags |= O_NONBLOCK;
-          if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
-            Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
-                  "Robot::start_process, child");
-          
-          
-          if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
-            Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
-                  "Robot::start_process, child");
-          pd_flags |= O_NONBLOCK;
-          if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
-            Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
-                  "Robot::start_process, child");
-        }
-      
-      // Check file attributes
-
-      struct stat filestat;
-      if( 0 != stat( robot_filename.chars(), &filestat ) ) 
-        Error(true, "Couldn't get stats for robot " + robot_filename, "Robot::start_process, child");
-      if( !S_ISREG( filestat.st_mode) )
-        Error(true, "Robot file isn't regular, error for robot " + robot_filename, 
-              "Robot::start_process, child");
-      if( !(filestat.st_mode & S_IXOTH) )
-        Error(true, "Robot file isn't executable for user, error for robot " + robot_filename, 
-              "Robot::start_process, child");
-      if( (filestat.st_mode & S_ISUID) )
-        Error(true, "Set user ID is not allowed, error for robot " + robot_filename, 
-              "Robot::start_process, child");
-
-      // Lower priority by one
-     
-      int old;
-      if( (old = getpriority (PRIO_PROCESS, 0)) == -1 )
-        Error(true, "Couldn't get priority for robot " + robot_filename, "Robot::start_process, child");
-      if( setpriority (PRIO_PROCESS, 0, old + 1) == -1)
-        Error(true, "Couldn't set priority for robot " + robot_filename, "Robot::start_process, child");
-      
-      // Close all pipes not belonging to the robot
-      
-      Robot* robotp;
-
-      ListIterator<Robot> li;
-      for( the_arena.get_all_robots_in_sequence()->first(li); li.ok(); li++ )
-        {
-          robotp = li();
-          if( robotp != this ) robotp->delete_pipes();
-        }
-
-      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
-        {
-          struct rlimit res_limit;
-
-          //        // Deny file access
-          
-          //            if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-          //              Error(true, "Couldn't get file limits for robot " + robot_filename, 
-          //                    "Robot::start_process, child");
-          
-          //            //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
-          //            if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-          //              Error(true, "Couldn't limit file access for robot " + robot_filename, 
-          //                    "Robot::start_process, child");
-          
-
-          // Forbid creation of child processes
-          
-#ifdef HAVE_RLIMIT_NPROC
-          if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            Error(true, "Couldn't get proc limits for robot " + robot_filename, 
-                  "Robot::start_process, child");
-          
-          res_limit.rlim_cur = 0;
-          if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
-            Error(true, "Couldn't limit child processes for robot " + robot_filename, 
-                  "Robot::start_process, child");
-#endif
-        }
-
-      // Execute process. Should not return!
-      if( execl(robot_filename.chars(), robot_filename.chars(), NULL) == -1 )
-        Error(true, "Couldn't open robot " + robot_filename, "Robot::start_process, child");
-
-      Error(true, "Robot didn't execute, SHOULD NEVER HAPPEN!, error for " + robot_filename, 
-            "Robot::start_process, child");
-    }
-  else
-    {
-      close(pipe_out[0]);     // Close input side of pipe_out
-      close(pipe_in[1]);      // Close output side of pipe_in  
-      
-      pipes[0] = pipe_out[1];
-      pipes[1] = pipe_in[0];
-
-      // Make the pipes non-blocking
-      int pd_flags;
-      if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
-        Error(true, "Couldn't get pd_flags for pipe_in in robot " + robot_filename, 
-              "Robot::start_process, parent");
-      pd_flags |= O_NONBLOCK;
-      if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
-        Error(true, "Couldn't change pd_flags for pipe_in in robot " + robot_filename, 
-              "Robot::start_process, parent");
-      if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 ) 
-        Error(true, "Couldn't get pd_flags for pipe_out in robot " + robot_filename, 
-              "Robot::start_process, parent");
-      pd_flags |= O_NONBLOCK;
-      if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
-        Error(true, "Couldn't change pd_flags for pipe_out in robot " + robot_filename, 
-              "Robot::start_process, parent");
-
-      outstreamp = new ofstream(pipe_out[1]);
-      instreamp = new ifstream(pipe_in[0]);
-    }
-
-  // wait some time to let process start up
-
-  struct timeval timeout;
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 40000;  //  1/25 s 
-
-  select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
-  
-  set_values_at_process_start_up();
-}
-
-bool
-Robot::is_process_running()
-{
-  return process_running;
-}
-
-void
-Robot::check_process()
-{
-  String procfilename = "/proc/" + String(pid) + "/stat";
-
-  if( is_process_running() )
-    {
-      ifstream procfile(procfilename.chars());
-      if( !procfile ) 
-        {
-          process_running = false;
-          return;
-        }
-
-      char buf[16];
-
-      for(int i=0; i<13; i++)
-        procfile >> buf;
-      
-      int jiffies;
-      
-      procfile >> jiffies;
-
-      double current_cpu = (double)jiffies / 100.0;
-      double tot_time = the_arena.get_total_time() + time_survived_in_sequence;
-      if( !alive ) tot_time = time_survived_in_sequence;
-
-      if( current_cpu > cpu_next_limit )
-        {
-          if( tot_time >= cpu_timeout )
-            {
-              // add time
-              cpu_warning_limit = cpu_next_limit + 
-                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
-              cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
-            }
-          else
-            {
-              // cpu limit exceeded, robot disqualified
-              die();
-              // add time for next game
-              cpu_warning_limit = cpu_next_limit + 
-                the_opts.get_d(OPTION_CPU_EXTRA) * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-              cpu_next_limit += the_opts.get_d(OPTION_CPU_EXTRA);
-              cpu_timeout = tot_time + the_opts.get_d(OPTION_CPU_PERIOD);
-            }
-        }
-      else if( current_cpu > cpu_warning_limit && tot_time < cpu_timeout )
-        {
-          send_message( WARNING, PROCESS_TIME_LOW, String(cpu_next_limit - current_cpu).chars());
-          cpu_warning_limit = cpu_next_limit;
-        }
-    }
-}
-
-
-void
-Robot::end_process()
-{
-  send_message(EXIT_ROBOT);
-  send_signal();
-}
-
-void
-Robot::send_signal()
-{
-  if( send_usr_signal )
-    kill(pid, signal_to_send);
-}
-
-void
-Robot::kill_process_forcefully()
-{
-  kill(pid, SIGKILL);
-  delete_pipes();
-  process_running = false;
-}
-
-void
-Robot::delete_pipes()
-{
-  if( instreamp != NULL ) delete instreamp;
-  instreamp = NULL;
-  if( outstreamp != NULL ) delete outstreamp;
-  outstreamp = NULL;
-  if( pipes[0] != -1 ) 
-    {
-      close(pipes[0]);
-      pipes[0] = -1;
-    }
-  if( pipes[1] != -1 ) 
-    {
-      close(pipes[1]);
-      pipes[1] = -1;
-    }
-  
-}
 
 void
 Robot::live()
@@ -433,7 +174,7 @@ Robot::set_stats(const int robots_killed_same_time, const bool timeout)
   time_survived_in_sequence += the_arena.get_total_time();
 
   send_message(DEAD);
-  send_signal();
+  process->send_signal();
 
   realtime_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
 
@@ -488,18 +229,11 @@ Robot::set_stats(const double pnts, const int pos, const double time_survived,
 }
 
 void
-Robot::change_position( const double x, const double y, 
-                        const double robot_a, const double cannon_a, 
-                        const double radar_a, const double en )
+Robot::set_angles( double robot_a, const double cannon_a, const double radar_a)
 {
-  center = Vector2D(x, y);
   robot_angle.pos  = robot_a;
   cannon_angle.pos = cannon_a;
   radar_angle.pos  = radar_a;
-  energy = en;
-//  #ifndef NO_GRAPHICS  
-//    if( !no_graphics )  display_score();
-//  #endif
 }
 
 void
@@ -685,86 +419,40 @@ Robot::update_radar_and_cannon(const double timestep)
   send_message(INFO, the_arena.get_total_time(), length(velocity), cannon_angle.pos); 
 }
 
-void
-Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal)
+
+//
+// Note that 'angle' is _not_ relative to the robot
+//
+double
+Robot::get_bounce_coeff( const double angle )
 {
-  double h, p, b;
-  
-  if( -dot(normal, angle2vec(robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
-    {
-      h = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
-      b = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
-      p = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
-    }
+  if( cos(angle - robot_angle.pos ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
+    return the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
   else
-    {
-      h = the_opts.get_d(OPTION_ROBOT_HARDNESS);
-      b = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
-      p = the_opts.get_d(OPTION_ROBOT_PROTECTION);
-    }  
+    return the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+}
 
-  double e = b * bounce_c;
-  Vector2D start_vel = velocity;
-  velocity -= (1.0 + e) * dot(normal, velocity) * normal;
-
-  double en_diff = 0.5 * the_opts.get_d(OPTION_ROBOT_MASS) * lengthsqr(start_vel - velocity);
-  double injury = en_diff * 0.5 * (h + hardness_c ) * (1.0-e) * (1.0-p);
-  change_energy(-injury);
-
-  send_message(COLLISION, WALL, vec2angle(-normal)-robot_angle.pos);
+double
+Robot::get_hardness_coeff( const double angle )
+{
+  if( cos(angle - robot_angle.pos ) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)) )
+    return the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
+  else
+    return the_opts.get_d(OPTION_ROBOT_HARDNESS);
 }
 
 void
-bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
+Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal)
 {
-  double h1, h2, p1, p2, b1, b2;
-  Vector2D dir1_2 = unit(robot2.center - robot1.center);
-  
-  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
-    {
-      h1 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
-      b1 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
-      p1 = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
-    }
-  else
-    {
-      h1 = the_opts.get_d(OPTION_ROBOT_HARDNESS);
-      b1 = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
-      p1 = the_opts.get_d(OPTION_ROBOT_PROTECTION);
-    }
+  double angle = vec2angle(-normal);
 
-  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
-    {
-      h2 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
-      b2 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
-      p2 = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
-    }
-  else
-    {
-      h2 = the_opts.get_d(OPTION_ROBOT_HARDNESS);
-      b2 = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
-      p2 = the_opts.get_d(OPTION_ROBOT_PROTECTION);
-    }
+  double e = get_bounce_coeff( angle ) * bounce_c;
+  double h = get_hardness_coeff( angle ) * hardness_c;
 
-  double e = b1*b2;
-  Vector2D start_vel1 = robot1.velocity;
-  Vector2D start_vel2 = robot2.velocity;
-  double mass = the_opts.get_d(OPTION_ROBOT_MASS);
-  Vector2D tmp = ((1.0 + e) / 2.0) * dot(robot2.velocity - robot1.velocity, normal) * normal;
-  robot1.velocity += tmp;
-  robot2.velocity -= tmp;
+  Vector2D start_vel = velocity;  
+  velocity -= (1.0 + e) * dot(normal, velocity) * normal;
 
-  double an = vec2angle(-normal);
-  double en_diff = 0.5 * mass * lengthsqr(start_vel1 - robot1.velocity);
-  double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
-  robot1.change_energy(-injury);
-  robot1.send_message(COLLISION, ROBOT, an-robot1.robot_angle.pos);
-
-  an = vec2angle(normal);
-  en_diff = 0.5 * mass * lengthsqr(start_vel2 - robot2.velocity);
-  injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
-  robot2.change_energy(-injury);
-  robot2.send_message(COLLISION, ROBOT, an-robot2.robot_angle.pos);
+  injury_from_collision( 0.5 * get_mass() * h * lengthsqr(start_vel - velocity), angle );
 }
 
 void
@@ -781,18 +469,13 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
   position_this_game = 0;
   //  points_this_game = 0.0;
   brake_percent = 0.0;
-  acceleration = 0.0;
+  acceleration = Vector2D(0.0, 0.0);
 }
 
 void
 Robot::set_values_at_process_start_up()
 {
-  process_running = true;
-  has_saved = false;
   time_survived_in_sequence = 0.0;
-  cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
-  cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-  cpu_timeout = 0.0;
 
   if( statistics.is_empty() )       // first sequence !
     {
@@ -813,18 +496,24 @@ Robot::set_values_at_process_start_up()
 }
 
 void
-Robot::change_velocity(const double timestep)
+Robot::update_velocity(const double timestep)
 {
   Vector2D dir = angle2vec(robot_angle.pos);
-  double gt = the_opts.get_d(OPTION_GRAV_CONST) * timestep;
+  double gt = the_opts.get_d(OPTION_GRAV_CONST);
+  double slide_fric = the_opts.get_d(OPTION_SLIDE_FRICTION);
   double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - brake_percent) + 
-    the_opts.get_d(OPTION_SLIDE_FRICTION) * brake_percent;
-  velocity = -velocity* min(the_opts.get_d(OPTION_AIR_RESISTANCE) * timestep, 0.5) +
-    timestep*acceleration*dir + 
-    dot(velocity, dir) * max(0.0, 1.0-gt*fric) * dir +
-    vedge(dir, velocity) * max(0.0, 1.0-gt*the_opts.get_d(OPTION_SLIDE_FRICTION)) * rotate90(dir);
+    slide_fric * brake_percent;
+
+  double air_res = the_opts.get_d(OPTION_AIR_RESISTANCE);
+
+  velocity = 
+    dot(velocity, dir) * max(0.0, 1.0-gt*fric*timestep) * dir +
+    -velocity* min(air_res * timestep, 0.5) +
+    timestep*acceleration + 
+    vedge(dir, velocity) * max(0.0, 1.0-gt*slide_fric*timestep) * rotate90(dir);
 }
 
+/*
 void
 Robot::move(const double timestep)
 {
@@ -917,13 +606,17 @@ Robot::move(const double timestep, int iterstep, const double eps)
       if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1, eps );
     }
 }
+*/
 
 void
 Robot::send_message(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
-  *outstreamp << message_to_robot[msg_type].msg << " ";
+
+  ofstream* pout = process->get_outstreamp();
+
+  *pout << message_to_robot[msg_type].msg << " ";
   for(int i=0; i<message_to_robot[msg_type].number_of_args; i++)
     {
       switch(message_to_robot[msg_type].arg_type[i])
@@ -932,22 +625,22 @@ Robot::send_message(const message_to_robot_type msg_type ...)
           Error(true, "Couldn't send message, no arg_type", "Robot::send_message");
           break;
         case INT:
-          *outstreamp << va_arg(args, int) << " ";
+          *pout << va_arg(args, int) << " ";
           break;
         case DOUBLE:
-          *outstreamp << va_arg(args, double) << " ";
+          *pout << va_arg(args, double) << " ";
           break;
         case STRING:
-          *outstreamp << va_arg(args, char*) << " ";
+          *pout << va_arg(args, char*) << " ";
           break;   
         case HEX:
-          *outstreamp << hex << va_arg(args, int) << " ";
+          *pout << hex << va_arg(args, int) << " ";
           break;
         default:
           Error(true, "Couldn't send message, unknown arg_type", "Robot::send_message");
         }
     }
-  *outstreamp << endl;
+  *pout << endl;
 }
 
 
@@ -962,64 +655,60 @@ Robot::get_messages()
   char msg_name[81];
   message_from_robot_type msg_t;
 
-  *instreamp >> ws;
-  instreamp->clear();
-  instreamp->peek();
-  while( !instreamp->eof() )
+  ifstream* pin = process->get_instreamp();
+
+  *pin >> ws;
+  pin->clear();
+  pin->peek();
+  while( !pin->eof() )
     {
-      *instreamp >> msg_name;
+      *pin >> msg_name;
       msg_t = name2msg_from_robot_type(msg_name);
       //      cerr << "Got message: " << msg_name << endl;
 
-      *instreamp >> ws;
+      *pin >> ws;
 
       switch(msg_t)
         {
         case UNKNOWN_MESSAGE_FROM_ROBOT:
           //cout << "Server: Warning sent for message: " << msg_name << endl;
           send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
-          instreamp->get(buffer, 80, '\n');
+          pin->get(buffer, 80, '\n');
           break;
         case ROBOT_OPTION:
           if( check_state_for_message(msg_t, STARTING_ROBOTS) )
             {
               int opt_nr, val;
-              *instreamp >> opt_nr;
+              *pin >> opt_nr;
               switch(opt_nr)
                 {
                 case SEND_SIGNAL:
-                  *instreamp >> val;
-                  send_usr_signal = (val == true);
-                  signal_to_send = SIGUSR1;
-                  send_signal();
+                  *pin >> val;
+                  process->set_signal_to_send( val==true, SIGUSR1 );
                   break;
                 case SIGNAL:
-                  *instreamp >> val;
+                  *pin >> val;
                   if( val > 0 && val < NSIG )
                     {
-                      signal_to_send = val;
-                      send_usr_signal = true;
-                      send_signal();
-
+                      process->set_signal_to_send( true, val );
                     }
                   else
                     {                      
                       if( val >= NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
-                      signal_to_send = 0;
-                      send_usr_signal = false;
+                      process->set_signal_to_send( false, 0 );
                     }
                   break;
 
                 case SEND_ROTATION_REACHED:
-                  *instreamp >> val;
+                  *pin >> val;
                   if( val < 0 ) val = 0;
                   if( val > 2 ) val = 2;
                   send_rotation_reached = val;
                   break;
 
                 case USE_NON_BLOCKING:
-                  *instreamp >> val;
-                  set_non_blocking_state( val );                  
+                  *pin >> val;
+                  process->set_non_blocking_state( val );                  
                   break;
 
                 default:
@@ -1031,7 +720,7 @@ Robot::get_messages()
         case NAME:
           if( check_state_for_message(msg_t, STARTING_ROBOTS) )
             {
-              instreamp->get(text, 80, '\n');
+              pin->get(text, 80, '\n');
               plain_robot_name = text;
               check_name_uniqueness();
               name_given = true;
@@ -1042,7 +731,7 @@ Robot::get_messages()
             {
               long home_colour, away_colour;
               
-              *instreamp >> hex >> home_colour >> away_colour >> dec;
+              *pin >> hex >> home_colour >> away_colour >> dec;
               
               // TODO: check if colour is already allocated! 
               set_colour( realtime_arena.find_free_colour(home_colour, away_colour, this) );
@@ -1054,7 +743,7 @@ Robot::get_messages()
             { 
               int bits;
               double rot_speed;
-              *instreamp >> bits >> rot_speed;
+              *pin >> bits >> rot_speed;
               
               double rot_sign = sgn(rot_speed);
               rot_speed = fabs(rot_speed);
@@ -1080,7 +769,7 @@ Robot::get_messages()
             {
               int bits;
               double rot_speed, rot_end_angle, rot_amount;
-              *instreamp >> bits >> rot_speed >> rot_end_angle;
+              *pin >> bits >> rot_speed >> rot_end_angle;
               rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
 
               rot_speed = fabs(rot_speed);
@@ -1121,7 +810,7 @@ Robot::get_messages()
             {
               int bits;
               double rot_speed, rot_amount;
-              *instreamp >> bits >> rot_speed >> rot_amount;
+              *pin >> bits >> rot_speed >> rot_amount;
 
               rot_speed = fabs(rot_speed);
               if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
@@ -1168,7 +857,7 @@ Robot::get_messages()
             {
               int bits;
               double rot_speed, sweep_left, sweep_right;
-              *instreamp >> bits >> rot_speed >> sweep_left >> sweep_right;
+              *pin >> bits >> rot_speed >> sweep_left >> sweep_right;
               sweep_left = max(min(sweep_left, infinity), -infinity);
               sweep_right = max(min(sweep_right, infinity), -infinity);
               rotation_mode_t rot_dir;
@@ -1211,7 +900,7 @@ Robot::get_messages()
           break;
         case PRINT:
           {
-            instreamp->get(text, 160, '\n');
+            pin->get(text, 160, '\n');
             realtime_arena.print_to_logfile('P', id, text);
             the_arena.print_message( robot_name, text );
           }
@@ -1219,8 +908,8 @@ Robot::get_messages()
 
         case DEBUG:
           {
-            instreamp->get(text, 160, '\n');
-            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
+            pin->get(text, 160, '\n');
+            if( realtime_arena.get_game_mode() == DEBUG_MODE )
               {
                 realtime_arena.print_to_logfile('P', id, text);
                 the_arena.print_message( robot_name, text );
@@ -1240,7 +929,7 @@ Robot::get_messages()
 //                else if( !no_graphics )
 //                  {
 //                    double a1, d1, a2, d2;
-//                    *instreamp >> a1 >> d1 >> a2 >> d2;
+//                    *pin >> a1 >> d1 >> a2 >> d2;
                   
 //                    Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
 //                    Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
@@ -1264,7 +953,7 @@ Robot::get_messages()
 //                else if( !no_graphics )
 //                  {
 //                    double a, d, r;
-//                    *instreamp >> a >> d >> r;
+//                    *pin >> a >> d >> r;
 
 //                    Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
 
@@ -1279,7 +968,7 @@ Robot::get_messages()
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
             {
               double en;
-              *instreamp >> en;
+              *pin >> en;
               en = min(en, shot_energy);
               if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
               shot_energy -= en;
@@ -1351,10 +1040,10 @@ Robot::get_messages()
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
             {
               double acc;
-              *instreamp >> acc;
+              *pin >> acc;
               acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
               acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
-              acceleration = acc;
+              acceleration = acc * angle2vec(robot_angle.pos);
             }
           break;
         case BREAK:  // Included only for compatibility reasons
@@ -1363,7 +1052,7 @@ Robot::get_messages()
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
             {
               double brk;
-              *instreamp >> brk;
+              *pin >> brk;
               brk = max( brk, 0.0);
               brk = min( brk, 1.0);
               brake_percent = brk;
@@ -1373,7 +1062,7 @@ Robot::get_messages()
           //            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
           //              {
           //                bool bin;
-          //                *instreamp >> bin;
+          //                *pin >> bin;
           //                load_data(bin);
           //              }
           //            break;
@@ -1402,9 +1091,9 @@ Robot::get_messages()
           Error(true, "Message_type not implemented, " + (String)msg_name, "Robot::get_messages");
         }
 
-      *instreamp >> ws;
-      instreamp->clear();
-      instreamp->peek();
+      *pin >> ws;
+      pin->clear();
+      pin->peek();
     }
 }
 
@@ -1430,57 +1119,57 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
         send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, 
                      message_from_robot[msg_t].msg);
       char buffer[80];
-      instreamp->get(buffer, 80, '\n');
+      process->get_instreamp()->get(buffer, 80, '\n');
       return false;
     }
   
   return true;
 }
 
-bool
-Robot::get_default_non_blocking_state()
-{
-  String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-    "/" + robot_plain_filename;
+//  bool
+//  Robot::get_default_non_blocking_state()
+//  {
+//    String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+//      "/" + robot_plain_filename;
   
-  int fd;
-  if( ( fd = open(filename.chars(), O_RDONLY) ) != -1 )
-    {
-      close(fd);
-      return false;
-    }
+//    int fd;
+//    if( ( fd = open(filename.chars(), O_RDONLY) ) != -1 )
+//      {
+//        close(fd);
+//        return false;
+//      }
   
-  return true;
-}
+//    return true;
+//  }
 
-// If non_blocking is _not_ used, a file, OPTION_TMP_RTB_DIR/"robotname"
-// , is created.
-void
-Robot::set_non_blocking_state(const bool non_bl)
-{
-  if( non_bl == use_non_blocking ) return;
+//  // If non_blocking is _not_ used, a file, OPTION_TMP_RTB_DIR/"robotname"
+//  // , is created.
+//  void
+//  Robot::set_non_blocking_state(const bool non_bl)
+//  {
+//    if( non_bl == use_non_blocking ) return;
 
-  String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-    "/" + robot_plain_filename;
+//    String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+//      "/" + robot_plain_filename;
 
-  create_tmp_rtb_dir();
+//    create_tmp_rtb_dir();
 
-  if( non_bl )
-    remove( filename.chars() );
-  else
-    {
-      int fd = open(filename.chars(), O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
-      if( fd != -1 )  close( fd );
-    }
+//    if( non_bl )
+//      remove( filename.chars() );
+//    else
+//      {
+//        int fd = open(filename.chars(), O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
+//        if( fd != -1 )  close( fd );
+//      }
   
  
-  use_non_blocking = non_bl;
+//    use_non_blocking = non_bl;
 
-  //  restart_process
+//    //  restart_process
 
-  kill_process_forcefully();
-  start_process();
-}
+//    process.kill_forcefully();
+//    process.start();
+//  }
 
 
 

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,18 +25,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //  #endif
 
 #include <fstream.h>
-#include <sys/types.h>
-#include <unistd.h>
+//#include <sys/types.h>
+//#include <unistd.h>
 
 
 #include "Messagetypes.h"
 
 #include "Structs.h"
-#include "MovingObject.h"
+#include "RollingObject.h"
 #include "String.h"
 #include "List.h"
+#include "Process.h"
+//#include "Vector2D.h"
 
-class Robot : public MovingObject
+class Vector2D;
+
+
+class Robot : public RollingObject
 {
 public:
   Robot(const String& filename);
@@ -45,16 +50,27 @@ public:
 
   //arenaobject_t get_arenaobject_t() { return ROBOT; }
   
-  void move(const double timestep);  
-  void change_velocity(const double timestep);  
+  //  void move(const double timestep);  
+  void update_velocity(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
   bool update_rotation(rotation_t& angle, const double timestep);
   void bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal);
-  friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
+  double get_bounce_coeff( const double angle );
+  double get_hardness_coeff( const double angle );
+
+  friend void rolling_object_collision(RollingObject& robj1, 
+                                       RollingObject& robj2, 
+                                       const Vector2D& normal);
+
   void change_energy(const double energy_diff);
-  void change_position( const double x, const double y, 
-                        const double robot_a, const double cannon_a, 
-                        const double radar_a, const double en );
+  void injury_from_collision(const double en, const double angle);
+
+  void set_energy( const double en ) { energy = en; }
+  void set_angles( const double robot_a, const double cannon_a, const double radar_a );
+
+  //  void change_position( const double x, const double y, 
+  //                        const double robot_a, const double cannon_a, 
+  //                        const double radar_a, const double en );
 
   void check_name_uniqueness();
   void get_messages();
@@ -65,23 +81,26 @@ public:
   void set_stats(const double pnts, const int pos, const double time_survived,
                  const bool make_stats);
   bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
-  void start_process();
-  bool is_process_running();
-  void check_process();
-  void send_signal();
-  void end_process();
-  void delete_pipes();
-  void kill_process_forcefully();
+
+  Process* get_process() { return process; }
+//    void start_process();
+//    bool is_process_running();
+//    void check_process();
+//    void send_signal();
+//    void end_process();
+//    void delete_pipes();
+//    void kill_process_forcefully();
+
   void live();
   void die();
 
   String get_robot_name() { return robot_name; }
-  String get_robot_filename() { return robot_filename; }
+  //  String get_robot_filename() { return robot_filename; }
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
-  pid_t get_pid() { return pid; }
+//    pid_t get_pid() { return pid; }
   List<stat_t>* get_statistics() { return &statistics; }
-  ofstream* get_outstreamp() { return outstreamp; }  
+  //  ofstream* get_outstreamp() { return outstreamp; }  
   int get_position_this_game() { return position_this_game; }
   double get_total_points();
   //  void add_points(double pts) { points_this_game += pts; total_points += pts; }
@@ -118,21 +137,24 @@ public:
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
-  void move(const double timestep, int iterstep, const double eps);
-  bool check_state_for_message(const message_from_robot_type msg_t, const enum state_t state1,
+  //  void move(const double timestep, int iterstep, const double eps);
+  bool check_state_for_message(const message_from_robot_type msg_t, 
+                               const enum state_t state1,
                                const enum state_t state2 = NO_STATE);
   //  void save_data(const bool bin, const bool rewrite);
   //  void load_data(const bool bin);
   
-  bool get_default_non_blocking_state();
-  void set_non_blocking_state(const bool use_non_blocking);
+//    bool get_default_non_blocking_state();
+//    void set_non_blocking_state(const bool use_non_blocking);
+
+  class Process* process;
 
   bool alive;
-  bool process_running;
-  bool has_saved;
+//  bool process_running;
+//  bool has_saved;
 
-  bool send_usr_signal;
-  int signal_to_send;
+//    bool send_usr_signal;
+//    int signal_to_send;
   int  send_rotation_reached;
 
   bool has_competed;
@@ -145,7 +167,7 @@ private:
   rotation_t cannon_angle;
   rotation_t radar_angle;
 
-  double acceleration;
+  //  double acceleration;
   double shot_energy;
 
 //    Vector2D last_drawn_robot_center;
@@ -158,8 +180,8 @@ private:
   class String plain_robot_name;      // Name given by robot
   class String robot_name;            // plain_robot_name + uniqueness number
 
-  class String robot_filename;        // Filename with path  
-  class String robot_plain_filename;  // Filename without path
+//    class String robot_filename;        // Filename with path  
+//    class String robot_plain_filename;  // Filename without path
 
   bool colour_given;
   bool name_given;
@@ -172,18 +194,18 @@ private:
   double time_survived_in_sequence;
   bool dead_but_stats_not_set;
 
-  double cpu_next_limit;
-  double cpu_warning_limit;
-  double cpu_timeout;
+//    double cpu_next_limit;
+//    double cpu_warning_limit;
+//    double cpu_timeout;
 
-  ifstream* instreamp;
-  ofstream* outstreamp;
-  int pipes[2];
-  pid_t pid;    
+//    ifstream* instreamp;
+//    ofstream* outstreamp;
+//    int pipes[2];
+//    pid_t pid;    
 
   ListIterator<stat_t> current_game_stats;
 
-  bool use_non_blocking;
+//    bool use_non_blocking;
 
 //    int row_in_score_clist;
 
