@@ -119,7 +119,6 @@ public:
   void start_tournament_add_all_selected( bool robots );
   void start_tournament_remove_all_selected( bool robots );
 
-  int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget * get_score_clist() { return score_clist; }

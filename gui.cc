@@ -307,23 +307,6 @@ Gui::quit_event()
   gtk_main_quit();
 }
 
-int
-Gui::get_robot_nr( void * robotp, GList * robot_list )
-{
-  GList * gl;
-  Robot * robotp_gl;
-
-  int i=0;
-  for(gl=g_list_next(robot_list); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp_gl = (Robot *)gl->data;
-      if(robotp_gl == (Robot *)robotp)
-        return i;
-      i++;
-    }
-  return -1;
-}
-
 void
 Gui::setup_control_window()
 {
@@ -480,6 +463,8 @@ Gui::setup_score_window()
       gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena.get_foreground_colour_p());
       gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena.get_background_colour_p());
 
+      robotp->set_row_in_score_clist( row );
+
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
       char ** col_sq;
@@ -492,9 +477,8 @@ Gui::setup_score_window()
 
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robot_name().non_const_chars());
 
-      robotp->display_energy();
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
-      robotp->display_last();
+      robotp->reset_last_displayed();
       robotp->display_score();
     }
 }
