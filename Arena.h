@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "Vector2D.h"
 #include "messagetypes.h"
+#include "Options.h"
 
 #ifndef __ARENA__
 #define __ARENA__
@@ -19,6 +20,7 @@ enum touch_type { NO_ACTION, BOUNCE, TRANSFORM };
 
 static const number_of_object_types = 6;
 
+static class Options opts;
 
 
 // --------------------------  Arena --------------------------
@@ -62,23 +64,10 @@ public:
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
   int get_sequences_remaining() { return sequences_remaining; }
   int get_robots_per_game() { return robots_per_game; }
-  double get_max_acceleration() { return max_acceleration; }
-  double get_min_acceleration() { return min_acceleration; }
-  double get_shot_radius() { return shot_radius; }
-  double get_shot_speed() { return shot_speed; }
-  double get_robot_radius() { return robot_radius; }
-  double get_robot_mass() { return robot_mass; }
-  double get_robot_protection() { return robot_protection; }
-  double get_robot_hardness() { return robot_hardness; }
-  double get_robot_bounce_coeff() { return robot_bounce_coeff; }
-  double get_start_energy() { return start_energy; }
-  double get_air_resistance() { return air_resistance; }
-  double get_roll_friction() { return roll_friction; }
-  double get_slide_friction() { return slide_friction; }
-  double get_grav_const() { return grav_const; }
+
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
-  double get_shooting_penalty() { return shooting_penalty / max(1.0, ((double)robots_left)/10.0); }
+  double get_shooting_penalty() { return opts.get_shooting_penalty() / max(1.0, ((double)robots_left)/10.0); }
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
@@ -121,27 +110,16 @@ private:
   int games_remaining_in_sequence;
   int games_per_sequence;
   int sequences_remaining;
+
+  int number_of_arenas;
   int current_arena_nr;
+
   int robots_left;
   int robots_per_game;
-  double robot_radius;
-  double robot_mass;
-  double robot_bounce_coeff;
-  double robot_hardness;
-  double robot_protection;
-  double shot_radius;
-  double shot_speed;
-  double start_energy;
-  double shooting_penalty;
+
   GdkColor background_colour;
   GdkColor foreground_colour;
 
-  double grav_const;
-  double air_resistance;
-  double roll_friction;
-  double slide_friction;
-  double max_acceleration;
-  double min_acceleration;
   Vector2D boundary[2];   // {top-left, bottom-right}
   state_t state;
 
@@ -264,6 +242,34 @@ protected:
   //  double radiussqr;
 };
 
+// ---------------------  InnerCircle : Shape ---------------------
+
+class InnerCircle : public virtual Shape 
+{
+public:
+  InnerCircle();
+  InnerCircle(const Vector2D& c, const double r); 
+  InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn);
+  ~InnerCircle() {}
+
+  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
+  bool within_distance(const Vector2D& pos, const double size);
+  Vector2D get_normal(const Vector2D& pos);
+  void draw_shape(Gui& the_gui, bool erase);
+  
+  double get_radius() { return radius; }
+  Vector2D get_center() { return center; }
+  //void add_to_center(const Vector2D& diff) { center += diff; }
+  
+protected:
+  Vector2D center;
+  double radius;
+
+  Vector2D last_drawn_center;
+  double last_drawn_radius;
+  //  double radiussqr;
+};
+
 // ---------------------  Wall : ArenaObject ---------------------
 
 class Wall : public virtual ArenaObject 
@@ -278,6 +284,14 @@ public:
   WallCircle(const Vector2D& c, const double r, 
              const double b_c, const double hardn) : Circle(c, r, b_c, hardn) {}
   ~WallCircle() {}
+};
+
+class WallInnerCircle : public virtual Wall, public virtual InnerCircle
+{
+public:
+  WallInnerCircle(const Vector2D& c, const double r, 
+             const double b_c, const double hardn) : InnerCircle(c, r, b_c, hardn) {}
+  ~WallInnerCircle() {}
 };
 
 class WallLine : public virtual Wall, public virtual Line
@@ -336,7 +350,7 @@ private:
 class MovingObject : public virtual ArenaObject
 {
 public:
-  MovingObject::MovingObject() {}
+  MovingObject() {}
   MovingObject(const Vector2D& vel) : velocity(vel) {}
   ~MovingObject() {}
 

@@ -11,25 +11,13 @@ Arena::Arena()
   all_robots_in_sequence = g_list_alloc();
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
-  robot_radius = 0.5;
-  robot_mass = 1.0;
-  robot_hardness = 0.5;
-  robot_protection = 0.5;
-  robot_bounce_coeff = 0.7;
-  shot_radius = 0.1;
-  shot_speed = 10.0;
-  max_acceleration = 2.0;
-  min_acceleration = -0.5;
-  start_energy = 100.0;
-  shooting_penalty = 0.075;
-  background_colour = make_gdk_color(0xfaf0e6);   // linen
-  foreground_colour = make_gdk_color(0x000000);   // black
-  air_resistance = 0.005;
-  roll_friction = 0.002;
-  slide_friction = 0.098;
-  grav_const = 9.82;
+
+  background_colour = make_gdk_color(opts.get_background_colour());
+  foreground_colour = make_gdk_color(opts.get_foreground_colour());
+
   for(int i=ROBOT; i<=EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
+
   the_gui = new Gui(this);
 }
 
@@ -51,58 +39,128 @@ void
 Arena::parse_file(istream& file)
 {
   char text[20];
-  double number1, number2, bounce_c, hardn;
+  double number1, number2, bounce_c, hardn, thickness;
+  int vertices;
 
-  Vector2D vec1, vec2;
-  //Wall* wallp;
+  Vector2D vec1, vec2, vec0;
+  WallLine* wall_linep;
+  WallCircle* wall_circlep;
+  WallInnerCircle* wall_inner_circlep;
 
+  int succession = 1;
+  double scale = 1.0;
   do
     {
       file >> ws >> text;
-      if( strcmp(text, "boundary" ) == 0 )
+      if( strcmp(text, "scale" ) == 0 )
         {
+          if( succession != 1 ) throw Error("'scale' not first", "Arena::parsefile");
+          succession = 2;
+          file >> scale;
+        }
+      else if( strcmp(text, "boundary" ) == 0 )
+        {
+          if( succession > 2 ) throw Error("'boundary' after wallpieces or duplicate", "Arena::parsefile");
+          succession = 3;
           double b1, b2;
           file >> b1;
           file >> b2;
-          boundary[0] = Vector2D(b1, b2);
+          boundary[0] = Vector2D(scale*b1, scale*b2);
           file >> b1;
           file >> b2;
-          boundary[1] = Vector2D(b1, b2);
+          boundary[1] = Vector2D(scale*b1, scale*b2);
+        }
+      else if( strcmp(text, "inner_circle" ) == 0 )
+        {
+          if( succession != 3 ) throw Error("'inner_circle' not between boundary other wallpieces", "Arena::parsefile");
+          file >> vec1;
+          file >> number1;
+          file >> bounce_c;
+          file >> hardn;
+          wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*number1, bounce_c, hardn);
+          g_list_append(object_lists[WALL], wall_inner_circlep);
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
+          if( succession < 3 ) throw Error("'circle' before 'boundary'", "Arena::parsefile");
+          succession = 4;
           file >> vec1;
           file >> number1;
           file >> bounce_c;
           file >> hardn;
 
-          WallCircle* wallp = new WallCircle(vec1, number1, bounce_c, hardn);
-          g_list_append(object_lists[WALL], wallp);
+          wall_circlep = new WallCircle(scale*vec1, scale*number1, bounce_c, hardn);
+          g_list_append(object_lists[WALL], wall_circlep);
         }
-      //  else if( strcmp(text, "outer_circle" ) == 0 )
-      //    {
-      //    }
-      //   else if( strcmp(text, "arc" ) == 0 )
-      //     {
-      //     }
+//       else if( strcmp(text, "arc" ) == 0 )
+//         {
+//         }
       else if( strcmp(text, "line" ) == 0 )
         {
+          if( succession < 3 ) throw Error("'line' before 'boundary'", "Arena::parsefile");
+          succession = 4;
           file >> vec1;      // start_point
           file >> vec2;      // end_point
           file >> number2;   // thickness
           file >> bounce_c;
           file >> hardn;
 
-          WallLine* wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), 
-                                         number2, bounce_c , hardn);      
-          g_list_append(object_lists[WALL], wallp);
+          wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
+                                    scale*number2, bounce_c , hardn);      
+          g_list_append(object_lists[WALL], wall_linep);
         }
-      //   else if( strcmp(text, "polygon" ) == 0 )
-      //     {
-      //     }
-      //   else if( strcmp(text, "closed_polygon" ) == 0 )
-      //     {
-      //     }
+      else if( strcmp(text, "polygon" ) == 0 )
+        {
+          if( succession < 3 ) throw Error("'polygon' before 'boundary'", "Arena::parsefile");
+          succession = 4;
+          file >> thickness;    // thickness
+          file >> bounce_c;
+          file >> hardn;
+          file >> vertices;   // number of vertices
+          file >> vec1;      // first point
+          wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
+          g_list_append(object_lists[WALL], wall_circlep);
+
+          for(int i=0; i<vertices; i++)
+            {
+              vec2 = vec1;
+              file >> vec1;      // next point
+
+              wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
+                                        scale*thickness, bounce_c , hardn);      
+              g_list_append(object_lists[WALL], wall_linep);
+              wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
+              g_list_append(object_lists[WALL], wall_circlep);
+            }
+        }
+      else if( strcmp(text, "closed_polygon" ) == 0 )
+        {
+          if( succession < 3 ) throw Error("'closed_polygon' before 'boundary'", "Arena::parsefile");
+          succession = 4;
+          file >> thickness;    // thickness
+          file >> bounce_c;
+          file >> hardn;
+          file >> vertices;   // number of vertices
+          file >> vec1;      // first point
+          wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
+          g_list_append(object_lists[WALL], wall_circlep);
+          vec0 = vec1;
+
+          for(int i=1; i<vertices; i++)
+            {
+              vec2 = vec1;
+              file >> vec1;      // next point
+
+              wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
+                                        scale*thickness, bounce_c , hardn);      
+              g_list_append(object_lists[WALL], wall_linep);
+              wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
+              g_list_append(object_lists[WALL], wall_circlep);
+            }
+          wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
+                                    scale*thickness, bounce_c , hardn);      
+          g_list_append(object_lists[WALL], wall_linep);
+        }
       else if( text[0] != '\0' )
         throw Error("Incorrect arenafile, unknown keyword", 
                     text, "Arena::parsefile");
@@ -493,6 +551,8 @@ Arena::start_game()
 {
   // put the arena together
   
+  current_arena_nr = current_arena_nr % number_of_arenas + 1;
+  
   GString* filename = (GString*)g_list_nth(arena_filenames, current_arena_nr)->data;
   ifstream file(filename->str);
   if( !file ) throw Error("Couldn't open file", filename->str, "Arena::Arena");
@@ -514,7 +574,7 @@ Arena::start_game()
       for( int i=0; i<100 && !found_space; i++)
         {
           pos = get_random_position();
-          found_space = space_available(pos, robot_radius*1.2);
+          found_space = space_available(pos, opts.get_robot_radius()*1.2);
         }
 
       if( !found_space )
@@ -568,7 +628,7 @@ void
 Arena::start_sequence()
 {
   games_remaining_in_sequence = games_per_sequence;
-  current_arena_nr = 1;
+  current_arena_nr = 0;
 
   // Make list of robots in this sequence
 
@@ -675,10 +735,13 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
     }
 
   // Create list of arena filenames
+  number_of_arenas = 0;
 
   for(int i=0; arenafilename_list[i] != NULL; i++)
     {
+      // TODO: check if arena filename is ok
       g_list_append(arena_filenames, g_string_new(arenafilename_list[i]));
+      number_of_arenas++;
     }
 
   robots_per_game = robots_p_game;

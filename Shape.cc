@@ -117,9 +117,7 @@ Circle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size
 bool
 Circle::within_distance(const Vector2D& pos, const double size)
 {
-  return ((center[0]-pos[0])*(center[0]-pos[0])+
-          (center[1]-pos[1])*(center[1]-pos[1]) 
-          <= (size+radius)*(size+radius));
+  return (lengthsqr(center-pos) <= (size+radius)*(size+radius));
 }
 
 Vector2D
@@ -137,4 +135,59 @@ Circle::draw_shape(Gui& the_gui, bool erase)
   last_drawn_center = center;
   last_drawn_radius = radius;
   the_gui.draw_circle(center,radius,colour,true);
+}
+
+InnerCircle::InnerCircle()
+{
+  center = Vector2D(0.0, 0.0);
+  radius = 0.0;
+  last_drawn_center = Vector2D(-infinity,-infinity);
+  last_drawn_radius = 0.0;
+}
+
+InnerCircle::InnerCircle(const Vector2D& c, const double r)
+{
+  last_drawn_center = center = c;
+  last_drawn_radius = radius = r;
+}
+
+InnerCircle::InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn)
+{
+  last_drawn_center = center = c;
+  last_drawn_radius = radius = r;
+  bounce_coeff = b_c;
+  hardness_coeff = hardn;
+}
+
+inline double
+InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+{
+  Vector2D y = center - pos;
+  double speedsqr = lengthsqr(vel);
+  double dt = dot(vel, y);
+  double c = dt*dt + speedsqr*((size-radius)*(size-radius) - lengthsqr(y));
+  return (dt + sqrt(c))/speedsqr;
+}
+
+bool
+InnerCircle::within_distance(const Vector2D& pos, const double size)
+{
+  return (lengthsqr(center-pos) > (size-radius)*(size-radius));
+}
+
+Vector2D
+InnerCircle::get_normal(const Vector2D& pos)
+{
+  return unit(center - pos);
+}
+
+void
+InnerCircle::draw_shape(Gui& the_gui, bool erase)
+{
+  //  if( erase )
+  //    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
+  //                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
+  last_drawn_center = center;
+  last_drawn_radius = radius;
+ the_gui.draw_circle(center,radius,colour,false);
 }
