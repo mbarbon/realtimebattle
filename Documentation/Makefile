@@ -8,6 +8,8 @@ target: RealTimeBattle.html note-files
 
 all: target RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt note-files.html
 
+html: RealTimeBattle.html note-files.html
+
 note-files: ../BUGS ../FAQ ../INSTALL ../NEWS ../README ../TODO
 
 note-files.html: BUGS.html FAQ.html INSTALL.html NEWS.html README.html TODO.html
