@@ -665,7 +665,7 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
         max_value = 10000;
       else
         {
-          max_value = min(120,robot_number);
+          max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),robot_number);
         }
       if(i != 1)
         min_value = 1;
@@ -741,8 +741,8 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
           {
             int number_of_robots = mmf_p->stw_p->
               get_selected_robot_tournament()->number_of_elements();
-            if( number_of_robots > 120 )
-              number_of_robots = 120;
+            if( number_of_robots > the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ) )
+              number_of_robots = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
             gtk_entry_set_text
               ( GTK_ENTRY( mmf_p->stw_p->get_entries()[mmf_p->entry] ),
                 String(number_of_robots).chars() );
@@ -760,8 +760,8 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
 
         if( number_of_robots < robots_per_sequence )
           robots_per_sequence = number_of_robots;
-        if( robots_per_sequence > 120 )
-          robots_per_sequence = 120;
+        if( robots_per_sequence > the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ) )
+          robots_per_sequence = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
         if( robots_per_sequence < 2 )
           robots_per_sequence = 2;
         gtk_entry_set_text
@@ -775,8 +775,8 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
         int number_of_arenas = mmf_p->stw_p->
           get_selected_arena_tournament()->number_of_elements();
 
-        if( number_of_arenas > 120 )
-          number_of_arenas = 120;
+        if( number_of_arenas > the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ) )
+          number_of_arenas = the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED );
         if( number_of_arenas < 1 )
           number_of_arenas = 1;
         gtk_entry_set_text
@@ -807,7 +807,7 @@ StartTournamentWindow::start( GtkWidget* widget,
         max_value = 10000;
       else
         {
-          max_value = min(120,robot_number);
+          max_value = min(the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),robot_number);
         }
       if(i != 1)
         min_value = 1;
