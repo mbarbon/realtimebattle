@@ -21,7 +21,7 @@ TournamentRobotPacketFactory::MakePacket( string& netstr, NetConnection* nc )
   string type = netstr.substr(0,2);
   string data = netstr.substr(2, netstr.length() - 2);
 
-  if     (type == "OM")    return new OldRTBMessagePacket( data, nc );
+  if     (type == "OM")     robot_connection[ nc ]->new_message( data );
   else if(type == "@R")    return new RobotCommandPacket( data, nc );
 
   //else if(type == "@C")    return new CommandPacket( );
@@ -71,6 +71,8 @@ string OldRTBMessagePacket::make_netstring() const
 
 int OldRTBMessagePacket::handle_packet( )
 {
+  cout<<data<<endl;
+  
   return 0;
 }
 

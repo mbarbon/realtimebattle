@@ -30,5 +30,6 @@ Packet*
 RobotPacketFactory::MakePacket(string & s, NetConnection*)
 {
   cout<<"Making a packet from "<<s<<endl;
+  if( s == "@CQuit" ) { exit( 0 ); }
   return NULL;
 }

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -229,7 +229,7 @@ Process::start(const enum game_mode_t mode)
   
   struct timeval timeout;
   timeout.tv_sec = 0;
-  timeout.tv_usec = 40000;  //  1/25 s 
+  timeout.tv_usec = 500000;  //  1/2 s 
   
   select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
   
@@ -314,6 +314,27 @@ Process::check()
   */ 
 }
 
+void
+Process::reset_messages()
+{
+  *instreamp >> ws;
+  instreamp->clear();
+  instreamp->peek();
+}
+
+bool
+Process::more_messages()
+{
+  return (!instreamp->eof());
+}
+
+string
+Process::get_next_message( )
+{
+  char temp[512] ;
+  instreamp->getline( temp, 512, '\n' );
+  return string(temp);
+}
 
 void
 Process::end()

@@ -24,20 +24,35 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include "RobotClient.h"
-#include "SimpleProcess.h"
+#include "Process.h"
 #include "ClientSocket.h"
 #include "RobotPacketFactory.h"
 #include <iostream>
-
+#include <unistd.h>
 int
 main(int argc, char* argv[])
 {
+  /* argv[0] : robotclient
+
+     argv[1] : hostname
+     argv[2] : port_number
+     argv[3] : Protocol version
+     argv[4] : Channel number
+
+     argv[5] : robot path
+     argv[6] : robot exec
+
+     argv[7] : uniqueness id number
+     argv[8] : random id number
+  */
+
   cout<<"Launching robot\n";
-  for(int i = 0; i < argc; i ++)
+  /*
+    for(int i = 0; i < argc; i ++)
     {
       cout<<i<<"  "<<argv[i]<<endl;
     }
-
+  */
   
   SocketClient my_client;
   NetConnection* my_conn = my_client.connect_to_server( argv[1], 4147 );
@@ -49,15 +64,30 @@ main(int argc, char* argv[])
 
   cout<<"socketclient ok\n";
 
-  SimpleProcess my_process( (string(argv[5]) + string(argv[6])). c_str() );
-  my_process.start();
+  string robot_name = string(argv[5]) + string(argv[6]);
+  cout<<"Robot file : "<<robot_name<<endl;
+
+  Process P( robot_name. c_str() );
+  P.start( NORMAL_MODE );
 
   cout<<"process started\n";
+
+  //(*P.get_outstreamp())<<"Initialize 1"<<endl;
+
+  //P.set_signal_to_send(true, 10);
+  //P.send_signal();
+
 
   while( 1 )
     {
       my_client.check_socket();
-      //cout<<(my_process.ipipe_streamp)->c_str()<<endl;
+
+      P.reset_messages();
+      while( P.more_messages()  )
+	{
+	  string message = P.get_next_message();
+	  my_conn->send_data("OM" + message );
+	}
     }
   
 }

@@ -86,11 +86,8 @@ public:
       {
 	my_connection->send_data( "@IConnect RTB_NET_Agree_0.1 2" );
 	my_connection->send_data( "TCAddRob /tmp/roussebe/RealTimeBattle/Robots/empty/ empty.robot 0 0");
-	my_connection->send_data( "TCAddRob /tmp/roussebe/RealTimeBattle/Robots/empty/ empty.robot 0 0");
+	my_connection->send_data( "TCAddRob /tmp/roussebe/RealTimeBattle/Robots/seek_and_destroy/ seek_and_destroy.robot 0 0");
 	my_connection->send_data( "TCAddArn  /tmp/roussebe/RealTimeBattle/Arenas/ Original.arena 0");
-      }
-    else if(command == "2")
-      {
 	my_connection->send_data( "ST1" );
       }
     else

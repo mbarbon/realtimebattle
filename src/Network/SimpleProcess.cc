@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -222,6 +222,7 @@ SimpleProcess::start()
 
       opipe_streamp = new ofstream( out_pipe );
       ipipe_streamp = new ifstream( in_pipe );
+      cout<<"Pipe linkend to stream\n";
     }
 
   process_running = true;

@@ -68,6 +68,7 @@ public:
   void set_angle( const double a ) { robot_angle.angle = a; }
 
   void check_name_uniqueness();
+  void new_message( string );
   void get_messages();
   void send_message(enum message_to_robot_type ...);
   void set_values_before_game(const Vector2D& pos, double angle);

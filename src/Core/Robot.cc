@@ -415,6 +415,13 @@ Robot::get_messages()
   */
 }
 
+void
+Robot::new_message( string message )
+{
+  cout<<"Robot : I have this message "<<message<<endl;
+
+}
+
 message_from_robot_type
 Robot::name2msg_from_robot_type(char* msg_name)
 {

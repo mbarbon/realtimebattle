@@ -5,7 +5,8 @@ PROFFLAGS = -pg
 endif
 
 INCLUDES = -I$(top_srcdir)/intl  \
-	-I$(top_srcdir)/src/Network $(PROFFLAGS)
+	-I$(top_srcdir)/src/Network -I$(top_srcdir)/src/Common \
+	$(PROFFLAGS)
 
 if ENABLE_CCMALLOC
 CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
@@ -19,7 +20,8 @@ GETOPT_O =
 endif
 
 
-rtb_RobotClient_LDADD = $(top_builddir)/src/Network/libRTB_Network.a 
+rtb_RobotClient_LDADD = $(top_builddir)/src/Network/libRTB_Network.a \
+	$(top_builddir)/src/Common/libRTB_Common.a \
 	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) 
 
 #rtb_RobotClient_LDFLAGS =  -export-dynamic

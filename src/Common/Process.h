@@ -17,13 +17,6 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/*
- * Note from Benoit Rousseau (august 2001) :
- *   I think the process will only be used by the robot_client to launch
- *   a specific robot. I don't think we need variables such as Robot* my_robot
- *   or things like that...
- */
-
 #ifndef __PROCESS__
 #define __PROCESS__
 
@@ -64,6 +57,12 @@ public:
   //  void send_message(enum message_to_robot_type ...);
 
   string get_robot_filename() { return filename; }
+  string get_next_line();
+
+  void reset_messages();
+  bool more_messages();
+  string get_next_message( );
+
   ofstream* get_outstreamp() { return outstreamp; }  
   ifstream* get_instreamp() { return instreamp; }  
 

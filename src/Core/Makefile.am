@@ -20,7 +20,7 @@ RealTimeBattle_LDADD = \
 	$(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
 	$(top_builddir)/src/Network/libRTB_Network.a \
 	$(top_builddir)/src/Common/libRTB_Common.a \
-	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) $(THREAD_LIBS)
+	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS)
 
 RealTimeBattle_DEPENDENCIES =  \
 	$(top_builddir)/src/Core/libRTB_Core.a \
@@ -39,7 +39,7 @@ INCLUDES = -I$(top_srcdir)/intl \
 	-I$(top_srcdir)/src/Gadgets/ \
 	-I$(top_srcdir)/src/Common/ \
 	-I$(top_srcdir)/src/Network/ \
-	$(PROFFLAGS) $(THREAD_FLAGS)
+	$(PROFFLAGS)
 
 
 libRTB_Core_a_SOURCES = \
