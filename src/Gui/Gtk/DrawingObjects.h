@@ -31,6 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 struct _GtkCList;
 typedef struct _GtkCList GtkCList;
 
+struct object_pos_info;
 class Shape;
 class Robot;
 
@@ -45,6 +46,7 @@ public:
   virtual ~DrawingShape    () {}
 
   virtual void draw_shape  ( const bool erase ) = 0;
+  virtual void set_position( const object_pos_info* pos ) {}
 
   void set_colour          ( const long int colour );
   long int get_rgb_colour  () const { return rgb_colour; }
@@ -72,6 +74,7 @@ public:
   ~DrawingLine             () {}
 
   void draw_shape          ( const bool erase );
+  void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& sp, const Vector2D& dir,
                              const double len, const double th );
 
@@ -95,6 +98,7 @@ public:
   ~DrawingCircle           () {}
 
   void draw_shape          ( const bool erase );
+  void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double r );
 
 protected:
@@ -116,6 +120,7 @@ public:
   ~DrawingInnerCircle      () {}
 
   void draw_shape          ( const bool erase );
+  void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double r );
 
 protected:
@@ -139,6 +144,7 @@ public:
   ~DrawingArc              () {}
 
   void draw_shape          ( const bool erase );
+  void set_position        ( const object_pos_info* pos );
   void set_position        ( const Vector2D& c, const double ir, const double or,
                              const double sa, const double ea );
 

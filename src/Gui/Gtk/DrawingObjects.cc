@@ -37,6 +37,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaWindow.h"
 #include "ScoreWindow.h"
 #include "String.h"
+#include "InfoClasses.h"
 
 extern class Gui* gui_p;
 
@@ -78,6 +79,18 @@ DrawingLine::draw_shape( const bool erase )
 }
 
 void
+DrawingLine::set_position( const object_pos_info* pos )
+{
+  if( pos->type != SHAPE_LINE )
+    return;
+
+  start_point = ((object_line_pos_info*)pos)->start_point;
+  direction   = ((object_line_pos_info*)pos)->direction;
+  length      = ((object_line_pos_info*)pos)->length;
+  thickness   = ((object_line_pos_info*)pos)->thickness;
+}
+
+void
 DrawingLine::set_position( const Vector2D& sp, const Vector2D& dir,
                            const double len, const double th )
 {
@@ -108,6 +121,16 @@ DrawingCircle::draw_shape( const bool erase )
   last_drawn_radius = radius;
   the_gui.get_arenawindow_p()->draw_circle( center, radius,
                                             gdk_colour, true );
+}
+
+void
+DrawingCircle::set_position( const object_pos_info* pos )
+{
+  if( pos->type != SHAPE_CIRCLE )
+    return;
+
+  center = ((object_circle_pos_info*)pos)->center;
+  radius = ((object_circle_pos_info*)pos)->radius;
 }
 
 void
@@ -144,6 +167,16 @@ DrawingInnerCircle::draw_shape( const bool erase )
 }
 
 void
+DrawingInnerCircle::set_position( const object_pos_info* pos )
+{
+  if( pos->type != SHAPE_INNER_CIRCLE )
+    return;
+
+  center = ((object_inner_circle_pos_info*)pos)->center;
+  radius = ((object_inner_circle_pos_info*)pos)->radius;
+}
+
+void
 DrawingInnerCircle::set_position( const Vector2D& c, const double r )
 {
   center = c;
@@ -170,6 +203,20 @@ DrawingArc::draw_shape(const bool erase)
 
   the_gui.get_arenawindow_p()->draw_arc( center, inner_radius, outer_radius,
                                          start_angle, end_angle, gdk_colour );
+}
+
+void
+DrawingArc::set_position( const object_pos_info* pos )
+{
+  if( pos->type != SHAPE_ARC )
+    return;
+
+  center       = ((object_arc_pos_info*)pos)->center;
+  inner_radius = ((object_arc_pos_info*)pos)->inner_radius;
+  outer_radius = ((object_arc_pos_info*)pos)->outer_radius;
+  start_angle  = ((object_arc_pos_info*)pos)->start_angle;
+  end_angle    = ((object_arc_pos_info*)pos)->end_angle;
+
 }
 
 void
