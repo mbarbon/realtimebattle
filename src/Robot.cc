@@ -599,7 +599,10 @@ Robot::get_last_position()
   li--;
   if( !li.ok() ) return 0;
   
-  return li()->position;
+  if( li()->sequence_nr == the_arena.get_sequence_nr() )
+    return li()->position;
+  else
+    return 0;
 }
 
 ListIterator<stat_t>
