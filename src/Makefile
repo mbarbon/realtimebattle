@@ -1,30 +1,28 @@
 #CC = gcc
 #CXX = g++
 
-ifndef DEBUG_MODE
-DEBUG_MODE=no
-endif
+#ifndef DEBUG_MODE
+#DEBUG_MODE=no
+#endif
 
 # Substitute '-O' with '-fhandle-exceptions' in CXXFLAGS if your compiler requires it.
 # Add '-DUSE_STDARG_H' if the compiler complains about va_list, va_args or similar.
 # Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
 # Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
-CXXFLAGS = -O -DINSTALLDIR='"$(INSTALLDIR)"'
+CXXFLAGS =-DINSTALLDIR='"$(INSTALLDIR)"'
+
+OPTIMIZEFLAGS = -O
+
+ifdef DEBUG
+OPTIMIZEFLAGS = -g -Wall
+endif
+
+CPPFLAGS = $(gtkincludedirs)
 
 ifndef RPM_OPT_FLAGS
-ifeq ($(DEBUG_MODE), yes)
-#debug-options
-CPPFLAGS = $(gtkincludedirs)
-CFLAGS = -g -Wall
-CXXFLAGS += -g -Wall
+CFLAGS = $(OPTIMIZEFLAGS)
+CXXFLAGS += $(OPTIMIZEFLAGS)
 else
-#final-options
-CPPFLAGS = $(gtkincludedirs)
-CFLAGS = -O
-CXXFLAGS += 
-endif
-else
-CPPFLAGS = $(gtkincludedirs)
 CFLAGS = $(RPM_OPT_FLAGS)
 CXXFLAGS += $(RPM_OPT_FLAGS)
 endif
