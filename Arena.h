@@ -82,6 +82,7 @@ private:
   void move_shots();
   void update_explosions();
 
+  void check_robots();
   void add_cookie();
   void add_mine();
 

@@ -208,6 +208,35 @@ Robot::is_process_running()
 }
 
 void
+Robot::check_process()
+{
+  String procfilename = "/proc/" + String(pid) + "/stat";
+
+  if( is_process_running() )
+    {
+      ifstream procfile(procfilename.chars());
+      if( !procfile ) 
+        {
+          process_running = false;
+          return;
+        }
+
+      char buf[16];
+
+      for(int i=0; i<13; i++)
+        procfile >> buf;
+      
+      int jiffies;
+      
+      procfile >> jiffies;
+
+      //      cerr << robot_name << " time usage: " << (double)jiffies / 100.0 << endl;
+      //  TODO: check if used to much CPU
+    }
+}
+
+
+void
 Robot::end_process()
 {
   send_message(SAVE_DATA);

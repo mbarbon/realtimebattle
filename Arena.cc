@@ -81,8 +81,8 @@ Arena::parse_file(istream& file)
   double scale = the_opts.get_d(OPTION_ARENA_SCALE);
   do
     {
-      // TODO: max 20 should be read
-      file >> ws >> text;
+      file >> ws;
+      file.get(text, 20, ' ');
       if( strcmp(text, "scale" ) == 0 )
         {
           if( succession != 1 ) throw Error("'scale' not first", "Arena::parsefile");
@@ -427,7 +427,7 @@ Arena::timeout_function()
             end_game();
           }
 
-      //   TODO:    if( total_time > next_check_time ) check_robots();
+        if( total_time > next_check_time ) check_robots();
 
         // Place mines and cookies
         if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
@@ -513,6 +513,24 @@ Arena::add_mine()
   if( !found_space ) throw Error("Couldn't find space for mine", "Arena::timeout_function");
   Mine* minep = new Mine(pos, r, en);
   g_list_append(object_lists[MINE], minep);
+}
+
+void
+Arena::check_robots()
+{
+  Robot* robotp;
+
+  GList* gl = g_list_next(all_robots_in_sequence); 
+  for( ; gl != NULL; gl=g_list_next(gl))
+    {
+      robotp = (Robot*)gl->data;
+      if( robotp->is_process_running() )
+        {
+          robotp->check_process();
+        }      
+    } 
+
+  next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
 
 void
@@ -760,6 +778,7 @@ Arena::start_game()
   the_gui.setup_score_window();
 
   reset_timer();
+  next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
 
 void

@@ -73,6 +73,7 @@ public:
   void set_stats(int robots_killed_same_time);
   void start_process();
   bool is_process_running();
+  void check_process();
   void send_signal();
   void end_process();
   void delete_pipes();

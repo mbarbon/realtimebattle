@@ -72,6 +72,9 @@ Options::Options()
 
   all_double_options[OPTION_ROBOT_RADAR_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, 2.0*M_PI / 3.0, 2.0*M_PI / 50.0, 2.0*M_PI * 5.0, 12, "Robot radar max rotate speed [rad/s]", NULL);
+
+  all_double_options[OPTION_CHECK_INTERVAL] = 
+    option_info_t<double>(ENTRY_DOUBLE, 1.0, 0.01, 1000000, 12, "Process check interval", NULL);
     
   all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
     option_info_t<long>(ENTRY_INT, 10, 1, 100, 4, "Robot energy levels", NULL);
