@@ -313,11 +313,11 @@ StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
 
 void
 StatisticsWindow::save_stats( GtkWidget* widget,
-                           class StatisticsWindow* sw_p )
+                              class StatisticsWindow* sw_p )
 {
   the_arena.save_statistics_to_file
     ( gtk_file_selection_get_filename
-      ( GTK_FILE_SELECTION ( sw_p->get_filesel() ) ) );
+      ( GTK_FILE_SELECTION( sw_p->get_filesel() ) ) );
   destroy_filesel( sw_p->get_filesel(), sw_p );
 }
 
