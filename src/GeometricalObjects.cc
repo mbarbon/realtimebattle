@@ -280,7 +280,7 @@ Arc::within_distance(const Vector2D& pos, const double size)
   double l = lengthsqr( d );
 
   return( l <= (size + outer_radius)*(size + outer_radius) &&
-          l >= (size - inner_radius)*(size - inner_radius) &&
+          ( l >= (size - inner_radius)*(size - inner_radius) || size >= inner_radius ) &&
           within_angle( vec2angle( d ) ) );
 }
 
@@ -292,7 +292,7 @@ Arc::within_angle( const double a )
   if( start_angle <= end_angle )
     return ( a >= start_angle && a <= end_angle );
   else
-    return ( a <= start_angle && a >= end_angle );
+    return ( a >= start_angle || a <= end_angle );
 }
 
 Vector2D
