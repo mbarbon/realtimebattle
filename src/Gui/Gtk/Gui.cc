@@ -72,7 +72,7 @@ GIInit( int argc, char** argv )
 }
 //TODO: How do we get the_opts?
 int
-GIMain( GuiInterface* _gi_p )
+GIMain( GuiClientInterface* _gi_p )
 {
   int returncode = the_gui.main_loop( _gi_p );
   _gi_p->quit( true );
@@ -181,11 +181,10 @@ Gui::initialize_gtk_options()
                 _("Initial Statistics window height") );
 
   gtk_opts = new OptionHandler( "Gui Gtk", all_options, group_names );
-
 }
 
 int
-Gui::main_loop( GuiInterface* _gi_p )
+Gui::main_loop( GuiClientInterface* _gi_p )
 {
   guiinterface_p = _gi_p;
 
@@ -216,7 +215,7 @@ void
 Gui::get_information()
 {
   const InfoBase* info_p;
-  while( NULL != ( info_p = guiinterface_p->get_information() ) )
+  while( NULL != ( info_p = guiinterface_p->check_information() ) )
     {
       game_time = info_p->get_game_time();
       switch( info_p->get_type() )
@@ -250,17 +249,17 @@ Gui::get_information()
                 switch( (*opi)->type )
                   {
                   case SHAPE_LINE:
-                    ds_p = new DrawingLine( id, 0 ); //Should the colour be bg_colour?
+                    ds_p = new DrawingLine( id, 0 ); //Should the colour be fg_colour?
                     break;
                   case SHAPE_CIRCLE:
-                    ds_p = new DrawingCircle( id, 0 ); //Should the colour be bg_colour?
+                    ds_p = new DrawingCircle( id, 0 ); //Should the colour be fg_colour?
                     break;
                   case SHAPE_INNER_CIRCLE:
-                    //Should the colour be bg_colour?
+                    //Should the colour be fg_colour?
                     ds_p = new DrawingInnerCircle( id, 0 );
                     break;
                   case SHAPE_ARC:
-                    ds_p = new DrawingArc( id, 0 ); //Should the colour be bg_colour?
+                    ds_p = new DrawingArc( id, 0 ); //Should the colour be fg_colour?
                     break;
                   }
                 ds_p->set_position( *opi );

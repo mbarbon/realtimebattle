@@ -30,14 +30,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "Structs.h"
 
-class GuiInterface;
 class ControlWindow;
 class ArenaWindow;
 class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
-class GuiInterface;
+class GuiClientInterface;
 class Vector2D;
 
 class Gui;
@@ -58,7 +57,7 @@ public:
   Gui();
   ~Gui();
 
-  int main_loop                                ( GuiInterface* );
+  int main_loop                                ( GuiClientInterface* );
   int timeout_function                         ();
   void get_information                         ();
   void set_colours                             ();
@@ -137,7 +136,7 @@ private:
 
   void initialize_gtk_options                  ();
 
-  GuiInterface* guiinterface_p;
+  GuiClientInterface* guiinterface_p;
 
   OptionHandler* main_opts;
   OptionHandler* gtk_opts;
