@@ -100,12 +100,14 @@ void
 TournamentAgreementPacketFactory::set_start(NetConnection* nc, bool start)
 {
   ready_to_start[ nc ] = start;
-  start_tournament( true );
+  if( start )  //If I accepted, maybe I'm the last one to accept : try to run the tournament
+    start_tournament( true );
 }
 
 void
 TournamentAgreementPacketFactory::reset_start( )
 {
+  //All the ready_to_start to false ; used if some chatter said 'start' but something changed in the tournament_info
   for(map<NetConnection*, bool>::iterator mi = ready_to_start.begin();
       mi != ready_to_start.end(); mi ++)
     mi->second = false;
@@ -170,6 +172,12 @@ TournamentAgreementPacketFactory::start_tournament(bool check_everybody_ready = 
       Packet* P = new StartTournamentPacket( true );
       broadcast( P );
       delete P;
+
+      //TODO : new Tournament;
+      //TODO : Create an other channel for the tournament (to be created)
+      //TODO : indicate
+      //TODO : release the connections ! (find a way to do it !!!)
+      //TODO : Close me !
     }
 }
 
@@ -196,7 +204,12 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
 
   bool modified = false;
 
-  is >> type_init;           ;
+  is >> type_init;
+  if(type_init.substr(3, 6) == "Rob")
+    {
+      cout<<"Modification on a robot\n";
+      cout<<type_init.substr(3, 6)<<endl;
+    }
   if(type_init == "AddRob")
     {
       string dir, name;
@@ -259,8 +272,8 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
     }
   if( modified )
     {
-      //TODO : reset all the connection that have accepted the setting because they may not accept the new conditions
-      
+      //Reset all the connection that have accepted the setting because they may not accept the new conditions
+      my_factory->reset_start( );
       return 0;
     }
   else

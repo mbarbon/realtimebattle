@@ -55,9 +55,10 @@ enum packet_t
   PACKET_WARNING,       //Send a warning message... (should be used by everybody...)
 };
 
-#define RTB_PROTOCOL_VERSION_STR string("RTB_NET_Server_devel")
-#define RTB_PROTOCOL_TOURNAMENT_AGREEMENT string("RTB_NET_Agree_0.0")
-
+#define RTB_PROTOCOL_VERSION_STR           string("RTB_NET_Server_devel")
+#define RTB_PROTOCOL_TOURNAMENT_AGREEMENT  string("RTB_NET_Agree_0.1")
+#define RTB_PROTOCOL_TOURNAMENT_ROBOT      string("RTB_NET_Robot_0.0")
+#define RTB_PROTOCOL_TOURNAMENT_VIEW       string("RTB_NET_View_0.0")
 
 class Packet
 {
