@@ -1,8 +1,14 @@
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
+
 #include "Messagetypes.h"
 
 volatile double acceleration = 0.0;

@@ -7,6 +7,11 @@
 #include <math.h>
 #include "Messagetypes.h"
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+
 #define abs(x) ((x>0) ? (x) : -(x))
 
 volatile double acceleration = 0.0;
