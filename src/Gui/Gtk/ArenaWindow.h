@@ -122,20 +122,20 @@ private:
   bool window_shown;
 };
 
-#include "ArenaController.h"
+#include "Gui.h"
 
 inline int
 ArenaWindow::boundary2pixel_x( const double x )
 {
-//    return (int)( ( x - the_arena.get_boundary()[0][0] ) * 
-//                  drawing_area_scale + 0.5 );
+  return (int)( ( x - the_gui.get_arena_boundary()[0][0] ) * 
+                drawing_area_scale + 0.5 );
 }
 
 inline int
 ArenaWindow::boundary2pixel_y( const double y )
 {
-//    return (int)( ( the_arena.get_boundary()[1][1] - y ) * 
-//                  drawing_area_scale + 0.5 );
+  return (int)( ( the_gui.get_arena_boundary()[1][1] - y ) * 
+                drawing_area_scale + 0.5 );
 }
 
 #endif NO_GRAPHICS
