@@ -7,7 +7,7 @@
 #include <math.h>
 #include "../messagetypes.h"
 
-#define abs(x) ((x>0) ? (x) : (-x))
+#define abs(x) ((x>0) ? (x) : -(x))
 
 volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;
