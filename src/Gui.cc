@@ -136,7 +136,8 @@ zoom_out_callback(GtkWidget *widget, gpointer data)
 gint
 redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
-  the_gui.draw_all_walls();
+  if(the_arena.get_state() == GAME_IN_PROGRESS)
+    the_gui.draw_all_walls();
   return FALSE;
 }
 
