@@ -51,6 +51,7 @@ install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 /usr/info/RealTimeBattle.info.gz
 
 /usr/games/RealTimeBattle/RealTimeBattle.xpm
+/usr/games/RealTimeBattle/tournament.txt
 /usr/games/RealTimeBattle/Messagetypes.h
 /usr/include/Messagetypes.h
 
