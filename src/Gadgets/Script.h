@@ -20,19 +20,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __SCRIPT_GADGET__
 #define __SCRIPT_GADGET__
 
-#include <vector>
-#include <string>
+#include <list>
+#include <stack>
 
 #include "Gadget.h"
-#include "Variable.h"
+#include "Value.h"
 
-class Function;
+class Variable;
 
-struct ScriptLine
-{
-  string name;
-  double value;
-};
 
 
 class Script : public Gadget
@@ -44,21 +39,36 @@ public:
 
   void run();
   void continue_script() {}
+
+  enum ScriptFunction
+  {
+    PUSH, POP, COPY, STORE,
+    ADD, SUB, MULT, DIV, INV, NEG,
+    SIN, COS, TAN, ATAN, ASIN, ACOS,
+    LT, GT, LE, GE, EQ, NE,
+    THEN, ELSE, GOTO, WAIT
+  };
   
 
-  
+  struct ScriptLine
+  {
+    int line_nr;
+    ScriptFunction function;
+    bool is_variable;
+    Value val;
+    Variable* var_p;
+
+    Value& get_value();
+  };
 
 private:
 
-  vector<ScriptLine> commands;
+  list<ScriptLine> commands;
   
-  Variable* compare_var;
+  list<ScriptLine>::iterator current_line;
   
-  bool last_test_result;  // the result of the latest comparison
-  
+  stack<Value> val_stack;
 
-  int current_line_number;
-  
   bool pausing;
 };
 
