@@ -438,6 +438,7 @@ public:
   double get_energy() { return energy; }
   pid_t get_pid() { return pid; }
   GList* get_statistics() { return statistics; }
+  ofstream* get_outstreamp() { return outstreamp; }  
   int get_position_this_game() { return position_this_game; }
   double get_total_points();
   int get_last_position();
