@@ -35,7 +35,7 @@ GIName()
 const String
 GIUsageMessage()
 {
-  static const String usage("_(No options)");
+  static const String usage(_("No options"));
   return usage;
 }
 
