@@ -119,7 +119,7 @@ Line::draw_shape( bool erase )
                                             last_drawn_direction,
                                             last_drawn_length,
                                             last_drawn_thickness,
-                                            *(the_arena.get_bg_gdk_colour_p()) );
+                                            *(the_gui.get_bg_gdk_colour_p()) );
   last_drawn_start_point = start_point;
   last_drawn_direction = direction;
   last_drawn_length = length;
@@ -192,7 +192,7 @@ Circle::draw_shape(bool erase)
   if( erase )
     the_gui.get_arenawindow_p()->draw_circle( last_drawn_center,
                                               last_drawn_radius,
-                                              *(the_arena.get_bg_gdk_colour_p()),
+                                              *(the_gui.get_bg_gdk_colour_p()),
                                               true );
   last_drawn_center = center;
   last_drawn_radius = radius;
@@ -255,7 +255,7 @@ InnerCircle::draw_shape(bool erase)
     the_gui.get_arenawindow_p()->
       draw_circle( last_drawn_center,
                    last_drawn_radius,
-                   *(the_arena.get_bg_gdk_colour_p()),
+                   *(the_gui.get_bg_gdk_colour_p()),
                    true );
   last_drawn_center = center;
   last_drawn_radius = radius;
@@ -265,7 +265,7 @@ InnerCircle::draw_shape(bool erase)
                     gdk_colour, true );
   the_gui.get_arenawindow_p()->
     draw_circle( center, radius,
-                 *(the_arena.get_bg_gdk_colour_p()),
+                 *(the_gui.get_bg_gdk_colour_p()),
                  true );
 }
 

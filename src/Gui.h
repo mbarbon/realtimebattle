@@ -38,6 +38,12 @@ public:
   Gui();
   ~Gui() {}
 
+  void set_colours();
+
+  GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
+  GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
+  GdkColor* get_rtb_message_gdk_colour_p       () { return &rtb_message_gdk_colour; }
+
   bool is_arenawindow_up                       ()
     { return ( arenawindow_p != NULL ); }
   ArenaWindow* get_arenawindow_p               ()
@@ -75,6 +81,10 @@ public:
   void close_starttournamentwindow             ();
 
 private:
+
+  GdkColor bg_gdk_colour;
+  GdkColor fg_gdk_colour;
+  GdkColor rtb_message_gdk_colour;
 
   ArenaWindow* arenawindow_p;
   MessageWindow* messagewindow_p;

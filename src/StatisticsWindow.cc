@@ -528,9 +528,9 @@ StatisticsWindow::add_new_row( Robot* robot_p, stat_t average_stat,
   char* empty_list[] = { "", "", "", "", "", "", "", "" };
   int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
   gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                            the_arena.get_fg_gdk_colour_p() );
+                            the_gui.get_fg_gdk_colour_p() );
   gtk_clist_set_background( GTK_CLIST( clist ), row,
-                            the_arena.get_bg_gdk_colour_p() );
+                            the_gui.get_bg_gdk_colour_p() );
 
   if( type == STAT_TYPE_GAME ||
       type == STAT_TYPE_SEQUENCE ||

@@ -101,11 +101,9 @@ protected:
 
 public:
 
-  void set_colours();
-
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
- void save_statistics_to_file(String filename);
+  void save_statistics_to_file(String filename);
 
 
 
@@ -129,14 +127,6 @@ public:
   int increase_shot_count()   { return shot_count++; }
   int increase_cookie_count() { return cookie_count++; }
   int increase_mine_count()   { return mine_count++; }
-
-#ifndef NO_GRAPHICS
-  GdkColor* get_bg_gdk_colour_p() { return &bg_gdk_colour; }
-  GdkColor* get_fg_gdk_colour_p() { return &fg_gdk_colour; }
-  GdkColor* get_rtb_message_gdk_colour_p() { return &rtb_message_gdk_colour; }
-#endif NO_GRAPHICS
-  long int get_bg_rgb_colour() { return bg_rgb_colour; }
-  long int get_fg_rgb_colour() { return fg_rgb_colour; }
 
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
@@ -199,16 +189,6 @@ protected:
   int number_of_robots;
   int robots_left;
   int robots_per_game;
-
-
-#ifndef NO_GRAPHICS
-  GdkColor bg_gdk_colour;
-  GdkColor fg_gdk_colour;
-  GdkColor rtb_message_gdk_colour;
-#endif NO_GRAPHICS
-  long int bg_rgb_colour;
-  long int fg_rgb_colour;
-  long int rtb_message_rgb_colour;
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   

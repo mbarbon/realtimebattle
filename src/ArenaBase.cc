@@ -185,24 +185,6 @@ ArenaBase::interrupt_tournament()
     }
 }
 
-#ifndef NO_GRAPHICS
-
-void
-ArenaBase::set_colours()
-{  
-  bg_rgb_colour = the_opts.get_l(OPTION_BACKGROUND_COLOUR);
-  fg_rgb_colour = the_opts.get_l(OPTION_FOREGROUND_COLOUR);
-  rtb_message_rgb_colour = the_opts.get_l(OPTION_RTB_MESSAGE_COLOUR);
-#ifndef NO_GRAPHICS
-  bg_gdk_colour = make_gdk_colour(bg_rgb_colour);
-  fg_gdk_colour = make_gdk_colour(fg_rgb_colour);
-  rtb_message_gdk_colour = make_gdk_colour(rtb_message_rgb_colour);
-#endif NO_GRAPHICS
-}
-
-#endif
-
-
 // This function takes the statistics and saves into a selected file
 void
 ArenaBase::save_statistics_to_file(String filename)
