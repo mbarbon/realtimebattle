@@ -9,9 +9,7 @@
 
 Lots of internal changes, the class hierarchy is completely
 redone. Hopefully this will have changed nothing in the behavior of RTB,
-expect for the following.
-
-GTK+ is no longer necessary when compiling without graphics.
+expect for: GTK+ is no longer necessary when compiling without graphics.
 
 Optimizations. At least the non-graphics version should be a lot faster now.
 
@@ -37,8 +35,8 @@ A thin line, marking the angle the robot is facing, is now drawn.
 
 Some extra bits of information are now displayed in the window titles.
 
-&apos;Rotate and Fire&apos; is more or less remade to be a slightly better robot and
-a much better example robot.
+The robot 'Rotate and Fire' is more or less remade to be a slightly better
+robot and a much better example.
 
 The arena is now draw using a normal right handed coordinate system instead of the one
 used be gtk+ by default. The result is that everything is turned upside down. Angles
