@@ -23,14 +23,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ScoreWindow.h"
 #include "IntlDefs.h"
 #include "ControlWindow.h"
-#include "ArenaController.h"
-#include "Robot.h"
 #include "GuiVarious.h"
 #include "Gui.h"
 #include "String.h"
-
-extern class Gui* gui_p;
-extern class ControlWindow* controlwindow_p;
 
 //
 // The constructor. The window will be set up here.
@@ -129,7 +124,7 @@ ScoreWindow::ScoreWindow( const int default_width,
 #endif
   gtk_widget_show( clist );
 
-  if( window_shown = ( controlwindow_p->is_scorewindow_checked() ) )
+  if( window_shown = ( the_controlwindow.is_scorewindow_checked() ) )
     gtk_widget_show_now( window_p );
 
   selected_robot = NULL;
@@ -158,7 +153,7 @@ ScoreWindow::set_window_title()
     ")  " + (string)_("Game") + ": " + int2string( the_gui.get_game_nr() ) +
     " (" + int2string( the_gui.get_games_per_match() ) +
 
-    ")  " + (string)_("Time") + ": " + int2string( (int)the_gui.get_match_time() );
+    ")  " + (string)_("Time") + ": " + int2string( (int)the_gui.get_game_time() );
 
   gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
@@ -175,9 +170,9 @@ ScoreWindow::hide_window( GtkWidget* widget, GdkEvent* event,
     {
       gtk_widget_hide( scorewindow_p->get_window_p() );
       scorewindow_p->set_window_shown( false );
-      if( controlwindow_p->is_scorewindow_checked() )
+      if( the_controlwindow.is_scorewindow_checked() )
         {
-          GtkWidget* menu_item = controlwindow_p->get_show_score_menu_item();
+          GtkWidget* menu_item = the_controlwindow.get_show_score_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #else
