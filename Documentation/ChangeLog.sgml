@@ -36,6 +36,10 @@ Some extra bits of information are now displayed in the window titles.
 
 'Rotate and Fire' is more or less remade.
 
+The arena is now draw using a normal right handed coordinate system instead of the one
+used be gtk+ by default. The result is that everything is turned upside down. Angles
+do now increase in the counterclockwise direction as they should.
+
 <item> <bf>0.9.6:</bf>
 <p>
 The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
