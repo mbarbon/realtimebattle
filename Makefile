@@ -22,7 +22,8 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 export libdirs = -L/usr/lib -L/usr/X11R6/lib
 export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o
+objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o
+stdincludes = Vector2D.h gui.h Various.o Options.h Arena.h messagetypes.h
 
 all: RealTimeBattle robots
 
@@ -35,17 +36,19 @@ RealTimeBattle: $(objects)
 
 Vector2D.o: Vector2D.cc Vector2D.h
 	g++ $(CXXFLAGS) -c Vector2D.cc
+Various.o: Various.cc Various.h
+	g++ $(CXXFLAGS) -c Various.cc
 
-gui.o: gui.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
-RealTimeBattle.o: RealTimeBattle.cc Vector2D.h Arena.h messagetypes.h gui.h
-Arena.o: Arena.cc Arena.h messagetypes.h Vector2D.h gui.h Options.h
-Error.o: Error.cc Arena.h messagetypes.h Vector2D.h
-MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
-Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
-Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
+gui.o: gui.cc $(stdincludes)
+RealTimeBattle.o: RealTimeBattle.cc $(stdincludes)
+Arena.o: Arena.cc $(stdincludes)
+Error.o: Error.cc $(stdincludes)
+MovingObject.o: MovingObject.cc $(stdincludes)
+Shape.o: Shape.cc $(stdincludes)
+Extras.o: Extras.cc $(stdincludes)
 Options.o: Options.cc Options.h
-Statistics.o: Statistics.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
-StartTournament.o: StartTournament.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
+Statistics.o: Statistics.cc $(stdincludes)
+StartTournament.o: StartTournament.cc $(stdincludes)
 
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
