@@ -31,7 +31,8 @@ public:
 
   friend double length(const Vector2D&);  
   friend double lengthsqr(const Vector2D&);  
-  friend double angle(const Vector2D&);
+  friend double vec2angle(const Vector2D&);
+  friend Vector2D angle2vec(const double);
   Vector2D& normalize();  
   friend Vector2D unit(const Vector2D&);  
   friend double vedge(const Vector2D&, const Vector2D&);  
