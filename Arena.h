@@ -42,15 +42,19 @@ public:
   void start_tournament(char**robotfilenamelist, 
                         char** arenafilenamelist, // NULL terminated lists
                         int robots_p_game, 
-                        int games_p_sequence);   
+                        int games_p_sequence,
+                        int number_of_sequences);   
 
   void broadcast(enum message_to_robot_type ...);
+  long find_free_color(const long home_colour, const long away_colour, const class Robot*);
   void quit_ordered();
+  void delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list);
 
   Vector2D get_random_position();
 
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
+  GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
   Gui* get_the_gui() { return the_gui; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
@@ -92,7 +96,9 @@ private:
   void move_shots();
   void update_explosions();
   
-  
+  bool is_colour_allowed(const long colour, const double min_dist, const class Robot*);
+  double colour_dist(const long col1, const GdkColor& col2);
+
   void start_game();
   void end_game();
   void start_sequence();

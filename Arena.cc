@@ -1,5 +1,6 @@
 #include <math.h>
 #include <signal.h>
+#include <unistd.h>
 #include "Arena.h"
 #include "gui.h"
 
@@ -33,7 +34,10 @@ Arena::Arena()
 Arena::~Arena()
 {
   //  if( filep ) delete filep;
+  state=EXITING;
+  sleep(1);
   g_timer_destroy(timer);
+  delete_lists(true, true, true);
   g_list_free(all_robots_in_sequence);
   g_list_free(all_robots_in_tournament);
   g_list_free(arena_filenames);
@@ -268,7 +272,6 @@ Arena::timeout_function()
       break;
 
     case EXITING:
-      //  TODO:  exit properly
       return false;
     }
 
@@ -354,6 +357,106 @@ Arena::update_robots()
     ((Robot*)gl->data)->send_signal();
 }
 
+double
+Arena::colour_dist(const long col1, const GdkColor& col2)
+{
+  return( abs((col1 & 0xff)*0x101 - col2.blue) +
+          abs(((col1 & 0xff00) >> 8)*0x101 - col2.green) +
+          abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red) );
+}
+
+bool
+Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
+{
+  for(GList* gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl))
+    {
+      if((Robot *)gl->data != robotp)
+        {
+          if( colour_dist( colour, ((Robot*)gl->data)->get_colour() ) < min_dist ) return false;
+        }
+    }
+  // TODO: check background color
+  return true;
+}
+
+long
+Arena::find_free_color(const long home_colour, const long away_colour, const Robot* robotp)
+{  
+  long tmp_colour;
+
+  for(double min_dist = 50.0; min_dist > 0.5 ; min_dist *= 0.8)
+    {
+      if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
+      if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
+      for(int i=0; i<25; i++)
+        {
+          tmp_colour = rand() & 0xffffff;
+          if( is_colour_allowed(tmp_colour, min_dist, robotp) ) return tmp_colour;
+        }                  
+    }
+   throw Error("Impossible to find colour", "Arena::find_free_colour");
+}
+
+void
+Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
+{
+  GList* gl;
+  // clear the lists;
+  Robot* robotp;
+  for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
+    {
+      robotp = (Robot*)gl->data;
+      if( kill_robots ) delete robotp;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[ROBOT], robotp);
+    }
+  Shot* shotp;
+  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; )
+    {
+      shotp = (Shot*)gl->data;
+      delete shotp;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[SHOT], shotp);
+    }
+  Mine* minep;
+  for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
+    {
+      minep = (Mine*)(gl->data); 
+      delete minep;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[MINE], minep);
+    }
+  Cookie* cookiep;
+  for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; )
+    {
+      cookiep = (Cookie*)(gl->data);
+      delete cookiep;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[COOKIE], cookiep);
+    }
+  void* wallp;
+  for(gl=g_list_next(object_lists[WALL]); gl != NULL; )
+    {
+      wallp = gl->data;
+      delete (Shape*)(WallCircle*)wallp;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[WALL], wallp);
+    }
+  Explosion* explosionp;
+  for(gl=g_list_next(object_lists[EXPLOSION]); gl != NULL; )
+    {
+      explosionp = (Explosion*)(gl->data);
+      delete explosionp;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[EXPLOSION], explosionp);
+    }
+  if( del_seq_list )
+    for(gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
+      g_list_remove(all_robots_in_sequence, (Robot*)gl->data);
+  if( del_tourn_list )
+    for(gl=g_list_next(all_robots_in_tournament); gl != NULL; gl=g_list_next(gl))
+      g_list_remove(all_robots_in_tournament, (Robot*)gl->data);
+}
 void
 Arena::start_game()
 {
@@ -421,55 +524,7 @@ Arena::end_game()
 
   broadcast(GAME_FINISHES);
 
-  GList* gl;
-  // clear the lists;
-  Robot* robotp;
-  for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
-    {
-      robotp = (Robot*)gl->data;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[ROBOT], robotp);
-    }
-  Shot* shotp;
-  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; )
-    {
-      shotp = (Shot*)gl->data;
-      delete shotp;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[SHOT], shotp);
-    }
-  Mine* minep;
-  for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
-    {
-      minep = (Mine*)(gl->data); 
-      delete minep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[MINE], minep);
-    }
-  Cookie* cookiep;
-  for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; )
-    {
-      cookiep = (Cookie*)(gl->data);
-      delete cookiep;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[COOKIE], cookiep);
-    }
-  void* wallp;
-  for(gl=g_list_next(object_lists[WALL]); gl != NULL; )
-    {
-      wallp = gl->data;
-      delete (Shape*)(WallCircle*)wallp;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[WALL], wallp);
-    }
-  Explosion* explosionp;
-  for(gl=g_list_next(object_lists[EXPLOSION]); gl != NULL; )
-    {
-      explosionp = (Explosion*)(gl->data);
-      delete explosionp;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[EXPLOSION], explosionp);
-    }
+  delete_lists(false, false, false);
   
   if(games_remaining_in_sequence == 0) 
     end_sequence();
@@ -506,6 +561,7 @@ Arena::start_sequence()
 
   state = STARTING_ROBOTS;
   sequence_nr++;
+  sequences_remaining--;
   g_timer_reset(timer);
   update_timer();
   next_check_time = total_time + 1.0;
@@ -572,11 +628,11 @@ Arena::end_sequence_follow_up()
 }
 
 void
-Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_p_game, int games_p_sequence)
+Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_p_game, int games_p_sequence, int n_o_sequences)
 {
   // Create robot classes and to into the list all_robots_in_tournament
 
-  the_gui->setup_control_window();
+  //  the_gui->setup_control_window();
   the_gui->setup_message_window();
 
   Robot* robotp;
@@ -596,6 +652,7 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 
   robots_per_game = robots_p_game;
   games_per_sequence = games_p_sequence;
+  sequences_remaining = n_o_sequences;
   sequence_nr = 0;
   start_sequence();
 }
@@ -605,15 +662,15 @@ Arena::end_tournament()
 {
   // delete all robot classes in all_robots_in_tournament
 
-  GList* gl = g_list_next(all_robots_in_tournament);
+  //  GList* gl = g_list_next(all_robots_in_tournament);
 
-  for(; gl != NULL; gl = g_list_next(gl))
-    {
-      delete gl->data;
-    }
-  //g_list_free(all_robots_in_tournament);
+  //  for(; gl != NULL; gl = g_list_next(gl))
+  //    {
+  //      delete gl->data;
+  //    }
+
   state = FINISHED;
 
   the_gui->close_message_window();
-  the_gui->close_control_window();
+  //  the_gui->close_control_window();
 }
