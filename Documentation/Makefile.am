@@ -115,19 +115,12 @@ RealTimeBattle%.html: RealTimeBattle.sgml
 	@if [ -f $< ]; then \
 		echo "sgml2txt --filter -D table=char -c latin $<"; \
 		sgml2txt --filter -D table=char -c latin $<; \
-#		echo "lynx -dump -nolist $< > $@"; \
-#		lynx -dump -nolist $< > $@; \
 	fi
-#	elif [ ! -f $@ ]; then \
-#		echo "Error: $@ is missing and cannot be generated"; \
-#	fi
 
 ../%: %.sgml
 	@if [ -f $< ]; then \
 		echo "sgml2txt --filter -D table=char -c latin $<"; \
 		sgml2txt --filter -D table=char -c latin $<; \
-#		echo "lynx -dump -nolist $< > $@"; \
-#		lynx -dump -nolist $< > $@; \
 		echo "mv $(subst .sgml,.txt,$<) $@"; \
 		mv $(subst .sgml,.txt,$<) $@; \
 	elif [ ! -f $@ ]; then \
