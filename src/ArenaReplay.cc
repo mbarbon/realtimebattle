@@ -721,7 +721,7 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
       log_file.open( replay_fname.chars() );
       if( !log_file )
         Error( true, "Couldn't open replay file",
-               "ArenaRealTime::set_filenames" );
+               "ArenaReplay::set_filenames" );
       log_from_stdin = false;
     }
   else
