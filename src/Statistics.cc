@@ -166,6 +166,9 @@ Gui::add_new_row( void * rp, void * sp, int games_played )
     }
 
   int row = gtk_clist_append(GTK_CLIST(stat_clist), list);
+
+  for(int i=0; i<8; i++) delete [] list[i];
+
   gtk_clist_set_foreground(GTK_CLIST(stat_clist), row, the_arena.get_foreground_colour_p());
   gtk_clist_set_background(GTK_CLIST(stat_clist), row, the_arena.get_background_colour_p());
 
