@@ -628,6 +628,7 @@ AC_OUTPUT([
    po/Makefile.in
    Packages/Makefile
    Packages/rpm/Makefile
+   Packages/rpm/RealTimeBattle.spec
    Packages/debian/Makefile
    Packages/freebsd/Makefile
    Makefile],
