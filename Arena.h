@@ -71,17 +71,12 @@ public:
   Vector2D * get_boundary() { return boundary; }
   
 private:
-  gdouble timestep;
-  gdouble total_time;
-  GTimer* timer;
-  
-  gdouble next_check_time;
-
   void parse_file(istream&);
   void check_initialization();
 
   void update();
   void update_timer();
+  void reset_timer();
   void update_robots();
   void move_shots();
   void update_explosions();
@@ -105,6 +100,15 @@ private:
   GList* exclusion_points;
   GList* arena_filenames;               // list of GStrings
   
+  gdouble timestep;
+  gdouble total_time;
+  gdouble current_timer;
+  gdouble timescale;
+
+  GTimer* timer;
+  
+  gdouble next_check_time;
+
   int sequence_nr;
   int games_remaining_in_sequence;
   int games_per_sequence;

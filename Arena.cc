@@ -8,6 +8,8 @@ Arena::Arena()
 {
   state = NOT_STARTED;
   timer = g_timer_new();
+  timescale = 1.0;
+  
   all_robots_in_sequence = g_list_alloc();
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
@@ -374,10 +376,20 @@ Arena::update()
 void
 Arena::update_timer()
 {
-  gdouble last_time = total_time;
+  gdouble last_timer = current_timer;
   gulong microsecs;
-  total_time = g_timer_elapsed(timer, &microsecs);
-  timestep = total_time - last_time;
+  current_timer = g_timer_elapsed(timer, &microsecs);
+  timestep = min( (current_timer - last_timer) * timescale, 0.5 );
+  total_time += timestep;
+}
+
+void
+Arena::reset_timer()
+{
+  total_time = 0.0;
+  current_timer = 0.0;
+  g_timer_reset(timer);
+  update_timer();
 }
 
 void
@@ -632,8 +644,7 @@ Arena::start_game()
   the_gui->setup_arena_window( boundary );
   the_gui->setup_score_window();
 
-  g_timer_reset(timer);
-  update_timer();
+  reset_timer();
 }
 
 void
@@ -684,8 +695,7 @@ Arena::start_sequence()
   state = STARTING_ROBOTS;
   sequence_nr++;
   sequences_remaining--;
-  g_timer_reset(timer);
-  update_timer();
+  reset_timer();
   next_check_time = total_time + 1.0;
 }
 
