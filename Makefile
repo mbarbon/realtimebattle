@@ -43,7 +43,7 @@ Error.o: Error.cc Arena.h messagetypes.h Vector2D.h
 MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h
 Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h
 Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h
-$(ROBOTDIR)/empty: 
+$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.c 
 
 #$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 #	cd $(ROBOTDIR); \
