@@ -19,6 +19,7 @@ libRTB_Gadgets_a_SOURCES = \
 	Gadget.cc Gadget.h \
 	GadgetSet.cc GadgetSet.h \
 	RobotBodyGadget.cc RobotBodyGadget.h \
+	Script.h \
 	ShotGadget.cc ShotGadget.h \
 	Variable.cc Variable.h \
 	WeaponGadget.h WeaponGadget.cc

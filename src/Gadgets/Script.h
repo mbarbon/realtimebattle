@@ -17,25 +17,63 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ALLGADGETS__
-#define __ALLGADGETS__
+#ifndef __SCRIPT_GADGET__
+#define __SCRIPT_GADGET__
+
+#include <vector>
+
+class Function;
+
+struct ScriptLine
+{
+  string name;
+  double value;
+};
 
 
-#include "Gadget.h"
-#include "GadgetSet.h"
+class Script : public Gadget
+{
+public:
+  
+  Script() {}
+  ~Script() {}
 
-#include "Function.h"
-#include "Variable.h"
-#include "Script.h"
+  void run();
+  void continue_script();
+  
 
-#include "ArenaGadget.h"
-#include "CommunicationGadget.h"
-#include "DefenseGadget.h"
-#include "EngineGadget.h"
-#include "ExplosionGadget.h"
-#include "RobotBodyGadget.h"
-#include "ShotGadget.h"
-#include "WeaponGadget.h"
+  
+
+private:
+
+  vector<ScriptLine> commands;
+  
+  Variable* compare_var;
+  
+  bool last_test_result;  // the result of the latest comparison
+  
+
+  int current_line_number;
+  
+  bool pausing;
+};
 
 
-#endif  __ALLGADGETS__
+
+
+
+#include "../Event.h"
+
+class ContinueScriptEvent : public Event
+{
+public:
+  ContinueScriptEvent( const double time, Script* ev) 
+    : Event(time), my_script(ev) {}
+
+  void eval() const { my_script->continue_script(); }
+
+protected:
+  Script* my_script;
+};
+
+#endif __SCRIPT_GADGET__
