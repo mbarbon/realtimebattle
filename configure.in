@@ -45,10 +45,10 @@ ALL_LINGUAS="sv pl pt de ja gl"
 AC_SUBST(RTB_DIR)
 AC_SUBST(RTB_LOCALEDIR)
 
-ROBOTDIR=['${RTB_DIR}/Robots']
-ARENADIR=['${RTB_DIR}/Arenas']
-AC_SUBST(ROBOTDIR)
-AC_SUBST(ARENADIR)
+# ROBOTDIR=['${RTB_DIR}/Robots']
+# ARENADIR=['${RTB_DIR}/Arenas']
+# AC_SUBST(ROBOTDIR)
+# AC_SUBST(ARENADIR)
 
 DOCS_DIR=['${RTB_DIR}']
 AC_SUBST(DOCS_DIR)
@@ -110,18 +110,29 @@ AC_ARG_ENABLE(debug, [
 RealTimeBattle options:
   --enable-debug          turn on debugging],, enable_debug=no)
 
+AM_MAINTAINER_MODE
+
+AC_ARG_ENABLE(compile-warnings,
+              [  --enable-compile-warnings  turn on compile time warnings],
+              , enable_compile_warnings=no)
+
+WARNING_FLAGS=""
+if test "x$enable_compile_warnings" = "xyes"; then
+	WARNING_FLAGS="-Wall"
+fi
+
 changequote(,)dnl
 if test "x$enable_debug" = "xno"; then
-   CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-g //"`
-   CFLAGS=`echo "$CFLAGS " | sed "s/-g //"`
+   CXXFLAGS=`echo "$CXXFLAGS $WARNING_FLAGS " | sed "s/-g //"`
+   CFLAGS=`echo "$CFLAGS $WARNING_FLAGS " | sed "s/-g //"`
 else
    case " $CXXFLAGS " in
    *[\ \	]-g[\ \	]*) ;;
-   *) CXXFLAGS="$CXXFLAGS -g" ;;
+   *) CXXFLAGS="$CXXFLAGS $WARNING_FLAGS -g " ;;
    esac
    case " $CFLAGS " in
    *[\ \	]-g[\ \	]*) ;;
-   *) CFLAGS="$CFLAGS -g" ;;
+   *) CFLAGS="$CFLAGS $WARNING_FLAGS -g " ;;
    esac
    CXXFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
    CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
@@ -158,6 +169,11 @@ AC_ARG_WITH(rtb_dir,
 
 RTB_DIR=$with_rtb_dir
 
+RTB_EXPAND_DIR(ROBOTDIR, "${RTB_DIR}/Robots")
+RTB_EXPAND_DIR(ARENADIR, "${RTB_DIR}/Arenas")
+AC_DEFINE_UNQUOTED(ROBOTDIR, "$ROBOTDIR")
+AC_DEFINE_UNQUOTED(ARENADIR, "$ARENADIR")
+
 # Internationalization
 AC_ARG_WITH(nls_localedir, 
 [  --with-nls-localedir=[path]
@@ -165,7 +181,10 @@ AC_ARG_WITH(nls_localedir,
                           [DATADIR/locale]],,
    with_nls_localedir=['${datadir}/locale'])
 
-RTB_LOCALEDIR=$with_nls_localedir
+#RTB_LOCALEDIR=$with_nls_localedir
+RTB_EXPAND_DIR(RTB_LOCALEDIR, "${with_nls_localedir}")
+RTB_EXPAND_DIR(RTB_LOCALEDIR, "${RTB_LOCALEDIR}") #Need to expand twice!
+AC_DEFINE_UNQUOTED(RTB_LOCALEDIR, "$RTB_LOCALEDIR")
 AM_GNU_GETTEXT
 
 # graphics / GTK
@@ -211,7 +230,7 @@ AC_HEADER_TIME
 
 # Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(select)
+AC_CHECK_FUNCS(select strcat strchr strrchr strncpy)
 AC_CHECK_FUNC(getopt_long,, [getopt=yes])
 AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
 
