@@ -40,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdio.h>
 #include <sys/socket.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include "Socklib.h"
 #include "SimpleProcess.h"
@@ -75,12 +76,32 @@ main ( int argc, char* argv[] )
 
   signal(SIGPIPE,  SIG_IGN);
 
+
+
+
+
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
         
   string robotname = string(argv[1]);
 
   out_socket << robotname << endl; // send robot name;
+
+  // Make socket non_blocking
+
+  int pd_flags;
+  if( (pd_flags = fcntl(socket_fd, F_GETFL, 0)) == -1 ) 
+    {
+      cerr << "Server: couldn't get pd_flags for socket: ";
+      perror( NULL );
+    }
+
+  pd_flags |= O_NONBLOCK;
+  if( fcntl(socket_fd, F_SETFL, pd_flags) == -1 ) 
+    {
+      cerr << "Server: couldn't change pd_flags for socket: ";
+      perror( NULL );
+    }
 
 
   SimpleProcess robot_process( robotname );
@@ -94,6 +115,8 @@ main ( int argc, char* argv[] )
   fd_set pipe_and_socket;
 
   struct timeval time_to_wait;
+
+  struct timeval current_time;
 
   while( true )
     {
@@ -124,9 +147,12 @@ main ( int argc, char* argv[] )
                   sleep(3);
                 }
 
+//            gettimeofday(&current_time, NULL);
+//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//            cout << "client <<<s: " << buffer << endl;
+
           if( buffer[0] == '@' )  // special message
             {
-              cerr << "Special message: " << buffer << endl;
               switch( buffer[1] )
                 {
                 case 'R':  // Run process
@@ -160,7 +186,9 @@ main ( int argc, char* argv[] )
           else if( robot_process.is_running() )
             *robot_process.opipe_streamp << buffer << endl;
 
-          cout << buffer << endl; 
+//            gettimeofday(&current_time, NULL);
+//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//            cout << "client >>>p: " << buffer << endl;
 
 
 //            if( robot_process.opipe_streamp->fail() )
@@ -189,8 +217,15 @@ main ( int argc, char* argv[] )
                   sleep(3);
                 }
 
-              cout << buffer << endl;
-              out_socket << buffer << endl;
+//            gettimeofday(&current_time, NULL);
+//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//            cout << "client <<<p: " << buffer << endl;
+
+          out_socket << buffer << endl;
+
+//            gettimeofday(&current_time, NULL);
+//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//            cout << "client >>>s: " << buffer << endl;
               //              cout << "%" << flush;  
 
               if( out_socket.fail() )
