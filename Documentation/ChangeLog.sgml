@@ -8,6 +8,10 @@ Change log
 <item> <bf>1.1.0</bf>
 <p>
 
+New option: <tt>Max robots allowed simultaneously</tt>. This option allows
+the user to change how many robots allowed in a sequence. Depending on how
+many file-descriptors allowed for the system.
+
 Fixed a problem with COLLISION giving wrong angle. Thanks to Nathan D Green.
 
 Sorting by sequence in the statistics when viewing individual robots now

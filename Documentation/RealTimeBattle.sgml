@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>
 <title>RealTimeBattle User Manual, version 1.0.0 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
-<date> 6 January 2000
+<date> 15 January 2000
 
 <!-- <abstract> -->
 
@@ -1210,9 +1210,17 @@ double sidelength, i.e., a four times larger area.
 <ref name="replaying" id="replaying">, the speed when the fast forward
 button or the rewind button is pressed.
 
+<label id="Max robots allowed simultaneously">
+<tag>Max robots allowed simultaneously:</tag> Allows the user to change the
+maximum amount of robots allowed in a sequence. If there are too many, the
+system might complain (how many depends on the system).
+
 <tag>Background colour:</tag> Background colour and ...
 
 <tag>Foreground colour:</tag> ... foreground colour for the arena.
+
+<label id="Colour for RTB messages">
+<tag>Colour for RTB messages:</tag> Colour for the text when RTB sends messages.
 
 <label id="Robot search path">
 <tag>Robot search path:</tag> This is a colon-separated list of directories which will be searched
