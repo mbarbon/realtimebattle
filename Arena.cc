@@ -1,10 +1,15 @@
 #include <math.h>
 #include <signal.h>
 #include <unistd.h>
+
 #include "Arena.h"
+#include "MovingObject.h"
+#include "Shape.h"
+#include "Extras.h"
 #include "Error.h"
 #include "gui.h"
 #include "Various.h"
+#include "String.h"
 
 Arena::Arena()
 {
@@ -310,6 +315,12 @@ Arena::get_random_position()
                    (double)rand()/(double)RAND_MAX, 
                    boundary[0][1] + (boundary[1][1] - boundary[0][1])*
                    (double)rand()/(double)RAND_MAX );
+}
+
+double 
+Arena::get_shooting_penalty() 
+{ 
+  return the_opts.get_d(OPTION_SHOOTING_PENALTY) / max(1.0, ((double)robots_left)/10.0); 
 }
 
 void
@@ -648,14 +659,6 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
       delete (Shape*)(WallCircle*)wallp;
       gl=g_list_next(gl);
       g_list_remove(object_lists[WALL], wallp);
-    }
-  Explosion* explosionp;
-  for(gl=g_list_next(object_lists[EXPLOSION]); gl != NULL; )
-    {
-      explosionp = (Explosion*)(gl->data);
-      delete explosionp;
-      gl=g_list_next(gl);
-      g_list_remove(object_lists[EXPLOSION], explosionp);
     }
   Vector2D* vecp;
   for(gl=g_list_next(exclusion_points); gl != NULL; )
