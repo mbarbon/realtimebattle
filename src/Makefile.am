@@ -27,6 +27,7 @@ CCMALLOC_O =
 endif
 
 #Note the gui-lib should be taken via configure
+RealTimeBattle_LDFLAGS = -export-dynamic
 RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) \
 	$(STDCXX_LIBS) $(THREAD_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS) $(GUI_OBJS)
