@@ -5,14 +5,15 @@
 enum message_to_robot_type 
 {
   UNKNOWN_MESSAGE_TO_ROBOT = -1,
-  INITIALIZE = 0,
+  BIN_DATA_TO = 0,
+  ASCII_DATA_TO = 1,
+  INITIALIZE,
   YOUR_NAME,
   YOUR_COLOUR,
   GAME_OPTION,
   GAME_STARTS,
   GAME_FINISHES,
   SAVE_DATA,
-  BIN_DATA_TO,
   LOAD_DATA_FINISHED,
   EXIT_ROBOT,
   RADAR,
@@ -27,6 +28,8 @@ enum message_to_robot_type
 enum message_from_robot_type 
 {
   UNKNOWN_MESSAGE_FROM_ROBOT = -1,
+  BIN_DATA_FROM = 0,
+  ASCII_DATA_FROM = 1,
   ROBOT_OPTION,
   ROTATE,
   ROTATE_TO,
@@ -39,7 +42,6 @@ enum message_from_robot_type
   COLOUR,
   PRINT,
   LOAD_DATA,
-  BIN_DATA_FROM,
   SAVE_DATA_FINISHED
 };
 
@@ -108,6 +110,8 @@ struct Message
 
 static const Message message_to_robot[20] = 
 {
+  {"BinData",    2,   {INT,    BINDATA,NONE,   NONE}},
+  {"AsciiData",  1, {STRING, NONE,   NONE,   NONE}},
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
   {"YourColor",  1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
@@ -115,7 +119,6 @@ static const Message message_to_robot[20] =
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
   {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
-  {"BinDataTo",  2, {INT,    BINDATA,NONE,   NONE}},
   {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      4, {DOUBLE, INT,    DOUBLE, INT}},   // first arg: distance, second arg: object_type, 
@@ -131,7 +134,9 @@ static const Message message_to_robot[20] =
 
 static const Message message_from_robot[20] = 
 {
-  {"RobotOption",   2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
+  {"BinData",      2, {INT, BINDATA}},    // first arg: number of bytes,  second arg: data
+  {"AsciiData",    1, {STRING}},          // arg: data
+  {"RobotOption",  2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
   {"Rotate",       2, {INT, DOUBLE}},     // first arg: what to rotate: 1 Robot, 2 cannon, 4 radar and apropriate sums for combinations                                                             // second arg: angular velocity (rad/s)
   {"RotateTo",     3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to move to
   {"RotateAmount", 3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to rotate
@@ -143,8 +148,7 @@ static const Message message_from_robot[20] =
   {"Name",         1, {STRING}},             // arg: name
   {"Colour",       2, {HEX, HEX}},           // first arg: home colour, second arg: away colour
   {"Print",        1, {STRING}},             // arg: message to print   
-  {"LoadData",     0, {}},
-  {"BinDataFrom",  2, {INT, BINDATA}},       // first arg: number of bytes,  second arg: data
+  {"LoadData",     1, {INT}},                // arg: type of data, 0 - binary, 1 - ascii
   {"SaveDataFinished",0, {}},
   {"",             0, {}}
 };

@@ -196,6 +196,7 @@ Robot::start_process()
         } 
     }
   process_running = true;
+  have_saved = false;
 }
 
 bool
@@ -898,14 +899,21 @@ Robot::get_messages()
           } 
           break;
         case LOAD_DATA:
-          // TODO: Load data
+          bool bin;
+          *instreamp >> bin;
+          load_data(bin);
           break;
         case SAVE_DATA_FINISHED:
           send_message(EXIT_ROBOT);
           send_signal();
           break;
         case BIN_DATA_FROM:
-          // TODO: Receive data
+          save_data(true, have_saved);
+          have_saved = true;
+          break;
+        case ASCII_DATA_FROM:
+          save_data(false, have_saved);
+          have_saved = true;
           break;
         default:
           throw Error("Message_type not implemented, ", msg_name, "Robot::get_messages");
@@ -926,6 +934,96 @@ Robot::name2msg_from_robot_type(char* msg_name)
         return (message_from_robot_type)i;
     }
   return UNKNOWN_MESSAGE_FROM_ROBOT;
+}
+
+void
+Robot::save_data(const bool binary, const bool append)
+{
+  String filename;
+
+  if( robot_name_uniqueness_number == 0 )
+    filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
+  else
+    filename = the_gui.get_robotdir() + robot_name + ".robotdata";
+
+  int mode = _IO_OUTPUT;  
+  if( append ) mode = _IO_APPEND;
+
+  ofstream file(filename.chars(), mode);
+
+  if( !file ) throw Error("Couldn't open file ", filename, "Robot::save_bin_data");
+
+  if( binary )
+    {
+      int bytes;
+      char c;
+      *instreamp >> bytes;
+      
+      for(int i=0; i < bytes; i++)
+        {
+          instreamp->get(c);
+          file.put(c);
+        }
+    }
+  else
+    {
+      char buf[256];
+      
+      instreamp->get(buf, 256 ,'\n');
+      file << buf << endl;
+    }
+}
+
+void
+Robot::load_data(const bool binary)
+{
+  String filename;
+
+  ifstream file;
+
+
+  if( robot_name_uniqueness_number == 0 )
+    {
+      filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
+      file.open(filename.chars());
+    }
+  if( !file )
+    {
+      filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
+      file.open(filename.chars());
+    }
+
+  if (!file) 
+    {
+      send_message(LOAD_DATA_FINISHED);
+      return;
+    }
+
+  char buf[256];
+  if( binary )
+    {
+      char c;
+      int i;
+      while( !file.eof() )
+        {
+          for(i=0; i < 255 && file.get(c) ; i++)
+            buf[i] = c;
+
+          buf[i] = '\0';
+          send_message(BIN_DATA_TO, i, buf);
+        }
+    }
+  else
+    {
+      while( !file.eof() )
+        {
+          
+          file.get(buf, 256 ,'\n');
+          send_message(ASCII_DATA_TO, buf);
+        }
+    }
+
+  send_message(LOAD_DATA_FINISHED);
 }
 
 void
@@ -986,10 +1084,11 @@ Robot::display_score()
 void
 Robot::draw_radar_and_cannon()
 {
+  if( radius*the_gui.get_zoom() < 2.5 ) return;
   // Draw Cannon
   the_gui.draw_line( center,
                      angle2vec(cannon_angle.pos+robot_angle.pos),
-                     radius - the_opts.get_d(OPTION_SHOT_RADIUS),
+                     radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0/the_gui.get_zoom(),
                      the_opts.get_d(OPTION_SHOT_RADIUS),
                      *(the_arena.get_foreground_colour_p()) );
 

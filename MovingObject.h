@@ -101,9 +101,12 @@ public:
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
   void move(const double timestep, int iterstep, const double eps);
+  void save_data(const bool bin, const bool rewrite);
+  void load_data(const bool bin);
 
   bool alive;
   bool process_running;
+  bool have_saved;
 
   bool send_usr_signal;
 
