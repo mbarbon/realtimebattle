@@ -58,10 +58,10 @@ public:
                                        RollingObject& robj2, 
                                        const Vector2D& normal);
 
-  void change_energy(const double energy_diff);
+  void change_health(const double health_diff);
   void injury_from_collision(const double en, const double angle);
 
-  void set_energy( const double en ) { energy = en; }
+  void set_health( const double h ) { health = h; }
   void set_angle( const double a ) { robot_angle.angle = a; }
 
   void check_name_uniqueness();
@@ -70,12 +70,14 @@ public:
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
 
+  void start_process();
+
   Process* get_process() { return process; }
 
 
   string get_robot_name() { return robot_name; }
 
-  double get_energy() { return energy; }
+  double get_health() { return health; }
 
   bool is_colour_given() { return colour_given; }
   void set_colour_given( const bool c ) { colour_given = c; }
@@ -84,10 +86,6 @@ public:
 
 
   Rotation get_robot_angle() { return robot_angle; }
-
-  bool set_and_get_has_competed() 
-    { if( has_competed ) return true; else { has_competed = true; return false; } }
-
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -102,11 +100,12 @@ private:
 
   int  send_rotation_reached;
 
-  bool has_competed;
 
-  double energy; 
-  double extra_air_resistance;
-  double brake_percent;
+  double health;
+  double fuel;
+  double temperature;
+
+  double brake_percentage;
 
   Rotation robot_angle;
   
@@ -114,14 +113,13 @@ private:
 
   int robot_name_uniqueness_number;
 
+  string robot_filename;
   string plain_robot_name;      // Name given by robot
   string robot_name;            // plain_robot_name + uniqueness number
 
   bool colour_given;
   bool name_given;
   
-  int position_this_game;
-  double time_survived_in_sequence;
 };
 
 #endif __ROBOT__

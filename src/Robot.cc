@@ -43,42 +43,19 @@ Robot::Robot(const string& filename)
 {
   //  velocity = Vector2D(0.0, 0.0);
   //  acceleration = 0.0;
-  //  robot_filename = filename;
-  
-  //  int nr;
-//    if( ( nr = robot_filename.find( '/', 0, true) ) == -1 )
-//      robot_plain_filename = robot_filename;
-//    else
-//      robot_plain_filename = get_segment(robot_filename, nr+1, -1);
+
+  robot_filename = filename;  
 
   plain_robot_name = "";
   robot_name = "";
   robot_name_uniqueness_number = 0;
-  //  robot_dir= getenv("RTB_ROBOTDIR");
-  extra_air_resistance = 0.0;
-//    process_running = false;
 
-//    send_usr_signal = false;
-//    signal_to_send = 0;
   send_rotation_reached = 0;
   killed = true;
-  //  total_points = 0.0;
-  
-  has_competed = false;
 
   id = 0;//the_arena.increase_robot_count();
 
-//    instreamp = NULL;
-//    outstreamp = NULL;
-
-  process = new Process( filename, this );
-
-//    pipes[0] = -1;  
-//    pipes[1] = -1;
-//    pid = -1;
-  //  last_drawn_robot_center = Vector2D(infinity,infinity);
-
-  //  use_non_blocking = get_default_non_blocking_state();
+  process = NULL;
 }
 
 // Constructor used by ArenaReplay. No process needed.
@@ -89,14 +66,9 @@ Robot::Robot(const int r_id, const long int col, const string& name)
   robot_name = name;
   set_colour( col );
 
-  //  process_running = false;
   process = NULL;
   killed = true;
-  //  total_points = 0.0;
-  
-  has_competed = false;
 
-  //  last_drawn_robot_center = Vector2D(infinity,infinity);
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
 }
 
@@ -183,12 +155,19 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
   center = pos;
   robot_angle.set_rot (angle, 0.0, -DBL_MAX, DBL_MAX, NORMAL_ROT);
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
-  energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
+  health = the_opts.get_d(OPTION_ROBOT_START_HEALTH);
   velocity = Vector2D(0.0, 0.0);
-  position_this_game = 0;
-  //  points_this_game = 0.0;
-  brake_percent = 0.0;
+  brake_percentage = 0.0;
   acceleration = Vector2D(0.0, 0.0);
+}
+
+void
+Robot::start_process()
+{
+  if( process != NULL )
+    delete process;
+
+  process = new Process( robot_filename, this );
 }
 
 void
@@ -431,161 +410,15 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
   return true;
 }
 
-//  bool
-//  Robot::get_default_non_blocking_state()
-//  {
-//    string filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-//      "/" + robot_plain_filename;
-  
-//    int fd;
-//    if( ( fd = open(filename.chars(), O_RDONLY) ) != -1 )
-//      {
-//        close(fd);
-//        return false;
-//      }
-  
-//    return true;
-//  }
-
-//  // If non_blocking is _not_ used, a file, OPTION_TMP_RTB_DIR/"robotname"
-//  // , is created.
-//  void
-//  Robot::set_non_blocking_state(const bool non_bl)
-//  {
-//    if( non_bl == use_non_blocking ) return;
-
-//    string filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-//      "/" + robot_plain_filename;
-
-//    create_tmp_rtb_dir();
-
-//    if( non_bl )
-//      remove( filename.chars() );
-//    else
-//      {
-//        int fd = open(filename.chars(), O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
-//        if( fd != -1 )  close( fd );
-//      }
-  
- 
-//    use_non_blocking = non_bl;
-
-//    //  restart_process
-
-//    process.kill_forcefully();
-//    process.start();
-//  }
-
-
-
-//  void
-//  Robot::save_data(const bool binary, const bool append)
-//  {
-//    cerr << "Sorry, save_data is broken at the moment!" << endl;
-//    return;
-
-//    string filename;
-
-//  //    if( robot_name_uniqueness_number == 0 )
-//  //      filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
-//  //    else
-//  //      filename = the_gui.get_robotdir() + robot_name + ".robotdata";
-
-//    int mode = _IO_OUTPUT;  
-//    if( append ) mode = _IO_APPEND;
-
-//    ofstream file(filename.chars(), mode);
-
-//    if( !file ) Error(true, "Couldn't open file " + filename, "Robot::save_bin_data");
-
-//    if( binary )
-//      {
-//        int bytes;
-//        char c;
-//        *instreamp >> bytes;
-
-//        // TODO: check if data is avalable (peek), wait otherwise (select)
-      
-//        for(int i=0; i < bytes; i++)
-//          {
-//            instreamp->get(c);
-//            file.put(c);
-//          }
-//      }
-//    else
-//      {
-//        char buf[256];
-      
-//        instreamp->get(buf, 256 ,'\n');
-//        file << buf << endl;
-
-//        // TODO: continue saving if next message is SAVE_DATA
-//      }
-//  }
-
-//  void
-//  Robot::load_data(const bool binary)
-//  {
-//    cerr << "Sorry, load_data is broken at the moment!" << endl;
-//    return;
-
-//    string filename;
-
-//    ifstream file;
-
-
-//  //    if( robot_name_uniqueness_number == 0 )
-//  //      {
-//  //        filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
-//  //        file.open(filename.chars());
-//  //      }
-//  //    if( !file )
-//  //      {
-//  //        filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
-//  //        file.open(filename.chars());
-//  //      }
-
-//    if (!file) 
-//      {
-//        send_message(LOAD_DATA_FINISHED);
-//        return;
-//      }
-
-//    char buf[256];
-//    if( binary )
-//      {
-//        char c;
-//        int i;
-//        while( !file.eof() )
-//          {
-//            for(i=0; i < 255 && file.get(c) ; i++)
-//              buf[i] = c;
-
-//            buf[i] = '\0';
-//            send_message(BIN_DATA_TO, i, buf);
-//          }
-//      }
-//    else
-//      {
-//        while( !file.eof() )
-//          {
-          
-//            file.get(buf, 256 ,'\n');
-//            send_message(ASCII_DATA_TO, buf);
-//          }
-//      }
-
-//    send_message(LOAD_DATA_FINISHED);
-//  }
 
 void
-Robot::change_energy(const double energy_diff)
+Robot::change_health(const double health_diff)
 {
-  energy = min(energy+energy_diff, the_opts.get_d(OPTION_ROBOT_MAX_ENERGY));
+  health = min(health+health_diff, the_opts.get_d(OPTION_ROBOT_MAX_HEALTH));
 //  #ifndef NO_GRAPHICS  
 //    if( !no_graphics )  display_score();
 //  #endif
-  if( energy <= 0.0 ) killed = true;
+  if( health <= 0.0 ) killed = true;
 }
 
 void
@@ -593,108 +426,3 @@ Robot::injury_from_collision(const double en, const double angle)
 {
 
 }
-
-//  #ifndef NO_GRAPHICS
-
-//  void
-//  Robot::reset_last_displayed()
-//  {
-//    last_displayed_energy = -1;
-//    last_displayed_place = 0;
-//    last_displayed_last_place = 0;
-//    last_displayed_score = -1;
-//  }
-
-//  void
-//  Robot::display_score()
-//  {
-//    int p;
-
-//    if( last_displayed_energy != (int)energy )
-//      {
-//        last_displayed_energy = (int)energy;
-//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-//                           row_in_score_clist,
-//                           2, string((int)energy).non_const_chars());
-//      }
-
-//    if( last_displayed_place != position_this_game )
-//      {
-//        string str;
-//        if( position_this_game != 0 ) str = string(position_this_game);
-//        last_displayed_place = position_this_game;
-//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-//                           row_in_score_clist,
-//                           3, str.non_const_chars());
-//      }
-
-//    p = get_last_position();
-//    if( p != 0 && p != last_displayed_last_place  )
-//      {
-//        last_displayed_last_place = p;
-//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-//                           row_in_score_clist,
-//                           4, string(p).non_const_chars());
-//      }
-
-
-//    double pnts = get_total_points();
-//    if( last_displayed_score != (int)(10 * pnts) )
-//      {
-//        last_displayed_score = (int)(10 * pnts);
-//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-//                           row_in_score_clist,
-//                           5, string(pnts).non_const_chars());
-//      }
-//  }
-
-//  void
-//  Robot::draw_radar_and_cannon()
-//  {
-//    double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
-
-//    if( radius*scale < 2.5 ) return;
-//    // Draw Cannon
-//    the_gui.get_arenawindow_p()->
-//      draw_line( center,
-//                 angle2vec(cannon_angle.pos+robot_angle.pos),
-//                 radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
-//                 the_opts.get_d(OPTION_SHOT_RADIUS),
-//                 *(the_gui.get_fg_gdk_colour_p()) );
-
-//    // Draw radar lines
-//    Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
-//    the_gui.get_arenawindow_p()->
-//      draw_line( center - radius * 0.25 * radar_dir,
-//                 rotate( radar_dir, M_PI / 4.0 ),
-//                 radius / 1.5,
-//                 radius / 20.0,
-//                 *(the_gui.get_fg_gdk_colour_p()) );
-//    the_gui.get_arenawindow_p()->
-//      draw_line( center - radius * 0.25 * radar_dir,
-//                 rotate( radar_dir, - (M_PI / 4.0) ),
-//                 radius / 1.5,
-//                 radius / 20.0,
-//                 *(the_gui.get_fg_gdk_colour_p()) );
-
-//    // Draw robot angle line
-//    the_gui.get_arenawindow_p()->
-//      draw_line( center,
-//                 angle2vec(robot_angle.pos),
-//                 radius * 0.9 - 2.0 / scale,
-//                 *(the_gui.get_fg_gdk_colour_p()) );
-//  }
-
-//  void
-//  Robot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
-//  {
-//    score_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
-//  }
-
-//  void
-//  Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
-//  {
-//    stat_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
-//  }
-
-//  #endif NO_GRAPHICS
