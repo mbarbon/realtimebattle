@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventRT.h"
 #include "EventHandler.h"
 
-extern EventHandler* the_eventhandler;
+#include "Tournament.h"
 
     ///////////////////////////////////////////////////
    //                                               //
@@ -33,12 +33,28 @@ extern EventHandler* the_eventhandler;
 ///////////////////////////////////////////////////
 
 
-void CheckGUIEvent::eval() const 
+void
+CheckGUIEvent::eval() const 
 {
   // Note: might have to supply process_all_options() with eventhandler in the future.
-  gui_p->process_all_options();
+  //  gui_p->process_all_options();
 
-  Event* next_event = new CheckGUIEvent(eval_time + refresh, gui_p, refresh );
-  the_event_handler->insert_RT_event(next_event);
+  Event* next_event = new CheckGUIEvent(eval_time + refresh, refresh, gui_p);
+  the_eventhandler.insert_RT_event(next_event);
 }
 
+
+
+
+void
+StartTournamentEvent::eval() const 
+{
+  Tournament* t = new Tournament(filename);
+
+  if( !t->did_load_succeed() )
+    {
+      Error(true, "Couldn't load tournament file", "StartTournamentEvent::evel");
+    }
+
+  the_eventhandler.set_tournament( t );
+}

@@ -36,10 +36,23 @@ protected:
   double refresh;           //Time between 2 checks
 
   GuiServerInterface* gui_p;
-
-  // Note: Wouldn't it be nice to have a a base class for 'recursive' events,
-  //       containing next_event() and such things?
 };
+
+
+// This starts a tournament when given as an command line argument
+
+class StartTournamentEvent : public Event
+{
+  StartTournamentEvent(const double time, const double refresh_time, const string& filen )
+    : Event(time), filename(filen) {}
+
+  void eval() const;
+
+protected:
+
+  string filename;
+};
+
 
 
 
