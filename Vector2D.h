@@ -1,7 +1,9 @@
-#include <iostream.h>
+
 
 #ifndef __VECTOR2D__
 #define __VECTOR2D__
+
+#include <iostream.h>
 
 class Vector2D
 {

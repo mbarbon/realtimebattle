@@ -1,12 +1,12 @@
-#include <gtk/gtk.h>
-#include <math.h>
-#include "Vector2D.h"
-#ifndef __ARENA__
-#include "Arena.h"
-#endif
 
 #ifndef __GUI__
 #define __GUI__
+
+#include <gtk/gtk.h>
+#include <math.h>
+#include "Vector2D.h"
+#include "Arena.h"
+
 
 #define ZOOMFACTOR 20
 
