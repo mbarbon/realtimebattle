@@ -298,10 +298,10 @@ Define Engine name
    Power                    REAL
    MaxPower                 REAL
    MinPower                 REAL ; It may consume fuel at standby
+   Efficiency               REAL
    SoundLevelPerPower       REAL
    UseCostPerTime           REAL
    UseCostPerPower          REAL
-   Efficiency               REAL
    MaxTemperature           REAL
    Colour                   INT  ;Max: #ffffff Min: #000000
    Price                    REAL
@@ -398,24 +398,45 @@ Define RobotBody name
    Function Brake           FUNCSPEC (true)
 
    ;Variables:
+   Fuel                     REAL
+   Temperature              REAL
+   Health                   REAL
+
+   FuelEnergyDensity        REAL  ; Energy per kg
+
+   ;Constants:  
+   Size                     REAL
+
    Friction                 REAL
    BounceCoefficient        REAL
    Hardness                 REAL
    Protection               REAL
    DamagePerHeat            REAL
-   UseCostPerTime           REAL
-   HeatPerBrakeEffect       REAL
-   MaxBrakeHeat             REAL
+   DamagePerTime            REAL
+
+   BrakeMaxPower            REAL  ; at low temp.
+   BrakeDegenerationHeat    REAL  ; above this temp. brakes are losing power
+   BrakeMaxHeat             REAL  ; above this temp. brakes are not working at all
+
+
    MaxWeaponMass            REAL
    MaxNumberOfWeapons       INT
    MaxSensorMass            REAL
    MaxNumberOfSensors       INT
    MaxDefenseMass           REAL
    MaxNumberOfDefenses      INT
-   MaxTotalLast             REAL
-   CoolDownPerTime          REAL
-   FuelTank                 REAL ;Maximum possible amount of fuel
-   StartingFuel             REAL ;Amount of fuel at starttime
+
+   MaxTotalMass             REAL  ; Mass of RobotBody + all equipment
+
+   HeatCapacity             REAL  ; Determines how much heat energy needed
+                                  ; to raise temp one degree
+   HeatConductivity         REAL  ; Determines how much the environment
+                                    temp affects the robot temp
+   CoolDownPower            REAL
+   FuelPerCoolingPower      REAL  ; 
+
+   MaxFuel                  REAL ;Maximum possible amount of fuel
+
    Colour                   INT  ;Max: #ffffff Min: #000000
    Price                    REAL
    Mass                     REAL
