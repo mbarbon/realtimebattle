@@ -47,6 +47,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
+#include "ArenaReplay.h"
 #include "Various.h"
 #include "Options.h"
 #include "Wall.h"
@@ -545,7 +546,7 @@ Robot::get_total_points()
   ListIterator<stat_t> li;
   double total_pnts;
 
-  if( the_arena_controller.is_realtime() ) 
+  if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
     {
       statistics.last(li);
 
@@ -579,7 +580,7 @@ Robot::get_last_position()
 {
   ListIterator<stat_t> li;
 
-  if( the_arena_controller.is_realtime() )
+  if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
     {
       
       statistics.last(li);

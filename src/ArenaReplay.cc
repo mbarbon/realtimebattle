@@ -178,25 +178,19 @@ ArenaReplay::parse_this_time_index()
     parse_log_line();
   else
     {
-      cout << "'T' not first in log_file for parse_this_time_index()" << endl;
-      cout << "log_file.peek(): " << log_file.peek() << endl;
-      cout << "current_replay_time: " << current_replay_time << endl;
+//        cout << "'T' not first in log_file for parse_this_time_index()" << endl;
+//        cout << "log_file.peek(): " << (char)log_file.peek() << endl;
+//        cout << "current_replay_time: " << current_replay_time << endl;
     }
 
   double next_replay_time = current_replay_time;
-  streampos strpos = log_file.tellg();
 
-  while( current_replay_time == next_replay_time )
+  while( log_file.peek() != 'T' || current_replay_time == 0.0 )
     {
-      strpos = log_file.tellg();
       if( parse_log_line() == '?' ) return;
       if ( current_replay_time == 0.0 ) next_replay_time = 0.0; // A new game has started
     }
 
-  // We have read the next 'T'-line, which we shouldn't: Step back!
-
-  log_file.seekg(strpos);
-  log_file.clear();
 
   current_replay_time = next_replay_time;
   move_shots_no_check( current_replay_time - last_replay_time );
@@ -340,10 +334,9 @@ ArenaReplay::parse_log_line()
         if( !log_from_stdin )
           get_time_positions_in_game();
 
-        ListIterator<Shape> li;
-        for( object_lists[ROBOT].first(li); li.ok(); li++ )
-          ((Robot*)li())->
-            set_values_before_game(Vector2D(infinity,infinity), 0.0);
+        ListIterator<Robot> li;
+        for( all_robots_in_tournament.first(li); li.ok(); li++ )
+          li()->set_values_before_game(Vector2D(infinity,infinity), 0.0);
 
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
@@ -356,28 +349,37 @@ ArenaReplay::parse_log_line()
       break;
     case 'H': // Header
       {
-        char buffer[400];
-        log_file.get( buffer, 400, '\n' );
-        log_file >> ws;
-//          log_file >> games_per_sequence >> robots_per_game 
-//                   >> sequences_in_tournament >> number_of_robots;
+        if( log_from_stdin )
+          log_file >> games_per_sequence >> robots_per_game 
+                   >> sequences_in_tournament >> number_of_robots;        
+        else
+          {
+            char buffer[400];
+            log_file.get( buffer, 400, '\n' );
+            log_file >> ws;
+          }          
       }
       break;
     case 'L': // List of robot properties
       {
-        char buffer[400];
-        log_file.get( buffer, 400, '\n' );
-        log_file >> ws;
-//          int robot_id;
-//          char robot_colour[7];
-//          char name[200];
-//          log_file >> robot_id >> ws;
-//          log_file.get( robot_colour, 7, ' ');
-//          long int col = str2hex( (String)robot_colour );
-//          log_file.get( name, 200, '\n' );
-//          Robot* robotp = new Robot( robot_id, col, (String)name );
-//          object_lists[ROBOT].insert_last(robotp); // array better?
-//          all_robots_in_tournament.insert_last(robotp); // used by statistics
+        if( log_from_stdin )
+          {
+            int robot_id;
+            char robot_colour[7];
+            char name[200];
+            log_file >> robot_id >> ws;
+            log_file.get( robot_colour, 7, ' ');
+            long int col = str2hex( (String)robot_colour );
+            log_file.get( name, 200, '\n' );
+            Robot* robotp = new Robot( robot_id, col, (String)name );
+            all_robots_in_tournament.insert_last(robotp); // used by statistics
+          }
+        else
+          {
+            char buffer[400];
+            log_file.get( buffer, 400, '\n' );
+            log_file >> ws;
+          }
       }
       break;
     case 'A': // Arena file line
@@ -452,14 +454,27 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
     case 'R': // Robot pos
       {
         int robot_id;
-        double x, y, robot_angle, cannon_angle, radar_angle, energy;
-        log_file >> robot_id >> x >> y >> 
-          robot_angle >> cannon_angle >> radar_angle >> energy;
+        double x, y, robot_angle, cannon_angle, radar_angle, energy; 
+        Robot* robotp;       
+        log_file >> robot_id >> x >> y 
+                 >> robot_angle >> cannon_angle >> radar_angle >> energy;
         ListIterator<Shape> li;
-        find_object_by_id( object_lists[ROBOT], li, robot_id );
-        if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line_forward");
-
-        Robot* robotp = (Robot*)li();
+        if( find_object_by_id( object_lists[ROBOT], li, robot_id ) )
+          {
+            robotp = (Robot*)li();
+          }
+        else
+          {
+            ListIterator<Robot> li2;
+            if( log_from_stdin &&
+                find_object_by_id( all_robots_in_tournament, li2, robot_id ) )
+              {
+                object_lists[ROBOT].insert_last( li2() ); 
+                robotp = li2();
+              }
+            else
+              Error(true, "Robot not in list", "ArenaReplay::parse_log_line_forward");
+          }
 
         robotp->change_position( x, y, robot_angle, cannon_angle, radar_angle, energy );
         robotp->live();
@@ -517,7 +532,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
                   robotp->die();
                   robots_killed_this_round++;
                   robotp->set_stats( points_received, pos_this_game, 
-                                     current_replay_time, false);
+                                     current_replay_time, log_from_stdin);
                   robotp->change_energy( -robotp->get_energy() );
                 }
             }
@@ -758,11 +773,11 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
     }
   else if( forward )
     {
-      fast_forward_factor = 5.0;   // should be an option? // RO: Why Not? Could also be accelerating. How fast the forwarding should be depends on how long the button has been pressed.
+      fast_forward_factor = the_opts.get_d( OPTION_FAST_FORWARD_FACTOR );
     }
   else
     {
-      fast_forward_factor = -5.0;
+      fast_forward_factor = -the_opts.get_d( OPTION_FAST_FORWARD_FACTOR );
       step_forward( 0, true );
     }
 }
@@ -1130,8 +1145,6 @@ ArenaReplay::make_statistics_from_file()
   String letters;
 
   streampos old_pos = log_file.tellg();
-
-  cout << "make_statistics_from_file" << endl;
 
   while(  (letters = search_forward( str_list ))  != "" )
     {
