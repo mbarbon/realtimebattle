@@ -473,9 +473,9 @@ received] [position])
 <p>
 You can replay a game from its <ref name="log file" id="log_files"> either
 by giving the <ref name="command line option" id="Command line options">
-<tt>&lsquo;-r&rsquo;</tt> or from the <ref name="control window" id="Control window">.
+<tt>&dquot;-r&dquot;</tt> or from the <ref name="control window" id="Control window">.
 Note that if the log is coming from standard input (command line option
-<tt>&lsquo;-r&nbsp;-&rsquo;</tt>), you cannot do much but watch the game, but otherwise
+<tt>&dquot;-r&nbsp;-&dquot;</tt>), you cannot do much but watch the game, but otherwise
 you can influence the flow of the game:
 
 <itemize>
