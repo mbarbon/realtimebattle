@@ -19,20 +19,55 @@ start_tournament_button_callback(GtkWidget *widget, gpointer data)
 void
 start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p)
 {
-  the_gui.start_tournament_change_selection(true,true,true);
-  //  cout << "(robots) type: " << *(int *)button_number_p << endl;
+  switch(*(int *)button_number_p)
+    {
+    case START_TORUNAMENT_REMOVE:
+      break;
+    case START_TORUNAMENT_SELECT_ALL_TOURNAMENT:
+      the_gui.start_tournament_change_selection( true,false,true );
+      break;
+    case START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT:
+      the_gui.start_tournament_change_selection( true,false,false );
+      break;
+    case START_TORUNAMENT_ADD:
+      break;
+    case START_TORUNAMENT_SELECT_ALL_DIRECTORY:
+      the_gui.start_tournament_change_selection( true,true,true );
+      break;
+    case START_TORUNAMENT_UNSELECT_ALL_DIRECTORY:
+      the_gui.start_tournament_change_selection( true,true,false );
+      break;
+    }
 }
 
 void
 start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p)
 {
-  cout << "(arenas) type: " << *(int *)button_number_p << endl;
+  switch(*(int *)button_number_p)
+    {
+    case START_TORUNAMENT_REMOVE:
+      break;
+    case START_TORUNAMENT_SELECT_ALL_TOURNAMENT:
+      the_gui.start_tournament_change_selection( false,false,true );
+      break;
+    case START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT:
+      the_gui.start_tournament_change_selection( false,false,false );
+      break;
+    case START_TORUNAMENT_ADD:
+      break;
+    case START_TORUNAMENT_SELECT_ALL_DIRECTORY:
+      the_gui.start_tournament_change_selection( false,true,true );
+      break;
+    case START_TORUNAMENT_UNSELECT_ALL_DIRECTORY:
+      the_gui.start_tournament_change_selection( false,true,false );
+      break;
+    }
 }
 
 void
 Gui::start_tournament_change_selection(bool robots, bool dir, bool all)
 {
-  gtk_clist_select_row(GTK_CLIST(robots_in_directory_clist), 0,0);
+  //  gtk_clist_select_row(GTK_CLIST(robots_in_directory_clist), 0,0);
 }
 
 void
@@ -137,6 +172,7 @@ Gui::setup_start_tournament_window()
                   gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(robots_in_directory_clist), row, 0, entry->d_name);
+                  selected_items_in_robot_directory = new int[row](false);
                 }
           }
         closedir( robotdir );
@@ -232,6 +268,8 @@ Gui::setup_start_tournament_window()
                   gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(arenas_in_directory_clist), row, 0, entry->d_name);
+                  selected_items_in_arena_directory = new int[row](false);
+                  //                  cout << "selected_items_in_arena_directory[" << row << "]: " << selected_items_in_arena_directory[row] << endl;
                 }
           }
         closedir( arenadir );
