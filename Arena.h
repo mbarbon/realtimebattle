@@ -32,32 +32,43 @@ public:
                                const double size, class Shape* closest_shape);
 
   gint timeout_function();
-  
-  void start_game(int arenanr);
-  void end_game();
-  void start_sequence(int first_arena);
-  void end_sequence();
-  void start_tournament(char**robotfilenamelist, char** arenafilenamelist, // NULL terminated lists
-                        int robots_per_game); 
-  void end_tournament();
+  void start_tournament(char**robotfilenamelist, 
+                        char** arenafilenamelist, // NULL terminated lists
+                        int robots_p_game, 
+                        int games_p_sequence);   
 
-  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
+  GList* get_object_lists() { return object_lists; }
+
+
+  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
+                 SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
   
 private:
-  double timestep;
-  double total_time;
+  gdouble timestep;
+  gdouble total_time;
   GTimer timer;
   
-  double next_check_time;
+  gdouble next_check_time;
 
   void parse_file(istream&);
   void check_initialization();
 
   void update();
-  void start_robot(char* filename);
+  void update_timer();
   void update_robots();
   void move_shots();
   void update_explosions();
+  
+  
+  void start_game();
+  void end_game();
+  void start_sequence();
+  void start_sequence_follow_up();
+  void end_sequence();
+  void end_sequence_follow_up();
+
+  void end_tournament();
+
 
   void add_to_list(class ArenaObject&);
   void remove_from_list(class ArenaObject&);
@@ -72,7 +83,9 @@ private:
   GList arena_filenames;               // list of GStrings
   
   int games_remaining_in_sequence;
+  int games_per_sequence;
   int sequences_remaining;
+  int current_arena_nr;
   int robots_left;
   int robots_per_game;
   state_t state;
@@ -80,6 +93,7 @@ private:
   double air_resistance;
   double roll_friction;
   double slide_friction;
+  double boundary[4];   // {left, top, rigth, bottom}
 };
 
 // ---------------------  ArenaObject ---------------------
@@ -140,6 +154,11 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
 
+  Vector2D get_start_point() { return start_point; }
+  Vector2D get_direction() { return direction; }
+  double get_length() { return length; }
+  double get_thickness() { return thickness; }
+
 protected:
   Vector2D start_point;
   Vector2D direction;
@@ -159,8 +178,8 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
   
-  // double get_radius() { return radius; }
-  //Vector2D get_center() { return center; }
+  double get_radius() { return radius; }
+  Vector2D get_center() { return center; }
   //void add_to_center(const Vector2D& diff) { center += diff; }
   
 protected:
@@ -268,9 +287,9 @@ public:
   void send_message(enum message_to_robot_type ...);
   void set_initial_position_and_direction(const Vector2D&, const Vector2D&);
   void start_process();
-  int check_process_started();
+  bool is_process_running();
   void end_process();
-  int check_procees_finished();
+  void kill_process_forcefully();
 
   void set_colour( int red, int green, int blue );
   GdkColor get_colour() { return colour; }
@@ -298,7 +317,7 @@ private:
 
   istream instream;
   ostream outstream;
-  pid_t robot_pid;    
+  pid_t pid;    
 };
 
 // ---------------------  Shot : MovingObject  ---------------------
@@ -336,4 +355,3 @@ private:
 };
 
 #endif __ARENA__
-
