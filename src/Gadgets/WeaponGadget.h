@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Function.h"
 #include "ShotGadget.h"
 #include "../Arena.h"
+#include "../EventHandler.h"
 
 class WeaponGadget : public Gadget
 {
@@ -37,7 +38,7 @@ public:
 
   enum WeaponVars
   {
-    AMMUNITION=0,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
+    AMMUNITION=0,  STOPANGLE, LEFTANGLE, RIGHTANGLE, ROTATESPEED,
     AUTOFIRE, MAXROTATESPEED, SOUNDLEVEL,
     MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
     USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
@@ -53,7 +54,7 @@ private:
 
   enum WeaponFcns
   {
-    SHOOT=0, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, LAST_WEAPONFCN
+    SHOOT=0, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, SWEEP, LAST_WEAPONFCN
   };
 
   const static FunctionDefinition function_def[LAST_WEAPONFCN];
@@ -72,6 +73,7 @@ private:
 
   ShotGadget* shot;
 
+  double last_shoot_time;
 };
 
 

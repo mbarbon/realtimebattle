@@ -31,10 +31,12 @@ const VariableDefinition
 WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 
 {
   // Name,      type, value, min,max, inaccm, random, read, write
-  {"Ammunition", INT_V, 0, 0, INT_MAX,0,false,true,false},
+  {"Ammunition", INT_V, 0, 0, INT_MAX, 0, false, true, false},
   
-  {"RotateToAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
-  {"RotateAmountAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+  {"StopAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+  {"LeftAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+  {"RightAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+
   {"RotateSpeed", DOUBLE_V, 0, 0.0, DBL_MAX,0, false, true, true },
   
   {"AutoFire", BOOL_V, false,0,0,0,false,true,true}
@@ -74,7 +76,9 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
   { "Drop", true },
   { "Rotate", true },
   { "RotateTo", true },
-  { "RotateAmount", true }
+  { "RotateAmount", true },
+  { "Sweep", true }
+  
 };
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
@@ -82,6 +86,8 @@ WeaponGadget::WeaponGadget( const char* name, Gadget* const p )
 {
   init_variables(variable_def, LAST_WEAPONVAR);
   init_functions(function_def, LAST_WEAPONFCN);
+
+  last_shoot_time = -1e10;
 }
 
 void
@@ -114,6 +120,22 @@ void
 WeaponGadget::shoot()
 {
   assert( parent->get_info().type == ROBOTBODY_GDT );
+  // TODO: other objects should be able to carry weapon 
+
+  if( variables[AMMUNITION] < 0 )
+    {
+      // TODO: Send warning message
+      return;
+    }
+
+  double cur_time = the_eventhandler.get_game_time();
+
+  if( cur_time < last_shoot_time + variables[RELOADTIME] )
+    return;
+
+  last_shoot_time = cur_time;
+  
+  variables[AMMUNITION] -= 1;
 
   RobotBodyGadget* body = (RobotBodyGadget*) parent;
 
