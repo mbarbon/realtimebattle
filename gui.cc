@@ -524,11 +524,191 @@ Gui::setup_arena_window( Vector2D bound[] )
 void
 Gui::setup_statistics_window()
 {
+  GtkWidget * vbox, * hbox;
+  GtkWidget * button_table;
+  GtkWidget * button;
+
   statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
   gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
   gtk_container_border_width (GTK_CONTAINER (statistics_window), 12);  
+
+  vbox = gtk_vbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (statistics_window), vbox);
+  gtk_widget_show (vbox);
+
+  button_table = gtk_table_new (1, 6, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), button_table, FALSE, FALSE, 0);
+
+  // Buttons for displaying different statistics
+
+  button = gtk_button_new_with_label ("Close");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 0, 1, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Total");
+  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 1, 2, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("First");
+  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 2, 3, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Next");
+  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 3, 4, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Prev");
+  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 4, 5, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Last");
+  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 5, 6, 0, 1);
+  gtk_widget_show (button);
+
+  gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
+  gtk_widget_show (button_table);
+
+  hbox = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+  gtk_widget_show (hbox);
+
+  GtkWidget * name_table;
+  GtkWidget * pos_table;
+  GtkWidget * points_table;
+  GtkWidget * time_table;
+  GtkWidget * total_table;  
+
+  GList** object_lists;
+  GList* gl, * stat_gl;
+  Robot* robotp;
+  int robot_number = 0;
+
+  object_lists = the_arena->get_object_lists();
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    robot_number++;
+
+  name_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), name_table, FALSE, FALSE, 0);
+
+  pos_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), pos_table, FALSE, FALSE, 0);
+
+  points_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), points_table, FALSE, FALSE, 0);
+
+  time_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), time_table, FALSE, FALSE, 0);
+
+  total_table = gtk_table_new (robot_number + 1, 1, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), total_table, FALSE, FALSE, 0);
+
+  GtkWidget * label;  
+
+  label = gtk_label_new( "Name" );
+  gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new( "Position" );
+  gtk_table_attach_defaults (GTK_TABLE(pos_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new( "Points" );
+  gtk_table_attach_defaults (GTK_TABLE(points_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new( "Time Survived" );
+  gtk_table_attach_defaults (GTK_TABLE(time_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  label = gtk_label_new( "Total Points" );
+  gtk_table_attach_defaults (GTK_TABLE(total_table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
+
+  int i=0;
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      GtkWidget * pos_widget;
+      GtkWidget * points_widget;
+      GtkWidget * time_widget;
+      GtkWidget * total_widget;
+      robotp = (Robot*)(gl->data);
+      stat_t* statp = NULL;
+
+      label = gtk_label_new (robotp->get_robotname() );
+      gtk_table_attach_defaults (GTK_TABLE(name_table), label, 0, 1, i + 1, i + 2);
+      gtk_widget_show (label);
+
+      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+        statp = (stat_t*)(stat_gl->data);
+
+      if( statp != NULL )
+        {
+          strstream ss1,ss2,ss3,ss4;
+
+          char str[25];
+          pos_widget = gtk_entry_new_with_max_length(3);
+          ss1 << statp->position;
+          ss1 >> str;
+          gtk_entry_set_text (GTK_ENTRY (pos_widget), str );
+          gtk_entry_set_editable(GTK_ENTRY(pos_widget),FALSE);
+          gtk_widget_set_usize(pos_widget, 30,25);
+          gtk_table_attach_defaults (GTK_TABLE(pos_table), pos_widget, 0, 1, i + 1, i + 2);
+          gtk_widget_show (pos_widget);
+
+          points_widget = gtk_entry_new_with_max_length(3);
+          ss2 << statp->points;
+          ss2 >> str;
+          gtk_entry_set_text (GTK_ENTRY (points_widget), str );
+          gtk_entry_set_editable(GTK_ENTRY(points_widget),FALSE);
+          gtk_widget_set_usize(points_widget, 60,25);
+          gtk_table_attach_defaults (GTK_TABLE(points_table), points_widget, 0, 1, i + 1, i + 2);
+          gtk_widget_show (points_widget);
+
+          time_widget = gtk_entry_new_with_max_length(3);
+          ss3 << statp->time_survived;
+          ss3 >> str;
+          gtk_entry_set_text (GTK_ENTRY (time_widget), str );
+          gtk_entry_set_editable(GTK_ENTRY(time_widget),FALSE);
+          gtk_widget_set_usize(time_widget, 100,25);
+          gtk_table_attach_defaults (GTK_TABLE(time_table), time_widget, 0, 1, i + 1, i + 2);
+          gtk_widget_show (time_widget);
+
+          total_widget = gtk_entry_new_with_max_length(3);
+          ss4 << statp->total_points;
+          ss4 >> str;
+          gtk_entry_set_text (GTK_ENTRY (total_widget), str );
+          gtk_entry_set_editable(GTK_ENTRY(total_widget),FALSE);
+          gtk_widget_set_usize(total_widget, 60,25);
+          gtk_table_attach_defaults (GTK_TABLE(total_table), total_widget, 0, 1, i + 1, i + 2);
+          gtk_widget_show (total_widget);
+        }
+      i++;
+    }  
+
+  gtk_table_set_row_spacings (GTK_TABLE(name_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(pos_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(points_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(time_table), 5);
+  gtk_table_set_row_spacings (GTK_TABLE(total_table), 5);
+  gtk_widget_show (name_table);
+  gtk_widget_show (pos_table);
+  gtk_widget_show (points_table);
+  gtk_widget_show (time_table);
+  gtk_widget_show (total_table);
 
   gtk_widget_show(statistics_window);
   statistics_up = true;
