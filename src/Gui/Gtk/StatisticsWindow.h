@@ -24,12 +24,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
+#include <string>
+
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
 typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
+template<class T> class FileSelector;
 class Robot;
 class DrawingRobot;
 struct stat_t;
@@ -80,10 +83,8 @@ public:
                                        class StatisticsWindow* sw_p );
   static void save                   ( GtkWidget* widget,
                                        class StatisticsWindow* sw_p );
-  static void save_stats             ( GtkWidget* widget,
-                                       class StatisticsWindow* sw_p );
-  static void destroy_filesel        ( GtkWidget* widget,
-                                       class StatisticsWindow* sw_p );
+  void save_stats                    ( const string& );
+
   static void change_table_type      ( GtkWidget* widget,
                                        struct change_type_data_t* info_p );
   static void change_stats_viewed    ( GtkWidget* widget,
@@ -106,14 +107,14 @@ public:
   void set_type                      ( stat_types t ) { type = t; }
 
 private:
-  GtkWidget* get_filesel          () { return filesel; }
-  void set_filesel                ( GtkWidget* fs ) { filesel = fs; } 
-
   GtkWidget* window_p;
   GtkWidget* clist;
   GtkWidget* title_button;
   GtkWidget* title_button_hbox;
-  GtkWidget* filesel;
+
+  // FileSelector
+  FileSelector<StatisticsWindow>* get_filesel () { return filesel; }
+  FileSelector<StatisticsWindow>* filesel;
 
   stat_types type;
   int looking_at_nr;

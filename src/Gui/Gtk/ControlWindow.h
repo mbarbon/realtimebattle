@@ -39,6 +39,7 @@ typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
 struct dialog_result_t;
+template<class T> class FileSelector;
 
 class ControlWindow
 {
@@ -56,6 +57,7 @@ public:
   void clear_extra_widgets         ();
   void display_debug_widgets       ();
   void display_replay_widgets      ();
+  void replay                      ( const string& );
 
   static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* cw_p );
@@ -84,8 +86,6 @@ public:
                                      class ControlWindow* cw_p );
   static void score_window_toggle  ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
-  static void replay               ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
   static void rewind_pressed       ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void rewind_released      ( GtkWidget* widget,
@@ -110,13 +110,10 @@ public:
                                      class ControlWindow* cw_p ) {}
   static void change_current_replay_time( GtkAdjustment *adj,
                                           class ControlWindow* cw_p );
-  static void destroy_filesel      ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
   static void kill_and_open_filesel( int result );
   void open_replay_filesel         ();
 
   displayed_t get_displayed        () { return displayed; }
-  GtkWidget* get_filesel           () { return filesel; }
   GtkWidget* get_window_p          () { return window_p; }
 
   bool is_arenawindow_checked      ();
@@ -127,8 +124,6 @@ public:
   GtkWidget* get_show_message_menu_item() { return show_message_menu_item; }
   GtkWidget* get_show_score_menu_item() { return show_score_menu_item; }
 
-  void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
-
   void set_progress_time           ( const double time );
   void change_time_limitations     ();
 
@@ -136,7 +131,6 @@ private:
 
   GtkWidget* window_p;
   GtkWidget* debug_level;
-  GtkWidget* filesel;
 
   GtkWidget* window_hbox;
   GtkWidget* vseparator;
@@ -145,6 +139,10 @@ private:
   GtkWidget* show_arena_menu_item;
   GtkWidget* show_message_menu_item;
   GtkWidget* show_score_menu_item;
+
+  // FileSelector
+  FileSelector<ControlWindow>* get_filesel () { return filesel; }
+  FileSelector<ControlWindow>* filesel;
 
   GtkWidget* time_control;
   GtkAdjustment* current_replay_time_adjustment;

@@ -32,7 +32,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "OptionHandler.h"
 #include "Structs.h"
-
+#include "FileSelector.h"
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -155,7 +155,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   vseparator = NULL;
   extra_vbox = NULL;
-  filesel = NULL;
+  filesel = new FileSelector<ControlWindow>( this );
 
   remove_replay_widgets();
   gtk_widget_show( window_p );
@@ -557,20 +557,8 @@ ControlWindow::replay_tournament( GtkWidget* widget,
 void
 ControlWindow::open_replay_filesel()
 {
-  if( filesel == NULL )
-    {
-      filesel = gtk_file_selection_new( _("Choose a log file to replay") );
-      gtk_signal_connect( GTK_OBJECT( filesel ), "destroy",
-                          (GtkSignalFunc) ControlWindow::destroy_filesel,
-                          (gpointer) this );
-      gtk_signal_connect
-        ( GTK_OBJECT( GTK_FILE_SELECTION( filesel )->cancel_button ), "clicked",
-          (GtkSignalFunc) ControlWindow::destroy_filesel, (gpointer) this );
-      gtk_signal_connect
-        ( GTK_OBJECT( GTK_FILE_SELECTION( filesel )->ok_button ), "clicked",
-          (GtkSignalFunc) ControlWindow::replay, (gpointer) this );
-      gtk_widget_show( filesel );
-    }
+  filesel->bring_up( _("Choose a log file to replay"),
+                     &ControlWindow::replay );
 }
 
 void
@@ -660,28 +648,13 @@ ControlWindow::is_scorewindow_checked()
 }
 
 void
-ControlWindow::replay( GtkWidget* widget,
-                       class ControlWindow* cw_p )
+ControlWindow::replay( const string& filename )
 {
-  string filename =
-    gtk_file_selection_get_filename
-    ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
-
-  destroy_filesel( cw_p->get_filesel(), cw_p );
-
-  if( filename[filename.length() - 1] == '/' )  
+  if( filename.empty() || filename[filename.length() - 1] == '/' )  
     return;  // no file is selected
 
 //    the_arena_controller.replay_filename = filename;
 //    the_arena_controller.start_replay_arena();
-}
-
-void
-ControlWindow::destroy_filesel( GtkWidget* widget,
-                                class ControlWindow* cw_p )
-{
-  gtk_widget_destroy( cw_p->get_filesel() );
-  cw_p->set_filesel( NULL );
 }
 
 void
@@ -712,7 +685,7 @@ void
 ControlWindow::options_clicked( GtkWidget* widget,
                                 class ControlWindow* cw_p )
 {
-  //  the_opts.open_optionswindow();
+  the_gui.open_optionswindow();
 }
 
 void

@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiVarious.h"
 #include "DrawingObjects.h"
 #include "String.h"
-
+#include "FileSelector.h"
 
 StatisticsWindow::StatisticsWindow( const int default_width,
                                     const int default_height,
@@ -37,7 +37,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
 {
   type = STAT_TYPE_TOTAL;
   looking_at_nr = 1;
-  filesel = NULL;
+  filesel = new FileSelector<StatisticsWindow>( this );
 
   // The window widget
 
@@ -295,6 +295,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
 
 StatisticsWindow::~StatisticsWindow()
 {
+  delete filesel;
   gtk_widget_destroy( window_p );
 }
 
@@ -314,42 +315,18 @@ StatisticsWindow::exit( GtkWidget* widget, class StatisticsWindow* sw_p )
 void
 StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
 {
-  if( sw_p->get_filesel() != NULL )
-    return;
-
-  GtkWidget* fs =
-    gtk_file_selection_new( _("Choose a statistics file to save") );
-  gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
-                      (GtkSignalFunc) StatisticsWindow::destroy_filesel,
-                      (gpointer) sw_p );
-  gtk_signal_connect
-    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
-      (GtkSignalFunc) StatisticsWindow::destroy_filesel,
-      (gpointer) sw_p );
-  gtk_signal_connect
-    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
-      (GtkSignalFunc) StatisticsWindow::save_stats,
-      (gpointer) sw_p );
-  gtk_widget_show( fs );
-  sw_p->set_filesel( fs );
+  sw_p->get_filesel()->bring_up( (string)_("Choose a statistics file to save"),
+                                 &StatisticsWindow::save_stats );
 }
 
 void
-StatisticsWindow::save_stats( GtkWidget* widget,
-                              class StatisticsWindow* sw_p )
+StatisticsWindow::save_stats( const string& filename )
 {
-//    the_arena.save_statistics_to_file
-//      ( gtk_file_selection_get_filename
-//        ( GTK_FILE_SELECTION( sw_p->get_filesel() ) ) );
-//    destroy_filesel( sw_p->get_filesel(), sw_p );
-}
+  if( filename.empty() || filename[filename.length() - 1] == '/' )  
+    return;  // no file is selected
 
-void
-StatisticsWindow::destroy_filesel( GtkWidget* widget,
-                                   class StatisticsWindow* sw_p )
-{
-  gtk_widget_destroy( sw_p->get_filesel() );
-  sw_p->set_filesel( NULL );
+  // TODO: save stats
+//    the_arena.save_statistics_to_file( result )
 }
 
 void
