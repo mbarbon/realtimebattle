@@ -689,6 +689,42 @@ AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
 AC_CHECK_LIB(xpg4, setlocale)
 
 # ---------------------------------------------------------------------------
+# Changing Gettext behaviour. These fixes are taken from Freeciv.
+# ---------------------------------------------------------------------------
+dnl Vast quantities of meaningless errors from xgettext is also annoying.
+dnl We fix this by filtering its output, removing "unknown extension"
+dnl warnings.
+AC_OUTPUT_COMMANDS(
+  [if test -f po/Makefile ; then
+     if grep 'grep -v "is unknown; will try C"' po/Makefile >/dev/null 2>&1 ; then
+       # has already been silenced
+       :
+     else
+       echo silencing po/Makefile
+       mv -f po/Makefile po/Makefile.tmp
+       sed -e 's/--files-from=$(srcdir)\/POTFILES.in/--files-from=$(srcdir)\/POTFILES.in 2>\&1 | grep -v "is unknown; will try C"/' po/Makefile.tmp > po/Makefile
+       rm po/Makefile.tmp
+     fi
+   fi])
+
+dnl Finally, the default behavior of msgmerge breaks 2-byte character
+dnl encodings, as used in ja.po and others.
+dnl We fix this by forcing the "-w 0" option on all msgmerge calls.
+AC_OUTPUT_COMMANDS(
+  [if test -f po/Makefile ; then
+     if grep 'MSGMERGE = PATH=../src:$$PATH msgmerge -w 0' po/Makefile >/dev/null 2>&1 ; then
+       # has already been modified
+       :
+     else
+       echo modifying po/Makefile
+       mv -f po/Makefile po/Makefile.tmp
+       sed -e 's/MSGMERGE = PATH=..\/src:$$PATH msgmerge/MSGMERGE = PATH=..\/src:$$PATH msgmerge -w 0/' po/Makefile.tmp > po/Makefile
+       rm po/Makefile.tmp
+     fi
+   fi])
+
+
+# ---------------------------------------------------------------------------
 # Finished !
 # ---------------------------------------------------------------------------
 AC_OUTPUT([
@@ -711,5 +747,4 @@ AC_OUTPUT([
    Packages/rpm/RealTimeBattle.spec
    Packages/debian/Makefile
    Packages/freebsd/Makefile
-   Makefile],
-   [sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+   Makefile])
