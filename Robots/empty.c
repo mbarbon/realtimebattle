@@ -6,14 +6,12 @@
 
 int main(int argc, char * argv[])
 {
-  write(STDOUT_FILENO, "RobotOption 0 0\n", 16); 
-  write(STDOUT_FILENO, "Name Empty\n", 11);
-  write(STDOUT_FILENO, "Colour aaffaa ee2299\n", 21);
+  printf("RobotOption 0 0\n"); 
+  printf("Name Empty\n");
+  printf("Colour aaffaa ee2299\n");
+  fflush(stdout);
 
-  printf("Print printf worked!\n");
-  fprintf(stdout, "Print fprintf worked!\n");
-
-  sleep(500);
+  sleep(50);
 
   return(EXIT_SUCCESS);
 }
