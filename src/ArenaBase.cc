@@ -84,7 +84,6 @@ ArenaBase::ArenaBase()
   object_lists[ROBOT].set_deletion_responsibility(false);
   all_robots_in_sequence.set_deletion_responsibility(false);
 
-  max_debug_level = 5;
   debug_level = 0;
 
   robots_in_sequence = NULL;
@@ -534,7 +533,8 @@ ArenaBase::set_game_mode( const enum game_mode_t gm)
 int
 ArenaBase::set_debug_level( const int new_level)
 {
-  if( new_level > max_debug_level || new_level < 0 || new_level == debug_level ) return debug_level;
+  if( new_level > max_debug_level || new_level < 0 || new_level == debug_level )
+    return debug_level;
   
   debug_level = new_level;
 

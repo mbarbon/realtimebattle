@@ -54,6 +54,7 @@ class WallInnerCircle;
 class ArenaRealTime;
 
 static const double infinity = 1.0e10;  //approximatly ;-)
+static const int max_debug_level = 5;
 
 extern class Options the_opts;
 //extern class ArenaRealTime the_arena;
@@ -196,7 +197,6 @@ protected:
   game_mode_t game_mode;
   
   int debug_level;
-  int max_debug_level;
 
   bool halt_next;
   bool pause_after_next_game;
