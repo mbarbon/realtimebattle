@@ -184,6 +184,7 @@ Options::Options()
   all_string_options[OPTION_OPTIONS_SAVE_FILE] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "Options savefile", NULL);
 
+  get_options_from_rtbrc();
   options_window_up = false;
 }
 
@@ -209,11 +210,6 @@ Options::broadcast_opts()
   the_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT));  
 
   the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL, the_arena.get_debug_level());  
-}
-
-void
-Options::get_options_from_rtbrc()
-{
 }
 
 void
@@ -262,6 +258,73 @@ Options::set_all_options_from_gui()
       the_arena.set_colours();
 
       close_options_window();
+    }
+}
+
+void
+Options::get_options_from_rtbrc()
+{
+  char* home_dir;
+  if( NULL == ( home_dir = getenv("HOME") ) )
+    return;
+
+  String resource_file = String(home_dir) + "/.rtbrc";
+  ifstream rc_file(resource_file.chars());
+  if( !rc_file )
+    return;
+
+  for(;;)
+    {
+      char temp;
+      char buffer[100];
+      rc_file >> ws;
+      rc_file.get(buffer,100,':');
+      rc_file.get(temp);
+      String option_name(buffer);
+      if(option_name == "")
+        break;
+
+      for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+        if(option_name == all_double_options[i].label )
+          {
+            double option_value;
+            rc_file >> option_value;
+            rc_file.get(buffer,100,'\n');
+            all_double_options[i].value = option_value;
+            all_double_options[i].default_value = option_value;
+          }
+
+      for(int i=0;i<LAST_LONG_OPTION;i++)
+        if(option_name == all_long_options[i].label )
+          {
+            long option_value = 0;
+            if( all_long_options[i].datatype == ENTRY_INT )
+              rc_file >> option_value;
+            if( all_long_options[i].datatype == ENTRY_HEX )
+              {
+                String temp_string;
+                rc_file >> temp_string;
+                while( temp_string[0] == ' ' )
+                  temp_string = get_segment(temp_string,1,-1);
+                option_value = str2hex(temp_string);
+              }
+            rc_file.get(buffer,100,'\n');
+            all_long_options[i].value = option_value;
+            all_long_options[i].default_value = option_value;
+          }
+
+      for(int i=0;i<LAST_STRING_OPTION;i++)
+        if(option_name == all_string_options[i].label )
+          {
+            String option_value;
+            rc_file >> option_value;
+            while( option_value[0] == ' ' )
+              option_value = get_segment(option_value,1,-1);
+            rc_file.get(buffer,100,'\n');
+            all_string_options[i].value = option_value;
+            all_string_options[i].default_value = option_value;
+          }
+
     }
 }
 
