@@ -372,13 +372,13 @@ ArenaController::initialize_options()
 //      LongOption( GROUP_MISC, 120, 1, 10000, false, false,
 //                  _("Max robots allowed simultaneously") );
 
-  all_options["Robot search path" ] = (Option*) new
+  all_options["Robot search path"] = (Option*) new
     StringOption( GROUP_MISC, "", 1000, false, false, _("Robot search path") );
 
-  all_options["Arena search path" ] = (Option*) new
+  all_options["Arena search path"] = (Option*) new
     StringOption( GROUP_MISC, "", 1000, false, false, _("Arena search path") );
 
-  all_options["RTB dir" ] = (Option*) new
+  all_options["RTB dir"] = (Option*) new
     StringOption( GROUP_MISC, "/tmp/rtb", 1000, false, false,
                   _("Directory for temporary files") );
 
