@@ -91,20 +91,20 @@ ControlWindow::ControlWindow( const int default_width,
 
   GtkItemFactoryEntry menu_items[] =
   {
-    { "/_" N_("File"), NULL, NULL, 0, "<Branch>" },
+    { "/_"N_("File"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("File") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/"  N_("File") "/" N_("New tournament"), "<control>n",
+    { "/" N_("File") "/" N_("New tournament"), "<control>n",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
     { "/" N_("File") "/" N_("Replay tournament"), "<control>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_REPLAY_TOURNAMENT, "" },
     { "/" N_("File") "/sep1", NULL, NULL, 0, "<Separator>" },
-    { "/"  N_("File") "/" N_("Specify logfile"), NULL,
+    { "/" N_("File") "/" N_("Specify logfile"), NULL,
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_LOGFILE, "" },
-    { "/"  N_("File") "/" N_("Specify messagefile"), NULL,
+    { "/" N_("File") "/" N_("Specify messagefile"), NULL,
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_MESSAGEFILE, "" },
     { "/" N_("File") "/sep2", NULL, NULL, 0, "<Separator>" },
-    { "/"  N_("File") "/" N_("Quit"), "<control>q",
+    { "/" N_("File") "/" N_("Quit"), "<control>q",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
     { "/_" N_("Windows"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("Windows") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
@@ -116,10 +116,10 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Windows") "/" N_("Show arena window"), "<control>a",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_ARENA, "<CheckItem>" },
-    { "/"  N_("Windows") "/" N_("Show message window"), "<control>m",
+    { "/" N_("Windows") "/" N_("Show message window"), "<control>m",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_MESSAGES, "<CheckItem>" },
-    { "/"  N_("Windows") "/" N_("Show score window"), "<control>s",
+    { "/" N_("Windows") "/" N_("Show score window"), "<control>s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_SCORE, "<CheckItem>" },
     { "/_" N_("Match control"), NULL, NULL, 0, "<Branch>" },
@@ -142,13 +142,13 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Replay") "/" N_("Step backward"), "b",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_BACKWARD, "" },
     { "/" N_("Replay") "/sep", NULL, NULL, 0, "<Separator>" },
-    { "/" N_("Replay") "/" N_("Next Match"), "m",
+    { "/" N_("Replay") "/" N_("Next match"), "m",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEXT_MATCH, "" },
-    { "/" N_("Replay") "/" N_("Previous Match"), "<shift>m",
+    { "/" N_("Replay") "/" N_("Previous match"), "<shift>m",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PREV_MATCH, "" },
-    { "/" N_("Replay") "/" N_("Next Round"), "r",
+    { "/" N_("Replay") "/" N_("Next round"), "r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEXT_ROUND, "" },
-    { "/" N_("Replay") "/" N_("Previous Round"), "<shift>r",
+    { "/" N_("Replay") "/" N_("Previous round"), "<shift>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PREV_ROUND, "" },
     { "/_" N_("Help"), NULL, NULL, 0, "<LastBranch>" },
     { "/" N_("Help") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
@@ -248,7 +248,6 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_set_usize( matchinfo_label, max_label_width, max_label_height );
   gtk_label_set_justify( GTK_LABEL( matchinfo_label ), GTK_JUSTIFY_CENTER );
   gtk_box_pack_start( GTK_BOX( label_vbox ), matchinfo_label, TRUE, TRUE, 0 );
-//    gtk_widget_set_sensitive( matchinfo_label, FALSE );
   gtk_widget_show( matchinfo_label );
 
   set_matchinfo( 0, 0, 0 );
@@ -271,7 +270,6 @@ ControlWindow::ControlWindow( const int default_width,
                       (GtkSignalFunc) change_debug_level,
                       (gpointer) this );
   gtk_box_pack_start( GTK_BOX( debug_level_vbox ), debug_level, TRUE, FALSE, 0 );
-  gtk_widget_set_sensitive( debug_level, FALSE );
   gtk_widget_show( debug_level );
 
   gtk_widget_show( window_p );
@@ -321,7 +319,6 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_signal_connect( GTK_OBJECT( rewind_button ), "released",
                       (GtkSignalFunc) ControlWindow::rewind_released,
                       (gpointer) this );
-  gtk_widget_set_sensitive( rewind_button, FALSE );
   gtk_widget_show( rewind_button );
 
   vbox3 = gtk_vbox_new ( FALSE, 0 );
@@ -336,7 +333,6 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_signal_connect( GTK_OBJECT( fast_forward_button ), "released",
                       (GtkSignalFunc) ControlWindow::fast_forward_released,
                       (gpointer) this );
-  gtk_widget_set_sensitive( fast_forward_button, FALSE );
   gtk_widget_show( fast_forward_button );
 
   // TODO: Get length of match (use instead of 120.0)
@@ -353,8 +349,10 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_range_set_update_policy( GTK_RANGE( time_control ), GTK_UPDATE_DISCONTINUOUS );
   gtk_scale_set_draw_value( GTK_SCALE( time_control ), FALSE );
   gtk_box_pack_start( GTK_BOX( hbox ), time_control, TRUE, TRUE, 2 );
-  gtk_widget_set_sensitive( time_control, FALSE );
   gtk_widget_show( time_control );
+
+  set_debug_sensitivity( false );
+  set_replay_sensitivity( false );
 
   filesel = new FileSelector<ControlWindow>( this );
   about_window = NULL;
@@ -501,6 +499,30 @@ ControlWindow::set_matchinfo( const int& time, const int& match_nr,
   gtk_label_set_text( GTK_LABEL( matchinfo_label ),
                       get_matchinfo_string( time, match_nr,
                                             matches_per_round ).c_str() );
+}
+
+void
+ControlWindow::set_debug_sensitivity( const bool is_debugging )
+{
+  menu_set_sensitive("<main>/Match control/Step", is_debugging);
+  menu_set_sensitive("<main>/Match control/End match", is_debugging);
+  menu_set_sensitive("<main>/Match control/Kill marked robot", is_debugging);
+  gtk_widget_set_sensitive( debug_level, (gint)is_debugging );
+}
+
+void
+ControlWindow::set_replay_sensitivity( const bool is_debugging )
+{
+  menu_set_sensitive("<main>/Replay", is_debugging);
+  menu_set_sensitive("<main>/Replay/Step forward", is_debugging);
+  menu_set_sensitive("<main>/Replay/Step backward", is_debugging);
+  menu_set_sensitive("<main>/Replay/Next match", is_debugging);
+  menu_set_sensitive("<main>/Replay/Previous match", is_debugging);
+  menu_set_sensitive("<main>/Replay/Next round", is_debugging);
+  menu_set_sensitive("<main>/Replay/Previous round", is_debugging);
+  gtk_widget_set_sensitive( rewind_button, (gint)is_debugging );
+  gtk_widget_set_sensitive( fast_forward_button, (gint)is_debugging );
+  gtk_widget_set_sensitive( time_control, (gint)is_debugging );
 }
 
 void
