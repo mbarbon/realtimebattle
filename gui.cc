@@ -1,4 +1,6 @@
 #include <strstream.h>
+#include <iostream.h>
+#include <iomanip.h>
 #include <math.h>
 #include "gui.h"
 #include "Vector2D.h"
@@ -592,13 +594,11 @@ Gui::setup_statistics_window()
   GtkWidget * time_table;
   GtkWidget * total_table;  
 
-  GList** object_lists;
   GList* gl, * stat_gl;
   Robot* robotp;
   int robot_number = 0;
 
-  object_lists = the_arena->get_object_lists();
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
   name_table = gtk_table_new (robot_number + 1, 1, TRUE);
@@ -639,7 +639,7 @@ Gui::setup_statistics_window()
   gtk_widget_show (label);
 
   int i=0;
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
     {
       GtkWidget * pos_widget;
       GtkWidget * points_widget;
@@ -669,7 +669,7 @@ Gui::setup_statistics_window()
           gtk_table_attach_defaults (GTK_TABLE(pos_table), pos_widget, 0, 1, i + 1, i + 2);
           gtk_widget_show (pos_widget);
 
-          points_widget = gtk_entry_new_with_max_length(3);
+          points_widget = gtk_entry_new_with_max_length(5);
           ss2 << statp->points;
           ss2 >> str;
           gtk_entry_set_text (GTK_ENTRY (points_widget), str );
@@ -678,8 +678,8 @@ Gui::setup_statistics_window()
           gtk_table_attach_defaults (GTK_TABLE(points_table), points_widget, 0, 1, i + 1, i + 2);
           gtk_widget_show (points_widget);
 
-          time_widget = gtk_entry_new_with_max_length(3);
-          ss3 << statp->time_survived;
+          time_widget = gtk_entry_new_with_max_length(10);
+          ss3 << setiosflags(ios::fixed) << setprecision(2) << statp->time_survived;
           ss3 >> str;
           gtk_entry_set_text (GTK_ENTRY (time_widget), str );
           gtk_entry_set_editable(GTK_ENTRY(time_widget),FALSE);
@@ -687,7 +687,7 @@ Gui::setup_statistics_window()
           gtk_table_attach_defaults (GTK_TABLE(time_table), time_widget, 0, 1, i + 1, i + 2);
           gtk_widget_show (time_widget);
 
-          total_widget = gtk_entry_new_with_max_length(3);
+          total_widget = gtk_entry_new_with_max_length(10);
           ss4 << statp->total_points;
           ss4 >> str;
           gtk_entry_set_text (GTK_ENTRY (total_widget), str );
