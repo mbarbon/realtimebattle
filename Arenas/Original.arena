@@ -162,7 +162,7 @@ Define Wall Cookie
    EndDefine
 
 
-   ActionAtCollision        "Collider.AddEnergy $RandomEnergy
+   ActionAtCollision        "Collider.AddEnergy $RandomEnergy\n\
                              Die"
    ActionWhenHit            "Die"
 
