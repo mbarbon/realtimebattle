@@ -32,6 +32,16 @@ enum stat_table_t
   STAT_TABLE_ROBOT
 };
 
+enum start_tournament_button_t
+{
+  START_TORUNAMENT_REMOVE = 0,
+  START_TORUNAMENT_SELECT_ALL_TOURNAMENT = 1,
+  START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT = 2,
+  START_TORUNAMENT_ADD = 3,
+  START_TORUNAMENT_SELECT_ALL_DIRECTORY = 4,
+  START_TORUNAMENT_UNSELECT_ALL_DIRECTORY = 5
+};
+
 void statistics_button_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
 void delete_event( GtkWidget * widget, gpointer data );
@@ -42,9 +52,8 @@ gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
 
-void start_tournament_select_buttons_callback(GtkWidget *widget, gpointer data);
-void start_tournament_clists_callback( GtkWidget *clist, gint row, gint column,
-                                       GdkEventButton *event, gpointer data);
+void start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p);
+void start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p);
 
 class Gui
 {
@@ -90,6 +99,9 @@ public:
   void add_new_row( void * rp, void * sp );
   void add_the_statistics_to_clist();
   void stat_make_title_button();
+
+  void start_tournament_change_selection(bool robots, bool dir, bool all);
+
 
   int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }

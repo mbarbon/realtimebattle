@@ -17,14 +17,22 @@ start_tournament_button_callback(GtkWidget *widget, gpointer data)
 }
 
 void
-start_tournament_select_buttons_callback(GtkWidget *widget, gpointer data)
+start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p)
 {
+  the_gui.start_tournament_change_selection(true,true,true);
+  //  cout << "(robots) type: " << *(int *)button_number_p << endl;
 }
 
 void
-start_tournament_clists_callback( GtkWidget *clist, gint row, gint column,
-                                  GdkEventButton *event, gpointer data)
+start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p)
 {
+  cout << "(arenas) type: " << *(int *)button_number_p << endl;
+}
+
+void
+Gui::start_tournament_change_selection(bool robots, bool dir, bool all)
+{
+  gtk_clist_select_row(GTK_CLIST(robots_in_directory_clist), 0,0);
 }
 
 void
@@ -66,9 +74,13 @@ Gui::setup_start_tournament_window()
 
   {
     char * button_labels[] = { "Remove", "Select All", "Unselect All" };
-    for(int i=0;i<3;i++)
+    for(int i=START_TORUNAMENT_REMOVE;i<=START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        int * button_number_p;
+        button_number_p = new int(i);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (start_tournament_select_robots_buttons_callback), (gpointer) button_number_p );
         gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
         gtk_widget_show( button );
       }
@@ -80,9 +92,13 @@ Gui::setup_start_tournament_window()
 
   {
     char * button_labels[] = { "Add", "Select All", "Unselect All" };
-    for(int i=0;i<3;i++)
+    for(int i=START_TORUNAMENT_ADD;i<=START_TORUNAMENT_UNSELECT_ALL_DIRECTORY;i++)
       {
-        GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        GtkWidget * button = gtk_button_new_with_label( button_labels[i-START_TORUNAMENT_ADD] );
+        int * button_number_p;
+        button_number_p = new int(i);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (start_tournament_select_robots_buttons_callback), (gpointer) button_number_p );
         gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
         gtk_widget_show( button );
       }
@@ -150,9 +166,13 @@ Gui::setup_start_tournament_window()
 
   {
     char * button_labels[] = { "Remove", "Select All", "Unselect All" };
-    for(int i=0;i<3;i++)
+    for(int i=START_TORUNAMENT_REMOVE;i<=START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        int * button_number_p;
+        button_number_p = new int(i);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (start_tournament_select_arenas_buttons_callback), (gpointer) button_number_p );
         gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
         gtk_widget_show( button );
       }
@@ -164,9 +184,13 @@ Gui::setup_start_tournament_window()
 
   {
     char * button_labels[] = { "Add", "Select All", "Unselect All" };
-    for(int i=0;i<3;i++)
+    for(int i=START_TORUNAMENT_ADD;i<=START_TORUNAMENT_UNSELECT_ALL_DIRECTORY;i++)
       {
-        GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        GtkWidget * button = gtk_button_new_with_label( button_labels[i-START_TORUNAMENT_ADD] );
+        int * button_number_p;
+        button_number_p = new int(i);
+        gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                            GTK_SIGNAL_FUNC (start_tournament_select_arenas_buttons_callback), (gpointer) button_number_p );
         gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
         gtk_widget_show( button );
       }
@@ -217,10 +241,18 @@ Gui::setup_start_tournament_window()
 
   char * label_titles[] = { "Games per sequence", "Robots per sequence", "Number of sequences" };
 
+  GtkWidget * hbox2 = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox2);
+  gtk_widget_show (hbox2);
+
+  vbox2 = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
+  gtk_widget_show (vbox2);
+
   for( int i=0;i<3;i++ )
     {
       hbox = gtk_hbox_new (FALSE, 5);
-      gtk_container_add (GTK_CONTAINER (vbox), hbox);
+      gtk_container_add (GTK_CONTAINER (vbox2), hbox);
       gtk_widget_show (hbox);
 
       GtkWidget * label = gtk_label_new(label_titles[i]);
@@ -233,6 +265,23 @@ Gui::setup_start_tournament_window()
       gtk_widget_set_usize(entry, 36,18);
       gtk_widget_show(entry);
     }
+
+  vbox2 = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
+  gtk_widget_show (vbox2);
+
+  {
+    char * button_labels[] = { "Start", "Cancel" };
+    for(int i=0;i<2;i++)
+      {
+        GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
+        if(i==1)
+          gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                              GTK_SIGNAL_FUNC (start_tournament_button_callback), (gpointer) NULL );
+        gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
+        gtk_widget_show( button );
+      }
+  }  
 
   gtk_widget_show( start_tournament_window );
   start_tournament_up = true;
