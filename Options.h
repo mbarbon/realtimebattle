@@ -24,9 +24,10 @@ enum option_double_t
   OPTION_ROBOT_START_ENERGY,
   OPTION_ROBOT_MAX_ENERGY,
 
-  OPTION_ROBOT_FRONT_PROTECTION,
-  OPTION_ROBOT_FRONT_HARDNESS,
   OPTION_ROBOT_FRONT_BOUNCE_COEFF,
+  OPTION_ROBOT_FRONT_HARDNESS,
+  OPTION_ROBOT_FRONT_PROTECTION,
+
   OPTION_ROBOT_COS_FRONTSIZE,
 
   OPTION_ROBOT_MAX_ROTATE,
@@ -201,20 +202,15 @@ public: // get_options
   double get_max_timestep() { return max_timestep; }
   double get_timeout() { return timeout; }
 
-  double get_option_d( int option );
-  long get_option_l( int option );
-  String get_option_s( int option );
-  bool get_option_b( int option );
-
-  set_option( double v );
-  set_option( long v );
-  set_option( String v );
-  set_option( bool v );
+  inline double get_d( option_double_t  option ) { return all_double_options[option].value; }
+  inline long   get_l( option_long_t    option ) { return all_long_options[option].value; }
+  //  String get_s( option_double_t option ) { return all_string_options[option]; }
+  //  bool get_b( option_double_t option ) { return all_bool_options[option]; }
 
 private:  // other private variables and functions
 
-  option_info_t<double> * all_double_options[LAST_DOUBLE_OPTION];
-  option_info_t<long> * all_long_options[LAST_LONG_OPTION];
+  option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
+  option_info_t<long> all_long_options[LAST_LONG_OPTION];
 
   // No char or bool options yet
   //  option_info_t<String> * all_char_options[LAST_STRING_OPTION];
@@ -222,6 +218,11 @@ private:  // other private variables and functions
 
   bool options_window_up;
   GtkWidget * options_window;
+
+  set_option( double v );
+  set_option( long v );
+  set_option( String v );
+  set_option( bool v );
 
 public:  // other public variables and functions
   void broadcast_opts();
