@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <string.h>
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
 # include <time.h>
