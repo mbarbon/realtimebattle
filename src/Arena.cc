@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,11 +23,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <stack>
 #include <fstream>
+#include <strstream>
+
 #include <typeinfo>
 #include <set>
 #include <algorithm>
 #include <vector>
 
+#include <unistd.h>
 #include <math.h>
 #include <assert.h>
 
@@ -44,6 +47,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Arena::Arena(const string& s, set<Robot*> &S)
 {
+  load_arena_file(s, gadget_hierarchy);
 }
 
 void
@@ -123,15 +127,12 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
 }
 
 
-
-
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
   enum load_file_mode_t { LAF_DEFINING_MODE, LAF_VARIABLE_MODE,
                           LAF_SCRIPT_MODE, LAF_GEOMETRY_MODE };
 
-  char buffer[400];
   load_file_mode_t mode = LAF_DEFINING_MODE;
 
   string top_filename = filename;
@@ -140,62 +141,81 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 
   string top_file_path = top_filename.substr( 0, top_filename.rfind( '/' ) );
 
-  stack<ifstream*> file_stack;
-  file_stack.push( new ifstream( top_filename.c_str() ) );
+  stack<ifstream*> file_stack;   ifstream* current_file;
+  file_stack.push( current_file = new ifstream( top_filename.c_str() ) );
 
   bool first_line = true;
 
   Gadget* current_gadget = &hierarchy;
 
+  string str_buffer;
   while( !file_stack.empty() )
     {
-      ifstream* current_file = file_stack.top();
-      string str_buffer;
-      bool first_time = true;
+      str_buffer = "";
+      bool keep_reading_line = true;
 
       //Read a complete line (continue if the '\\' caracter is at the end)
       //What happend if there is a space at the end : "\\ \n" ?
-      while( str_buffer[str_buffer.length() - 1] != '\\' || first_time )
+      while( keep_reading_line )
         {
-          if( first_time )
-            first_time = false;
-          if( current_file->fail() || current_file->eof() )
-            {
-              delete current_file;
-              file_stack.pop();
-              continue;
-            }
-          current_file->get( buffer, 400, '\n' );
-          current_file->get();
-          str_buffer += buffer;
-          if( str_buffer[str_buffer.length() - 1] != '\\' )
-            str_buffer.erase( str_buffer.length() - 1 );
+	  char buffer[400];
+	  
+	  if( current_file->fail() || current_file->eof() )
+	    { //TODO : make two separate cases !
+	      delete current_file;
+	      file_stack.pop();
+	      current_file = file_stack.top();
+	      continue;
+	    }
+	  current_file->get( buffer, 400, '\n' );
+	  current_file->get();
+
+          str_buffer += string(buffer);
+
+          if( str_buffer[str_buffer.length() - 1] == '\\' )
+	    str_buffer.erase( str_buffer.length() - 1 );
+	  else
+	    keep_reading_line = false;
+
         }
 
-      vector<string> wordlist = special_split_string( buffer, wordlist );
+      vector<string> wordlist;
+      wordlist = special_split_string( str_buffer, wordlist );
+
       if( wordlist.size() > 0 )
         {
+	  for(int i = 0; i < wordlist.size(); i ++)
+	    cout<<"{"<<wordlist[i]<<"} ";
+	  cout<<endl;
+
           if( first_line && wordlist[0][0] == '!' )  //This may be the arena version
             {
-              if( !sufficient_arena_version( wordlist ) )
+	      cout<<"Checking the arena version\n";
+              if( !sufficient_arena_version( wordlist ) )   ;
               first_line = false;
             }
           if( equal_strings_nocase( wordlist[0], "Include" ) )
             {
+	      cout<<"Including a new file\n";
               if( !find_full_arena_filename( wordlist[1], top_file_path, true ) )
                 Error( false, "Couldn't find this include file: " + wordlist[1],
                        "Arena::load_arena_file" );
-              file_stack.push( new ifstream( wordlist[1].c_str() ) );  //Put the include file on the top of the stack
+	      //Put the include file on the top of the stack
+              file_stack.push( current_file = new ifstream( wordlist[1].c_str() ) );
             }
           else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Define" ) &&
-                   wordlist.size() > 2 )  //Why not wordlist.size() == 3
+                   wordlist.size() > 2 )  
             {
+	      cout<<"Starting a definition\n";
+	      cout<<wordlist[1]<<"  "<<wordlist[2]<<endl;
               Gadget* gadget =
                 AllGadgets::create_gadget_by_stringtype( wordlist[1],
                                                          wordlist[2].c_str(),
                                                          current_gadget );
+
               assert( gadget != NULL );
+	      cout<<"Gadget created\n";
               current_gadget->get_my_gadgets().add( gadget->get_info() );
               current_gadget = (Gadget*)gadget;
               if( gadget->get_info().type == GAD_SCRIPT )
@@ -208,34 +228,48 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
               current_gadget = current_gadget->get_parent();
               mode = LAF_DEFINING_MODE;
             }
+	  else if( equal_strings_nocase( wordlist[0], "InfoString") )
+	    {
+	    }
           else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Function" ) &&
                    wordlist.size() > 2 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                                find_by_name( wordlist[1] ))).gadgetp;
-              assert( typeid(gadp) == typeid(Function*) );
-              Function* func_p = (Function*)func_p;
+				find_by_name( wordlist[1] ))).gadgetp;
+	     
+              //NOTE : assert( typeid(gadp) == typeid(Function*) ); doesn't work !!! why ?
+	      //TODO : Gadget must be a virtual class 
+	      //NOTE : dynamic_cast<Function*> gadp; neither ?!?!
+
+	      assert( gadp != NULL );
+              Function* func_p = (Function*) gadp;
+
               if( equal_strings_nocase( wordlist[2], "default" ) )
                 {
-                  // TODO: Set Function allowance to default
+                  //Set Function allowance to default (do nothing)
                 }
               else if( equal_strings_nocase( wordlist[2], "true" ) )
                 {
-                  // TODO: Set Function allowance to true
+		  //Set Function allowance to true
+		  func_p->set_enable();
                 }
               else if( equal_strings_nocase( wordlist[2], "false" ) )
                 {
-                  // TODO: Set Function allowance to false
+                  //Set Function allowance to false
+		  func_p->set_enable( false );
                 }
             }              
           else if( mode == LAF_VARIABLE_MODE )
             {
-              assert( typeid(current_gadget) == typeid(Variable*) );
+	      cout<<"Setting a variable :\n";
+	      //cout<<current_gadget->get_info().name<<endl;
+              //assert( typeid(current_gadget) == typeid(Variable*) );
               // TODO: set variable info.
             }
           else if( mode == LAF_SCRIPT_MODE )
             {
+	      cout<<"LAF_SCRIPT_MODE\n";
               assert( typeid(current_gadget) == typeid(Script*) );
               ((Script*)current_gadget)->add_script_line( wordlist );
             }            
@@ -247,7 +281,26 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
                                 find_by_name( wordlist[0] ))).gadgetp;
-              assert( typeid(gadp) == typeid(Variable*) );
+
+	      assert( gadp != NULL );
+	      Variable* var_p = (Variable*) gadp;
+
+	      if(var_p->type() == DOUBLE_V) {
+		istrstream is(wordlist[1].c_str()); double d;
+		is >> d;
+		(*var_p) = Value( d );
+	      } else if(var_p->type() == INT_V) {
+		int i;
+		istrstream is(wordlist[1].c_str());
+		is>>i;
+		(*var_p) = Value( i );
+	      } else if(var_p->type() == BOOL_V) {
+		bool b = (wordlist[1] == string("true"));
+		var_p->make_bool( b );
+	      }
+	      sleep( 1 );
+
+              //assert( typeid(gadp) == typeid(Variable*) );
               // TODO: set value to the found gadget
             }
         }

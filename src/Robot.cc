@@ -60,13 +60,7 @@ Robot::Robot(const string& uniqueness_name, int id) {
   owner = NULL;
 }
 
-/*Robot::Robot(const string& filename)
-{
-  
-}*/
-
 // Constructor used by ArenaReplay. No process needed.
-//
 Robot::Robot(const int r_id, const long int col, const string& name)
 {
   id = r_id;

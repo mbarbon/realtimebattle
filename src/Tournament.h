@@ -91,14 +91,12 @@ class Tournament
 
   void reset();
 
-  bool add_Robot(Robot* robot);
-  bool add_Arena(string arena_filename);
   bool set_number_o_matches(int);
   bool set_robots_p_match(int);
 
   Robot* connect_to_robot(NetConnection* nc, string& uniqueness_name);
 
-  vector<Robot*>* get_the_robots(){return &the_robots;};
+  set<Robot*>* get_the_robots(){return &the_robots;};
 
   void start();
 
@@ -107,7 +105,6 @@ private:
   void create_matches();
 
   bool parse_tournament_file( const string& tournament_file );
-
 
   void reorder_matches(const int start, const int end);
 
@@ -120,7 +117,7 @@ private:
   bool started;
 
   vector<Match> the_matches;
-  vector<Robot*> the_robots;  //Use a set instead of a vector (as for the arena)
+  set<Robot*> the_robots;  //Use a set instead of a vector (as for the arena)
 
   //NOTE : put the arena filenames directly in the_arenagadgets when ready
   vector<string> arena_filenames; 
@@ -132,7 +129,6 @@ private:
   bool load_succeeded;
 
   tourn_info_t my_tournament_info;
-
 };
 
 extern Tournament the_tournament;

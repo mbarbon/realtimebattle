@@ -171,6 +171,11 @@ main( int argc, char* argv[] )
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
 
+  set<Robot*> s;
+  Arena* a = new Arena("/tmp/roussebe/RealTimeBattle/Arenas/Original.arena", s);
+  delete a;
+  exit(0);
+
   my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
   my_socketserver.open_channel( new TournamentAgreementPacketFactory );
   Event* new_event = new CheckSocketEvent(0.1, &my_socketserver );

@@ -37,6 +37,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "TournamentAgreementPackets.h"
 #include "TournamentPackets.h"
 #include "ServerSocket.h"
+#include "Arena.h"
 
 Tournament::Tournament() :
   robots_per_match(0),
@@ -83,34 +84,6 @@ Tournament::set_packet_factories(TournamentRobotPacketFactory* robots,
   view_packet_factory  = views;
 }
 
-bool
-Tournament::add_Robot(Robot* robot)
-{
-  if( ! started )
-    {
-      the_robots.push_back(robot);
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-};
-
-bool 
-Tournament::add_Arena(string arena_filename)
-{
-  if( ! started )
-    {
-      arena_filenames.push_back(arena_filename);
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
 bool 
 Tournament::set_number_o_matches(int i)
 {
@@ -145,11 +118,9 @@ Tournament::start()
 {
 
   match_nr = 0;
-  create_matches();
-  prepare_for_new_match();  
+  //create_matches();
+  //prepare_for_new_match();  
   
-  // TODO: Load all arenafiles.
-
   //Tell the NetConnection to run the robots
   for(list<robot_info_t>::iterator ri = my_tournament_info.robots.begin(); 
       ri != my_tournament_info.robots.end(); ri ++)
@@ -159,22 +130,34 @@ Tournament::start()
       ostrstream unique_name, os; 
       unique_name<<ri->filename<<"_"<<ri->id<<"/"<<rand_id; 
 
-      os<<"RunRobot "<<ri->filename<<" "<<ri->directory<<" "<<ri->id<<" "<<rand_id;
+      //TODO : change this !!!
+      os<<"RunRobot "<<ri->filename<<" "<<ri->directory<<" "<<ri->id<<" "<<rand_id<<ends;
       TournamentCommitChangePacket P( os.str() );
       ri->nc->send_data( P.make_netstring() );
 
-      the_robots.push_back(new Robot(unique_name.str(), ri->id));
+      the_robots.insert(new Robot(unique_name.str(), ri->id));
+    }
+
+  //Load all arenafiles.
+  for(list<arena_info_t>::iterator ai = my_tournament_info.arenas.begin();
+      ai != my_tournament_info.arenas.end(); ai ++)
+    {
+      if(ai->selected)
+	{
+	  Arena * my_arena = new Arena( ai->directory+ai->filename, the_robots);
+	  delete my_arena;
+	  //TODO : load the arena file !
+	  break;
+	}
     }
   
-
   started = true;
-
 }
 
 Robot*
 Tournament::connect_to_robot(NetConnection* nc, string& uniqueness_name)
 {
-  for( vector<Robot*>::iterator ri = the_robots.begin(); ri != the_robots.end(); ri ++ )
+  for( set<Robot*>::iterator ri = the_robots.begin(); ri != the_robots.end(); ri ++ )
     {
       if((*ri)->get_robot_name() == uniqueness_name && (*ri)->set_connection( nc )) {
 	return *ri;

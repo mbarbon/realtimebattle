@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -21,7 +21,6 @@ Boston, MA  02111-1307, USA.
 #ifndef __MESSAGETYPES__
 #define __MESSAGETYPES__
 
-// Note: Doesn't these fit better in AllGadgets.h
 enum gadget_t
 {
   GAD_NONE = -1,
@@ -66,6 +65,11 @@ static const char gadget_types[][LAST_GADGET] =
   "Function",
   "Script"
 };
+
+
+
+
+
 
 enum message_to_robot_type 
 {
