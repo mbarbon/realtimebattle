@@ -486,13 +486,52 @@ Robot::get_messages()
                 Shot* shotp = new Shot( shot_center, shot_radius,
                                         velocity + dir * opts.get_shot_speed(),
                                         the_arena, en );
-                change_energy(-en * opts.get_shooting_penalty() );
                 g_list_append((the_arena->get_object_lists())[SHOT], shotp);
               }
             else
-              {  // TODO: shooting: direct hit if too close
+              { 
+                void* col_obj;
+                object_type cl_shape;
+                double dist;
+                if( (dist = the_arena->get_shortest_distance( center, dir, shot_radius, cl_shape, col_obj)) > radius+1.5*shot_radius )
+                  {
+                    cerr << "Shot has space available after all?" <<  endl;
+                    cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
+                    cerr << "col_shape: " << cl_shape << endl; 
+                    //                  throw Error("Shot has space available after all?", "Robot::get_messages");                  
+                  }
+                switch(cl_shape)
+                  {
+                  case WALL:
+                    break;
+                  case ROBOT:
+                    ((Robot*)col_obj)->change_energy(-energy);
+                    ((Robot*)col_obj)->send_message(COLLISION, SHOT, -energy);
+                    break;
+                  case SHOT:
+                    ((Shot*)col_obj)->die();
+                    break;
+                  case COOKIE:
+                    {
+                      Cookie* cookiep =(Cookie*)col_obj;
+                      cookiep->die();
+                      g_list_remove((the_arena->get_object_lists())[COOKIE], cookiep);
+                      delete cookiep;
+                    }
+                    break;
+                  case MINE:
+                    {
+                      Mine* minep =(Mine*)col_obj;
+                      minep->die();
+                      g_list_remove((the_arena->get_object_lists())[MINE], minep);
+                      delete minep;
+                    }
+                    break;
+                  default:
+                    throw Error("Shot on unknown object", "Robot::get_messages");
+                  }
               }
-
+            change_energy(-en * opts.get_shooting_penalty() );
           }
           break;
         case ACCELERATE:
@@ -526,7 +565,7 @@ Robot::get_messages()
           // TODO: Receive data
           break;
         default:
-          throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
+          throw Error("Message_type not implemented, ", msg_name, "Robot::get_messages");
         }
 
       *instreamp >> ws;
