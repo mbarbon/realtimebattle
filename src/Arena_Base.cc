@@ -75,8 +75,8 @@ Arena_Base::Arena_Base()
 
   reset_timer();
   
-  //  for(int i=ROBOT_T; i<=LAST_ARENAOBJECT_T; i++)
-  //    object_lists[i] = new List<Shape>;
+  object_lists[ROBOT_T].set_deletion_responsibility(false);
+  all_robots_in_sequence.set_deletion_responsibility(false);
 
   max_debug_level = 5;
   debug_level = 0;
@@ -89,8 +89,6 @@ Arena_Base::~Arena_Base()
   sleep(1);
 
   delete_lists(true, true, true, true);
-  //  for(int i=ROBOT_T; i<LAST_ARENAOBJECT_T; i++)
-  //    delete object_lists[i];
 
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
     delete [] robots_in_sequence[i];
@@ -149,17 +147,18 @@ Arena_Base::save_statistics_to_file(String filename)
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
 
-  GList* stat_gl;
+  stat_t* statp;
   Robot* robotp;
 
   ListIterator<Robot> li;
+  ListIterator<stat_t> stat_li;
   for(all_robots_in_tournament.first(li); li.ok() ; li++ )
     {
       robotp = li();
       file << robotp->get_robot_name() << ": " << endl;
-      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+      for(robotp->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
         {
-          stat_t * statp = (stat_t*)(stat_gl->data);
+          statp = stat_li();
           file << "Seq: " << statp->sequence_nr 
                << "  Game: " << statp->game_nr 
                << "  Pos: " << statp->position
@@ -524,7 +523,7 @@ Arena_Base::delete_lists(const bool kill_robots, const bool del_seq_list,
   // clear the lists;
 
   for( int obj_type = ROBOT_T; obj_type < LAST_ARENAOBJECT_T; obj_type++ )  
-    object_lists[obj_type].delete_list(obj_type != ROBOT_T);
+    object_lists[obj_type].delete_list();
 
   exclusion_points.delete_list();
 
@@ -536,7 +535,7 @@ Arena_Base::delete_lists(const bool kill_robots, const bool del_seq_list,
           for( all_robots_in_sequence.first(li); li.ok(); li++)
             li()->kill_process_forcefully();
         }
-      all_robots_in_sequence.delete_list(false);
+      all_robots_in_sequence.delete_list();
     }
 
   if( del_tourn_list )  all_robots_in_tournament.delete_list();
