@@ -39,6 +39,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "DrawingObjects.h"
 #include "OptionHandler.h"
 #include "GuiVarious.h"
+#include "Various.h"
 #include "InfoClasses.h"
 
 class Gui* gui_p;
@@ -85,6 +86,20 @@ Gui::Gui()
   scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
+}
+
+Gui::~Gui()
+{
+  close_statisticswindow();
+  close_starttournamentwindow();
+  close_scorewindow();
+  close_messagewindow();
+  close_arenawindow();
+
+  delete controlwindow_p;
+
+  for( int i = ROBOT; i < LAST_OBJECT_TYPE; i++ )
+    clear_and_delete_pointer_list( drawing_objects_lists[i] );
 }
 
 int
@@ -137,15 +152,51 @@ Gui::get_information()
         case INFO_TOURNAMENT_ENDED:
           break;
         case INFO_GAME_STARTED:
-          break;
-        case INFO_MESSAGE:
           {
-            MessageInfo* message_p = (MessageInfo*)info_p;
-            if( is_messagewindow_up() )
-              messagewindow_p->add_message( message_p->get_sender(),
-                                            message_p->get_message() );
-            break;
+            GameStartedInfo* gameinfo_p = (GameStartedInfo*)info_p;
+            match_nr = gameinfo_p->get_match();
+            game_nr  = gameinfo_p->get_game();
+            // TODO: Take care of participating_robots
+            clear_and_delete_pointer_list( drawing_objects_lists[WALL] );
+            int id = -1;
+            list<object_pos_info*>::const_iterator opi;
+            for( opi = gameinfo_p->get_list_of_walls().begin();
+                 opi != gameinfo_p->get_list_of_walls().end(); opi++ )
+              {
+                id++;
+                DrawingShape* ds_p = NULL;
+                switch( (*opi)->type )
+                  {
+                  case SHAPE_LINE:
+                    ds_p = new DrawingLine( id, 0 ); //Should the colour be bg_colour?
+                    break;
+                  case SHAPE_CIRCLE:
+                    ds_p = new DrawingCircle( id, 0 ); //Should the colour be bg_colour?
+                    break;
+                  case SHAPE_INNER_CIRCLE:
+                    //Should the colour be bg_colour?
+                    ds_p = new DrawingInnerCircle( id, 0 );
+                    break;
+                  case SHAPE_ARC:
+                    ds_p = new DrawingArc( id, 0 ); //Should the colour be bg_colour?
+                    break;
+                  }
+                ds_p->set_position( *opi );
+              }
+          break;
           }
+        case INFO_MESSAGE:
+          if( is_messagewindow_up() )
+            {
+              messagewindow_p->freeze_clist();
+              const list<MessageInfo::message> message_list
+                = ((MessageInfo*)info_p)->get_message_list();
+              list<MessageInfo::message>::const_iterator mci;
+              for( mci = message_list.begin(); mci != message_list.end(); mci++ )
+                messagewindow_p->add_message( (*mci).sender, (*mci).message );
+              messagewindow_p->thaw_clist();
+            }
+          break;
         }
     }
 }

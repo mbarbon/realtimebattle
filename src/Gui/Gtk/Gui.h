@@ -56,7 +56,7 @@ class Gui
 {
 public:
   Gui();
-  ~Gui() {}
+  ~Gui();
 
   int main_loop                                ( GuiInterface* );
   int timeout_function                         ();
