@@ -32,11 +32,11 @@ public:
 private:
 };
 
-class QuitGuiRequest : public GuiRequest
+class QuitProgramRequest : public GuiRequest
 {
 public:
-  QuitGuiRequest               ( const bool _success) : success(_success) {}
-  ~QuitGuiRequest              () {}
+  QuitProgramRequest           ( const bool _success) : success(_success) {}
+  ~QuitProgramRequest          () {}
 
   void accept                  () const;
 private:
@@ -58,11 +58,11 @@ private:
   bool as_default;
 };
 
-class TogglePauseGameGuiRequest : public GuiRequest
+class TogglePauseGameRequest : public GuiRequest
 {
 public:
-  TogglePauseGameGuiRequest    () {}
-  ~TogglePauseGameGuiRequest   () {}
+  TogglePauseGameRequest       () {}
+  ~TogglePauseGameRequest      () {}
 
   void accept                  () const;
 };

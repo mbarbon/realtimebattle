@@ -27,9 +27,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 
 void
-QuitGuiRequest::accept() const
+QuitProgramRequest::accept() const
 {
-  Quit( success ); // TODO: How should we quit really?
+//    Quit( success ); // TODO: How should we quit really?
 }
 
 void
@@ -39,7 +39,7 @@ OptionChangeRequest::accept() const
 }
 
 void
-TogglePauseGameGuiRequest::accept() const
+TogglePauseGameRequest::accept() const
 {
   //TODO: toggle pause game
 }
