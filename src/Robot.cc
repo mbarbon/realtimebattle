@@ -83,7 +83,7 @@ Robot::Robot(const String& filename)
   alive = false;
   total_points = 0.0;
   
-  have_competed = false;
+  has_competed = false;
 
   id = the_arena.increase_robot_count();
 
@@ -640,7 +640,7 @@ void
 Robot::set_values_at_process_start_up()
 {
   process_running = true;
-  have_saved = false;
+  has_saved = false;
   time_survived_in_sequence = 0.0;
   cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
   cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
@@ -1174,15 +1174,15 @@ Robot::get_messages()
         case BIN_DATA_FROM:
           if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
             {
-              save_data(true, have_saved);
-              have_saved = true;
+              save_data(true, has_saved);
+              has_saved = true;
             }
           break;
         case ASCII_DATA_FROM:
           if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
             {
-              save_data(false, have_saved);
-              have_saved = true;
+              save_data(false, has_saved);
+              has_saved = true;
             }
           break;
         default:
@@ -1212,7 +1212,10 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
   if( the_arena.get_state() != state1 && the_arena.get_state() != state2 )
     {
       //cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena.get_state() << endl;
-      send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, message_from_robot[msg_t].msg);
+
+      if( the_arena.get_state() != BEFORE_GAME_START )
+        send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, 
+                     message_from_robot[msg_t].msg);
       char buffer[80];
       instreamp->get(buffer, 80, '\n');
       return false;

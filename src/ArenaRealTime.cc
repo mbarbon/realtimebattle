@@ -899,7 +899,7 @@ ArenaRealTime::start_game()
     {
       state = PAUSING_BETWEEN_GAMES;
       return;
-    }
+    }  
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
@@ -932,10 +932,14 @@ ArenaRealTime::start_game()
 
   robots_left = 0;
 
+  state = BEFORE_GAME_START;
+
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
       robotp = li();
+      robotp->get_messages();
+
       found_space = false;
       for( int i=0; i<100 && !found_space; i++)
         {
@@ -1058,7 +1062,7 @@ ArenaRealTime::start_sequence_follow_up()
           all_robots_in_sequence.remove(li);
           robots_left--;
         }
-      if( !robotp->set_and_get_have_competed() )
+      if( !robotp->set_and_get_has_competed() )
         print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), robotp->get_robot_name().chars());
     }
   start_game();

@@ -72,7 +72,8 @@ struct rotation_t
 };
 
 
-enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
+enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
+               PAUSING_BETWEEN_GAMES, BEFORE_GAME_START,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
 struct start_tournament_info_t
