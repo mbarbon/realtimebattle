@@ -1,0 +1,34 @@
+mailto(ragou603@student.liu.se)
+
+report(RealTimeBattle User Manual v0.1)
+      (Erik Ouchterlony and Ragnar Ouchterlony)
+      (PUSHCHARTABLE() PIPETHROUGH(date +"%-d %b %Y")() POPCHARTABLE())
+
+chapter(Introduction)
+includefile(Introduction.yo)
+
+COMMENT(
+chapter(History)
+includefile(History.yo)
+
+chapter(User interface)
+includefile(UserInterface.yo)
+
+chapter(Robot messaging language)
+includefile(RobotMessagingLanguage.yo)
+
+chapter(Options)
+includefile(Options.yo)
+
+chapter(Arena construction)
+includefile(ArenaConstruction.yo)
+
+chapter(Concluding remarks)
+includefile(ConcludingRemarks.yo)
+
+chapter(FAQ)
+includefile(FAQ.yo)
+
+chapter(Appendices)
+includefile(Appendices.yo)
+)
