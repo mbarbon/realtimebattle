@@ -40,6 +40,7 @@ make rpm-install
 /usr/bin/RealTimeBattle
 /usr/info/RealTimeBattle.info.gz
 
+/usr/games/RealTimeBattle/RealTimeBattle.xpm
 
 /usr/games/RealTimeBattle/Arenas/Circle.arena
 /usr/games/RealTimeBattle/Arenas/Circles.arena
