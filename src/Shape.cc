@@ -34,7 +34,6 @@ Shape::Shape()
 {
   set_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
   killed = false;
-  removable = false;
 }
 
 Shape::Shape(int long colour)
