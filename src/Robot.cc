@@ -95,6 +95,25 @@ Robot::Robot(const String& filename)
   last_drawn_robot_center = Vector2D(infinity,infinity);
 }
 
+// Constructor used by ArenaReplay. No process needed.
+//
+Robot::Robot(const int r_id, const long int col, const String& name)
+{
+  id = r_id;
+  robot_name = name;
+  set_colour( col );
+
+  process_running = false;
+  alive = false;
+  total_points = 0.0;
+  
+  has_competed = false;
+
+  last_drawn_robot_center = Vector2D(infinity,infinity);
+  radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
+}
+
+
 Robot::~Robot()
 {
   if( is_process_running() ) kill_process_forcefully();
@@ -416,6 +435,17 @@ Robot::set_stats(int robots_killed_same_time)
      );
 
   statistics.insert_last( statp );
+}
+
+void
+Robot::change_position( const double x, const double y, 
+                        const double robot_a, const double cannon_a, 
+                        const double radar_a, const double energy )
+{
+  center = Vector2D(x, y);
+  robot_angle.pos  = robot_a;
+  cannon_angle.pos = cannon_a;
+  radar_angle.pos  = radar_a;
 }
 
 void

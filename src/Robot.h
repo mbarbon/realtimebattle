@@ -39,7 +39,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Robot : public MovingObject
 {
 public:
-  Robot(const String& filename);   
+  Robot(const String& filename);
+  Robot(const int r_id, const long int col, const String& name);
   ~Robot();
 
   //arenaobject_t get_arenaobject_t() { return ROBOT; }
@@ -51,6 +52,10 @@ public:
   void bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal);
   friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
   void change_energy(const double energy_diff);
+  void change_position( const double x, const double y, 
+                        const double robot_a, const double cannon_a, 
+                        const double radar_a, const double energy );
+
   void check_name_uniqueness();
   void get_messages();
   void send_message(enum message_to_robot_type ...);
