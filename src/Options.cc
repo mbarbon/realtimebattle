@@ -25,6 +25,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <stdlib.h>
 
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
+
+#include "IntlDefs.h"
+
 #include "Options.h"
 #include "IntlDefs.h"
 #include "ArenaRealTime.h"
