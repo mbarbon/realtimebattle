@@ -31,8 +31,8 @@ class ArenaObjectCollector
 {
 public:
 
-  ArenaObjectCollector();
-  ~ArenaObjectCollector();
+  ArenaObjectCollector() {}
+  ~ArenaObjectCollector() {}
   
   void add( Shape& shape );
   void remove( Shape& shape );
