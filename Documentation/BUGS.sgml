@@ -19,6 +19,15 @@ don't forget to describe the system you are using, including the version of Real
 System dependent problems may still be present.
 If you encounter such a bug please send a bug report to us.
 
+<tag>Compilation problems with gettext</tag>
+<p>
+If you encounter a lot of parse errors with gettext and String, try to
+configure using:
+% ./configure --with-included-gettext
+or if it is still a lot of compilation problems, try to configure using:
+% ./configure --disable-nls
+If it still is problems, please send us a bug report.
+
 <tag>Statistics window doesn't work in gtk+ 1.1</tag>
 <p>
 Fixed in version 0.9.6.
