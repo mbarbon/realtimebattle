@@ -50,7 +50,7 @@ AC_SUBST(LT_AGE)
 
 # Languages
 
-ALL_LINGUAS="sv pl pt de ja"
+ALL_LINGUAS="sv pl pt de ja gl"
 
 # Directories
 
