@@ -17,6 +17,17 @@ start_tournament_button_callback(GtkWidget *widget, gpointer data)
 }
 
 void
+start_tournament_select_buttons_callback(GtkWidget *widget, gpointer data)
+{
+}
+
+void
+start_tournament_clists_callback( GtkWidget *clist, gint row, gint column,
+                                  GdkEventButton *event, gpointer data)
+{
+}
+
+void
 Gui::setup_start_tournament_window()
 {
   GtkWidget * vbox, * hbox;

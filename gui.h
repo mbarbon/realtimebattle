@@ -40,7 +40,11 @@ void zoom_in_callback(GtkWidget *widget, gpointer data);
 void zoom_out_callback(GtkWidget *widget, gpointer data);
 gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
-void buttons_in_statistics_callback(GtkWidget *widget, gpointer bi_p);
+void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
+
+void start_tournament_select_buttons_callback(GtkWidget *widget, gpointer data);
+void start_tournament_clists_callback( GtkWidget *clist, gint row, gint column,
+                                       GdkEventButton *event, gpointer data);
 
 class Gui
 {
