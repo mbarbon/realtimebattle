@@ -34,13 +34,18 @@ public:
 
   ExplosionGadget( const char* name, Gadget* const p );
 
-private:
+
+  //  friend class Explosion;
+
+
 
   enum ExplosionVars
   {
     SIZE=0, GROWTIME, ATMAXTIME, SHRINKTIME, TEMPERATURE, DAMAGE, AIRRESISTANCE,
     VISIBILITY, SOUNDLEVEL, COLOUR, LAST_EXPLOSIONVAR
   };
+
+private:
 
   const static VariableDefinition variable_def[LAST_EXPLOSIONVAR]; 
 
