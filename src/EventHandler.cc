@@ -93,7 +93,7 @@ EventHandler::main_loop()
 
           //          timer.double2timeval( time_for_next_event, time_to_wait );          
 
-          current_time = timer.get();
+          current_time = timer.get_realtime();
 
 	  if(time_for_next_event - current_time < 0) break;
 
@@ -102,7 +102,7 @@ EventHandler::main_loop()
           //select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
         }
 
-      current_time = timer.get();
+      current_time = timer.get_realtime();
 
       next_eventp->eval();
       delete next_eventp;
@@ -162,7 +162,7 @@ EventHandler::pauseGame()
     }
   else
     {
-      pausedTime += pauseStarted.get();   //How long the pause was.
+      pausedTime += pauseStarted.get_realtime();   //How long the pause was.
     }
   paused = !paused;
 }

@@ -36,7 +36,7 @@ Timer::reset()
 }
 
 double
-Timer::get()
+Timer::update()
 {
   timeval current_time;
   gettimeofday(&current_time, NULL);
@@ -52,5 +52,38 @@ Timer::get()
   elapsed = ((double)( current_time.tv_usec - start.tv_usec )) / 1e6;
   elapsed += (double)( current_time.tv_sec  - start.tv_sec );
 
+
+  gametime += ( elapsed - time_last_gametime_update ) * gamespeed;
+
+  time_last_gametime_update = elapsed;
+
   return elapsed;
+}
+
+double
+Timer::get_realtime()
+{
+  return update();
+}
+
+double
+Timer::get_gametime()
+{
+  update();
+  return gametime;
+}
+
+void
+Timer::set_game_speed( const double speed )
+{
+  update();
+  gamespeed = speed;
+}
+
+double
+Timer::realtime2gametime( const double time )
+{
+  double current_realtime = update();
+
+  return gametime + ( time - current_realtime ) * gamespeed;
 }

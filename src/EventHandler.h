@@ -57,7 +57,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
   ---------------     --------------       -----------------
   |             |     |            |       |               |
   ---------------     --------------       -----------------
-  |             |     |Witch:Robot |       |               |
+  |             |     |Which:Robot |       |               |
   ---------------     --------------       -----------------
 
 
@@ -117,6 +117,9 @@ class EventHandler
   bool paused;    //For the moment, this is the only way to alter the gametime in a normal game... so...
 
   bool finished;
+
+  int NbGTEvent;
+  int NbRTEvent;
 };
 
 

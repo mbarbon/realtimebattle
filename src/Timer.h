@@ -43,16 +43,28 @@ public:
   Timer();
   ~Timer() {}
 
-  double get();   //Return the elapsed time [in sec] since the begining/last_reset
+  double get_realtime();   //Return the elapsed time [in sec] since the begining/last_reset
+  double get_gametime();
+
+  double realtime2gametime(const double time);
+
   void reset();   //Reset the timer (how to be useless :) )
+  
+  void set_game_speed( const double speed );
 
   unsigned int get_random_seed() { return (unsigned int)start.tv_usec; }
 
 private:
   
+  double update();
+
   struct timeval start;
   //struct timeval end;
 
+  double gametime;
+  double gamespeed;
+  
+  double time_last_gametime_update;
 };
 
 #endif __TIMER__
