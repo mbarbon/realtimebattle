@@ -272,7 +272,10 @@ ArenaController::parse_command_line( int argc, char** argv )
   if( debug_level < 0 )
     debug_level = 0;
 
-  if(optind != argc) 
+  // TODO: A better way to determine whether a tournament can be stated
+  //       (i.e. some guis may not start up a tournament)
+  if( optind != argc ||
+      ( tournament_filename == "" && gui_list.empty() ) )
     {
       print_help_message();
       exit( EXIT_FAILURE );
