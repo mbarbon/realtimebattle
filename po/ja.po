@@ -1,13 +1,13 @@
 # Internationalization of RealTimeBattle - japanese
-# Copyright (C) 2000 Gen Kitagata <minatsu@shiratori.riec.tohoku.ac.jp>
+# Copyright (C) 2000 Minatsu Tukisima <minatsu@shiratori.riec.tohoku.ac.jp>
 # Copyright (C) 1999 Jan Suhr <jan.suhr@usa.net>
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 2000-01-06 09:50+0100\n"
+"POT-Creation-Date: 2000-01-21 18:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: Gen Kitagata <minatsu@shiratori.riec.tohoku.ac.jp>\n"
+"Last-Translator: Minatsu Tukisima <minatsu@shiratori.riec.tohoku.ac.jp>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=euc-jp\n"
@@ -412,79 +412,83 @@ msgstr "CPUタイムワーニングパーセンテージ"
 msgid "Logging frequency [Each n:th update interval]"
 msgstr "ロギング頻度 [更新間隔n回毎]"
 
-#: src/Options.cc:304
+#: src/Options.cc:305
+msgid "Max robots allowed simultaneously"
+msgstr "最大同時稼働ロボット数"
+
+#: src/Options.cc:309
 msgid "Robot search path"
 msgstr "ロボット検索パス"
 
-#: src/Options.cc:308
+#: src/Options.cc:313
 msgid "Arena search path"
 msgstr "アリーナ検索パス"
 
-#: src/Options.cc:313
+#: src/Options.cc:318
 msgid "Directory for temporary files"
 msgstr "テンポラリディレクトリ"
 
-#: src/Options.cc:318
+#: src/Options.cc:323
 msgid "Initial Arena window width"
 msgstr "初期アリーナウィンドウ幅"
 
-#: src/Options.cc:323
+#: src/Options.cc:328
 msgid "Initial Arena window height"
 msgstr "初期アリーナウィンドウ高さ"
 
-#: src/Options.cc:328
+#: src/Options.cc:333
 msgid "Initial Arena window x position"
 msgstr "初期アリーナウィンドウx座標"
 
-#: src/Options.cc:333
+#: src/Options.cc:338
 msgid "Initial Arena window y position"
 msgstr "初期アリーナウィンドウy座標"
 
-#: src/Options.cc:338
+#: src/Options.cc:343
 msgid "Initial Control window x position"
 msgstr "初期コントロールウィンドウx座標"
 
-#: src/Options.cc:343
+#: src/Options.cc:348
 msgid "Initial Control window y position"
 msgstr "初期コントロールウィンドウy座標"
 
-#: src/Options.cc:348
+#: src/Options.cc:353
 msgid "Initial Message window width"
 msgstr "初期メッセージウィンドウ幅"
 
-#: src/Options.cc:353
+#: src/Options.cc:358
 msgid "Initial Message window height"
 msgstr "初期メッセージウィンドウ高さ"
 
-#: src/Options.cc:358
+#: src/Options.cc:363
 msgid "Initial Message window x position"
 msgstr "初期メッセージウィンドウx座標"
 
-#: src/Options.cc:363
+#: src/Options.cc:368
 msgid "Initial Message window y position"
 msgstr "初期メッセージウィンドウy座標"
 
-#: src/Options.cc:368
+#: src/Options.cc:373
 msgid "Initial Score window width"
 msgstr "初期スコアウィンドウ幅"
 
-#: src/Options.cc:373
+#: src/Options.cc:378
 msgid "Initial Score window height"
 msgstr "初期スコアウィンドウ高さ"
 
-#: src/Options.cc:378
+#: src/Options.cc:383
 msgid "Initial Score window x position"
 msgstr "初期スコアウィンドウx座標"
 
-#: src/Options.cc:383
+#: src/Options.cc:388
 msgid "Initial Score window y position"
 msgstr "初期スコアウィンドウy座標"
 
-#: src/Options.cc:388
+#: src/Options.cc:393
 msgid "Initial Statistics window width"
 msgstr "初期統計情報ウィンドウ幅"
 
-#: src/Options.cc:393
+#: src/Options.cc:398
 msgid "Initial Statistics window height"
 msgstr "初期統計情報ウィンドウ高さ"
 
@@ -521,7 +525,7 @@ msgid "Misc"
 msgstr "その他"
 
 #: src/OptionsWindow.cc:135 src/OptionsWindow.cc:172
-#: src/StartTournamentWindow.cc:295
+#: src/StartTournamentWindow.cc:300
 msgid " Min "
 msgstr " 最小 "
 
@@ -530,7 +534,7 @@ msgid " Def "
 msgstr " デフォルト "
 
 #: src/OptionsWindow.cc:139 src/OptionsWindow.cc:176
-#: src/StartTournamentWindow.cc:329
+#: src/StartTournamentWindow.cc:334
 msgid " Max "
 msgstr " 最大 "
 
@@ -558,12 +562,12 @@ msgstr " デフォルトとして保存 "
 msgid " Apply "
 msgstr " 適用 "
 
-#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
-#: src/StartTournamentWindow.cc:714 src/StartTournamentWindow.cc:849
+#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:570
+#: src/StartTournamentWindow.cc:719 src/StartTournamentWindow.cc:858
 msgid " Ok "
 msgstr " Ok "
 
-#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:379
+#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:384
 msgid " Cancel "
 msgstr " キャンセル "
 
@@ -592,7 +596,8 @@ msgid ""
 "    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
 msgstr ""
-"    --debug_level [0-5],         -D   初期デバッグレベルの指定。-d も指定した\n"
+"    --debug_level [0-5],         -D   初期デバッグレベルの指定。-d "
+"も指定した\n"
 "                                      ことになります"
 
 #: src/RealTimeBattle.cc:95
@@ -628,7 +633,8 @@ msgid ""
 "    --tournament_file [file],    -t   specify a tournament file to\n"
 "                                      autostart a tournament"
 msgstr ""
-"    --tournament_file [file],    -t   自動スタートさせるトーナメントファイル\n"
+"    --tournament_file [file],    -t   "
+"自動スタートさせるトーナメントファイル\n"
 "                                      を指定します"
 
 #: src/RealTimeBattle.cc:107
@@ -696,7 +702,7 @@ msgid " Seq: "
 msgstr " シーケンス: "
 
 #: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:408 src/StatisticsWindow.cc:519
+#: src/StatisticsWindow.cc:409 src/StatisticsWindow.cc:521
 msgid "Game"
 msgstr "ゲーム"
 
@@ -744,129 +750,130 @@ msgstr "トータル得点"
 msgid "Choose a statistics file to save"
 msgstr "保存する統計情報ファイルを選んで下さい"
 
-#: src/StatisticsWindow.cc:407
+#: src/StatisticsWindow.cc:408
 msgid "Seq"
 msgstr "シーケンス"
 
-#: src/StatisticsWindow.cc:503
+#: src/StatisticsWindow.cc:505
 msgid " Grand Total "
 msgstr " グランドトータル "
 
-#: src/StatisticsWindow.cc:506
+#: src/StatisticsWindow.cc:508
 msgid " Sequence "
 msgstr " シーケンス "
 
-#: src/StatisticsWindow.cc:518
+#: src/StatisticsWindow.cc:520
 msgid " Sequence: "
 msgstr " シーケンス: "
 
-#: src/StartTournamentWindow.cc:68
+#: src/StartTournamentWindow.cc:73
 msgid "Start New Tournament"
 msgstr "新しいトーナメントの開始"
 
-#: src/StartTournamentWindow.cc:117
+#: src/StartTournamentWindow.cc:122
 msgid "Robots in Tournament"
 msgstr "トーナメントに参加するロボット"
 
-#: src/StartTournamentWindow.cc:118
+#: src/StartTournamentWindow.cc:123
 msgid "Robots in Directory"
 msgstr "ディレクトリにあるロボット"
 
-#: src/StartTournamentWindow.cc:127
+#: src/StartTournamentWindow.cc:132
 msgid "Arenas in Tournament"
 msgstr "トーナメントに使用するアリーナ"
 
-#: src/StartTournamentWindow.cc:128
+#: src/StartTournamentWindow.cc:133
 msgid "Arenas in Directory"
 msgstr "ディレクトリにあるアリーナ"
 
-#: src/StartTournamentWindow.cc:145
+#: src/StartTournamentWindow.cc:150
 msgid " Remove "
 msgstr " 削除 "
 
-#: src/StartTournamentWindow.cc:145 src/StartTournamentWindow.cc:147
+#: src/StartTournamentWindow.cc:150 src/StartTournamentWindow.cc:152
 msgid " Select All "
 msgstr " 全て選択 "
 
-#: src/StartTournamentWindow.cc:146 src/StartTournamentWindow.cc:147
+#: src/StartTournamentWindow.cc:151 src/StartTournamentWindow.cc:152
 msgid " Unselect All "
 msgstr " 選択解除 "
 
-#: src/StartTournamentWindow.cc:146
+#: src/StartTournamentWindow.cc:151
 msgid " Add "
 msgstr " 追加 "
 
 #. Choose Number of games per sequence, Number of robots per sequence
 #. and Number of sequences
-#: src/StartTournamentWindow.cc:237
+#: src/StartTournamentWindow.cc:242
 msgid "Games per sequence"
 msgstr "１シーケンスのゲーム数"
 
-#: src/StartTournamentWindow.cc:237
+#: src/StartTournamentWindow.cc:242
 msgid "Robots per sequence"
 msgstr "１シーケンスのロボット数"
 
-#: src/StartTournamentWindow.cc:238
+#: src/StartTournamentWindow.cc:243
 msgid "Number of sequences"
 msgstr "シーケンス数"
 
-#: src/StartTournamentWindow.cc:307
+#: src/StartTournamentWindow.cc:312
 msgid " All Arenas "
 msgstr " 全てのアリーナ "
 
-#: src/StartTournamentWindow.cc:319
+#: src/StartTournamentWindow.cc:324
 msgid " Full Round "
 msgstr " 全ラウンド "
 
-#: src/StartTournamentWindow.cc:357
+#: src/StartTournamentWindow.cc:362
 msgid " Load tournament "
 msgstr " トーナメントの読込 "
 
-#: src/StartTournamentWindow.cc:357
+#: src/StartTournamentWindow.cc:362
 msgid " Save tournament "
 msgstr " トーナメントの保存 "
 
-#: src/StartTournamentWindow.cc:379
+#: src/StartTournamentWindow.cc:384
 msgid " Start "
 msgstr " スタート "
 
-#: src/StartTournamentWindow.cc:485
+#: src/StartTournamentWindow.cc:490
 msgid "Choose a tournament file to load"
 msgstr "読み込むトーナメントファイルを選んで下さい"
 
-#: src/StartTournamentWindow.cc:519
+#: src/StartTournamentWindow.cc:524
 msgid "Choose file to save tournament into"
 msgstr "保存するトーナメントファイルを選んで下さい"
 
-#: src/StartTournamentWindow.cc:563
+#: src/StartTournamentWindow.cc:568
 msgid "Error in specified tournament file."
 msgstr "指定したトーナメントファイルにエラーがあります。"
 
-#: src/StartTournamentWindow.cc:566
+#: src/StartTournamentWindow.cc:571
 msgid "Tournament could not be loaded."
 msgstr "トーナメントが読み込みできませんでした。"
 
-#: src/StartTournamentWindow.cc:704
+#: src/StartTournamentWindow.cc:709
 msgid "There are too few robots in the tournament."
 msgstr "トーナメントに参加するロボットが少なすぎます。"
 
-#: src/StartTournamentWindow.cc:706 src/StartTournamentWindow.cc:844
+#: src/StartTournamentWindow.cc:711 src/StartTournamentWindow.cc:853
 msgid "There are no arenas in the tournament."
 msgstr "トーナメントに使用するアリーナが指定されていません。"
 
-#: src/StartTournamentWindow.cc:709
+#: src/StartTournamentWindow.cc:714
 msgid "Could not open file."
 msgstr "ファイルをオープンできません。"
 
-#: src/StartTournamentWindow.cc:715
+#: src/StartTournamentWindow.cc:720
 msgid "Tournament could not be saved."
 msgstr "トーナメントが保存できませんでした。"
 
-#: src/StartTournamentWindow.cc:842
+#: src/StartTournamentWindow.cc:851
 msgid "There must be at least two robots in the tournament."
-msgstr "トーナメントには少なくとも２つのロボットが参加していなければなりません。"
+msgstr ""
+"トーナメントには少なくとも２つのロボットが参加していなければなりません。"
 
-#: src/StartTournamentWindow.cc:850
+#: src/StartTournamentWindow.cc:859
 msgid "Tournament could not be started."
 msgstr "トーナメントが開始できませんでした。"
 
