@@ -354,7 +354,7 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
     {
       if( fatal_error_on_file_failure )
         Error( true, "Can't open specified tournament file.",
-               "ArenaRealTime::parse_tournament_file" );
+               "parse_tournament_file" );
       else
         return false;
     }
@@ -390,20 +390,35 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
           robots_p_s = min(robots_counted,robots_p_s);
           
           if(robots_p_s < 2)
-              Error(true, "Can't start tournament with only " + String(robots_p_s) + 
-                    " robots per sequence", 
-                    "ArenaRealTime::parse_tournament_file");
+            {
+              if( fatal_error_on_file_failure )
+                Error(true, "Can't start tournament with only " + String(robots_p_s) + 
+                      " robots per sequence", 
+                      "parse_tournament_file");
+              else
+                return false;
+            }
 
           if(games_p_s < 1)
-            Error(true, "Must have at least one game per sequence. " 
-                  "Current value is: " + String(games_p_s),
-                  "ArenaRealTime::parse_tournament_file");
+            {
+              if(fatal_error_on_file_failure)
+                Error(true, "Must have at least one game per sequence. " 
+                      "Current value is: " + String(games_p_s),
+                      "parse_tournament_file");
+              else
+                return false;
+            }
 
           if(n_o_sequences < 1)
-            Error(true, "Must have at least one sequence. Current value is: " + 
-                  String(n_o_sequences),
-                  "ArenaRealTime::parse_tournament_file");
-          
+            {
+              if(fatal_error_on_file_failure)
+                Error(true, "Must have at least one sequence. Current value is: " + 
+                      String(n_o_sequences),
+                      "parse_tournament_file");
+              else
+                return false;
+            }
+
           // Startup the tournament
 
           (*function)( robot_list, arena_list, robots_p_s, 
