@@ -128,6 +128,7 @@ public:
   void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
 
   void set_progress_time           ( const double time );
+  void change_time_limitations     ();
 
 private:
 
@@ -143,6 +144,7 @@ private:
   GtkWidget* show_message_checkbutton;
   GtkWidget* show_score_checkbutton;
 
+  GtkWidget* time_control;
   GtkAdjustment* current_replay_time_adjustment;
 
   displayed_t displayed;

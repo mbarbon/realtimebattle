@@ -266,20 +266,21 @@ ControlWindow::display_replay_widgets()
 
   current_replay_time_adjustment =
     (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
-                                          the_opts.get_d( OPTION_TIMEOUT ) + 1.0,
+                                          replay_arena.get_length_of_current_game(),
                                           0.1, 1.0, 1.0 );
 
   gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
                       (GtkSignalFunc) change_current_replay_time,
                       (gpointer) this );
 
-  GtkWidget* scale = gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
-  gtk_widget_set_usize( GTK_WIDGET( scale ), 150, 30 );
-  gtk_range_set_update_policy( GTK_RANGE( scale ), GTK_UPDATE_DELAYED );
-  gtk_scale_set_digits( GTK_SCALE( scale ), 1 );
-  gtk_scale_set_draw_value( GTK_SCALE( scale ), TRUE );
-  gtk_box_pack_start( GTK_BOX( hbox ), scale, TRUE, TRUE, 0 );
-  gtk_widget_show( scale );
+  time_control =
+    gtk_hscale_new( GTK_ADJUSTMENT( current_replay_time_adjustment ) );
+  gtk_widget_set_usize( GTK_WIDGET( time_control ), 150, 30 );
+  gtk_range_set_update_policy( GTK_RANGE( time_control ), GTK_UPDATE_DELAYED );
+  gtk_scale_set_digits( GTK_SCALE( time_control ), 1 );
+  gtk_scale_set_draw_value( GTK_SCALE( time_control ), TRUE );
+  gtk_box_pack_start( GTK_BOX( hbox ), time_control, TRUE, TRUE, 0 );
+  gtk_widget_show( time_control );
 
   char* rew_xpm[13] =
   { "18 10 2 1",
@@ -399,6 +400,25 @@ ControlWindow::display_replay_widgets()
     }
 
   displayed = REPLAY_WIDGETS;
+}
+
+void
+ControlWindow::change_time_limitations()
+{
+  if( displayed == REPLAY_WIDGETS )
+    {
+      // Possible memory leak: Do not know how to destroy old adjustment
+      // possibly destroyed by gtk_range_set_adjustment()
+      current_replay_time_adjustment =
+        (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
+                                              replay_arena.get_length_of_current_game(),
+                                              0.1, 1.0, 1.0 );
+      gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
+                          (GtkSignalFunc) change_current_replay_time,
+                          (gpointer) this );
+      gtk_range_set_adjustment( GTK_RANGE( time_control ),
+                                current_replay_time_adjustment );
+    }
 }
 
 ControlWindow::~ControlWindow()
@@ -747,9 +767,7 @@ void
 ControlWindow::change_current_replay_time( GtkAdjustment *adj,
                                            class ControlWindow* cw_p )
 {
-  //  cout << "Changing replay time" << endl;
-  //  replay_arena.change_replay_time( 10.5 );  // How get the correct value?  
-
+  replay_arena.change_replay_time( adj->value );
 }
 
 void
