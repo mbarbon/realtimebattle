@@ -62,6 +62,8 @@ private:
   double timeout;
 
 public:
+  void broadcast_opts();
+
   double get_grav_const() { return grav_const; }
   double get_air_resistance() { return air_resistance; }
   double get_roll_friction() { return roll_friction; }

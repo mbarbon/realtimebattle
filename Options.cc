@@ -1,10 +1,14 @@
 #include <math.h>
 #include "Options.h"
+#include "Arena.h"
 
 // void
 // Options::set_options()
 // {
 // }
+
+extern class Arena the_arena;
+extern class Gui the_gui;
 
 Options::Options()
 {
@@ -59,5 +63,20 @@ Options::Options()
   timeout = 120.0;        // i.e. 2 minutes
 }
 
+void
+Options::broadcast_opts()
+{
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ROTATE, robot_max_rotate);
+  the_arena.broadcast( GAME_OPTION, ROBOT_CANNON_MAX_ROTATE, robot_cannon_max_rotate);
+  the_arena.broadcast( GAME_OPTION, ROBOT_RADAR_MAX_ROTATE, robot_radar_max_rotate);
 
+  the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY, robot_start_energy);
+  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY, robot_max_energy);
 
+  the_arena.broadcast( GAME_OPTION, SHOT_SPEED, shot_speed);
+  the_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY, shot_min_energy);
+  the_arena.broadcast( GAME_OPTION, SHOT_MAX_ENERGY, shot_max_energy);
+  the_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED, shot_energy_increase_speed);
+
+  the_arena.broadcast( GAME_OPTION, TIMEOUT, timeout );  
+}
