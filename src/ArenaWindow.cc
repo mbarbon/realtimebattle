@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #include "ArenaWindow.h"
@@ -77,9 +78,9 @@ ArenaWindow::ArenaWindow( const int default_width,
   struct button_t { String label; GtkSignalFunc func; };
 
   struct button_t buttons[] = {
-    { (String)" No Zoom " , (GtkSignalFunc) ArenaWindow::no_zoom  },
-    { (String)" Zoom In " , (GtkSignalFunc) ArenaWindow::zoom_in  },
-    { (String)" Zoom Out ", (GtkSignalFunc) ArenaWindow::zoom_out } };
+    { (String)" No Zoom [0] " , (GtkSignalFunc) ArenaWindow::no_zoom  },
+    { (String)" Zoom In [+] " , (GtkSignalFunc) ArenaWindow::zoom_in  },
+    { (String)" Zoom Out [-] ", (GtkSignalFunc) ArenaWindow::zoom_out } };
 
   GtkWidget* button_table = gtk_table_new( 1, 3, TRUE );
   gtk_box_pack_start( GTK_BOX( vbox ), button_table, FALSE, FALSE, 0 );
@@ -127,6 +128,9 @@ ArenaWindow::ArenaWindow( const int default_width,
   window_shown = controlwindow_p->is_arenawindow_checked();
 
   zoom = 1;
+
+  gtk_signal_connect( GTK_OBJECT( window_p ), "key_press_event",
+                      (GtkSignalFunc) ArenaWindow::keyboard_handler, this );
 
   gtk_widget_show( window_p );
 
@@ -441,6 +445,7 @@ ArenaWindow::drawing_area_scale_changed( const bool change_da_value )
     }
 }
 
+// Warning! Do not use widget, may be NULL or undefined
 void
 ArenaWindow::no_zoom( GtkWidget* widget, class ArenaWindow* arenawindow_p )
 {
@@ -448,6 +453,7 @@ ArenaWindow::no_zoom( GtkWidget* widget, class ArenaWindow* arenawindow_p )
   arenawindow_p->drawing_area_scale_changed();
 }
 
+// Warning! Do not use widget, may be NULL or undefined
 void
 ArenaWindow::zoom_in( GtkWidget* widget, class ArenaWindow* arenawindow_p )
 {
@@ -457,6 +463,7 @@ ArenaWindow::zoom_in( GtkWidget* widget, class ArenaWindow* arenawindow_p )
   arenawindow_p->drawing_area_scale_changed( true );
 }
 
+// Warning! Do not use widget, may be NULL or undefined
 void
 ArenaWindow::zoom_out( GtkWidget* widget, class ArenaWindow* arenawindow_p )
 {
@@ -468,6 +475,36 @@ ArenaWindow::zoom_out( GtkWidget* widget, class ArenaWindow* arenawindow_p )
 }
 
 gint
+ArenaWindow::keyboard_handler( GtkWidget* widget, GdkEventKey *event,
+                               class ArenaWindow* arenawindow_p )
+{
+  switch (event->keyval)
+    {
+    case GDK_plus:
+    case GDK_KP_Add:
+      zoom_in( NULL, arenawindow_p );
+      break;
+
+    case GDK_minus:
+    case GDK_KP_Subtract:
+      zoom_out( NULL, arenawindow_p );
+      break;
+
+    case GDK_0:
+    case GDK_KP_0:
+    case GDK_KP_Insert:
+      no_zoom( NULL, arenawindow_p );
+      break;
+
+    default:
+      return FALSE;
+    }
+      
+  gtk_signal_emit_stop_by_name( GTK_OBJECT(widget), "key_press_event" );
+  return FALSE;
+}
+
+gint
 ArenaWindow::redraw( GtkWidget* widget, GdkEventExpose* event,
                      class ArenaWindow* arenawindow_p )
 {
@@ -475,3 +512,4 @@ ArenaWindow::redraw( GtkWidget* widget, GdkEventExpose* event,
     arenawindow_p->draw_everything();
   return FALSE;
 }
+

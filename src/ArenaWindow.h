@@ -32,6 +32,12 @@ struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
 typedef union _GdkEvent GdkEvent;
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
+struct _GdkEventExpose;
+typedef struct _GdkEventExpose GdkEventExpose;
+struct _GdkColor;
+typedef struct _GdkColor GdkColor;
 typedef void* gpointer;
 typedef int gint;
 
@@ -60,6 +66,9 @@ public:
   static gint redraw               ( GtkWidget* widget,
                                      GdkEventExpose* event,
                                      class ArenaWindow* arenawindow_p );
+  static gint keyboard_handler     ( GtkWidget *widget, GdkEventKey *event,
+                                     class ArenaWindow* arenawindow_p );
+
 
   inline int boundary2pixel_x      ( const double x );
   inline int boundary2pixel_y      ( const double y );
