@@ -48,7 +48,7 @@ public:
 
   void set_colour          ( const long int colour );
   long int get_rgb_colour  () const { return rgb_colour; }
-  GdkColor& get_gdk_colour () { return gdk_colour; }
+  const GdkColor& get_gdk_colour () const { return gdk_colour; }
   int get_id               () const { return id; }
 
 protected:
