@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Script to run latex as many times as necessary to make a dvi file.
+#
+#
+
+#################################################### Print error msg and die.
+error()
+{
+    echo latex2dvi: $@ 1>&2
+    exit 1
+}
+
+################################################### Print usage info and die.
+usage()
+{
+    cat << ENDUSAGE
+latex2dvi
+
+Usage: latex2dvi FILE
+Options:
+This converter runs "latex" to convert a file to dvi format. The LaTeX job 
+is repeated up to three times when necessary.
+ENDUSAGE
+
+    exit 1
+}
+
+###################################################### Start of main program.
+
+# get all flags
+flags=""
+inf=""
+while [ "$1" != "" ] ; do
+    case $1 in
+        -*)
+            flags="$flags $1"
+            shift
+            ;;
+        *)
+            inf=$1
+            shift
+            ;;
+    esac
+done
+
+# no input file, nogo
+if [ "$inf" = "" ] ; then
+    usage
+fi
+
+# determine output file, logfile, dvi file
+logf=${inf%%.latex}.log
+dvif=${inf%%.latex}.dvi
+
+latex $inf || error "First LaTeX to dvi conversion failed"
+grep Warning $logf > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    latex $inf || error "Second LaTeX to dvi conversion failed"
+fi
+grep Warning $logf > /dev/null 2>&1
+if [ $? -eq 0 ] ; then
+    latex $inf || error "Third LaTeX to dvi conversion failed"
+fi
