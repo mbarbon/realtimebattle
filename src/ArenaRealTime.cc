@@ -172,9 +172,10 @@ ArenaRealTime::parse_arena_file(String& filename)
 
   int succession = 1;
   double scale = the_opts.get_d(OPTION_ARENA_SCALE);
+  double angle_factor = 1.0;
   do
     {
-      parse_arena_line(file, scale, succession);
+      parse_arena_line(file, scale, succession, angle_factor);
 
     } while( !file.eof() );
 

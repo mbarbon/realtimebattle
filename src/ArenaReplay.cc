@@ -349,6 +349,7 @@ ArenaReplay::parse_log_line()
           li()->set_values_before_game(Vector2D(infinity,infinity), 0.0);
 
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
+        arena_angle_factor = 1.0;
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
 
@@ -394,7 +395,7 @@ ArenaReplay::parse_log_line()
       break;
     case 'A': // Arena file line
       {
-        parse_arena_line( log_file, arena_scale, arena_succession );
+        parse_arena_line( log_file, arena_scale, arena_succession, arena_angle_factor );
       }
       break;
     case 'O': // Option

@@ -211,7 +211,7 @@ ArenaBase::print_message( const String& messager,
 }
 
 void
-ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
+ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession, double& angle_factor)
 {
   char text[20];
   double radius, radius2, bounce_c, hardn, thickness;
@@ -234,6 +234,19 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       double scl;
       file >> scl;
       scale *= scl;
+    }
+  else if( strcmp(text, "angle_unit" ) == 0 )
+    {
+      char unit[20];
+      file >> ws;
+      file.get(unit, 20, '\n');
+      if( strcmp(unit, "radians" ) == 0)
+        angle_factor = 1.0;
+      else if( strcmp(unit, "degrees" ) == 0 )
+        angle_factor = M_PI / 180.0;
+      else
+        Error(true, "Error in arenafile: Unknown angle unit: " + String(unit), 
+              "ArenaBase::parse_arena_line");
     }
   else if( strcmp(text, "boundary" ) == 0 )
     {
@@ -304,7 +317,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> angle2;
       
       wall_arcp = new WallArc(scale*center, scale*radius, scale*radius2, 
-                              angle1 * M_PI / 180.0, angle2 * M_PI / 180.0,
+                              angle1 * angle_factor, angle2 * angle_factor,
                               bounce_c, hardn);
       object_lists[WALL].insert_last(wall_arcp);
     }
@@ -459,7 +472,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
               file >> angle;
               file >> radius;
 
-              angle *= M_PI / 180.0;
+              angle *= angle_factor;
               center = current_pos - rotate90( direction ) * radius * sgn( angle );
               start_angle = vec2angle( current_pos - center );
               current_pos = center + radius * angle2vec( start_angle - angle );
@@ -504,14 +517,18 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
             case 'Q':   // quit
               finish = true;
               break;
-
+              
+            default:
+              Error(true, "Incorrect arenafile, unknown command in poly_curve: " 
+                    + (String)c, "ArenaBase::parse_arena_line");
+              break;
             }
         }
       while( !finish );
     }
 
   else if( text[0] != '\0' )
-    Error(true, "Incorrect arenafile: unknown keyword" + (String)text, 
+    Error(true, "Incorrect arenafile, unknown keyword: " + (String)text, 
           "ArenaBase::parse_arena_line");
 
 }

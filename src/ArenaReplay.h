@@ -110,8 +110,9 @@ private:
   time_pos_info_t* time_position_in_log;
   int last_time_info;
 
-  // These two vars are used when creating the arena
+  // These three vars are used when creating the arena
   double arena_scale;
+  double arena_angle_factor;
   int arena_succession;
 };
 
