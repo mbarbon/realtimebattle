@@ -65,6 +65,7 @@ public:
 
   double get_current_replay_time() { return current_replay_time; }
   double get_length_of_current_game();
+  bool is_log_from_stdin        () { return log_from_stdin; }
 
 private: 
   void update                   ();
