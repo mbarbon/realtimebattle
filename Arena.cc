@@ -15,6 +15,7 @@ Arena::Arena()
 {
   state = NOT_STARTED;
   timer = g_timer_new();
+  reset_timer();
   timescale = 1.0;
   
   all_robots_in_sequence = g_list_alloc();
@@ -207,7 +208,7 @@ Arena::parse_file(istream& file)
 
 double
 Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, 
-                             object_type& closest_shape, void*& colliding_object)
+                             object_type& closest_shape, void*& colliding_object, const Robot* the_robot)
 {
   double dist = infinity;
   double d;
@@ -216,12 +217,15 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
 
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
-      d = ((Robot*)gl->data)->get_distance(pos, dir, size);
-      if( d < dist)
+      if( (Robot*)gl->data != the_robot )
         {
-          closest_shape = ROBOT;
-          colliding_object = gl->data;
-          dist = d;
+          d = ((Robot*)gl->data)->get_distance(pos, dir, size);
+          if( d < dist)
+            {
+              closest_shape = ROBOT;
+              colliding_object = gl->data;
+              dist = d;
+            }
         }
     }
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
@@ -541,7 +545,7 @@ Arena::update_robots()
       if( robotp->is_alive() ) robotp->get_messages();
     }
 
-  // Check if robots have died
+  // Check if robots have died and send energy level
 
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; )
     {
@@ -552,13 +556,21 @@ Arena::update_robots()
           g_list_remove(object_lists[ROBOT], robotp);          
           killed_robots++;
         }
+      else
+        robotp->send_message( ENERGY, (int)( robotp->get_energy() / (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS) ) );
     }
 
   if( killed_robots > 0 )
     {
+      for( gl=g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+        {
+          ((Robot*)gl->data)->add_points(killed_robots);
+          if( robots_left < 15 ) ((Robot*)gl->data)->display_score();
+        }
+
       for( gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-          if( ((Robot*)gl->data)->get_position_this_game() == -1 )
-              ((Robot*)gl->data)->set_stats(killed_robots);
+        if( ((Robot*)gl->data)->get_position_this_game() == -1 )
+          ((Robot*)gl->data)->set_stats(killed_robots);
       
       robots_left -= killed_robots;
       broadcast(ROBOTS_LEFT, robots_left);
@@ -975,7 +987,15 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
         }      
       current_nr++;
     }
-          
+
+  // set random seed
+
+  gulong usecs;
+  g_timer_elapsed(timer, &usecs); 
+  srand(usecs);
+
+  // start first sequence
+
   sequence_nr = 0;
   start_sequence();
 }
