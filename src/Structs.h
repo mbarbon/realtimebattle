@@ -71,111 +71,98 @@ struct start_tournament_info_t
   string directory;
 };
 
-enum option_long_t
-{
-  OPTION_MAX_ROBOTS_ALLOWED, 
+// ---------- Environment ----------
 
-  OPTION_ROBOT_ENERGY_LEVELS,
+#define OPTION_GRAV_CONST     "Gravity"
+#define OPTION_AIR_RESISTANCE "Air resistance"
+#define OPTION_ROLL_FRICTION  "Roll friction"
+#define OPTION_SLIDE_FRICTION "Slide friction"
 
-  OPTION_BACKGROUND_COLOUR,
-  OPTION_FOREGROUND_COLOUR,
-  OPTION_RTB_MESSAGE_COLOUR,
-  OPTION_COOKIE_COLOUR,
-  OPTION_MINE_COLOUR,
+// ---------- Robot ----------
 
-  OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL,
+#define OPTION_ROBOT_MAX_ACCELERATION   "Max acceleration"
+#define OPTION_ROBOT_MIN_ACCELERATION   "Min acceleration"
+#define OPTION_ROBOT_RADIUS             "Robot radius"
+#define OPTION_ROBOT_MASS               "Robot mass"
+#define OPTION_ROBOT_BOUNCE_COEFF       "Robot Bounce coeff"
+#define OPTION_ROBOT_HARDNESS           "Robot hardness"
+#define OPTION_ROBOT_PROTECTION         "Robot proection"
+#define OPTION_ROBOT_FRONTSIZE          "Robot frontsize"
+#define OPTION_ROBOT_FRONT_BOUNCE_COEFF "Robot front bounce coeff"
+#define OPTION_ROBOT_FRONT_HARDNESS     "Robot front hardness"
+#define OPTION_ROBOT_FRONT_PROTECTION   "Robot front protection"
+#define OPTION_ROBOT_START_ENERGY       "Start energy"
+#define OPTION_ROBOT_MAX_ENERGY         "Robot max energy"
+#define OPTION_ROBOT_MAX_ROTATE         "Robot max rotate"
+#define OPTION_ROBOT_CANNON_MAX_ROTATE  "Cannon max rotate"
+#define OPTION_ROBOT_RADAR_MAX_ROTATE   "Radar max rotate"
+#define OPTION_ROBOT_ENERGY_LEVELS      "energy_levels"
 
-  OPTION_ARENA_WINDOW_SIZE_X,
-  OPTION_ARENA_WINDOW_SIZE_Y,
-  OPTION_ARENA_WINDOW_POS_X,
-  OPTION_ARENA_WINDOW_POS_Y,
-  OPTION_CONTROL_WINDOW_POS_X,
-  OPTION_CONTROL_WINDOW_POS_Y,
-  OPTION_MESSAGE_WINDOW_SIZE_X,
-  OPTION_MESSAGE_WINDOW_SIZE_Y,
-  OPTION_MESSAGE_WINDOW_POS_X,
-  OPTION_MESSAGE_WINDOW_POS_Y,
-  OPTION_SCORE_WINDOW_SIZE_X,
-  OPTION_SCORE_WINDOW_SIZE_Y,
-  OPTION_SCORE_WINDOW_POS_X,
-  OPTION_SCORE_WINDOW_POS_Y,
-  OPTION_STATISTICS_WINDOW_SIZE_X,
-  OPTION_STATISTICS_WINDOW_SIZE_Y,
+// ---------- Shot ----------
 
-  LAST_LONG_OPTION
-};
+#define OPTION_SHOT_RADIUS                "Shot radius"
+#define OPTION_SHOT_SPEED                 "Shot speed"
+#define OPTION_SHOOTING_PENALTY           "Shooting penalty"
+#define OPTION_SHOT_MIN_ENERGY            "Shot min energy"
+#define OPTION_SHOT_MAX_ENERGY            "Shot max energy"
+#define OPTION_SHOT_ENERGY_INCREASE_SPEED "Shot energy increase speed"
 
-enum option_double_t
-{
-  OPTION_GRAV_CONST,
-  OPTION_AIR_RESISTANCE,
-  OPTION_ROLL_FRICTION,
-  OPTION_SLIDE_FRICTION,
-  OPTION_ROBOT_MAX_ACCELERATION,
-  OPTION_ROBOT_MIN_ACCELERATION,
+// ---------- Extras ----------
 
-  OPTION_ROBOT_RADIUS,
-  OPTION_ROBOT_MASS,
+#define OPTION_COOKIE_MAX_ENERGY "Cookie max energy"
+#define OPTION_COOKIE_MIN_ENERGY "Cookie min energy"
+#define OPTION_COOKIE_FREQUENCY  "Cookie frequency"
+#define OPTION_COOKIE_RADIUS     "Cookie radius"
+#define OPTION_COOKIE_COLOUR     "Cookie colour"
+#define OPTION_MINE_MAX_ENERGY   "Mine max energy"
+#define OPTION_MINE_MIN_ENERGY   "Mine min energy"
+#define OPTION_MINE_FREQUENCY    "Mine frequency"
+#define OPTION_MINE_RADIUS       "Mine radius"
+#define OPTION_MINE_COLOUR       "Mine colour"
 
-  OPTION_ROBOT_BOUNCE_COEFF,
-  OPTION_ROBOT_HARDNESS,
-  OPTION_ROBOT_PROTECTION,
+// ---------- Time ----------
 
-  OPTION_ROBOT_FRONT_BOUNCE_COEFF,
-  OPTION_ROBOT_FRONT_HARDNESS,
-  OPTION_ROBOT_FRONT_PROTECTION,
+#define OPTION_CHECK_INTERVAL                "Check interval"
+#define OPTION_TIMEOUT                       "Timeout"
+#define OPTION_MAX_TIMESTEP                  "Max timestep"
+#define OPTION_TIMESCALE                     "Timescale"
+#define OPTION_UPDATE_INTERVAL               "Update interval"
+#define OPTION_ROBOT_STARTUP_TIME            "Robot startup time"
+#define OPTION_CPU_START_LIMIT               "CPU start limit"
+#define OPTION_CPU_EXTRA                     "CPU Extra"
+#define OPTION_CPU_PERIOD                    "CPU Period"
+#define OPTION_CPU_WARNING_PERCENT           "CPU warning percent"
+#define OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL "Logging frequency"
 
-  OPTION_ROBOT_FRONTSIZE,
+// ---------- Misc ----------
 
-  OPTION_ROBOT_START_ENERGY,
-  OPTION_ROBOT_MAX_ENERGY,
+#define OPTION_BACKGROUND_COLOUR   "Background colour"
+#define OPTION_FOREGROUND_COLOUR   "Foreground colour"
+#define OPTION_RTB_MESSAGE_COLOUR  "RTB message colour"
+#define OPTION_ARENA_SCALE         "Arena scale"
+#define OPTION_FAST_FORWARD_FACTOR "Fast forward factor"
+#define OPTION_MAX_ROBOTS_ALLOWED  "max_robots" 
+#define OPTION_ROBOT_SEARCH_PATH   "Robot search path"
+#define OPTION_ARENA_SEARCH_PATH   "Arena search path"
+#define OPTION_TMP_RTB_DIR         "RTB dir"
 
-  OPTION_ROBOT_MAX_ROTATE,
-  OPTION_ROBOT_CANNON_MAX_ROTATE,
-  OPTION_ROBOT_RADAR_MAX_ROTATE,
+// ---------- Size of Windows ----------
 
-  OPTION_SHOT_RADIUS,
-  OPTION_SHOT_SPEED,
-  OPTION_SHOOTING_PENALTY,
-  OPTION_SHOT_MIN_ENERGY,
-  OPTION_SHOT_MAX_ENERGY,
-  OPTION_SHOT_ENERGY_INCREASE_SPEED,
-
-  OPTION_COOKIE_MAX_ENERGY,
-  OPTION_COOKIE_MIN_ENERGY,
-  OPTION_COOKIE_FREQUENCY,
-  OPTION_COOKIE_RADIUS,
-
-  OPTION_MINE_MAX_ENERGY,
-  OPTION_MINE_MIN_ENERGY,
-  OPTION_MINE_FREQUENCY,
-  OPTION_MINE_RADIUS,
-
-  OPTION_ARENA_SCALE,
-  OPTION_FAST_FORWARD_FACTOR,
-
-  OPTION_TIMEOUT,
-  OPTION_MAX_TIMESTEP,
-  OPTION_TIMESCALE,
-  OPTION_UPDATE_INTERVAL,
-  OPTION_ROBOT_STARTUP_TIME,
-
-  OPTION_CPU_START_LIMIT,
-  OPTION_CPU_EXTRA,
-  OPTION_CPU_PERIOD,
-  OPTION_CPU_WARNING_PERCENT,
-
-  OPTION_CHECK_INTERVAL,
-
-  LAST_DOUBLE_OPTION
-};
-
-enum option_string_t
-{
-  OPTION_ROBOT_SEARCH_PATH,
-  OPTION_ARENA_SEARCH_PATH,
-  OPTION_TMP_RTB_DIR,
-  LAST_STRING_OPTION
-};
+#define OPTION_ARENA_WINDOW_SIZE_X      "Arena window xsize"
+#define OPTION_ARENA_WINDOW_SIZE_Y      "Arena window ysize"
+#define OPTION_ARENA_WINDOW_POS_X       "Arena window xpos"
+#define OPTION_ARENA_WINDOW_POS_Y       "Arena window ypos"
+#define OPTION_CONTROL_WINDOW_POS_X     "Control window xpos"
+#define OPTION_CONTROL_WINDOW_POS_Y     "Control window ypos"
+#define OPTION_MESSAGE_WINDOW_SIZE_X    "Message window xsize"
+#define OPTION_MESSAGE_WINDOW_SIZE_Y    "Message window ysize"
+#define OPTION_MESSAGE_WINDOW_POS_X     "Message window xpos"
+#define OPTION_MESSAGE_WINDOW_POS_Y     "Message window ypos"
+#define OPTION_SCORE_WINDOW_SIZE_X      "Score window xsize"
+#define OPTION_SCORE_WINDOW_SIZE_Y      "Score window ysize"
+#define OPTION_SCORE_WINDOW_POS_X       "Score window xpos"
+#define OPTION_SCORE_WINDOW_POS_Y       "Score window ypos"
+#define OPTION_STATISTICS_WINDOW_SIZE_X "Statistics window xsize"
+#define OPTION_STATISTICS_WINDOW_SIZE_Y "Statistics window ysize"
 
 #endif __STRUCTS__

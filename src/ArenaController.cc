@@ -102,12 +102,13 @@ ArenaController::init( int argc, char** argv )
 void
 ArenaController::initialize_options()
 {
-  DoubleOption* all_double_options =
-    new DoubleOption[LAST_DOUBLE_OPTION];
-  LongOption* all_long_options =
-    new LongOption[LAST_LONG_OPTION];
-  StringOption* all_string_options =
-    new StringOption[LAST_STRING_OPTION];
+  map<string,Option*> all_options;
+//    DoubleOption* all_double_options =
+//      new DoubleOption[LAST_DOUBLE_OPTION];
+//    LongOption* all_long_options =
+//      new LongOption[LAST_LONG_OPTION];
+//    StringOption* all_string_options =
+//      new StringOption[LAST_STRING_OPTION];
 
   // ---------- Environment ----------
 
@@ -437,11 +438,12 @@ ArenaController::initialize_options()
 //                  "Initial Statistics window height",
 //                  _("Initial Statistics window height") );
 
-  main_opts = new OptionHandler( "RealTimeBattle",
-                                 all_double_options, all_long_options,
-                                 all_string_options,
-                                 LAST_DOUBLE_OPTION, LAST_LONG_OPTION,
-                                 LAST_STRING_OPTION );
+  main_opts = new OptionHandler( "RealTimeBattle", all_options );
+//    main_opts = new OptionHandler( "RealTimeBattle",
+//                                   all_double_options, all_long_options,
+//                                   all_string_options,
+//                                   LAST_DOUBLE_OPTION, LAST_LONG_OPTION,
+//                                   LAST_STRING_OPTION );
 }
 
 void

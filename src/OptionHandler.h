@@ -21,27 +21,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __OPTIONHANDLER__
 
 #include <string>
-#include <vector>
+#include <map>
+#include <list>
 #include <fstream.h>
+#include <assert.h>
 
 #include "Option.h"
-
-enum optiontype_t
-{
-  OPTIONTYPE_LONG,
-  OPTIONTYPE_DOUBLE,
-  OPTIONTYPE_STRING,
-  OPTIONTYPE_NOTFOUND
-};
-
-struct option_return_t
-{
-  option_return_t( const optiontype_t d, const int n ) :
-    datatype(d), option_number(n) {}
-
-  optiontype_t datatype;
-  int option_number;
-};
 
 // ---------------------------------------------------------------------------
 // class OptionHandler
@@ -53,31 +38,25 @@ struct option_return_t
 class OptionHandler
 {
 public:
-  OptionHandler::OptionHandler           ( const string&,
-                                           DoubleOption*, LongOption*, StringOption*,
-                                           const int, const int, const int );
+  OptionHandler                          ( const string&, map<string,Option*>& );
 
-  OptionHandler::~OptionHandler          ();
+  ~OptionHandler                         ();
 
-  inline long int get_l                  ( const int option ) const
-    { return all_long_options[option](); }
-  inline double get_d                    ( const int option ) const
-    { return all_double_options[option](); }
-  inline string get_s                    ( const int option ) const
-    { return all_string_options[option](); }
+  inline const long int get_l            ( const string& option ) const;
+  inline const double get_d              ( const string& option ) const;
+  inline const string get_s              ( const string& option ) const;
 
-  void broadcast_opts                    ();
-  void log_all_options                   ();
+  void log_all_options                   () const;
 
   void save_options_to_file              ( const string&, const bool ) const;
   void read_options_from_rtbrc           ();
   void read_options_file                 ( const string&, const bool );
 
-  void set_long_option                   ( const int, const long int );
-  void set_double_option                 ( const int, const double );
-  void set_string_option                 ( const int, const string& );
+  void set_long_option                   ( const string&, const long int );
+  void set_double_option                 ( const string&, const double );
+  void set_string_option                 ( const string&, const string& );
 
-  option_return_t get_option_from_string ( const string& option_name );
+  const bool is_option_existing          ( const string& option_name ) const;
 
 private:
   void initialize_groups                 ();
@@ -90,21 +69,47 @@ private:
   bool locate_option_in_file             ( const string&, const string::size_type,
                                            const string&, string::size_type& ) const;
   void read_option_from_file             ( string& strfile, string::size_type&,
-                                           Option&, const bool );
+                                           const string&, Option&, const bool );
   void save_option_to_file               ( string& strfile, string::size_type&,
-                                           const Option& ) const;
+                                           const string&, const Option& ) const;
 
   string section_name;
 
   string group_names[LAST_GROUP];
 
-  DoubleOption* all_double_options;
-  LongOption*   all_long_options;
-  StringOption* all_string_options;
-
-  int number_of_double_options;
-  int number_of_long_options;
-  int number_of_string_options;
+  map<string,Option*> all_options;
 };
+
+void Error(const bool fatal, const string& error_msg, const string& function_name);
+
+inline const long int
+OptionHandler::get_l( const string& option ) const
+{
+  map<string,Option*>::const_iterator mci;
+  mci = all_options.find( option );
+  assert( mci == all_options.end() || 
+          ((mci->second)->get_value_type() == OPTION_VALUE_LONG) );
+  return (((LongOption*)mci->second)->get_value());
+}
+
+inline const double
+OptionHandler::get_d( const string& option ) const
+{
+  map<string,Option*>::const_iterator mci;
+  mci = all_options.find( option );
+  assert( mci == all_options.end() || 
+          ((mci->second)->get_value_type() == OPTION_VALUE_DOUBLE) );
+  return (((DoubleOption*)mci->second)->get_value());
+}
+
+inline const string
+OptionHandler::get_s( const string& option ) const
+{
+  map<string,Option*>::const_iterator mci;
+  mci = all_options.find( option );
+  assert( mci == all_options.end() || 
+          ((mci->second)->get_value_type() == OPTION_VALUE_STRING) );
+  return (((StringOption*)mci->second)->get_value());
+}
 
 #endif __OPTIONHANDLER__

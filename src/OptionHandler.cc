@@ -41,30 +41,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // Optionarrays are deleted when OptionHandler is destructed.
 OptionHandler::OptionHandler( const string& _section_name,
-                              DoubleOption* double_opts, LongOption* long_opts,
-                              StringOption* string_opts,
-                              const int num_double, const int num_long,
-                              const int num_string )
+                              map<string,Option*>& opts )
+//                                list<string>& _group_names)
+  : section_name(_section_name), all_options(opts) //, group_names(_group_names)
 {
-  section_name = _section_name;
-
-  all_double_options = double_opts;
-  all_long_options = long_opts;
-  all_string_options = string_opts;
-
-  number_of_double_options = num_double;
-  number_of_long_options = num_long;
-  number_of_string_options = num_string;
-
   initialize_groups();
-  //  initialize_options();
 }
 
 OptionHandler::~OptionHandler()
 {
-  delete[] all_double_options;
-  delete[] all_long_options;
-  delete[] all_string_options;
+  map<string,Option*>::iterator mi;
+  for( mi = all_options.begin(); mi != all_options.end(); mi++ )
+    delete (mi->second);
+  all_options.clear();
 }
 
 void
@@ -79,66 +68,33 @@ OptionHandler::initialize_groups()
   group_names[GROUP_MISC] = _("Misc");
 }
 
-//TODO: Move broadcast_opts to a better place
 void
-OptionHandler::broadcast_opts()
+OptionHandler::log_all_options() const
 {
-  /*
-  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ROTATE,
-                       get_d(OPTION_ROBOT_MAX_ROTATE) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_CANNON_MAX_ROTATE,
-                       get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_RADAR_MAX_ROTATE,
-                       get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ACCELERATION,
-                       get_d(OPTION_ROBOT_MAX_ACCELERATION) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_MIN_ACCELERATION,
-                       get_d(OPTION_ROBOT_MIN_ACCELERATION) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_START_ENERGY,
-                       get_d(OPTION_ROBOT_START_ENERGY) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_MAX_ENERGY,
-                       get_d(OPTION_ROBOT_MAX_ENERGY) );
-  the_arena.broadcast( GAME_OPTION, ROBOT_ENERGY_LEVELS,
-                       (double)get_l(OPTION_ROBOT_ENERGY_LEVELS) );
-  the_arena.broadcast( GAME_OPTION, SHOT_SPEED,
-                       get_d(OPTION_SHOT_SPEED ));
-  the_arena.broadcast( GAME_OPTION, SHOT_MIN_ENERGY,
-                       get_d(OPTION_SHOT_MIN_ENERGY ));
-  the_arena.broadcast( GAME_OPTION, SHOT_MAX_ENERGY,
-                       get_d(OPTION_SHOT_MAX_ENERGY) );
-  the_arena.broadcast( GAME_OPTION, SHOT_ENERGY_INCREASE_SPEED,
-                       get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
-  the_arena.broadcast( GAME_OPTION, TIMEOUT, get_d(OPTION_TIMEOUT) );
-  the_arena.broadcast( GAME_OPTION, DEBUG_LEVEL,
-                       (double)the_arena.get_debug_level() );  
-  */
-}
+  // TODO: Log all options in a correct way!!!
 
-void
-OptionHandler::log_all_options()
-{
-  for( int i = 0; i < number_of_long_options; i++ )
-    if( all_long_options[i].log() )
-      {
-        if( all_long_options[i].is_value_hexadecimal() )
-          the_arena.print_to_logfile
-            ( 'O', (int)'H', (all_long_options[i].get_rc_label() + ":").c_str(),
-              all_long_options[i]() );
-        else
-          the_arena.print_to_logfile
-            ( 'O', (int)'L', (all_long_options[i].get_rc_label() + ":").c_str(),
-              all_long_options[i]() );
-      }
-  for( int i = 0; i < number_of_double_options; i++ )
-    if( all_double_options[i].log() )
-      the_arena.print_to_logfile
-        ( 'O', (int)'D', (all_double_options[i].get_rc_label() + ":").c_str(),
-          all_double_options[i]() );
-  for( int i = 0; i < number_of_string_options; i++ )
-    if( all_string_options[i].log() )
-      the_arena.print_to_logfile
-        ( 'O', (int)'S', (all_string_options[i].get_rc_label() + ":").c_str(),
-          all_string_options[i]().c_str() );
+//    for( int i = 0; i < number_of_long_options; i++ )
+//      if( all_long_options[i].log() )
+//        {
+//          if( all_long_options[i].is_value_hexadecimal() )
+//            the_arena.print_to_logfile
+//              ( 'O', (int)'H', (all_long_options[i].get_rc_label() + ":").c_str(),
+//                all_long_options[i]() );
+//          else
+//            the_arena.print_to_logfile
+//              ( 'O', (int)'L', (all_long_options[i].get_rc_label() + ":").c_str(),
+//                all_long_options[i]() );
+//        }
+//    for( int i = 0; i < number_of_double_options; i++ )
+//      if( all_double_options[i].log() )
+//        the_arena.print_to_logfile
+//          ( 'O', (int)'D', (all_double_options[i].get_rc_label() + ":").c_str(),
+//            all_double_options[i]() );
+//    for( int i = 0; i < number_of_string_options; i++ )
+//      if( all_string_options[i].log() )
+//        the_arena.print_to_logfile
+//          ( 'O', (int)'S', (all_string_options[i].get_rc_label() + ":").c_str(),
+//            all_string_options[i]().c_str() );
 }
 
 void
@@ -155,43 +111,30 @@ OptionHandler::read_options_from_rtbrc()
 }
 
 void
-OptionHandler::set_long_option( const int option, const long int val )
+OptionHandler::set_long_option( const string& option, const long int val )
 {
-  long int temp_val = min( val, all_long_options[option].get_max_value() );
-  temp_val = max( temp_val, all_long_options[option].get_min_value() );
-  
-  all_long_options[option].change_value( temp_val );
+  if( all_options.find( option ) != all_options.end() )
+    ((LongOption*)all_options[option])->change_value( val );
 }
 
 void
-OptionHandler::set_double_option( const int option, const double val )
+OptionHandler::set_double_option( const string& option, const double val )
 {
-  double temp_val = min( val, all_long_options[option].get_max_value() );
-  temp_val = max( temp_val, all_long_options[option].get_min_value() );
-  
-  all_double_options[option].change_value( temp_val );
+  if( all_options.find( option ) != all_options.end() )
+    ((DoubleOption*)all_options[option])->change_value( val );
 }
 
 void
-OptionHandler::set_string_option( const int option, const string& val )
+OptionHandler::set_string_option( const string& option, const string& val )
 {
-  all_string_options[option].change_value( val );
+  if( all_options.find( option ) != all_options.end() )
+    ((StringOption*)all_options[option])->change_value( val );
 }
 
-option_return_t
-OptionHandler::get_option_from_string( const string& option_name )
+const bool
+OptionHandler::is_option_existing( const string& option_name ) const
 {
-  for( int i=0; i<number_of_double_options; i++ )
-    if( option_name == all_double_options[i].get_rc_label() )
-      return option_return_t( OPTIONTYPE_LONG, i );
-  for( int i=0; i<number_of_long_options; i++ )
-    if( option_name == all_long_options[i].get_rc_label() )
-      return option_return_t( OPTIONTYPE_DOUBLE, i );
-  for( int i=0; i<number_of_string_options; i++ )
-    if( option_name == all_string_options[i].get_rc_label() )
-      return option_return_t( OPTIONTYPE_STRING, i );
-
-  return option_return_t( OPTIONTYPE_NOTFOUND, -1 );
+  return( all_options.end() != all_options.find(option_name) );
 }
 
 bool
@@ -336,10 +279,11 @@ OptionHandler::locate_option_in_file( const string& strfile,
 
 void
 OptionHandler::read_option_from_file( string& strfile, string::size_type& section_pos,
-                                      Option& option, const bool as_default )
+                                      const string& option_name, Option& option,
+                                      const bool as_default )
 {
   string::size_type pos = 0;
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
+  if( locate_option_in_file( strfile, section_pos, option_name, pos ) )
     {
       string tempstr = strfile.substr( pos, strfile.find_first_of( '\n', pos ) - pos );
       while( tempstr.length() > 0 && isspace( tempstr[0] ) )
@@ -350,16 +294,17 @@ OptionHandler::read_option_from_file( string& strfile, string::size_type& sectio
 
 void
 OptionHandler::save_option_to_file( string& strfile, string::size_type& section_pos,
+                                    const string& option_name, 
                                     const Option& option ) const
 {
   string::size_type pos = 0;
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
+  if( locate_option_in_file( strfile, section_pos, option_name, pos ) )
     strfile.replace( pos, strfile.find_first_of( '\n', pos ) - pos,
                      " " + option.get_string_val() );
   else
     {
       strfile += "\n;" + option.get_description() + "\n"
-        + option.get_rc_label() + " = " + option.get_string_val() + "\n";
+        + option_name + " = " + option.get_string_val() + "\n";
     }
 }
 
@@ -373,17 +318,10 @@ OptionHandler::read_options_file( const string& file_string, const bool as_defau
   string::size_type section_pos = 0;
   locate_section_in_file( option_string, section_name, section_pos, false );
 
-  for( int i=0; i<number_of_double_options; i++ )
+  map<string,Option*>::iterator mi;
+  for( mi = all_options.begin(); mi != all_options.end(); mi++ )
     read_option_from_file( option_string, section_pos,
-                           all_double_options[i], as_default );
-
-  for( int i=0; i<number_of_long_options; i++ )
-    read_option_from_file( option_string, section_pos,
-                           all_long_options[i], as_default );
-
-  for( int i=0; i<number_of_string_options; i++ )
-    read_option_from_file( option_string, section_pos,
-                           all_string_options[i], as_default );
+                           mi->first, *(mi->second), as_default );
 }
 
 void
@@ -408,14 +346,9 @@ OptionHandler::save_options_to_file( const string& fname, const bool as_default 
   string::size_type section_pos = 0;
   locate_section_in_file( option_string, section_name, section_pos, true );
 
-  for(int i=0;i<number_of_double_options;i++)
-    save_option_to_file( option_string, section_pos, all_double_options[i] );
-
-  for(int i=0;i<number_of_long_options;i++)
-    save_option_to_file( option_string, section_pos, all_long_options[i] );
-
-  for(int i=0;i<number_of_string_options;i++)
-    save_option_to_file( option_string, section_pos, all_string_options[i] );
+  map<string,Option*>::const_iterator mci;
+  for( mci = all_options.begin(); mci != all_options.end(); mci++ )
+    save_option_to_file( option_string, section_pos, mci->first, *(mci->second) );
 
   if( !dump_string_to_file( option_string, filename ) )
     {
