@@ -7,12 +7,12 @@
 <item> <bf>0.9.5:</bf>
 <p>
 The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.
-The easiest way of setting this is to choose the <tt>Save as Default</tt> button in the options
+The easiest way of setting this is to click the <tt>Save as Default</tt> button in the options
 window.
 
-Changing of Window sizes has been implemented. Change your <tt>.rtbrc</tt> for new default sizes.
+Changing of window sizes has been implemented. Change your <tt>.rtbrc</tt> for new default sizes.
 
-The environmental variables <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt> are moved to regular
+The environmental variables <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt> are replaced with regular
 options. Place your default directories in your <tt>.rtbrc</tt> for permanent options.
 
 Added some buttons to the options window.
@@ -25,6 +25,8 @@ specify which signal to be sent.
 A new warning message: <tt>OBSOLETE_KEYWORD</tt>. Please replace all the obsolete keywords with the
 corresponding new version as soon as possible, since obsolete keyword will be completely removed
 within a number of releases and certainly before 1.0.
+
+Long command line options are now available.
 
 Bugfixes:
 

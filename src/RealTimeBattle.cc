@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <getopt.h>
 
 #ifdef BSD_FP
 #include <floatingpoint.h>
@@ -51,11 +52,15 @@ print_help_message()
 {
   cout << endl;
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
-  cout << " Options:  -d   debug mode" << endl;
-  cout << "           -n   normal mode (default)" << endl;
-  cout << "           -c   competition mode" << endl ;
-  cout << "           -h   prints this message" << endl;
-  cout << "           -v   prints the version number" << endl << endl;
+  cout << " Options: --debug_mode,         -d   debug mode" << endl;
+  cout << "          --normal_mode,        -n   normal mode (default)" << endl;
+  cout << "          --competition_mode,   -c   competition mode" << endl ;
+  cout << "          --option_file [file], -o   selects option-file " << endl;
+  cout << "                                     (default: $HOME/.rtbrc)"  << endl;
+  cout << endl;
+  cout << "          --help,               -h   prints this message" << endl;
+  cout << "          --version,            -v   prints the version number" << endl;
+  cout << endl;
 }
 
 gint
@@ -96,6 +101,106 @@ sig_handler (int signum)
   signal(signum, sig_handler);
 }
 
+void
+parse_command_line(int argc, char **argv)
+{
+  int version_flag=false, help_flag=false;
+  int game_mode=Arena::NORMAL_MODE;
+  int c;
+
+  static struct option long_options[] =
+  {
+    //option, argument?, flag, value
+    {"version", 0, &version_flag, true},
+    {"help", 0, &help_flag, true},
+
+    {"debug_mode", 0, &game_mode, Arena::DEBUG_MODE},
+    {"normal_mode", 0, &game_mode, Arena::NORMAL_MODE},
+    {"competition_mode", 0, &game_mode, Arena::COMPETITION_MODE},
+
+    {"option_file", 1, 0, 0},
+
+    {0, 0, 0, 0}
+  };
+
+  for(;;)
+    {
+      int option_index = 0;
+     
+      c = getopt_long (argc, argv, "dncvho:", long_options, &option_index);
+
+      /* Detect the end of the options. */
+      if (c == -1)
+        break;
+     
+      switch (c)
+        {
+
+        case 0:
+          /* If this option set a flag, do nothing else now. */
+          if (long_options[option_index].flag != 0)
+            break;
+          
+          switch (option_index)
+            {
+            case 5: 
+              // options_file = (String)optarg; ?
+              break;
+            default:
+              cerr << "Bad error in parse_command_line, this shouldn't happen" << endl;
+              exit( EXIT_FAILURE );
+            }
+          break;
+
+
+        case 'd':
+          game_mode = Arena::DEBUG_MODE;
+          break;
+
+        case 'n':
+          game_mode = Arena::NORMAL_MODE;
+          break;
+
+        case 'c':
+          game_mode = Arena::COMPETITION_MODE;
+          break;
+
+        case 'v':
+          version_flag = true;
+          break;
+
+        case 'h':
+          help_flag = true;
+          break;
+
+        case 'o':
+          // options_file = (String)optarg; ?    
+          break;
+
+        default:
+          print_help_message();
+          exit( EXIT_FAILURE );
+        }
+    }
+
+  if(optind != argc) 
+    {
+      print_help_message();
+      exit( EXIT_FAILURE );
+    }
+
+  if( version_flag )
+      cout << "RealTimeBattle " << VERSION << endl;
+
+  if( help_flag )
+    print_help_message();
+
+  if( help_flag || version_flag ) exit( EXIT_SUCCESS );
+
+  the_arena.set_game_mode((Arena::game_mode_t)game_mode);
+}
+
+
 int 
 main ( int argc, char* argv[] )
 {
@@ -107,46 +212,8 @@ main ( int argc, char* argv[] )
 
   gtk_init (&argc, &argv);
 
-  int option_char;
-  while ((option_char = getopt (argc, argv, "dncvh")) != -1)
-    {
-      switch (option_char)
-        {
-        case 'd':
-          the_arena.set_game_mode(Arena::DEBUG_MODE);
-          break;
-        case 'n':
-          the_arena.set_game_mode(Arena::NORMAL_MODE);
-          break;
-        case 'c':
-          if( !the_arena.get_use_proc() )
-            {
-              cout << "In competition mode /proc is needed. Changing to normal mode." << endl;
-              the_arena.set_game_mode(Arena::NORMAL_MODE);
-            }
-          else
-            the_arena.set_game_mode(Arena::COMPETITION_MODE);
-          break;
-        case 'v':
-          cout << "RealTimeBattle " << VERSION << endl;
-          return EXIT_SUCCESS;
-          break;
-        case 'h':
-          print_help_message();
-          return EXIT_SUCCESS;
-        default:
-          //          cerr << "Unknown option: -" << (char)option_char << "." << endl << endl;
-          print_help_message();
-          return EXIT_FAILURE;
-        }
-    }
+  parse_command_line(argc, argv);
 
-  if(optind != argc) 
-    {
-      print_help_message();
-      return EXIT_FAILURE;
-    }
-  
   gint timeout_tag;
 
   the_arena.set_colours();
