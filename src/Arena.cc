@@ -109,7 +109,7 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
-  enum load_file_mode_t { LF_DEFINING_MODE, LF_SCRIPT_MODE };
+  enum load_file_mode_t { LF_DEFINING_MODE, LF_SCRIPT_MODE, LF_STRING_MODE };
 
   char buffer[400];
   string tempstr;
@@ -123,6 +123,8 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 
   stack<ifstream*> file_stack;
   file_stack.push( new ifstream( top_filename.c_str() ) );
+
+  bool first_line = true;
 
   Gadget* current_gadget = &hierarchy;
 
@@ -140,6 +142,11 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
       vector<string> wordlist = split_string( buffer, wordlist );
       if( wordlist.size() > 0 )
         {
+          if( first_line && wordlist[0][0] == '!' )
+            {
+              if( !sufficient_arena_version( wordlist ) )
+              first_line = false;
+            }
           if( equal_strings_nocase( wordlist[0], "Include" ) )
             {
               if( !find_full_arena_filename( wordlist[1], top_file_path, true ) )
@@ -242,6 +249,11 @@ Arena::find_full_arena_filename( string& filename, const string& top_file_path,
         return true;
       }
   return false;
+}
+
+const bool
+Arena::sufficient_arena_version( vector<string>& wordlist ) const
+{
 }
 
 // Remember to delete the gadget when not used anymore!

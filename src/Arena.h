@@ -134,6 +134,7 @@ private:
   const bool find_full_arena_filename( string& filename,
                                        const string& top_file_path = "",
                                        const bool included = false ) const;
+  const bool sufficient_arena_version( vector<string>& wordlist ) const;
   Gadget* create_gadget( gadget_t, const string&, Gadget* ) const;
 };
 
