@@ -11,6 +11,6 @@ endif
 
 libRTBGui_none_la_LIBADD =
 libRTBGui_none_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-module -export-dynamic $(STDCXX_LIBS) $(INTLLIBS) $(CCMALLOC_O)
+	-module $(STDCXX_LIBS) $(INTLLIBS) $(CCMALLOC_O)
 libRTBGui_none_la_DEPENDENCIES = $(INTLOBJS)
 libRTBGui_none_la_SOURCES = Gui.cc
