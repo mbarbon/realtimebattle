@@ -20,11 +20,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __EVENT__
 #define __EVENT__
 
+class EventHandler;
+
 class Event
 {
 
 public:
-  Event( const double time ) : eval_time(time) {}
+  Event( const double time, EventHandler * ev ) : eval_time(time), my_event_handler(ev) {}
 
   virtual ~Event() {}
 
@@ -37,6 +39,7 @@ public:
 protected:
 
   double eval_time;
+  EventHandler * my_event_handler;
 };
 
 #endif __EVENT__
