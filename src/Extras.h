@@ -45,7 +45,7 @@ protected:
 class Cookie : public Extras
 {
 public:
-  Cookie(const Vector2D& c, const double r, const double e);
+  Cookie(const Vector2D& c, const double e, const int c_id = -1);
   ~Cookie() {}
   
   //  arenaobject_t get_arenaobject_t() { return COOKIE; }
@@ -56,7 +56,7 @@ public:
 class Mine : public Extras
 {
 public:
-  Mine(const Vector2D& c, const double r, const double e); 
+  Mine(const Vector2D& c, const double e, const int m_id = -1);
   ~Mine() {}
 
   //  arenaobject_t get_arenaobject_t() { return MINE; }

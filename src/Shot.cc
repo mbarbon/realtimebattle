@@ -30,14 +30,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "Options.h"
 
-Shot::Shot(const Vector2D& c, const double r, 
-           const Vector2D& vel, const double en ) 
-  : MovingObject(c, r, vel)
+Shot::Shot(const Vector2D& c, //const double r, 
+           const Vector2D& vel, const double en, const int shot_id = -1 ) 
+  : MovingObject(c, the_opts.get_d(OPTION_SHOT_RADIUS), vel)
 {
   alive = true;
   energy = en;
 
-  id = the_arena.increase_shot_count();
+  if( shot_id == -1 )
+    id = the_arena.increase_shot_count();
+  else
+    id = shot_id;
 }
 
 void
