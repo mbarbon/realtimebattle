@@ -45,7 +45,7 @@ save_statistics_callback(GtkWidget *widget, gpointer data)
 {
   if(the_gui.get_filesel_widget() == NULL)
     {
-      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
+      GtkWidget* filesel = gtk_file_selection_new( "Choose an statistics file" );
       gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
                           (GtkSignalFunc) destroy_stats_filesel, GTK_OBJECT(filesel));
       gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
@@ -242,7 +242,6 @@ Gui::change_sorting_in_clist( const int column )
 void
 Gui::change_statistics( int change, bool absolut_change )
 {
-  int old_look = stat_looking_at_nr;
   int game_nr = the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
   int max_nr = 0;
@@ -529,7 +528,7 @@ Gui::add_the_statistics_to_clist()
   gtk_clist_thaw(GTK_CLIST(stat_clist));
 }
 
-// This function takes the statistics and saves into one file chosen in options
+// This function takes the statistics and saves into a selected file
 void
 Gui::save_statistics_to_file(String filename)
 {
@@ -794,7 +793,7 @@ Gui::setup_statistics_window()
   char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
   stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 0);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 5);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 3, 35);
