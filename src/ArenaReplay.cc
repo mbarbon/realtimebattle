@@ -38,6 +38,7 @@ extern class ControlWindow* controlwindow_p;
 ArenaReplay::ArenaReplay()
 {
   reset_timer();
+  speed = PLAY;
   state = NOT_STARTED;
   current_replay_time = 0.0;
 
@@ -120,9 +121,14 @@ ArenaReplay::timeout_function()
 void
 ArenaReplay::parse_this_interval()
 {
-  while( !log_file.eof() && total_time >= current_replay_time )
+  if( speed != REWIND )
+    while( !log_file.eof() && total_time >= current_replay_time )
+      {
+        parse_log_line();
+      }
+  else
     {
-      parse_log_line();
+      search_backwards();
     }
   
   if( log_file.eof() )
@@ -496,4 +502,48 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
 
   statistics_file_name = statistics_fname;
   option_file_name = option_fname;
+}
+
+void
+ArenaReplay::change_speed( const bool forward, const bool fast )
+{
+  if( !fast )
+    speed = PLAY;
+  else if( forward )
+    speed = FAST_FORWARD;
+  else
+    speed = REWIND;
+}
+
+void
+ArenaReplay::search_backwards( const char search_letter )
+{
+  if( log_from_stdin )
+    return;
+
+  char letter='?';
+  while( letter != search_letter && log_file.tellg() != 0 )
+    {
+      beginning_of_prev_line();
+      letter = log_file.peek();
+    }
+}
+
+void
+ArenaReplay::beginning_of_prev_line()
+{
+  char letter='?';
+  bool already_found_one_line = false;
+  while( ( letter != '\n' || !already_found_one_line ) &&
+         log_file.tellg() != 0 )
+    {
+      log_file.seekg( -1, ios::cur );
+      letter = log_file.peek();
+      if( letter == '\n' && !already_found_one_line )
+        {
+          already_found_one_line = true;
+          letter = '?';
+        }
+    }
+  log_file.get( letter );
 }

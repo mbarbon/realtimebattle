@@ -28,6 +28,8 @@ class String;
 class ArenaReplay : public ArenaBase
 {
 public:
+  enum speed_t { REWIND, PLAY, FAST_FORWARD };
+
   ArenaReplay                  ();
   ~ArenaReplay                 ();
 
@@ -37,6 +39,8 @@ public:
   void set_filenames           ( String& replay_fname, String& message_fname,
                                  const String& statistics_fname,
                                  const String& option_fname );
+  void change_speed            ( const bool forward, const bool fast );
+  void search_backwards        ( const char searh_letter = 'T' );
 
 private: 
   void update                  ();
@@ -47,6 +51,7 @@ private:
 
   char parse_log_line          ();
   void parse_this_interval     ();
+  void beginning_of_prev_line  ();
 
   ifstream log_file;
 
@@ -54,6 +59,8 @@ private:
   double current_replay_time;
 
   bool log_from_stdin;
+
+  speed_t speed;
 
   // These two vars are used when creating the arena
   double arena_scale;
