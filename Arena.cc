@@ -471,7 +471,7 @@ Arena::update_robots()
   Robot* robotp;
 
   int killed_robots = 0;
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; )
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl) )
     {
       robotp = (Robot*)gl->data;
       if( robotp->is_alive() )
@@ -481,7 +481,13 @@ Arena::update_robots()
           robotp->move(timestep);        
         }
       if( robotp->is_alive() ) robotp->get_messages();
+    }
 
+  // Check if robots have died
+
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; )
+    {
+      robotp = (Robot*)gl->data;
       gl = g_list_next(gl);
       if( !robotp->is_alive() ) 
         {
@@ -493,7 +499,7 @@ Arena::update_robots()
   if( killed_robots > 0 )
     {
       for( gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-          if( ((Robot*)gl->data)->get_position_this_game() == robots_left )
+          if( ((Robot*)gl->data)->get_position_this_game() == -1 )
               ((Robot*)gl->data)->set_stats(killed_robots);
       
       robots_left -= killed_robots;
@@ -685,6 +691,7 @@ Arena::start_game()
     }
 
   broadcast(GAME_STARTS);
+  broadcast(ROBOTS_LEFT, robots_left);
   
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
