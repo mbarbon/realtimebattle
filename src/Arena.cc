@@ -484,9 +484,8 @@ Arena::timeout_function()
 void
 Arena::update()
 {
-  //update_explosions();
-  move_shots();
   read_robot_messages();
+  move_shots();
   update_robots();
   if( state == GAME_IN_PROGRESS )
     the_gui.draw_objects();
