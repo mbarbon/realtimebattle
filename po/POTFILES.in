@@ -1,9 +1,6 @@
 # List of source files containing translatable strings.
 
-src/ArenaBase.cc
 src/ArenaController.cc
-src/ArenaRealTime.cc
-src/ArenaReplay.cc
 src/OptionHandler.cc
 src/RealTimeBattle.cc
 src/Various.cc
