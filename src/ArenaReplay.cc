@@ -46,7 +46,7 @@ ArenaReplay::timeout_function()
   while( !log_file.eof() && total_time >= next_check_time )
     {
       if( next_check_time > last_replay_time )
-        move_shots( next_check_time - last_replay_time );
+        move_shots_no_check( next_check_time - last_replay_time );
 
       last_replay_time = next_check_time;
       parse_log_line( log_file );
@@ -58,10 +58,15 @@ ArenaReplay::timeout_function()
 void 
 ArenaReplay::start_tournament()
 {
-  do
-    {
-      parse_log_line( log_file );
-    } while( !log_file.eof() );
+  if( the_gui.is_messagewindow_up() ) the_gui.close_messagewindow();
+  if( the_gui.is_scorewindow_up() )   the_gui.close_scorewindow();
+  if( the_gui.is_arenawindow_up() )   the_gui.close_arenawindow();
+  
+  //  if( !use_message_file )
+    the_gui.open_messagewindow();
+  the_gui.open_arenawindow();
+  the_gui.open_scorewindow();
+
 }
   
 void 
