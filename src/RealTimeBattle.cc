@@ -385,6 +385,7 @@ main ( int argc, char* argv[] )
 
 #ifdef HAVE_LOCALE_H
   setlocale( LC_MESSAGES, "" );
+  setlocale( LC_NUMERIC, "POSIX" );
 #endif
   bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
   textdomain( "RealTimeBattle" );
