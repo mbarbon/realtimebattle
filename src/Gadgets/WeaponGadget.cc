@@ -23,6 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "WeaponGadget.h"
 #include "Variable.h"
+#include "RobotBodyGadget.h"
+#include "Shot.h"
 
 
 const VariableDefinition 
@@ -76,7 +78,7 @@ WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] =
 };
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
-  : Gadget(name, p)
+  : Gadget(name, p, WEAPON_GDT)
 {
   init_variables(variable_def, LAST_WEAPONVAR);
   init_functions(function_def, LAST_WEAPONFCN);
@@ -110,7 +112,19 @@ WeaponGadget::eval_function( const int fcn )
 
 void
 WeaponGadget::shoot()
-{  
-  // s = new Shot(c,vel,en, my_shotgadget);
-  //  the_arena.add_shot( s );
+{
+  assert( parent->get_info().type == ROBOTBODY_GDT );
+
+  RobotBodyGadget* body = (RobotBodyGadget*) parent;
+
+  Vector2D dir = angle2vec(body->get_variables()[RobotBodyGadget::DIRECTION]);
+  Vector2D c( body->get_variables()[RobotBodyGadget::X_POS],
+              body->get_variables()[RobotBodyGadget::Y_POS] );
+
+  c += dir * (body->get_variables()[RobotBodyGadget::RADIUS] * 1.01);
+  dir *= shot->get_variables()[ShotGadget::SPEED];
+
+  Shot* s = new Shot( c, dir * shot->get_variables()[ShotGadget::SPEED], *shot);
+
+  the_arena.add_shot( s );
 }
