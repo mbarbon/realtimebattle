@@ -411,6 +411,7 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 90 );
   gtk_clist_set_column_justification( GTK_CLIST( clist ),
                                       0, GTK_JUSTIFY_LEFT);
+  gtk_clist_column_titles_passive( GTK_CLIST( clist ) );
   gtk_signal_connect( GTK_OBJECT( clist ), "select_row",
                       (GtkSignalFunc) StartTournamentWindow::selection_made, this );
   gtk_signal_connect( GTK_OBJECT( clist ), "unselect_row",

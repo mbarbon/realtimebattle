@@ -93,6 +93,7 @@ ScoreWindow::ScoreWindow( const int default_width,
                                       GTK_JUSTIFY_RIGHT );
   gtk_clist_set_column_justification( GTK_CLIST( clist ), 5,
                                       GTK_JUSTIFY_RIGHT );
+  gtk_clist_column_titles_passive( GTK_CLIST( clist ) );
   gtk_signal_connect( GTK_OBJECT( clist ), "select_row",
                       (GtkSignalFunc) new_robot_selected, this );
 
