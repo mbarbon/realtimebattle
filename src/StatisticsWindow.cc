@@ -291,24 +291,24 @@ StatisticsWindow::exit( GtkWidget* widget, class StatisticsWindow* sw_p )
 void
 StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
 {
-  if( sw_p->get_filesel() == NULL )
-    {
-      GtkWidget* fs =
-        gtk_file_selection_new( "Choose a statistics file to save" );
-      gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
-                          (GtkSignalFunc) StatisticsWindow::destroy_filesel,
-                          (gpointer) sw_p );
-      gtk_signal_connect
-        ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
-          (GtkSignalFunc) StatisticsWindow::destroy_filesel,
-          (gpointer) sw_p );
-      gtk_signal_connect
-        ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
-          (GtkSignalFunc) StatisticsWindow::save_stats,
-          (gpointer) sw_p );
-      gtk_widget_show( fs );
-      sw_p->set_filesel( fs );
-    }
+  if( sw_p->get_filesel() != NULL )
+    return;
+
+  GtkWidget* fs =
+    gtk_file_selection_new( "Choose a statistics file to save" );
+  gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
+                      (GtkSignalFunc) StatisticsWindow::destroy_filesel,
+                      (gpointer) sw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
+      (GtkSignalFunc) StatisticsWindow::destroy_filesel,
+      (gpointer) sw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
+      (GtkSignalFunc) StatisticsWindow::save_stats,
+      (gpointer) sw_p );
+  gtk_widget_show( fs );
+  sw_p->set_filesel( fs );
 }
 
 void
