@@ -95,8 +95,8 @@ class EventHandler
   
   void main_loop();
   
-  void insert_RT_event (Event* ev);
-  void insert_GT_event (Event* ev);
+  void insert_RT_event (Event* ev, bool absolute_time=false);
+  void insert_GT_event (Event* ev, bool absolute_time=false);
   
   double get_time();
   void pause_game() ;  //Pause/unPause the game
@@ -118,6 +118,7 @@ class EventHandler
   
   Timer timer;
   double current_time;
+  double current_game_time;
 
   double game_speed_before_pause;
 

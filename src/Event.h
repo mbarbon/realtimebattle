@@ -33,6 +33,8 @@ public:
 
   double get_time() const { return eval_time; } 
 
+  void add_time(const double t) { eval_time += t; }
+
   friend struct lt_event;
 
  protected:

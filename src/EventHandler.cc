@@ -33,6 +33,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 EventHandler::EventHandler()
 {
   current_time = 0.0;
+  current_game_time = 0.0;
   game_speed_before_pause = 0.0;
 
   the_tournament = NULL;
@@ -125,6 +126,7 @@ EventHandler::main_loop()
         }
 
       current_time = time_for_next_event;
+      current_game_time = timer.realtime2gametime( current_time );
 
       cout << "Current time: " << current_time << endl;
 
@@ -160,17 +162,20 @@ EventHandler::main_loop()
 
 
 void 
-EventHandler::insert_RT_event (Event* ev)
-{
+EventHandler::insert_RT_event (Event* ev, bool absolute_time)
+{  
   RT_event_queue.push( ev );
+  if( !absolute_time ) ev->add_time(current_time);
+
   cout << "Added event to be run at " << ev->get_time() << endl;
   cout << "There are " << ++nb_RT_event << " events in the RT queue" << endl;
 }
 
 void 
-EventHandler::insert_GT_event (Event* ev)
+EventHandler::insert_GT_event (Event* ev, bool absolute_time)
 {
   GT_event_queue.push( ev );
+  if( !absolute_time ) ev->add_time(current_game_time);
   cout << "There are " << ++nb_GT_event <<" events in the GT queue" << endl;
 }
 

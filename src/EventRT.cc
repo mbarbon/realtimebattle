@@ -59,7 +59,7 @@ CheckGUIEvent::eval() const
     }
   pthread_mutex_unlock( &the_mutex );
 
-  Event* next_event = new CheckGUIEvent(eval_time + refresh, refresh, gui_p);
+  Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
   the_eventhandler.insert_RT_event(next_event);
 }
 
