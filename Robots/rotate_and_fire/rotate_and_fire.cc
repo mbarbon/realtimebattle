@@ -4,11 +4,9 @@
 #endif
 
 #include <iostream.h>
-#include <unistd.h>
-#include <signal.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
@@ -21,140 +19,33 @@
 # endif
 #endif
 
-#include <Messagetypes.h>
+#include "rotate_and_fire.h"
 
-const double pi = 3.1415927;
-
-volatile bool quit_robot = false;
-
-message_to_robot_type name2msg_to_robot_type(char* msg_name);
-
-class RotateAndFire
+RotateAndFire::RotateAndFire(const char* name, const char* colour)
 {
-public:
-  // The constructor and destructor.
-  RotateAndFire               ();
-  ~RotateAndFire              () {}
+  robot_name = new char[strlen(name)];
+  strcpy(robot_name, name);
 
-  // These functions are equivalent to messages sent from the robot
-  void robot_option           ( const int option_nr, const int value );
-  void name                   ( const char* name );
-  void colour                 ( const char* home, const char* away );
-  void rotate                 ( const int what, const double vel );
-  void rotate_to              ( const int what, const double vel,
-                                const double angle );
-  void rotate_amount          ( const int what, const double vel,
-                                const double angle );
-  void sweep                  ( const int what, const double vel,
-                                const double left, const double right );
-  void accelerate             ( const double amount );
-  void brake                  ( const double amount );
-  void shoot                  ( const double energy );
-  void print                  ( const char* message );
-  void debug                  ( const char* message );
-  void debug_line             ( const double start_angle,
-                                const double start_radius,
-                                const double end_angle,
-                                const double end_radius );
-  void debug_circle           ( const double center_angle,
-                                const double center_radius,
-                                const double circle_radius );
+  robot_colour = new char[strlen(colour)];
+  strcpy(robot_colour, colour);
 
-  // These functions are called when the robot gets a message
-  // of the corresponding type. There are several radar and
-  // collision functions. These functions corresponds to each
-  // object that the robot has collided with or found with the radar.
-  void initialize             ( const int first_seq );
-  void your_name              ( const char* prev_name );
-  void your_colour            ( const char* colour );
-  void game_option            ( const int option, const double value );
-  void game_starts            ();
-  void radar_noobject         ( const double dist, const double angle );
-  void radar_robot            ( const double dist, const double angle );
-  void radar_shot             ( const double dist, const double angle );
-  void radar_wall             ( const double dist, const double angle );
-  void radar_cookie           ( const double dist, const double angle );
-  void radar_mine             ( const double dist, const double angle );
-  void info                   ( const double time, const double speed,
-                                const double cannon_angle );
-  void robot_info             ( const double energy, int enemy );
-  void rotation_reached       ( const int what );
-  void energy                 ( const double energylevel );
-  void robots_left            ( const int number_of_robots );
-  void collision_noobject     ( const double angle );
-  void collision_robot        ( const double angle );
-  void collision_shot         ( const double angle );
-  void collision_wall         ( const double angle );
-  void collision_cookie       ( const double angle );
-  void collision_mine         ( const double angle );
-  void warning                ( const int type, const char* message );
-  void dead                   ();
-  void game_finishes          ();
-  void exit_robot             ();
-
-  // This function is called before checking messages.
-  void pre_checking_messages  ();
-
-  // This function goes through all messages and calls the
-  // corresponding function whenever a message is recieved.
-  static void check_messages  ( int sig );
-
-private:
-
-  // These variables contains the current values of the robot rotation,
-  // acceleration and brake.
-  double radar_and_cannon_rotate;
-  double robot_rotate;
-  double acceleration;
-  double brake_value;
-
-  // Boolean variables to control if it is allowed to change robot
-  // rotation and acceleration.
-  bool rotate_allowed;
-  bool acceleration_change_allowed;
-
-  // Variables that controls how frequent the robot has been hit by shots.
-  int shots_hit;
-  double last_shot_hit_time;
-  int number_of_robots_left;
-
-  // The current time is stored in this variable.
-  double current_time;
-
-  // All game options are stored in these variables.
-  double robot_max_rotate;
-  double robot_cannon_max_rotate;
-  double robot_radar_max_rotate;
-  double robot_max_acceleration;
-  double robot_min_acceleration;
-  double robot_start_energy;
-  double robot_max_energy;
-  double robot_energy_levels;
-  double shot_speed;
-  double shot_min_energy;
-  double shot_max_energy;
-  double shot_energy_increase_speed;
-  double timeout;
-  double debug_level;
-};
-
-// Declare the robot object
-
-class RotateAndFire raf_obj;
-
-// The constructor. Initialize standard values of robot_rotate,
-// acceleration and brake_value.
-// Robot options is also sent here.
-// We want the SIGUSR1 signal to be sent to us.
-// We want a message when RotateTo or RotateAmount is finished
-RotateAndFire::RotateAndFire()
-{
   robot_rotate = 0.53;
   acceleration = 0.54;
   brake_value = 0.0;
 
-  robot_option( SIGNAL, SIGUSR1 );
+  // Get random seed from the clock
+  timeval current_time;
+  gettimeofday(&current_time, NULL);
+  srand(current_time.tv_usec);
+
+  // We want to know when RotateTo and RotateAmount finishes
   robot_option( SEND_ROTATION_REACHED, 1 );
+}
+
+RotateAndFire::~RotateAndFire()
+{
+  delete [] robot_name;
+  delete [] robot_colour;
 }
 
 // Function for sending messages from robot. 
@@ -263,8 +154,8 @@ RotateAndFire::initialize( const int first_seq )
 {
   if( first_seq == 1 )
     {
-      name( "Rotate and Fire v2" );
-      colour( "ffaaaa", "aaaaff" );
+      name( robot_name );
+      colour( robot_colour, robot_colour );
     }
 }
 
@@ -412,9 +303,9 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 
   double old_acc = acceleration;
 
-  double mod_angle = fmod( angle, 2 * pi );
+  double mod_angle = fmod( angle, 2 * M_PI );
 
-  if( mod_angle < 1 * pi / 3 || mod_angle > 5 * pi / 3 )
+  if( mod_angle < 1 * M_PI / 3 || mod_angle > 5 * M_PI / 3 )
     {
       if( dist < 1.0 )
         {
@@ -547,7 +438,7 @@ RotateAndFire::collision_shot( const double angle )
       int direction = rand() / (RAND_MAX/2);
       if( direction == 0 ) direction = -1;
       robot_rotate = robot_max_rotate * direction;
-      rotate_amount( 1, robot_rotate, pi / 2 );
+      rotate_amount( 1, robot_rotate, M_PI / 2 );
       rotate_allowed = false;
       acceleration = robot_max_acceleration;
       accelerate( acceleration );
@@ -629,7 +520,7 @@ void
 RotateAndFire::exit_robot()
 {
   print( "Shutting down and leaving" );
-  quit_robot = true;
+  quitting = true;
 }
 
 // This function is called before checking messages.
@@ -651,18 +542,18 @@ RotateAndFire::pre_checking_messages()
 // This function is called whenever a SIGUSR1 (decided in the
 // robotoption sent to the server) signal is received.
 void
-RotateAndFire::check_messages(int sig)
+RotateAndFire::check_messages( )
 {
-  quit_robot = false;
+  quitting = false;
 
   char msg_name[81];
   message_to_robot_type msg_t;
 
-  raf_obj.pre_checking_messages();
-
   cin.clear();
-  while( !cin.eof() )
+  while( !cin.eof() && !quitting )
     {
+      pre_checking_messages();
+
       cin >> msg_name;
       msg_t = name2msg_to_robot_type(msg_name);
       switch(msg_t)
@@ -671,21 +562,21 @@ RotateAndFire::check_messages(int sig)
           {
             int init;
             cin >> init;
-            raf_obj.initialize( init );
+            initialize( init );
           }
           break;
         case YOUR_NAME:
           {
             char name[81];
             cin >> name;
-            raf_obj.your_name( name );
+            your_name( name );
           }
           break;
         case YOUR_COLOUR:
           {
             char col[81];
             cin >> col;
-            raf_obj.your_colour( col );
+            your_colour( col );
           }
           break;
         case GAME_OPTION:
@@ -693,11 +584,11 @@ RotateAndFire::check_messages(int sig)
             int nr;
             double value;
             cin >> nr >> value;
-            raf_obj.game_option( nr, value );
+            game_option( nr, value );
           }
           break;
         case GAME_STARTS:
-          raf_obj.game_starts();
+          game_starts();
           break;
         case RADAR:
           {
@@ -708,22 +599,22 @@ RotateAndFire::check_messages(int sig)
             switch(object)
               {
               case NOOBJECT:
-                raf_obj.radar_noobject( dist, angle );
+                radar_noobject( dist, angle );
                 break;
               case ROBOT:
-                raf_obj.radar_robot( dist, angle );
+                radar_robot( dist, angle );
                 break;
               case WALL:
-                raf_obj.radar_wall( dist, angle );
+                radar_wall( dist, angle );
                 break;
               case SHOT:
-                raf_obj.radar_shot( dist, angle );
+                radar_shot( dist, angle );
                 break;
               case COOKIE:
-                raf_obj.radar_cookie( dist, angle );
+                radar_cookie( dist, angle );
                 break;
               case MINE:
-                raf_obj.radar_mine( dist, angle );
+                radar_mine( dist, angle );
                 break;
               default:
                 cout << "Print Unknown Object seen!" << endl;
@@ -735,7 +626,7 @@ RotateAndFire::check_messages(int sig)
           {
             double time, speed, cannon_angle;
             cin >> time >> speed >> cannon_angle;
-            raf_obj.info( time, speed, cannon_angle );
+            info( time, speed, cannon_angle );
           }
           break;
         case ROBOT_INFO:
@@ -743,28 +634,28 @@ RotateAndFire::check_messages(int sig)
             double energy;
             int enemy;
             cin >> energy >> enemy;
-            raf_obj.robot_info( energy, enemy );
+            robot_info( energy, enemy );
           }
           break;
         case ROTATION_REACHED:
           {
             int what;
             cin >> what;
-            raf_obj.rotation_reached( what );
+            rotation_reached( what );
           }
           break;
         case ENERGY:
           {
             double en;
             cin >> en;
-            raf_obj.energy( en );
+            energy( en );
           }
           break;
         case ROBOTS_LEFT:
           {
             int nr;
             cin >> nr;
-            raf_obj.robots_left( nr );
+            robots_left( nr );
           }
           break;
         case COLLISION:
@@ -776,22 +667,22 @@ RotateAndFire::check_messages(int sig)
             switch( object )
               {
               case NOOBJECT:
-                raf_obj.collision_noobject( angle );
+                collision_noobject( angle );
                 break;
               case ROBOT:
-                raf_obj.collision_robot( angle );
+                collision_robot( angle );
                 break;
               case WALL:
-                raf_obj.collision_wall( angle );
+                collision_wall( angle );
                 break;
               case SHOT:
-                raf_obj.collision_shot( angle );
+                collision_shot( angle );
                 break;
               case COOKIE:
-                raf_obj.collision_cookie( angle );
+                collision_cookie( angle );
                 break;
               case MINE:
-                raf_obj.collision_mine( angle );
+                collision_mine( angle );
                 break;
               default:
                 cout << "Print Collided with Unknown Object!" << endl;
@@ -805,23 +696,22 @@ RotateAndFire::check_messages(int sig)
             char text[81];
             cin >> type;
             cin.getline(text,80,'\n');
-            raf_obj.warning( type, text );
+            warning( type, text );
           }
           break;
         case DEAD:
-          raf_obj.dead();
+          dead();
           break;
         case GAME_FINISHES:
-          raf_obj.game_finishes();
+          game_finishes();
           break;
         case EXIT_ROBOT:
-          raf_obj.exit_robot();
+          exit_robot();
           break;
         default:
           break;
         }
     }
-  signal (sig, check_messages);
 }
 
 // A function to convert the messagename to an enum message_to_robot_type
@@ -834,29 +724,4 @@ name2msg_to_robot_type(char* msg_name)
         return (message_to_robot_type)i;
     }
   return UNKNOWN_MESSAGE_TO_ROBOT;
-}
-
-
-// The main function.
-// Initialize the signal function and get a random seed based on current
-// time in microseconds.
-int 
-main(int argc, char * argv[])
-{
-  sigset_t usr1set;
-
-  signal(SIGUSR1, RotateAndFire::check_messages);
-
-  // libpthread seems to block USR1 sometimes for some reason
-  sigemptyset(&usr1set);
-  sigaddset(&usr1set, SIGUSR1);
-  sigprocmask(SIG_UNBLOCK, &usr1set, NULL);
-
-  timeval current_time;
-  gettimeofday(&current_time, NULL);
-  srand(current_time.tv_usec);
-
-  for(;;sleep(1))
-    if( quit_robot ) 
-      return( EXIT_SUCCESS );
 }
