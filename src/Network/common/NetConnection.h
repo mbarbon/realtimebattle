@@ -1,6 +1,7 @@
 #ifndef __NETCONNECTION_H__
 #define __NETCONNECTION_H__
 
+#include <vector>
 #include <queue>
 #include <string>
 
@@ -66,9 +67,10 @@ protected:
   int the_socket;
   string address;
 
-  string read_buffer;
-  string write_buffer;
-
+  //string read_buffer;
+  queue<string> read_buffers; //All the read but not parsed packets
+  //string write_buffer;
+  queue<string> write_buffers;  //All the buffers to send next time
   bool connected;
   connection_state state;
 

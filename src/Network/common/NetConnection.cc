@@ -6,12 +6,12 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <netinet/in.h>
 
 #include <stack>
 #include <typeinfo>
 #include <set>
 #include <algorithm>
-
 
 #include "NetConnection.h"
 #include "String.h"
@@ -31,31 +31,77 @@ int
 NetConnection::read_data()
 {
   int bytes_read = 0;
-  char buffer[max_packet_length];
+  char buffer[max_packet_length]; 
+  static string str_buf; //The buffer we are reading currently
 
-  bytes_read = read( the_socket, buffer, max_packet_length );
+  char size_c[2]; //Size in char... Directly read from the socket
 
-  if( bytes_read > 0 )
+  static int size_buf = 0;
+  
+  while( 1 )
     {
-      string str_buf( buffer, bytes_read );
-      read_buffer += str_buf;
-      return bytes_read;
-    }
-  else if( bytes_read == 0 )
-    {
-      cout << "EOF on socket!" << endl;
-      return -1;
-    }
-  else if( errno == EWOULDBLOCK || errno == EAGAIN )
-    return 0;
+      if( size_buf == 0 )
+	{
+	  //cout << "First I need the size of the packet\n";
+	  //Read the size of the packet
+	  bytes_read = read( the_socket, size_c, 2);
+	  //cout << "I read "<<bytes_read<<" from the socket\n";
+	  
+	  if( bytes_read > 0 )
+	    ;
+	  else if( bytes_read == 0 )
+	    {
+	      cerr << "Premature EOF on socket ! "<<endl;
+	      return -1;
+	    }
+	  else if( errno == EWOULDBLOCK || errno == EAGAIN )
+	    {
+	      //cerr << "It would block : leave\n";
+	      return 0;
+	    }
 
-  return -1;
+	  //Now make the size become an int      
+	  memcpy(&size_buf, size_c, 2);
+	  size_buf =  ntohs(size_buf);
+	  //cout<<"I received a "<<size_buf<<" char message long\n";
+	}
+      
+      //Then try to read the packet
+      bytes_read = read( the_socket, buffer, 
+			 ((size_buf<max_packet_length)?(size_buf):(max_packet_length))
+			 );
+      
+      if( bytes_read > 0 ) //More informations on this packet
+	{
+	  str_buf += string( buffer, bytes_read );
+	  size_buf -= bytes_read; //size_c chars to read until the end of the packet
+	  //cout<<"{"<<str_buf<<"} ==> "<<bytes_read<<", "<<size_buf<<"\n";
+	}
+      else if( bytes_read == 0 )
+	{
+	  cerr << "Premature EOF on socket!" << endl;
+	  return -1;
+	}
+      else if( errno == EWOULDBLOCK || errno == EAGAIN )
+	{
+	  //cerr << "It would block (2) : leave\n";
+	  return 0;
+	}
+
+      //Maybe we can put this inst bloc at the begining...
+      if( size_buf == 0 ) //We have read the all packet now
+	{
+	  //cerr << "New buffer in the queue\n";
+	  read_buffers.push(str_buf);
+	  str_buf = string("");
+	}
+    }
 }
 
 int
 NetConnection::write_data()
 {
-  while( !write_buffer.empty() )
+  while( !write_buffers.empty() )
     {
       fd_set writefs;
       fd_set exceptfs;
@@ -83,21 +129,47 @@ NetConnection::write_data()
 
       if( FD_ISSET( the_socket, &writefs ) )
         {
-          string newstr = write_buffer.substr( 0, max_packet_length );
           int nput = 0;
 
-          if( (nput = write( the_socket, newstr.data(), newstr.length() )) == -1 )
-            {
+	  //Get the size of the current packet and send it in the socket
+	  char buf[2];
+	  unsigned short x = write_buffers.front().length();
+
+	  //cerr<<"I sent a "<<x<<" char message long\n";
+
+	  x = htons(x);
+
+	  memcpy( buf, &x, 2 );
+	  if( write( the_socket, buf, 2) == -1 )
+	    {
               if( errno == EWOULDBLOCK || errno == EAGAIN )
                 break;
               close_socket(); // Should I really do this here?
               return -1;
-            }
+	    }
 
-          if( (int)write_buffer.length() < nput )
-            write_buffer = write_buffer.substr( nput, string::npos );
-          else
-            write_buffer.erase(0, string::npos);
+	  //Now send the all packet itself
+	  string write_buffer = write_buffers.front();
+	  while( !write_buffer.empty() ) //Can it block???
+	    {
+	      //The information to send
+	      string newstr = write_buffer.substr( 0, max_packet_length );
+	      if( (nput = write( the_socket, newstr.data(), newstr.length() )) == -1 )
+		{
+		  if( errno == EWOULDBLOCK || errno == EAGAIN )
+		    break;
+		  close_socket(); // Should I really do this here?
+		  return -1;
+		}
+
+	      //The information we still have here (it isn't in the socket :-( )
+	      if( (int)write_buffer.length() < nput )
+		write_buffer = write_buffer.substr( nput, string::npos );
+	      else
+		write_buffer.erase(0, string::npos);
+	    }
+	  //We don't need it here anymore...
+	  write_buffers.pop();
         }
     }
   return 0; // For now
@@ -108,7 +180,7 @@ NetConnection::send_data( const string& data )
 {
   if( connected )
     {
-      write_buffer += data;
+      write_buffers.push(data);
       write_data();
     }
 }
