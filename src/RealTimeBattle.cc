@@ -88,6 +88,12 @@ class EventHandler the_eventhandler;
 class SocketServer my_socketserver;
 
 int Gadget::last_id_used = 0;
+int robot_info_t::next_id = 0;
+int arena_info_t::next_id = 0;
+
+
+
+
 
 RETSIGTYPE
 sig_handler (int signum)
