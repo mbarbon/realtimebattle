@@ -1,3 +1,4 @@
+#include <fstream.h>
 #include <math.h>
 #include "Options.h"
 #include "Arena.h"
@@ -138,6 +139,12 @@ Options::Options()
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
 
+  all_string_options[OPTION_STATISTICS_SAVE_FILE] =
+    option_info_t<String>(ENTRY_CHAR, "statistics.txt", "", "", 100, "File to dump the statistics", NULL);
+
+  all_string_options[OPTION_OPTIONS_SAVE_FILE] =
+    option_info_t<String>(ENTRY_CHAR, "options.txt", "", "", 100, "File to dump the options", NULL);
+
   options_window_up = false;
 }
 
@@ -195,9 +202,39 @@ Options::set_all_options_from_gui()
       all_long_options[i].value = entry_value;
     }
 
+  for(int i=0;i<LAST_STRING_OPTION;i++)
+    {
+      String entry_value(gtk_entry_get_text(GTK_ENTRY(all_string_options[i].entry)));
+
+      all_string_options[i].value = entry_value;
+    }
+
   the_arena.set_colours();
 
   close_options_window();
+}
+
+void
+Options::save_all_options_to_file()
+{
+  String filename(gtk_entry_get_text(GTK_ENTRY(all_string_options[OPTION_OPTIONS_SAVE_FILE].entry)));
+
+  int mode = _IO_OUTPUT;
+  ofstream file(filename.chars(), mode);
+
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    file << all_double_options[i].label << ": " << all_double_options[i].value << endl;
+
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    {
+      if(all_long_options[i].datatype == ENTRY_INT)
+        file << all_long_options[i].label << ": " << all_long_options[i].value << endl;
+      if(all_long_options[i].datatype == ENTRY_HEX)
+        file << all_long_options[i].label << ": " << hex2str(all_long_options[i].value) << endl;
+    }
+
+  for(int i=0;i<LAST_STRING_OPTION;i++)
+    file << all_string_options[i].label << ": " << all_string_options[i].value << endl;
 }
 
 void
@@ -205,11 +242,14 @@ Options::setup_options_window()
 {
   int number_of_columns = 2;
   int number_of_options = LAST_DOUBLE_OPTION + LAST_LONG_OPTION + LAST_STRING_OPTION + LAST_BOOL_OPTION;
-  int options_per_column = (number_of_options / number_of_columns) + 1;
-  GtkWidget * vboxes[number_of_columns];
+  int options_per_column = (number_of_options + 1) / number_of_columns;
+
+  GtkWidget * description_tables[number_of_columns];
+  GtkWidget * entry_tables[number_of_columns];
+  GtkWidget * button_tables[number_of_columns];
 
   options_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (options_window), "RealTimeBattle Start New Tournament");
+  gtk_window_set_title (GTK_WINDOW (options_window), "RealTimeBattle Options");
   gtk_signal_connect (GTK_OBJECT (options_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(options_window));
   gtk_container_border_width (GTK_CONTAINER (options_window), 12);
@@ -218,25 +258,35 @@ Options::setup_options_window()
   gtk_container_add (GTK_CONTAINER (options_window), vbox);
   gtk_widget_show (vbox);
 
-  GtkWidget * hbox = gtk_hbox_new (FALSE, 20);
+  GtkWidget * hbox = gtk_hbox_new (FALSE, 30);
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
   for(int i=0; i < number_of_columns; i++)
     {
-      vboxes[i] = gtk_vbox_new (FALSE, 5);
-      gtk_container_add (GTK_CONTAINER (hbox), vboxes[i]);
-      gtk_widget_show (vboxes[i]);
+      GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_container_add (GTK_CONTAINER (hbox), internal_hbox);
+      gtk_widget_show (internal_hbox);
+
+      description_tables[i] = gtk_table_new( options_per_column, 1, TRUE );
+      entry_tables[i] = gtk_table_new( options_per_column, 1, TRUE );
+      button_tables[i] = gtk_table_new( options_per_column, 3, TRUE );
+      gtk_box_pack_start (GTK_BOX (internal_hbox), description_tables[i], TRUE, TRUE, 0);
+      gtk_box_pack_start (GTK_BOX (internal_hbox), entry_tables[i], TRUE, TRUE, 0);
+      gtk_box_pack_start (GTK_BOX (internal_hbox), button_tables[i], TRUE, TRUE, 0);
     }
 
   for( int i=0;i<LAST_DOUBLE_OPTION;i++ )
     {
-      GtkWidget * option_hbox = gtk_hbox_new (FALSE, 5);
-      gtk_container_add (GTK_CONTAINER (vboxes[i / options_per_column]), option_hbox);
-      gtk_widget_show (option_hbox);
+      int column = i / options_per_column;
+      int row = i - column * options_per_column;
+
+      GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_table_attach_defaults( GTK_TABLE( description_tables[column] ), internal_hbox, 0, 1, row, row + 1 );
+      gtk_widget_show (internal_hbox);
 
       GtkWidget * label = gtk_label_new(all_double_options[i].label.chars());
-      gtk_box_pack_start (GTK_BOX (option_hbox), label, TRUE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
       gtk_widget_show(label);
 
       all_double_options[i].entry = gtk_entry_new_with_max_length(all_double_options[i].max_letters_in_entry);
@@ -251,37 +301,40 @@ Options::setup_options_window()
 
       gtk_signal_connect(GTK_OBJECT(all_double_options[i].entry), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
-      gtk_box_pack_start (GTK_BOX (option_hbox), all_double_options[i].entry, FALSE, FALSE, 0);
-      gtk_widget_set_usize(all_double_options[i].entry, all_double_options[i].max_letters_in_entry * 9,18);
+      gtk_widget_set_usize(all_double_options[i].entry, 108 ,18);
+      gtk_table_attach_defaults( GTK_TABLE( entry_tables[column] ), all_double_options[i].entry, 0, 1, row, row + 1 );
       gtk_widget_show(all_double_options[i].entry);
 
       GtkWidget * button = gtk_button_new_with_label ("min");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (double_options_min_callback), (gpointer) &all_double_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 0, 1, row, row + 1 );
       gtk_widget_show (button);
 
       button = gtk_button_new_with_label ("def");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (double_options_def_callback), (gpointer) &all_double_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 1, 2, row, row + 1 );
       gtk_widget_show (button);
 
       button = gtk_button_new_with_label ("max");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (double_options_max_callback), (gpointer) &all_double_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 2, 3, row, row + 1 );
       gtk_widget_show (button);
     }
 
   for( int i=0;i<LAST_LONG_OPTION;i++ )
     {
-      GtkWidget * option_hbox = gtk_hbox_new (FALSE, 5);
-      gtk_container_add (GTK_CONTAINER (vboxes[(i + LAST_DOUBLE_OPTION) / options_per_column]), option_hbox);
-      gtk_widget_show (option_hbox);
+      int column = (i + LAST_DOUBLE_OPTION) / options_per_column;
+      int row = (i + LAST_DOUBLE_OPTION) - column * options_per_column;
+
+      GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_table_attach_defaults( GTK_TABLE( description_tables[column] ), internal_hbox, 0, 1, row, row + 1 );
+      gtk_widget_show (internal_hbox);
 
       GtkWidget * label = gtk_label_new(all_long_options[i].label.chars());
-      gtk_box_pack_start (GTK_BOX (option_hbox), label, TRUE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
       gtk_widget_show(label);
 
       all_long_options[i].entry = gtk_entry_new_with_max_length(all_long_options[i].max_letters_in_entry);
@@ -299,34 +352,85 @@ Options::setup_options_window()
 
       gtk_signal_connect(GTK_OBJECT(all_long_options[i].entry), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
-      gtk_box_pack_start (GTK_BOX (option_hbox), all_long_options[i].entry, FALSE, FALSE, 0);
       gtk_widget_set_usize(all_long_options[i].entry, 108,18);
+      gtk_table_attach_defaults( GTK_TABLE( entry_tables[column] ), all_long_options[i].entry, 0, 1, row, row + 1 );
       gtk_widget_show(all_long_options[i].entry);
 
       GtkWidget * button = gtk_button_new_with_label ("min");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (long_options_min_callback), (gpointer) &all_long_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 0, 1, row, row + 1 );
       gtk_widget_show (button);
 
       button = gtk_button_new_with_label ("def");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (long_options_def_callback), (gpointer) &all_long_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 1, 2, row, row + 1 );
       gtk_widget_show (button);
 
       button = gtk_button_new_with_label ("max");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (long_options_max_callback), (gpointer) &all_long_options[i] );
-      gtk_box_pack_start (GTK_BOX (option_hbox), button, FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 2, 3, row, row + 1 );
       gtk_widget_show (button);
+    }
+
+  for( int i=0;i<LAST_STRING_OPTION;i++ )
+    {
+      int column = (i + LAST_DOUBLE_OPTION + LAST_LONG_OPTION) / options_per_column;
+      int row = (i + LAST_DOUBLE_OPTION + LAST_LONG_OPTION) - column * options_per_column;
+
+      GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_table_attach_defaults( GTK_TABLE( description_tables[column] ), internal_hbox, 0, 1, row, row + 1 );
+      gtk_widget_show (internal_hbox);
+
+      GtkWidget * label = gtk_label_new(all_string_options[i].label.chars());
+      gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
+      gtk_widget_show(label);
+
+      all_string_options[i].entry = gtk_entry_new_with_max_length(all_string_options[i].max_letters_in_entry);
+
+      gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
+
+      entry_t * info = new entry_t( ENTRY_CHAR, false );
+
+      gtk_signal_connect(GTK_OBJECT(all_string_options[i].entry), "changed",
+                         GTK_SIGNAL_FUNC(entry_handler), info);
+      gtk_widget_set_usize(all_string_options[i].entry, 108 ,18);
+      gtk_table_attach_defaults( GTK_TABLE( entry_tables[column] ), all_string_options[i].entry, 0, 1, row, row + 1 );
+      gtk_widget_show(all_string_options[i].entry);
+
+      GtkWidget * button = gtk_button_new_with_label ("def");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (string_options_def_callback), (gpointer) &all_string_options[i] );
+      gtk_table_attach_defaults( GTK_TABLE( button_tables[column] ), button, 1, 2, row, row + 1 );
+      gtk_widget_show (button);
+    }
+
+  for(int i=0; i < number_of_columns; i++)
+    {
+      gtk_table_set_row_spacings( GTK_TABLE( description_tables[i] ) , 5 );
+      gtk_table_set_col_spacings( GTK_TABLE( description_tables[i] ) , 5 );
+      gtk_table_set_row_spacings( GTK_TABLE( entry_tables[i] ) , 5 );
+      gtk_table_set_col_spacings( GTK_TABLE( entry_tables[i] ) , 5 );
+      gtk_table_set_row_spacings( GTK_TABLE( button_tables[i] ) , 5 );
+      gtk_table_set_col_spacings( GTK_TABLE( button_tables[i] ) , 5 );
+      gtk_widget_show( description_tables[i] );
+      gtk_widget_show( entry_tables[i] );
+      gtk_widget_show( button_tables[i] );
     }
 
   hbox = gtk_hbox_new (FALSE, 5);
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
-  GtkWidget * button = gtk_button_new_with_label ("Apply");
+  GtkWidget * button = gtk_button_new_with_label ("Dump options");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (dump_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Apply");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (apply_options_requested), (gpointer) NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
@@ -353,6 +457,12 @@ void
 apply_options_requested(GtkWidget * widget, gpointer data)
 {
   the_opts.set_all_options_from_gui();
+}
+
+void
+dump_options_requested(GtkWidget * widget, gpointer data)
+{
+  the_opts.save_all_options_to_file();
 }
 
 void
@@ -407,4 +517,10 @@ long_options_def_callback( GtkWidget * widget, option_info_t<long> * option )
     gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->default_value).chars() );
   else if(option->datatype == ENTRY_HEX)
     gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->default_value).chars() );
+}
+
+void
+string_options_def_callback( GtkWidget * widget, option_info_t<String> * option )
+{
+  gtk_entry_set_text( GTK_ENTRY( option->entry ), option->default_value.chars() );
 }

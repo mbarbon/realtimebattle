@@ -73,6 +73,8 @@ enum option_long_t
 
 enum option_string_t
 {
+  OPTION_STATISTICS_SAVE_FILE,
+  OPTION_OPTIONS_SAVE_FILE,
   LAST_STRING_OPTION
 };
 
@@ -100,12 +102,15 @@ struct option_info_t
 
 void options_window_requested(GtkWidget *widget, gpointer data);
 void apply_options_requested(GtkWidget *widget, gpointer data);
+void dump_options_requested(GtkWidget *widget, gpointer data);
+
 void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
 void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );
 void double_options_def_callback( GtkWidget * widget, option_info_t<double> * option );
 void long_options_min_callback( GtkWidget * widget, option_info_t<long> * option );
 void long_options_max_callback( GtkWidget * widget, option_info_t<long> * option );
 void long_options_def_callback( GtkWidget * widget, option_info_t<long> * option );
+void string_options_def_callback( GtkWidget * widget, option_info_t<String> * option );
 
 class Options
 {
@@ -116,13 +121,14 @@ public:
 
   inline double get_d( option_double_t  option ) { return all_double_options[option].value; }
   inline long   get_l( option_long_t    option ) { return all_long_options[option].value; }
-  //  String get_s( option_double_t option ) { return all_string_options[option]; }
-  //  bool get_b( option_double_t option ) { return all_bool_options[option]; }
+  inline const String get_s( option_string_t  option ) { return all_string_options[option].value.chars(); }
+  //  inline bool get_b( option_bool_t option ) { return all_bool_options[option].value; }
 
   void broadcast_opts();
   void setup_options_window();
   void close_options_window();
   void set_all_options_from_gui();
+  void save_all_options_to_file();
   void get_options_from_rtbrc();
   bool get_options_window_up() { return options_window_up; }
 
@@ -131,9 +137,8 @@ private:
   option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
   option_info_t<long> all_long_options[LAST_LONG_OPTION];
 
-  // No char or bool options yet
-  //  option_info_t<String> * all_char_options[LAST_STRING_OPTION];
-  //  option_info_t<bool> * all_bool_options[LAST_BOOL_OPTION];
+  option_info_t<String> all_string_options[LAST_STRING_OPTION];
+  //  option_info_t<bool> all_bool_options[LAST_BOOL_OPTION];
 
   bool options_window_up;
   GtkWidget * options_window;
