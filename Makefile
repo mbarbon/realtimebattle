@@ -1,22 +1,22 @@
 ROBOTDIR = Robots
 
-CC = gcc
-CXX = g++
+export CC = gcc
+export CXX = g++
 
 #debug-options
 CPPFLAGS = $(gtkincludedirs)
-CFLAGS = -g -Wall
-CXXFLAGS = -g -Wall
+export CFLAGS = -g -Wall
+export CXXFLAGS = -g -Wall
 
 #normal-options
 #CPPFLAGS = $(gtkincludedirs)
-#CFLAGS = -Wall
-#CXXFLAGS = -Wall
+#export CFLAGS = -Wall
+#export CXXFLAGS = -Wall
 
 #final-options
 #CPPFLAGS = $(gtkincludedirs)
-#CFLAGS = -O
-#CXXFLAGS = -O
+#export CFLAGS = -O
+#export CXXFLAGS = -O
 
 gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 libdirs = -L/usr/lib -L/usr/X11R6/lib
@@ -24,7 +24,7 @@ libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
 
-all: RealTimeBattle $(ROBOTDIR)/empty $(ROBOTDIR)/fire ETAGS
+all: RealTimeBattle robots  ETAGS
 
 RealTimeBattle: $(objects)
 	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
@@ -43,8 +43,9 @@ Error.o: Error.cc Arena.h messagetypes.h Vector2D.h
 MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h
 Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h
 Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h
-$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.c 
-$(ROBOTDIR)/fire: $(ROBOTDIR)/fire.cc 
+
+robots:
+	cd $(ROBOTDIR) && $(MAKE)
 
 #$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 #	cd $(ROBOTDIR); \
