@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ControlWindow.h"
 #include "ScoreWindow.h" 
+#include "StatisticsWindow.h" 
 #include "Gui.h"
 #include "Arena_Controller.h"
 #include "Arena_RealTime.h"
@@ -75,8 +76,8 @@ ControlWindow::ControlWindow( const int default_width,
     { " Options ",
       (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
     { " Statistics ",
-      (GtkSignalFunc) statistics_button_callback       , TRUE  },
-    //      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
+      //      (GtkSignalFunc) statistics_button_callback       , TRUE  },
+      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
     { "         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
@@ -323,4 +324,11 @@ ControlWindow::options_clicked( GtkWidget* widget,
                                 class ControlWindow* controlwindow_p )
 {
   the_opts.open_optionswindow();
+}
+
+void
+ControlWindow::statistics_clicked( GtkWidget* widget,
+                                   class ControlWindow* controlwindow_p )
+{
+  the_gui.open_statisticswindow();
 }
