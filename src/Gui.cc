@@ -308,14 +308,25 @@ Gui::change_to_pixels_y(const double input)
 }
 
 void
-Gui::print_to_message_output (const String& from_robot, const String& output_text, GdkColor& colour )
+Gui::print_to_message_output (String from_robot, String output_text)
 {
-  String rname = (String)'\n' + from_robot + ": ";
-  String printed_text = output_text;
-  gtk_text_freeze(GTK_TEXT(message_output));
-  gtk_text_insert(GTK_TEXT(message_output), NULL, &colour, NULL, rname.chars(), -1);
-  gtk_text_insert(GTK_TEXT(message_output), NULL, &message_output->style->black, NULL, printed_text.chars(), -1);
-  gtk_text_thaw(GTK_TEXT(message_output));
+  char * lst[2];
+  
+  for(int j=0;j<2;j++)
+    {
+      lst[j] = new char[30];
+      strcpy(lst[j],"");
+    }
+
+  int row = 0;
+  gtk_clist_insert(GTK_CLIST(message_clist), row, lst);
+  gtk_clist_set_foreground(GTK_CLIST(message_clist), row, the_arena.get_foreground_colour_p());
+  gtk_clist_set_background(GTK_CLIST(message_clist), row, the_arena.get_background_colour_p());
+
+  gtk_clist_set_text(GTK_CLIST(message_clist), row, 0, from_robot.non_const_chars());
+  gtk_clist_set_text(GTK_CLIST(message_clist), row, 1, output_text.non_const_chars());
+
+  for(int i=0; i<2; i++) delete [] lst[i];
 }
 
 void
@@ -833,42 +844,34 @@ Gui::setup_message_window()
   gtk_widget_set_usize(message_window,
                        (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_Y));
 
-  // The VBox 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                                     GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_container_add (GTK_CONTAINER (message_window), scrolled_win);
+  gtk_widget_show ( scrolled_win );
+#endif
 
-  vbox = gtk_vbox_new (FALSE, 10);
-  gtk_container_add (GTK_CONTAINER (message_window), vbox);
-  gtk_widget_show (vbox);
-
-  // Message Table 
-
-  messagetable = gtk_table_new (2, 2, FALSE);
-  gtk_table_set_row_spacing (GTK_TABLE (messagetable), 0, 2);
-  gtk_table_set_col_spacing (GTK_TABLE (messagetable), 0, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), messagetable, TRUE, TRUE, 0);
-  gtk_widget_show (messagetable);
-
-  // Message Text 
-
-  message_output = gtk_text_new (NULL, NULL);
-  gtk_text_set_editable (GTK_TEXT (message_output), FALSE);
-  gtk_table_attach (GTK_TABLE (messagetable), message_output, 0, 1, 0, 1,
-                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-                    0, 0);
-  gtk_widget_set_usize(message_output, 250,90);
-  gtk_widget_show(message_output);
-
-  // Message VScrollBar 
-
-  vscrollbar = gtk_vscrollbar_new (GTK_TEXT (message_output)->vadj);
-  gtk_table_attach (GTK_TABLE (messagetable), vscrollbar, 1, 2, 0, 1,
-                    (GtkAttachOptions)(GTK_FILL),
-                    (GtkAttachOptions)(GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-                    0, 0);
-  gtk_widget_show (vscrollbar);
-
-  gtk_widget_realize (message_output);
-  gtk_text_freeze (GTK_TEXT (message_output));
+  char* titles[2] = { "Robot", "Message" };
+  message_clist = gtk_clist_new_with_titles(2,titles);
+  gtk_clist_set_selection_mode (GTK_CLIST(message_clist), GTK_SELECTION_EXTENDED);
+  gtk_clist_set_column_width (GTK_CLIST(message_clist), 0, 130);
+  gtk_clist_set_column_width (GTK_CLIST(message_clist), 1, 1000);
+  gtk_clist_set_column_justification(GTK_CLIST(message_clist), 0, GTK_JUSTIFY_LEFT);
+  gtk_clist_set_column_justification(GTK_CLIST(message_clist), 1, GTK_JUSTIFY_LEFT);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(message_clist), GTK_SHADOW_IN);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), message_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(message_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(message_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_container_add (GTK_CONTAINER (message_window), message_clist);
+#endif
+  gtk_widget_show(message_clist);
 
   gtk_widget_show (message_window);
 }
