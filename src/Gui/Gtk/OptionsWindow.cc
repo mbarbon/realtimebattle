@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -256,6 +256,7 @@ OptionsWindow::create( const int&  default_width,
 
   // TODO: Add all options available.
   add_new_options( the_gui.get_gtk_opts() );
+  add_new_options( the_gui.get_main_opts() );
 
   gtk_widget_show( window_p );
 }
