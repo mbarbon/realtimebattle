@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <strstream.h>
 #include <signal.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
 #include "Arena.h"
 #include "Error.h"
 
@@ -67,18 +69,57 @@ Robot::start_process()
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for robot ", 
                     robot_filename, "Robot::Robot, child");
+      
+      // Check file attributes
 
-      // TODO: Restrict resources
-      // Restrict different resources
-      // E.g. priority, file_access, 
+      struct stat filestat;
+      if( 0 != stat( robot_filename.chars(), &filestat ) ) 
+        throw Error("Couldn't get stats for robot ", robot_filename, "Robot::Robot, child");
+      if( !S_ISREG( filestat.st_mode) )
+        throw Error("Robot file isn't regular, error for robot ", robot_filename, "Robot::Robot, child");
+      if( !(filestat.st_mode & S_IXOTH) )
+        throw Error("Robot file isn't executable for user, error for robot ", 
+                    robot_filename, "Robot::Robot, child");
+      if( (filestat.st_mode & S_ISUID) )
+        throw Error("Set user ID is not allowed, error for robot ", 
+                    robot_filename, "Robot::Robot, child");
+
+      // Lower priority by one
+     
+      int old;
+      if( (old = getpriority (PRIO_PROCESS, 0)) == -1 )
+        throw Error("Couldn't get priority for robot ", robot_filename, "Robot::Robot, child");
+      if( setpriority (PRIO_PROCESS, 0, old + 1) == -1)
+        throw Error("Couldn't set priority for robot ", robot_filename, "Robot::Robot, child");
+
+      // Deny file access
+
+      struct rlimit res_limit;
+
+      if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+        throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
+
+      // TODO: Deny file access
+
+      //res_limit.rlim_cur = ?;
+      if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+        throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
+
+      // Forbid creation of child processes
+
+      if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+        throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
+
+      res_limit.rlim_cur = 0;
+      if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
+        throw Error("Couldn't limit child processes for robot ", robot_filename, "Robot::Robot, child");
 
       // Execute process. Should not return!
-      execl(robot_filename.chars(), robot_filename.chars(), NULL);
+      if( execl(robot_filename.chars(), robot_filename.chars(), NULL) == -1 )
+        throw Error("Couldn't open robot ", robot_filename, "Robot::Robot, child");
 
-      cerr << "Couldn't open robot " << robot_filename 
-           << "  Error in Robot::Robot" << endl;
-      cerr << "Errno: " << errno << endl;
-      exit(EXIT_FAILURE);
+      throw Error("Robot didn't execute, SHOULD NEVER HAPPEN!, error for ", 
+                  robot_filename, "Robot::Robot, child");
     }
   else
     {
@@ -133,7 +174,7 @@ Robot::end_process()
 void
 Robot::send_signal()
 {
-  //  if( send_usr_signal )
+  if( send_usr_signal )
     kill(pid, SIGUSR1);
 }
 
@@ -148,7 +189,9 @@ void
 Robot::delete_pipes()
 {
   if( instreamp != NULL ) delete instreamp;
+  instreamp = NULL;
   if( outstreamp != NULL ) delete outstreamp;
+  outstreamp = NULL;
   if( pipes[0] != -1 ) 
     {
       close(pipes[0]);
@@ -544,6 +587,7 @@ Robot::get_messages()
               case SEND_SIGNAL:
                 *instreamp >> val;
                 send_usr_signal = (val == true);
+                send_signal();
                 break;
               default:
                 send_message(WARNING, UNKNOWN_OPTION, msg_name);
@@ -562,7 +606,6 @@ Robot::get_messages()
           *instreamp >> text;
           plain_robot_name = text;
           check_name_uniqueness();
-          // TODO: Tell gui to change name
           break;
         case COLOUR:
           if( the_arena.get_state() != Arena::STARTING_ROBOTS ) break;
@@ -938,7 +981,6 @@ Shot::move(const double timestep)
       switch( closest_shape )
         {
         case WALL:
-          // TODO: shot explode on wall ?
           die();
           break;
         case ROBOT:
@@ -951,7 +993,6 @@ Shot::move(const double timestep)
           }
           break;
         case SHOT:
-          // TODO: shot explode on shot ?
           ((Shot*)colliding_object)->die();
           die();
           break;
