@@ -27,9 +27,9 @@ enum message_to_robot_type
   INITIALIZE,
   YOUR_NAME,
   YOUR_COLOUR,
-  BIN_DATA_TO,
-  ASCII_DATA_TO,
-  LOAD_DATA_FINISHED,
+  //  BIN_DATA_TO,
+  //  ASCII_DATA_TO,
+  //  LOAD_DATA_FINISHED,
   GAME_OPTION,
   GAME_STARTS,
   RADAR,
@@ -42,7 +42,7 @@ enum message_to_robot_type
   WARNING,
   DEAD,
   GAME_FINISHES,
-  SAVE_DATA,
+  //  SAVE_DATA,
   EXIT_ROBOT
 };
 
@@ -52,7 +52,7 @@ enum message_from_robot_type
   ROBOT_OPTION,
   NAME,
   COLOUR,
-  LOAD_DATA,
+  //  LOAD_DATA,
   ROTATE,
   ROTATE_TO,
   ROTATE_AMOUNT,
@@ -63,9 +63,12 @@ enum message_from_robot_type
   SHOOT,
   PRINT,
   DEBUG,
-  BIN_DATA_FROM,
-  ASCII_DATA_FROM,
-  SAVE_DATA_FINISHED
+  DEBUG_LINE,
+  DEBUG_CIRCLE
+
+  //  BIN_DATA_FROM,
+  //  ASCII_DATA_FROM,
+  //  SAVE_DATA_FINISHED
 };
 
 enum argument_type
@@ -74,8 +77,8 @@ enum argument_type
   STRING,
   DOUBLE,
   INT,
-  HEX,
-  BINDATA
+  HEX
+  //  BINDATA
 };
 
 enum warning_type
@@ -144,9 +147,9 @@ static const struct Message message_to_robot[25] =
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
   {"YourColour", 1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
-  {"BinData",    2, {INT,    BINDATA,NONE,   NONE}},
-  {"AsciiData",  1, {STRING, NONE,   NONE,   NONE}},
-  {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
+  //  {"BinData",    2, {INT,    BINDATA,NONE,   NONE}},
+  //  {"AsciiData",  1, {STRING, NONE,   NONE,   NONE}},
+  //  {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
   {"GameOption", 2, {INT,    DOUBLE, NONE,   NONE}},   // arg 1: OPTION_NR,  arg 2:  value 
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
@@ -159,7 +162,7 @@ static const struct Message message_to_robot[25] =
   {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
   {"Dead",       0, {NONE,   NONE,   NONE,   NONE}},   // Robot died  
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
-  {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
+  //  {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
 
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
 
@@ -171,7 +174,7 @@ static const struct Message message_from_robot[25] =
   {"RobotOption",  2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
   {"Name",         1, {STRING}},             // arg: name
   {"Colour",       2, {HEX, HEX}},           // first arg: home colour, second arg: away colour
-  {"LoadData",     1, {INT}},                // arg: type of data, 0 - binary, 1 - ascii
+  //  {"LoadData",     1, {INT}},                // arg: type of data, 0 - binary, 1 - ascii
   {"Rotate",       2, {INT, DOUBLE}},     // first arg: what to rotate: 1 Robot, 2 cannon, 4 radar and apropriate sums for combinations                                                             // second arg: angular velocity (rad/s)
   {"RotateTo",     3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to move to
   {"RotateAmount", 3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to rotate
@@ -183,9 +186,11 @@ static const struct Message message_from_robot[25] =
   {"Shoot",        1, {DOUBLE}},             // arg: amount of energy
   {"Print",        1, {STRING}},             // arg: message to print   
   {"Debug",        1, {STRING}},             // arg: debug message
-  {"BinData",      2, {INT, BINDATA}},    // first arg: number of bytes,  second arg: data
-  {"AsciiData",    1, {STRING}},          // arg: data
-  {"SaveDataFinished",0, {}},
+  {"DebugLine",    4, {DOUBLE, DOUBLE, DOUBLE, DOUBLE}}, // start/end, polar
+  {"DebugCircle",  3, {DOUBLE, DOUBLE, DOUBLE}},         // center, radius
+  //  {"BinData",      2, {INT, BINDATA}},    // first arg: number of bytes,  second arg: data
+  //  {"AsciiData",    1, {STRING}},          // arg: data
+  //  {"SaveDataFinished",0, {}},
   {"",             0, {}}
 };
 
