@@ -22,8 +22,22 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
-#include "Timer.h"
+
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 #include <assert.h>
+
+#include "Timer.h"
+
 
 Timer::Timer()
 {
@@ -98,4 +112,21 @@ Timer::gametime2realtime( const double gtime )
   double current_realtime = update();
 
   return current_realtime + ( gtime - gametime ) / ( gamespeed + 1e-10 );
+}
+
+void
+Timer::double2timeval( const double time, struct timeval& wait_time)
+{
+  double time_diff = update() - time;
+
+  if( time_diff <= 0.0 )
+    {
+      wait_time.tv_sec = 0;
+      wait_time.tv_usec = 0;
+    }
+  else
+    {
+      wait_time.tv_sec = int( time_diff );
+      wait_time.tv_usec = int( 1e6 * ( time_diff - (double)wait_time.tv_sec ) );
+    }
 }

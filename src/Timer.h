@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
 # include <time.h>
@@ -33,8 +34,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  include <time.h>
 # endif
 #endif
-
-#include <unistd.h>
 
 class Timer
 {
@@ -48,6 +47,8 @@ public:
 
   double realtime2gametime(const double time);
   double gametime2realtime(const double gtime);
+
+  void double2timeval( const double time, struct timeval& wait_time);
 
   void reset();   //Reset the timer (how to be useless :) )
   
