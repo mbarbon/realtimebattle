@@ -921,7 +921,13 @@ ArenaRealTime::start_sequence_follow_up()
                              robotp->get_robot_name().chars());
           
           if( !robotp->is_name_given() )
-            robotp->send_message(WARNING, NAME_NOT_GIVEN, "");
+            {
+              robotp->send_message(WARNING, NAME_NOT_GIVEN, "");
+              char msg[128];
+              snprintf( msg, 127, _("Robot with filename %s has not given any name"),
+                        robotp->get_robot_filename().chars() );
+              print_message( "RealTimeBattle", String(msg) );
+            }
 
           if( !robotp->is_colour_given() )
             {
