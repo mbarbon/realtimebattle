@@ -356,10 +356,6 @@ ArenaController::initialize_options()
     LongOption( GROUP_MISC, 0x000000, 0x000000, 0xffffff, false, false,
                 _("Foreground colour"), true );
 
-  all_options["RTB message colour"] = (Option*) new
-    LongOption( GROUP_MISC, 0x1111ee, 0x000000, 0xffffff, false, false,
-                _("Colour for RTB messages"), true );
-
 //    all_options["Arena scale" ] = (Option*) new 
 //      DoubleOption( GROUP_MISC, 1.0, 0.001, 1000, false, true,
 //                    _("Arena scale") );
