@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,13 +17,16 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __INFOCLASSES__
-#define __INFOCLASSES__
+#ifndef RTB__INFOCLASSES_H__
+#define RTB__INFOCLASSES_H__
 
 #include <string>
+#include <map>
+#include <vector>
 
 #include "Structs.h"
 #include "Messagetypes.h"
+#include "Option.h"
 #include "Vector2D.h"
 #include "Various.h"
 
@@ -35,6 +38,7 @@ enum infoclass_t
   INFO_TOURNAMENT_STARTED,
   INFO_TOURNAMENT_ENDED,
   INFO_GAME_STARTED,
+  INFO_OPTION_DEFINITION,
   INFO_MESSAGE
 };
 
@@ -93,6 +97,8 @@ struct object_arc_pos_info : public object_pos_info
 // class InfoBase
 // ---------------------------------------------------------------------------
 // The base class for all InfoClasses
+// TODO: Should specific InfoClasses be defined elsewhere?
+//       For example: OptionDefinitionInfo may be declared in OptionHandler.h.
 // ---------------------------------------------------------------------------
 
 class InfoBase
@@ -181,13 +187,43 @@ private:
   int match;
 };
 
+
+// OptionDefinitionInfo supplies a reference to the option map
+// of an OptionHandler.
+// This information MUST to be copied to the Gui.
+// This includes all Option and string in all_options.
+class OptionDefinitionInfo : public InfoBase
+{
+public:
+  OptionDefinitionInfo      ( const string&                  sn,
+                              const vector<string>&          gn,
+                              const map< string, Option* >&  ao )
+    : InfoBase(INFO_OPTION_DEFINITION),
+      section_name( sn ), group_names( gn ), all_options( ao ) {}
+  ~OptionDefinitionInfo     () {}
+
+  const string& get_section_name() const { return section_name; }
+  const vector<string>& get_group_names() const { return group_names; }
+  const map< string, Option* >& get_all_options() const { return all_options; }
+
+private:
+  string                         section_name;
+  const vector<string>&          group_names;
+  const map< string, Option* >&  all_options;
+  
+};
+
+
+// MessageInfo supplies a list of messages to Guis.
 // MessageInfo type is most efficient when used with several messages,
 // e.g. should contain all messages since the last time MessageInfo was sent.
 class MessageInfo : public InfoBase
 {
 public:
+  // Constructor if you have to send only one message (Should not be necessary).
   MessageInfo                       ( const string& s, const string& m )
     : InfoBase(INFO_MESSAGE) { message_list.push_back( message_t( s, m ) ); }
+  // Constructor if you have a list of messages to send.
   MessageInfo                       ( const list<message_t>& ml )
     : InfoBase(INFO_MESSAGE), message_list(ml) {}
   ~MessageInfo                      () {}
@@ -198,5 +234,4 @@ private:
 };
 
 
-#endif __INFOCLASSES__
-
+#endif RTB__INFOCLASSES_H__
