@@ -10,7 +10,7 @@ Change log
 
 New option: <tt>Max robots allowed simultaneously</tt>. This option allows
 the user to change how many robots allowed in a sequence. Depending on how
-many file-descriptors allowed for the system.
+many file-descriptors and maximum number of tasks allowed by the system.
 
 RealTimebattle has now been translated to japanese.
 
