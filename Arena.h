@@ -1,3 +1,7 @@
+
+#ifndef __ARENA__
+#define __ARENA__
+
 #include <glib.h>
 #include <gdk/gdk.h>
 #include <fstream.h>
@@ -5,10 +9,6 @@
 #include "Vector2D.h"
 #include "messagetypes.h"
 #include "Options.h"
-
-#ifndef __ARENA__
-#define __ARENA__
-
 #include "gui.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
@@ -414,6 +414,7 @@ public:
   void move(const double timestep);  
   void change_velocity(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
+  void update_rotation(rotation_t& angle, const double timestep);
   friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
   friend void bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal);
   void change_energy(const double energy_diff);
