@@ -9,7 +9,7 @@ INFODIR=/usr/info
 INFO_TOPDIR=$(INFODIR)/dir
 export INSTALLDIR=/usr/games/RealTimeBattle
 INCLUDEDIR=/usr/include
-
+export MAKE+= -fMakefile.rtb
 
 # Internal directories, do not change
 SRCDIR=src
@@ -65,8 +65,8 @@ ETAGS:
 
 tar: docs
 	cd .. && tar -cf RealTimeBattle/RealTimeBattle.tar \
-	RealTimeBattle/Makefile \
-	RealTimeBattle/Makefile.rpm \
+	RealTimeBattle/Makefile.am \
+	RealTimeBattle/configure.in \
 	RealTimeBattle/BUGS \
 	RealTimeBattle/COPYING \
 	RealTimeBattle/FAQ \
@@ -78,15 +78,17 @@ tar: docs
 	RealTimeBattle/RealTimeBattle.xpm \
 	RealTimeBattle/$(SRCDIR)/*.cc \
 	RealTimeBattle/$(SRCDIR)/*.h \
-	RealTimeBattle/$(SRCDIR)/Makefile \
+	RealTimeBattle/$(SRCDIR)/Makefile.am \
 	RealTimeBattle/$(DOCSDIR)/RealTimeBattle*.html \
 	RealTimeBattle/$(DOCSDIR)/*.gif \
 	RealTimeBattle/$(DOCSDIR)/RealTimeBattle.dvi \
 	RealTimeBattle/$(DOCSDIR)/RealTimeBattle.info \
+	RealTimeBattle/$(DOCSDIR)/Makefile.am \
 	RealTimeBattle/$(ARENADIR)/*.arena \
-	RealTimeBattle/$(ROBOTDIR)/Makefile \
+	RealTimeBattle/$(ARENADIR)/Makefile.am \
+	RealTimeBattle/$(ROBOTDIR)/Makefile.am \
 	RealTimeBattle/$(ROBOTDIR)/*/*.c* \
-	RealTimeBattle/$(ROBOTDIR)/*/Makefile 
+	RealTimeBattle/$(ROBOTDIR)/*/Makefile.am
 
 tar.gz: 
 	$(MAKE) tar; \

@@ -34,4 +34,4 @@ seek_and_destroy.robot: seek_and_destroy.cc
 	$(CXX) $(CPPFLAGS) $(CFLAGS) seek_and_destroy.cc -o seek_and_destroy.robot $(libs)
 
 clean:
-	rm -f *~
+	rm -f *~ *.robot core

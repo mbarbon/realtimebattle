@@ -1,5 +1,5 @@
-ifndef CC
-CC=gcc
+ifndef CXX
+CXX=g++
 endif
 
 ifndef DEBUG_MODE
@@ -22,10 +22,10 @@ endif
 endif
 
 
-target: empty.robot
+target: rotate_and_fire.robot
 
-empty.robot: empty.c
-	$(CC) $(CFLAGS) empty.c -o empty.robot
+rotate_and_fire.robot: rotate_and_fire.cc
+	$(CXX) $(CFLAGS)  -I../../src rotate_and_fire.cc -o rotate_and_fire.robot
 
 clean:
-	rm -f *~
+	rm -f *~ *.robot core
