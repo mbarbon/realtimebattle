@@ -22,13 +22,14 @@ The default RealTimeBattle installation-directory is now
 <tt>EPREFIX/games/RealTimeBattle</tt> instead of
 <tt>PREFIX/games/RealTimeBattle</tt>.
 
-Some bugs in the new 'Rotate and Fire' code are fixed.
+The robot <tt>Rotate and Fire</tt> now exists in three different versions,
+all functionally equivalent, but using different methods for reading
+messages: blocking, select and signals.
 
 It is now possible to show hidden windows.
 
-The window for starting tournaments now remembers a tournament and the next time an
-tournament is to be played, the participating robots and arenas of the last tournament
-is shown.
+The window for starting tournaments now remembers the previous tournament
+which is used as default the next time a tournament is to be played.
 
 It is now possible to load and save tournaments in the start tournament window.
 
