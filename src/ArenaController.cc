@@ -29,6 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 
 #include <pthread.h>
+#include <list>
+#include <algorithm>
 
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
@@ -38,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GuiInterface.h"
 #include "Structs.h"
 #include "String.h"
+#include "Various.h"
 
 extern class Options the_opts;
 extern bool no_graphics;
@@ -69,9 +72,13 @@ ArenaController::~ArenaController()
 {
   if( started ) close_arena();
 
-  list<GuiInterface>::iterator li;
+  list<GuiInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    (*li).shutdown();
+    {
+      (*li)->shutdown();
+      delete *li;
+    }
+  gui_list.clear();
 
   pthread_mutex_destroy( &gi_mutex );
 }
@@ -82,9 +89,9 @@ ArenaController::init( int argc, char** argv )
   parse_command_line( argc, argv );
 
   // Startup all guis
-  list<GuiInterface>::iterator li;
+  list<GuiInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    (*li).startup();
+    (*li)->startup();
 
   if( tournament_filename != "" )
     start_realtime_arena();
@@ -92,6 +99,32 @@ ArenaController::init( int argc, char** argv )
     start_replay_arena();
 
   return EXIT_SUCCESS; // TODO: what should be returned here?
+}
+
+void
+ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
+{
+  list<GuiInterface*>::iterator li;
+  if( exit_program )
+    {
+      for( li = gui_list.begin(); li != gui_list.end(); li++ )
+        {
+          (*li)->shutdown();
+          delete *li;
+        }
+      gui_list.clear();
+      Quit();
+    }
+  else
+    {
+      if( (li = find( gui_list.begin(), gui_list.end(), gui_p )) != gui_list.end() )
+        {
+          (*li)->shutdown();
+          delete *li;
+          gui_list.erase(li);
+        }
+    }
+
 }
 
 void
@@ -202,8 +235,7 @@ ArenaController::parse_command_line( int argc, char** argv )
               replay_filename = (string)optarg;
               break;
             case 12:
-              gui_list.push_back( GuiInterface( optarg, &gi_mutex,
-                                                argc, argv ) );
+              gui_list.push_back( new GuiInterface( optarg, &gi_mutex, argc, argv ) );
               break;
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
@@ -264,7 +296,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'g':
-          gui_list.push_back( GuiInterface( optarg, &gi_mutex, argc, argv ) );
+          gui_list.push_back( new GuiInterface( optarg, &gi_mutex, argc, argv ) );
           break;
 
         default:
@@ -346,11 +378,11 @@ ArenaController::print_help_message()
   cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
 
-  list<GuiInterface>::const_iterator li;
+  list<GuiInterface*>::const_iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
       cout << endl;
-      cout << _(" Options for gui ") << (*li).Name() << ":" << endl;
-      cout << (*li).UsageMessage() << endl;
+      cout << _(" Options for gui '") << (*li)->Name() << "':" << endl;
+      cout << (*li)->UsageMessage() << endl;
     }
 }

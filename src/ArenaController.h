@@ -36,6 +36,8 @@ public:
 
   int init( int, char** );
   void parse_command_line( int, char** );
+
+  void quit_gui( GuiInterface* gui_p, bool exit_program );
   
   void close_arena();
 
@@ -53,7 +55,7 @@ private:
   bool started;
   bool realtime;
 
-  list<GuiInterface> gui_list;
+  list<GuiInterface*> gui_list;
   // Mutex for locking processes.
   pthread_mutex_t gi_mutex;
 
