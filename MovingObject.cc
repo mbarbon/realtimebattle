@@ -534,7 +534,11 @@ Robot::set_values_at_process_start_up()
     {
       send_message(INITIALIZE, 0);        // not first sequence !
       send_message(YOUR_NAME, robot_name.chars());
-      send_message(YOUR_COLOUR, gdk2hex_colour(colour));
+      long col = gdk2hex_colour(colour);
+      long newcol = the_arena.find_free_colour(col, col, this);
+      if( col != newcol ) colour = make_gdk_colour( newcol );
+      // TODO: probably free color!
+      send_message(YOUR_COLOUR, newcol);
     } 
 }
 
@@ -955,7 +959,8 @@ Robot::get_messages()
           {
             double acc;
             *instreamp >> acc;
-            if( acc < the_opts.get_d(OPTION_MIN_ACCELERATION) || acc > the_opts.get_d(OPTION_MAX_ACCELERATION) )
+            if( acc < the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) || 
+                acc > the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) )
               send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
             else
               acceleration = acc;
@@ -1294,10 +1299,11 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
   Vector2D vel = ( shot1p->energy * shot1p->velocity + 
                    shot2_en * shot2_vel ) / ( shot1p->energy + shot2_en );
 
-  double en = fabs( ( shot1p->energy + shot2_en ) * dot(shot1p->velocity, shot2_vel) / 
-                ( length(shot1p->velocity) * length(shot2_vel) ) );
+  double en = dot( shot1p->energy * unit(shot1p->velocity) + shot2_en * unit(shot2_vel),  
+                   unit(vel));
 
-  if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) 
+  if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) || 
+      length(vel) < the_opts.get_d(OPTION_SHOT_SPEED) * 0.5 )
     shot1p->die();
   else
     {
