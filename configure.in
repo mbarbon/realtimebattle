@@ -122,7 +122,6 @@ Library options: ])
 
 AM_PROG_LIBTOOL
 
-
 #  debug
 
 AC_ARG_ENABLE(debug, [  
@@ -476,27 +475,64 @@ AC_ARG_WITH(nls_localedir,
 RTB_LOCALEDIR=$with_nls_localedir
 AM_GNU_GETTEXT
 
-# graphics / GTK
+# Choose a graphical user interface
+# TODO: Make it possible to select several guis
+AC_ARG_ENABLE(gui,
+[  --enable-gui=[guess/type] compile a graphical user interface [default=guess]],
+[case "${enableval}" in
+  yes) gui=guess ;;
+  *)   gui="${enableval}"
+       if test ! -d "src/Gui/$gui" ; then
+         AC_MSG_ERROR(bad value ${enableval} for --enable-gui)
+       fi ;;
+esac], [gui=guess])
 
-AC_ARG_ENABLE(graphics, [  --disable-graphics      make a version without a GUI], enable_graphics=no, enable_graphics=yes)
+# Should the gui be linked statically or dynamically?
 
-AC_ARG_WITH(gtk,        [  --without-gtk           do not use GTK+ (same as --disable-graphics)], enable_graphics=no)
+AC_ARG_ENABLE(link_statically,
+[  --enable-link-statically  link the gui statically [defualt=no]],
+enable_link_statically=yes, enable_link_statically=no)
+AM_CONDITIONAL(LINK_STATICALLY, test x$enable_link_statically = xyes)
 
-# Check for GTK+.
+# Check for and choose a graphical user interface
 
-if test "x$enable_graphics" = "xyes"; then
+GUI_FLAGS=
+GUI_LIBS=
+
+# Gtk?
+
+if test "$gui" = "Gtk" || test "$gui" = "guess" ; then
 	AC_ARG_ENABLE(dummy, [
 GTK options: ])
-	AM_PATH_GTK(0.99.7, ,
-		AC_MSG_WARN([
+	AM_PATH_GTK(0.99.7, gtk_found="yes", gtk_found="no")
+	if test "x$gtk_found" = "xyes"; then
+		GUI_FLAGS="$GTK_CFLAGS"
+		GUI_LIBS="$GTK_LIBS"
+		found_gui=yes
+	fi
+
+	if test "x$found_gui" = "xyes"; then
+		gui=Gtk
+	elif test "$gui" = "Gtk"; then
+		AC_MSG_ERROR(
 *** GTK+ >= 0.99.7 is not correctly installed.
-*** Changing to non-graphical version of RTB.
-*** The latest version of GTK can be found at http://www.gtk.org])
-		enable_graphics=no
-	)
+*** If you want the gtk gui. Please install Gtk+ >= 0.99.7
+*** The latest version of GTK can be found at http://www.gtk.org)
+	fi
 fi
 
-AM_CONDITIONAL(NO_GRAPHICS, test x$enable_graphics = xno)
+# No graphics (Couldn't find a suitable user interface)
+if test "$gui" = "guess" ; then
+	gui=none
+fi
+
+GUI_NAME=$gui
+
+AC_SUBST(GUI_NAME)
+AC_SUBST(GUI_FLAGS)
+AC_SUBST(GUI_LIBS)
+AM_CONDITIONAL(GUI_GTK, test "$gui" = "Gtk")
+AM_CONDITIONAL(GUI_NONE, test "$gui" = "none")
 
 #  ccmalloc
 
@@ -537,6 +573,7 @@ AC_OUTPUT([
    src/Makefile
    src/Gui/Makefile
    src/Gui/Gtk/Makefile
+   src/Gui/none/Makefile
    po/Makefile.in
    Packages/Makefile
    Packages/rpm/Makefile

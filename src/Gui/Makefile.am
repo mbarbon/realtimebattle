@@ -1,1 +1,8 @@
-SUBDIRS = Gtk
+if GUI_GTK
+GUI_SUBDIR = Gtk
+endif
+if GUI_NONE
+GUI_SUBDIR = none
+endif
+
+SUBDIRS = $(GUI_SUBDIR)
