@@ -26,7 +26,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 
-#include <gtk/gtk.h>
+struct _GList;
+typedef struct _GList GList;
+struct _GtkWidget;
+typedef struct _GtkWidget GtkWidget;
+struct _GdkEventButton;
+typedef struct _GdkEventButton GdkEventButton;
+typedef int gint;
+typedef void* gpointer;
 
 class StartTournamentWindow
 {
