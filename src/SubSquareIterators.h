@@ -25,6 +25,10 @@ class Vector2D;
 enum direction_t { RIGHT, DOWN, LEFT, UP };
 
 
+//-------------------------------------------------------------------
+//   SubSquareLineIterator
+//-------------------------------------------------------------------
+
 class SubSquareLineIterator
 {
 public:
@@ -81,6 +85,12 @@ protected:
   bool is_ok;
 };
 
+
+
+//-------------------------------------------------------------------
+//   SubSquareSectorIterator
+//-------------------------------------------------------------------
+
 class SubSquareSectorIterator
 {
 public:
@@ -109,6 +119,46 @@ protected:
   SubSquareLineIterator right_line;
 
   // We are examining subsquare with distance 'distance' from center
+  int distance;
+
+  // Moving in direction 'dir'
+  direction_t dir;
+
+
+  // Whether the iterator is activated and pointing to a subsquare
+  bool is_ok;
+};
+
+
+
+
+//-------------------------------------------------------------------
+//   SubSquareCircleIterator
+//-------------------------------------------------------------------
+
+class SubSquareCircleIterator
+{
+public:
+  SubSquareCircleIterator(const Vector2D& pos);
+  ~SubSquareCircleIterator() {}
+
+  SubSquareCircleIterator& operator++ (int); // postfix increment
+
+  int x() { assert( is_ok ); return xx; }
+  int y() { assert( is_ok ); return yy; }
+
+  bool ok() { return is_ok; }
+
+protected:
+  
+  // Current subsquare coordinates
+  int xx;
+  int yy;
+
+  int center_x;
+  int center_y;
+
+  // We are examining subsquares with distance 'distance' from center
   int distance;
 
   // Moving in direction 'dir'
