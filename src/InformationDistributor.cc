@@ -18,6 +18,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <list>
+#include <algorithm>
+#include <assert.h>
 
 #include "InfoClasses.h"
 #include "InformationDistributor.h"
@@ -26,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 InformationDistributor::InformationDistributor()
 {
   informationlist.resize( distributor_listsize );
-  number_of_readers = 0;
+  next_reader_id = 0;
   writing_point = informationlist.begin();
 }
 
@@ -52,29 +54,28 @@ InformationDistributor::insert_information( const InfoBase* _info )
     writing_point = informationlist.begin();
 }
 
-// Returns NULL if reader_id not found or there are no messages to be read.
+// Returns NULL if there are no messages to be read.
+// Aborts if reader_id not found.
 const InfoBase*
 InformationDistributor::get_information( const int reader_id )
 {
-  list<reader_t>::iterator li;
-  for( li = readerlist.begin(); li != readerlist.end(); li++ )
-    if( (*li).reader_id == reader_id )
-      {
-        if( (*li).reading_point == writing_point )
-          return NULL;
-        const InfoBase* info = *((*li).reading_point);
-        ((*li).reading_point)++;
-        if( (*li).reading_point == informationlist.end() )
-          (*li).reading_point = informationlist.begin();
-        return info;
-      }
-  return NULL;
+  list<reader_t>::iterator li
+    = find( readerlist.begin(), readerlist.end(), reader_id );
+  assert( li == readerlist.end() );
+  if( (*li).reading_point == writing_point )
+    return NULL;
+  const InfoBase* info = *((*li).reading_point);
+  ((*li).reading_point)++;
+  if( (*li).reading_point == informationlist.end() )
+    (*li).reading_point = informationlist.begin();
+  return info;
 }
 
 const int
 InformationDistributor::add_reader()
 {
-  number_of_readers++;
-  readerlist.push_back( reader_t( number_of_readers, writing_point ) );
-  return number_of_readers;
+  int this_reader = next_reader_id;
+  readerlist.push_back( reader_t( this_reader, writing_point ) );
+  next_reader_id++;
+  return this_reader;
 }

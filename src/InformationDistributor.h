@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __INFORMATIONDISTRIBUTOR__
 
 #include <list>
+#include <assert.h>
 
 #include "InfoClasses.h"
 
@@ -39,7 +40,9 @@ public:
   struct reader_t {
     reader_t( const int id, list<const InfoBase*>::iterator& r )
       : reader_id(id), reading_point(r) {}
-      
+
+    const bool operator==( const int& id ) { return( reader_id == id ); }
+    const bool operator!=( const int& id ) { return( reader_id != id ); }
     int reader_id;
     list<const InfoBase*>::iterator reading_point;
   };
@@ -56,7 +59,7 @@ private:
   list<const InfoBase*>::iterator writing_point;
   list<reader_t> readerlist;
 
-  int number_of_readers;
+  int next_reader_id;
 };
 
 #endif __INFORMATIONDISTRIBUTOR__
