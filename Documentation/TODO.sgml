@@ -1,9 +1,7 @@
 <!doctype linuxdoc system>
 
-<notes>
-<title>To do
+<notes>To do
 <descrip>
-
 <tag>A survey of the messaging language</tag>
 <p>
 Before version 1.0 is release, the messaging language must be definitive. There should be no changes

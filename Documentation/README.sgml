@@ -1,7 +1,7 @@
 <!doctype linuxdoc system>
 
-<notes>
-<title>RealTimeBattle
+<notes>RealTimeBattle
+
 <p>
 RealTimeBattle is a programming game for Unix, in which robots
 controlled by programs are fighting each other. The goal is to destroy
