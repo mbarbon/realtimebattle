@@ -6,43 +6,47 @@
 #include "gui.h"
 
 void
-statistics_button_callback(GtkWidget *widget, gpointer guip)
+statistics_button_callback(GtkWidget *widget, gpointer data)
 {
-  if(((Gui *)guip)->get_statistics_up() == false)
-    ((Gui *)guip)->setup_statistics_window();
+  if(the_gui.get_statistics_up() == false)
+    the_gui.setup_statistics_window();
   else
-    ((Gui *)guip)->close_statistics_window();
+    the_gui.close_statistics_window();
 }
 
 void
-buttons_in_statistics_callback(GtkWidget *widget, gpointer bi_p)
+buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p)
 {
-  button_info_t * button_info_p = (button_info_t *)bi_p;
-  switch(button_info_p->type)
+  switch(*(int *)type_p)
     {
     case STAT_BUTTON_TOTAL:
-      button_info_p->guip->change_stat_type( STAT_TABLE_TOTAL );
+      the_gui.change_stat_type( STAT_TABLE_TOTAL );
       break;
     case STAT_BUTTON_SEQUENCE:
-      button_info_p->guip->change_stat_type( STAT_TABLE_SEQUENCE );
+      the_gui.change_stat_type( STAT_TABLE_SEQUENCE );
       break;
     case STAT_BUTTON_GAME:
-      button_info_p->guip->change_stat_type( STAT_TABLE_GAME );
+      the_gui.change_stat_type( STAT_TABLE_GAME );
       break;
     case STAT_BUTTON_ROBOT:
-      button_info_p->guip->change_stat_type( STAT_TABLE_ROBOT );
+      the_gui.change_stat_type( STAT_TABLE_ROBOT );
       break;
     case STAT_BUTTON_FIRST:
-      button_info_p->guip->change_statistics( -1, true );
+      the_gui.change_statistics( -1, true );
       break;
     case STAT_BUTTON_PREV:
-      button_info_p->guip->change_statistics( -1, false );
+      the_gui.change_statistics( -1, false );
+      break;
+    case STAT_BUTTON_UPDATE:
+      the_gui.add_the_statistics_to_clist();
       break;
     case STAT_BUTTON_NEXT:
-      button_info_p->guip->change_statistics( 1, false );
+      the_gui.change_statistics( 1, false );
       break;
     case STAT_BUTTON_LAST:
-      button_info_p->guip->change_statistics( 1, true );
+      the_gui.change_statistics( 1, true );
+      break;
+    default:
       break;
     }
 }
@@ -75,11 +79,11 @@ Gui::change_stat_type( stat_table_t type )
     case STAT_TABLE_TOTAL:
       break;
     case STAT_TABLE_SEQUENCE:
-      stat_looking_at_nr = the_arena->get_sequence_nr();
+      stat_looking_at_nr = the_arena.get_sequence_nr();
       break;
     case STAT_TABLE_GAME:
-      stat_looking_at_nr = ( the_arena->get_sequence_nr() - 1 ) * the_arena->get_games_per_sequence()
-        + the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
+      stat_looking_at_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence()
+        + the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
       break;
     case STAT_TABLE_ROBOT:
       stat_looking_at_nr = 1;
@@ -92,7 +96,7 @@ void
 Gui::change_statistics( int change, bool absolut_change )
 {
   int old_look = stat_looking_at_nr;
-  int game_nr = the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
+  int game_nr = the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
   int max_nr = 0;
   switch(stat_table_type)
@@ -101,14 +105,14 @@ Gui::change_statistics( int change, bool absolut_change )
       max_nr = -1;
       break;
     case STAT_TABLE_SEQUENCE:
-      max_nr = the_arena->get_sequence_nr();
+      max_nr = the_arena.get_sequence_nr();
       break;
     case STAT_TABLE_GAME:
-      max_nr = ( the_arena->get_sequence_nr() - 1 ) * the_arena->get_games_per_sequence() + game_nr;
+      max_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence() + game_nr;
       break;
     case STAT_TABLE_ROBOT:
       GList* gl;
-      for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+      for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
         max_nr++;
       break;
     }
@@ -149,8 +153,8 @@ Gui::add_new_row( void * rp, void * sp )
     }
 
   int row = gtk_clist_append(GTK_CLIST(stat_clist), list);
-  gtk_clist_set_foreground(GTK_CLIST(stat_clist), row, the_arena->get_foreground_colour_p());
-  gtk_clist_set_background(GTK_CLIST(stat_clist), row, the_arena->get_background_colour_p());
+  gtk_clist_set_foreground(GTK_CLIST(stat_clist), row, the_arena.get_foreground_colour_p());
+  gtk_clist_set_background(GTK_CLIST(stat_clist), row, the_arena.get_background_colour_p());
   char str[30];
 
   if(stat_table_type == STAT_TABLE_GAME ||
@@ -162,7 +166,7 @@ Gui::add_new_row( void * rp, void * sp )
       GdkBitmap * bitmap_mask;
 
       colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
-                                                    the_arena->get_background_colour_p(),
+                                                    the_arena.get_background_colour_p(),
                                                     get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(stat_clist), row, 0, colour_pixmap, bitmap_mask);
@@ -214,7 +218,7 @@ Gui::add_the_statistics_to_clist()
     {
     case STAT_TABLE_TOTAL:
       {
-        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
             robotp = (Robot *)gl->data;
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
@@ -242,7 +246,7 @@ Gui::add_the_statistics_to_clist()
       }
     case STAT_TABLE_SEQUENCE:
       {
-        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
             robotp = (Robot *)gl->data;
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
@@ -273,15 +277,15 @@ Gui::add_the_statistics_to_clist()
       }
     case STAT_TABLE_GAME:
       {
-        int looking_at_game = stat_looking_at_nr % the_arena->get_games_per_sequence();
-        int looking_at_sequence = (stat_looking_at_nr / the_arena->get_games_per_sequence()) + 1;
+        int looking_at_game = stat_looking_at_nr % the_arena.get_games_per_sequence();
+        int looking_at_sequence = (stat_looking_at_nr / the_arena.get_games_per_sequence()) + 1;
         if( looking_at_game == 0 )
           {
-            looking_at_game = the_arena->get_games_per_sequence();
+            looking_at_game = the_arena.get_games_per_sequence();
             looking_at_sequence--;
           }
 
-        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
             robotp = (Robot *)gl->data;
             stat_t * statp = NULL;
@@ -299,7 +303,7 @@ Gui::add_the_statistics_to_clist()
       {
         int i=0;
         stat_t * statp = NULL;
-        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
             i++;
             robotp = (Robot *)gl->data;
@@ -351,11 +355,11 @@ Gui::stat_make_title_button()
         strstream ss;
         char str[50];
 
-        int looking_at_game = stat_looking_at_nr % the_arena->get_games_per_sequence();
-        int looking_at_sequence = (stat_looking_at_nr / the_arena->get_games_per_sequence()) + 1;
+        int looking_at_game = stat_looking_at_nr % the_arena.get_games_per_sequence();
+        int looking_at_sequence = (stat_looking_at_nr / the_arena.get_games_per_sequence()) + 1;
         if( looking_at_game == 0 )
           {
-            looking_at_game = the_arena->get_games_per_sequence();
+            looking_at_game = the_arena.get_games_per_sequence();
             looking_at_sequence--;
           }
 
@@ -373,7 +377,7 @@ Gui::stat_make_title_button()
         Robot* robotp;
 
         int i=0;
-        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
           {
             i++;
             robotp = (Robot *)gl->data;
@@ -384,7 +388,7 @@ Gui::stat_make_title_button()
                 char ** col_sq;
 
                 colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
-                                                              the_arena->get_background_colour_p(),
+                                                              the_arena.get_background_colour_p(),
                                                               get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
                 GtkWidget * pixmap_widget = gtk_pixmap_new( colour_pixmap, bitmap_mask );
@@ -405,11 +409,11 @@ void
 Gui::setup_statistics_window()
 {
   GtkWidget * vbox, * hbox;
-  GtkWidget * button;
+  GtkWidget * button_widget;
 
   stat_table_type = STAT_TABLE_GAME;
-  stat_looking_at_nr = ( the_arena->get_sequence_nr() - 1 ) * the_arena->get_games_per_sequence()
-    + the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
+  stat_looking_at_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence()
+    + the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
   statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
@@ -427,24 +431,24 @@ Gui::setup_statistics_window()
 
   // Buttons for displaying different statistics
 
-  button = gtk_button_new_with_label ("Close");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
-  gtk_widget_show (button);
+  button_widget = gtk_button_new_with_label ("Close");
+  gtk_signal_connect (GTK_OBJECT (button_widget), "clicked",
+                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button_widget, TRUE, TRUE, 0);
+  gtk_widget_show (button_widget);
 
   // Upper line of buttons
 
   char * upper_button_labels[] = { "Total", "Sequence Total", "Game", "Robot" };
-  for(int i=1;i<5;i++)
+  for(int button=STAT_BUTTON_TOTAL;button<=STAT_BUTTON_ROBOT;button++)
     {
-      button = gtk_button_new_with_label (upper_button_labels[i-1]);
-      button_info_t * data;
-      data = new button_info_t( this, (stat_button_t)(i - 1) );
-      gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                          GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) data);
-      gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
-      gtk_widget_show (button);
+      button_widget = gtk_button_new_with_label (upper_button_labels[button]);
+      int * type_p;
+      type_p = new int(button);
+      gtk_signal_connect (GTK_OBJECT (button_widget), "clicked",
+                          GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) type_p);
+      gtk_box_pack_start (GTK_BOX (hbox), button_widget, TRUE, TRUE, 0);
+      gtk_widget_show (button_widget);
     }
 
   // Lower line of buttons
@@ -509,38 +513,41 @@ Gui::setup_statistics_window()
 
   gtk_widget_show(statistics_window);
 
-  bool made_middle_button = false;
-  for(int i=1;i<5;i++)
+  int made_middle_button = 0;
+  for(int button=STAT_BUTTON_FIRST;button<=STAT_BUTTON_LAST;button++)
     {
-      if( i != 3 || made_middle_button)
+      if( button != STAT_BUTTON_UPDATE)
         {
           GdkPixmap * pixmap;
           GdkBitmap * bitmap_mask;
           pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
-                                                 the_arena->get_background_colour_p(),
-                                                 (gchar **)lower_button_xpms[i-1] );
+                                                 the_arena.get_background_colour_p(),
+                                                 (gchar **)lower_button_xpms[button-STAT_BUTTON_FIRST-made_middle_button] );
           GtkWidget * pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
           gtk_widget_show( pixmap_widget );
-          button = gtk_button_new();
-          gtk_container_add( GTK_CONTAINER(button), pixmap_widget );
+          button_widget = gtk_button_new();
+          gtk_container_add( GTK_CONTAINER(button_widget), pixmap_widget );
 
-          button_info_t * data;
-          data = new button_info_t( this, (stat_button_t)(i + 3) );
-          gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                              GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) data);
-          gtk_widget_set_usize(button, 28,14);
-          gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, FALSE, 0);
-          gtk_widget_show (button);
+          int * type_p;
+          type_p = new int(button);
+          gtk_signal_connect (GTK_OBJECT (button_widget), "clicked",
+                              GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) type_p);
+          gtk_widget_set_usize(button_widget, 28,14);
+          gtk_box_pack_start (GTK_BOX (hbox), button_widget, FALSE, FALSE, 0);
+          gtk_widget_show (button_widget);
         }
-      else if( i == 3 && !made_middle_button )
+      else if( button == STAT_BUTTON_UPDATE )
         {
           stat_title_hbox = NULL;
           stat_title_button = gtk_button_new();
+          int * type_p;
+          type_p = new int(button);
+          gtk_signal_connect (GTK_OBJECT (stat_title_button), "clicked",
+                              GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) type_p);
           gtk_box_pack_start (GTK_BOX (hbox), stat_title_button, TRUE, TRUE, 0);
           gtk_widget_show (stat_title_button);
 
-          made_middle_button = true;
-          i--;
+          made_middle_button = 1;
         }
     }
 
