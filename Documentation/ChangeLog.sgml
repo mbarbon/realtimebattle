@@ -10,9 +10,12 @@ Change log
 
 New translation: Galician by Jesús Bravo Álvarez.
 
-It is now possible to create an <tt>arc</tt> (part of circle) in the arena. A new
-command <tt>poly_curve</tt> has been added to make it possible to create a
-series of <tt>arcs</tt> and <tt>lines</tt>.
+It is now possible to create an arc (part of circle ring) in the
+ arena. With it comes two new arena commands, <tt>arc</tt> and
+ <tt>poly_curve</tt>. The latter has been added to make it possible to
+ create a series of <tt>arcs</tt> and <tt>lines</tt>. A arena-command
+ <tt>angle_unit</tt> has been added to make it possible to use degrees
+ instead of radians.
 
 Two new arenas: <tt>Flower.arena</tt> and <tt>Pool.arena</tt>
 
