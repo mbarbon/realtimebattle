@@ -34,6 +34,10 @@ SimpleProcess* process = NULL;
 
 class RawSocketClient : public SocketClient {
 public:
+  RawSocketClient() :
+    is_connected_to_rtb( false ), SocketClient()
+    {}
+
   void handle_stdin(char * buffer)
   {
     istrstream is(buffer);
@@ -49,6 +53,7 @@ public:
         send_to_server( (string)buffer );
       }
   }
+  bool is_connected_to_rtb;
 };
 
 RawSocketClient sc;
@@ -57,24 +62,10 @@ class ClientsLinkPacketFactory : public PacketFactory {
  public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
-	  cout<<">>"<<s<<endl;
-	 cout<<"I'm here\n";
+    cout<<">>"<<s;
+    process->send_data( s.substr(0, s.length() - 2) );
     if( s == "@CQuit" )
       exit( 0 );
-    else if(s.substr(0, 10) == "TCRunRobot")
-      {
-        //TODO : put this code in src/Clients/Gui/Common
-        istrstream data( s.substr(10, s.length() - 1).c_str() );
-        char name[256], dir[256], unique_id[8], rand_id[8];
-        data >> name >> dir >> unique_id >> rand_id;
-        pid_t pid = fork();
-        if(pid  == 0 )
-        {
-        }
-      }
-    else
-      cout<<s<<endl;
-
     return NULL;
   };
 protected:
@@ -94,10 +85,7 @@ class ClientServerLinkFactory : public PacketFactory{
     cout<<"Done\n";
     cout<<"Setting the packet factory\n";
     sc.set_packet_factory( new ClientsLinkPacketFactory );
-    cout<<"Done\n";
-    cout<<"Running the robot \n";
-    process = new SimpleProcess( robot_path. c_str() );
-    process->start(  );
+    sc.is_connected_to_rtb = true;
     cout<<"Done\n";
     /*
     if( s == "@CQuit" )
@@ -135,6 +123,14 @@ int main(int argc, char* argv[])
   sc.connect_to_server( string(argv[1]), 4147 );
   sc.send_to_server( "remote" );
   sc.set_packet_factory( new ClientServerLinkFactory );
+
+  cout<<"Running the robot \n";
+  process = new SimpleProcess( robot_path. c_str() );
+  process->start(  );
+  cout<<"Done\n";
+
+
+  list<string> a_list;
   while(1)
     {
       sc.check_socket();
@@ -145,7 +141,16 @@ int main(int argc, char* argv[])
         {
           string message = process->get_next_message();
           cout<<"<<"<<message<<endl;
-          sc.send_to_server("OM" + message );
+          a_list.push_back( message );
+        }
+        if( sc.is_connected_to_rtb )
+        {
+          cout<<a_list.size()<<endl;
+          while( a_list.size() != 0 ) {
+            cout<<"Sending "<<*(a_list.begin())<<endl;
+            sc.send_to_server( "OM" + *(a_list.begin()) );
+            a_list.erase( a_list.begin() );
+           }
         }
       }
     }

@@ -40,6 +40,7 @@ public:
   bool is_running() {  return process_running; }
   
   void send_signal(const int sig);
+  void send_data( string s );
 
   bool get_default_non_blocking_state();
   void set_non_blocking_state(const bool use_non_blocking);

@@ -292,6 +292,12 @@ SimpleProcess::set_non_blocking_state(const bool non_bl)
   start();
 }
 
+void
+SimpleProcess::send_data( string s )
+{
+  (*opipe_streamp) << s;
+}
+
 bool
 SimpleProcess::get_default_non_blocking_state()
 {

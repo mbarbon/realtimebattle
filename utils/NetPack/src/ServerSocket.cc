@@ -70,14 +70,14 @@ SocketServer::open_socket( int port_nb = 0 )
   //Open my socket
   if( (server_socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 )
     {
-      cout<<( "Failed to open socket." )<<endl;
+      //cout<<( "Failed to open socket." )<<endl;
       quit();
     }
 
   int opt=1;
   if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR,
 		(char*)&opt, sizeof(opt))) {
-    cout<<"setsockopt failed"<<endl;
+    //cout<<"setsockopt failed"<<endl;
   }
 
   src.sin_family = AF_INET;
@@ -86,14 +86,14 @@ SocketServer::open_socket( int port_nb = 0 )
 
   if( bind( server_socket, (struct sockaddr*) &src, sizeof( src ) ) < 0 )
     {
-      cout<<( "Failed to bind socket." )<<endl;
+      //cout<<( "Failed to bind socket." )<<endl;
       port_number ++;
       continue;
     }
 
   if( listen( server_socket, max_number_connections ) < 0 )
     {
-      cout<<( "Listen to socket failed." )<<endl;
+      //cout<<( "Listen to socket failed." )<<endl;
       port_number ++;
       continue;
     }
@@ -107,7 +107,7 @@ SocketServer::close_socket()
   close( server_socket );
 }
 
-void
+int
 SocketServer::set_fd( )
 {
   add_fd( server_socket );
@@ -117,6 +117,7 @@ SocketServer::set_fd( )
     {
       add_fd( (**li).the_socket );
     }
+  return 0;
 }
 
 void
@@ -133,7 +134,7 @@ SocketServer::handle_stdin( char * buffer )
   }
 }
 
-void
+int
 SocketServer::check_fd( )
 {
   //See if no exception occured
@@ -156,9 +157,9 @@ SocketServer::check_fd( )
   for( li = all_connections.begin(); li != all_connections.end(); li++ )
     {
       if( (**li).connected && is_fd_read( (**li).the_socket ) )
-	{
-	  //NOTE : Maybe have the connection as a variable in the class.
-	  int read = (**li).read_data();
+      {
+        //NOTE : Maybe have the connection as a variable in the class.
+        int read = (**li).read_data();
 
 	  while( ! ((**li).read_buffers).empty() )
 	    {
@@ -177,13 +178,14 @@ SocketServer::check_fd( )
 	      (**li).read_buffers.pop_front();
 	    }
 
-	  if( read < 0 )
-	    {
-	      (**li).close_socket();
-	    }
-	}
-    }
+      if( read < 0 )
+      {
+        (**li).close_socket();
+      }
+     }
+  }
   remove_unconnected_sockets();
+  return 0;
 }
 
 NetConnection*

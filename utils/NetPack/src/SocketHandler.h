@@ -29,10 +29,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class SocketHandler {
 public:
-	SocketHandler();
-	virtual ~SocketHandler();
+  SocketHandler();
+  virtual ~SocketHandler();
 
-	virtual void check_socket();
+  virtual int check_socket();
 
   inline void add_read( int i );
   inline void add_except( int i );
@@ -41,8 +41,8 @@ public:
   inline bool is_fd_except( int i );
 
 protected:
-	virtual void set_fd() = 0;
-	virtual void check_fd() = 0;
+	virtual int  set_fd() = 0;
+	virtual int  check_fd() = 0;
   virtual void handle_stdin( char * ) = 0;
 	fd_set readfs;
 	fd_set exceptfs; 

@@ -67,24 +67,25 @@ SocketHandler::is_fd_except( int i )
 }
 
 
-void
+int
 SocketHandler::check_socket() {
-	struct timeval tv;
-	tv.tv_sec  = 0;
-	tv.tv_usec = 0; //500000;
+  struct timeval tv;
+  tv.tv_sec  = 0;
+  tv.tv_usec = 0; //500000;
 
-	FD_ZERO( &readfs );
+  FD_ZERO( &readfs );
   FD_ZERO( &exceptfs );
 
   max_desc = 0;
   add_read( 0 );
 
-  set_fd();
+  int r;
+  if( (r = set_fd()) != 0) return r;
 
   if( select( max_desc + 1, &readfs, NULL, &exceptfs, &tv ) < 0 )
   {
     cout<< "select failed." << endl;
-    exit( 0 ); //throw an exception instead
+    return 1; //throw an exception instead
   }
 
   if( is_fd_read( 0 ) )
@@ -95,6 +96,6 @@ SocketHandler::check_socket() {
     handle_stdin( buffer );
   }
 
-  check_fd();
+  return check_fd();
 }
 

@@ -64,16 +64,14 @@ public:
   bool accept_new_server();                //Accept a new connection
   int port_num() {return port_number;}     //my port
 
-  virtual void check_socket() { SocketHandler::check_socket(); }
-
   void set_packet_factory( PacketFactory* pf)
     { server_packet_factory = pf ; }
 
 protected:
   //Functions needed by SocketHandler
   virtual void handle_stdin( char * );
-  virtual void check_fd( );
-  virtual void set_fd( );
+  virtual int  check_fd( );
+  virtual int  set_fd( );
 
   NetConnection* accept_connection();       //Accept an incomming connection
   void remove_unconnected_sockets();        //Remove all connections that has been closed during this check

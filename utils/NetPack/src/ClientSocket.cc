@@ -109,23 +109,29 @@ SocketClient::connect_to_server( string hostname, int port_nb = 0 )
   return server_connection;
 }
 
-void
+int
 SocketClient::set_fd( )
 {
   if( server_connection->connected )
     add_fd( server_connection->the_socket );
+  else return 1;
+  return 0;
 }
 
-void
+int
 SocketClient::check_fd( )
 {
+  /** @return 0 if everything ok
+      @return 1 if the server connection is closed
+      @return 2 if there is an exception on the server socket
+  **/
   if( server_connection->connected )
   {
     if( is_fd_except( server_connection->the_socket ) )
     {
       cout<<"Exception, close it \n";
       server_connection->close_socket();
-      return;
+      return 2;
     }
     if( is_fd_read( server_connection->the_socket ) )
     {
@@ -148,8 +154,10 @@ SocketClient::check_fd( )
         P->handle_packet( );
         delete P;
       }
+      return 0;
     }
   }
+  return 1;
 }
 
 void

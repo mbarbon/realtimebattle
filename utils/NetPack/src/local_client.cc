@@ -23,19 +23,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
 #include <string>
+#include <list>
 #include <strstream>
 #include "ClientSocket.h"
 #include "ServerSocket.h"
 #include <unistd.h>
 
+list<string> a_list;
+
 class ASmallServerPacketFactory : public PacketFactory{
 public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
-    if(s.substr(0, 2) == "OM") //This is a message from the ro
-	cout<<s.substr(2, s.length() - 2 )<<endl;
+    cout<<"Print "<<s;
+    if(s.substr(0, 2) == "OM") //This is a message from the row packet factory
+      {
+        cout<<"Print "<<s.substr(2, s.length() - 2 );
+        cout<<s.substr(2, s.length() - 2 );
+      }
     else
-	cout<<s<<endl;
+      cout<<s<<endl;
+
     if( s == "@CQuit" ) nc->close_socket();
 
     return NULL;
@@ -46,38 +54,54 @@ class ASmallClientPacketFactory : public PacketFactory {
 public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
-    if(s.substr(0, 2) == "0M") //This is a message from the robot
-	cout<<s.substr(2, s.length() - 2 )<<endl;
-    else
-      cout<<s<<endl;
-    if( s == "@CQuit" ) nc->close_socket();
+    cout<<"Print "<<s;
     return NULL;
   }
 };
 
-class RawSocketClientServer : public SocketClient {
+class RawSocketClient : public SocketClient {
 public:
-  void check_socket() { SocketClient::check_socket(); };
-
   void say_hello_to_server(int port_number) {
     char buffer[16];
     sprintf( buffer, "%i", port_number);
     send_to_server( "local " + string(buffer) );
+    server_connection->close_socket();
   }
-
 protected:
-  //Functions needed by SocketHandler
+  void handle_stdin( char* buffer )
+  {
+    a_list.push_back(string(buffer));
+  }
+};
+
+class RawSocketServer : public SocketServer {
+protected:
   void handle_stdin( char * buffer )
   {
-	cout<<"Print "<<buffer<<endl;
-     	send_to_server( (string)buffer );
+    //cout<<"Print "<<buffer<<endl;
+    //Broadcast old messages in the list;
+    while( a_list.size() != 0 ) {
+       cout<<"Sending "<<*(a_list.begin())<<endl;
+       broadcast( *(a_list.begin()) );
+       a_list.erase( a_list.begin() );
+    }
+
+    //broadcast the incoming message
+    broadcast( (string)buffer );
+  }
+
+  void broadcast( string s )
+  {
+    list<NetConnection*>::iterator i;
+    for( i = all_connections.begin(); i != all_connections.end(); i ++)
+      (**i).send_data( string("RI") + s );
   }
 };
 
 int main()
 {
-  RawSocketClientServer sc;
-  SocketServer the_server;
+  RawSocketClient sc;
+  RawSocketServer the_server;
 
   the_server.open_socket( 4148 );
 
@@ -87,9 +111,8 @@ int main()
   the_server.set_packet_factory( new ASmallServerPacketFactory );
   sc.say_hello_to_server( the_server.port_num() );
 
-  while(1)
-    {
-      sc.check_socket();
-      the_server.check_socket();
-    }
+  //while(sc.check_socket() == 0)  ;     //should be necessary !!!
+  cout<<"Print ready\n";
+  while(the_server.check_socket() == 0);
+  cout<<"Print done\n";
 }

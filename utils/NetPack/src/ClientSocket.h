@@ -32,15 +32,14 @@ public:
   virtual ~SocketClient();
   void set_packet_factory( PacketFactory* );
   NetConnection* connect_to_server( string hostname, int port_nb = 0 );
-  virtual void check_socket() { SocketHandler::check_socket(); }
 
   void send_to_server( string );
 
 protected:
   //Functions needed by SocketHandler
   virtual void handle_stdin( char * ) {};
-  virtual void check_fd( );
-  virtual void set_fd( );
+  virtual int  check_fd( );
+  virtual int  set_fd( );
 
 
   NetConnection* server_connection;
