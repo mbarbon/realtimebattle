@@ -48,6 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 #include "Gui.h"
+#include "ControlWindow.h"
 #include "MovingObject.h"
 #include "Options.h"
 #include "Vector2D.h"
@@ -285,10 +286,12 @@ main ( int argc, char* argv[] )
 
 
 #ifndef NO_GRAPHICS
+  ControlWindow control_window( -1, -1, the_opts.get_l(OPTION_CONTROL_WINDOW_POS_X),
+                                the_opts.get_l(OPTION_CONTROL_WINDOW_POS_Y) );
   if( !no_graphics )
     {
       the_arena.set_colours();
-      the_gui.setup_control_window();
+      //      the_gui.setup_control_window();
     }
 #endif
       

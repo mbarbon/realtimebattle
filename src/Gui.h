@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "MovingObject.h"
 #include "Arena.h"
 #include "String.h"
+#include "MessageWindow.h"
 
 #ifndef NO_GRAPHICS
 
@@ -74,15 +75,6 @@ void clear_message_clist_callback                     ( GtkWidget* widget, gpoin
 void show_one_robots_messages_callback                ( GtkWidget* widget, gpointer data );
 void show_all_messages_callback                       ( GtkWidget* widget, gpointer data );
 
-void pause_button_callback                            ( GtkWidget* widget, gpointer data );
-void step_button_callback                             ( GtkWidget* widget, gpointer data );
-void end_game_button_callback                         ( GtkWidget* widget, gpointer data );
-void kill_robot_button_callback                       ( GtkWidget* widget, gpointer data );
-void decrease_debug_level_button_callback             ( GtkWidget* widget, gpointer data );
-void increase_debug_level_button_callback             ( GtkWidget* widget, gpointer data );
-void end_button_callback                              ( GtkWidget* widget, gpointer data );
-void end_tournament                                   ( bool really );
-
 void statistics_button_callback                       ( GtkWidget* widget, gpointer data );
 void save_statistics_callback                         ( GtkWidget* widget, gpointer data);
 void save_stats_filesel_ok_selected                   ( GtkWidget* widget, GtkFileSelection* fs);
@@ -116,14 +108,12 @@ public:
   Gui();
   ~Gui() {}
 
-  void setup_control_window();
   void setup_score_window();
   void setup_message_window();
   void setup_arena_window();
   void setup_start_tournament_window();
   void setup_statistics_window();
 
-  void close_control_window();
   void close_score_window();
   void close_message_window();
   void close_arena_window();
@@ -158,13 +148,11 @@ public:
   void add_the_statistics_to_clist();
   void stat_make_title_button();
 
-  void set_control_window_title( const bool halted );
   void set_score_window_title();
   void set_arena_window_title();
   void add_robots_to_score_list();
 
   void change_selected_robot( const int row );
-  void display_new_debug_level( const int debug_level );
 
   void start_new_tournament();
   void start_tournament_change_all_selection(bool robots, bool dir, bool all);
@@ -203,7 +191,6 @@ private:
   GtkWidget* filesel_widget;
 
   Robot* selected_robot;
-  GtkWidget* debug_level_widget;
 
   GtkWidget* robots_in_tournament_clist;
   GtkWidget* robots_in_directory_clist;
@@ -212,7 +199,6 @@ private:
 
   GtkWidget* start_tournament_entries[3];
 
-  GtkWidget* control_window;
   GtkWidget* score_window;
   GtkWidget* message_window;
   GtkWidget* arena_window;
@@ -220,7 +206,6 @@ private:
   GtkWidget* statistics_window;
   GtkWidget* question_window;
 
-  Vector2D control_window_size;
   Vector2D start_tournament_window_size;
 
   Vector2D da_scrolled_window_size;
