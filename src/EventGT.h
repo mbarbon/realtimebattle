@@ -21,11 +21,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __EventGT__
 
 #include "Event.h"
-
+#include "Gadgets/Script.h"
 
 class EventHandler;
 class Arena;
-
+class Script;
 
 class QuitEvent : public Event
 {
@@ -102,6 +102,20 @@ protected:
   Arena* my_arena;
   double refresh; //Time between 2 Update of robot
   double NoMoreThan;
+};
+
+
+
+class ContinueScriptEvent : public Event
+{
+public:
+  ContinueScriptEvent( const double time, Script* scr, EventHandler* ev) 
+    : Event(time, ev), my_script(scr) {}
+
+  void eval() const { my_script->continue_script(); }
+
+protected:
+  Script* my_script;
 };
 
 

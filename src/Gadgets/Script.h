@@ -21,6 +21,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __SCRIPT_GADGET__
 
 #include <vector>
+#include <string>
+
+#include "Gadget.h"
+#include "Variable.h"
 
 class Function;
 
@@ -61,19 +65,5 @@ private:
 
 
 
-
-#include "../Event.h"
-
-class ContinueScriptEvent : public Event
-{
-public:
-  ContinueScriptEvent( const double time, Script* ev) 
-    : Event(time), my_script(ev) {}
-
-  void eval() const { my_script->continue_script(); }
-
-protected:
-  Script* my_script;
-};
 
 #endif __SCRIPT_GADGET__
