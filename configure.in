@@ -139,7 +139,6 @@ AC_ARG_WITH(rtb_dir,
 RTB_DIR=$with_rtb_dir
 
 # Internationalization
-AM_GNU_GETTEXT
 AC_ARG_WITH(nls_localedir, 
 [  --with-nls-localedir=[path]
                           Data directory for NLS, parent of locale 
@@ -147,6 +146,7 @@ AC_ARG_WITH(nls_localedir,
    with_nls_localedir=['${datadir}/locale'])
 
 RTB_LOCALEDIR=$with_nls_localedir
+AM_GNU_GETTEXT
 
 # graphics / GTK
 
