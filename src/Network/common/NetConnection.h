@@ -1,3 +1,23 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
 #ifndef __NETCONNECTION_H__
 #define __NETCONNECTION_H__
 
@@ -13,13 +33,6 @@ static const string server_host = "localhost";
 static const string meta_server_host = "localhost";
 static const int max_number_connections = 10;
 
-
-class SocketServer;
-class SocketClient;
-class MetaServerSocket;
-
-
-
 enum network_protocol_t
 {
   RTB_UNKNOWN,
@@ -34,16 +47,10 @@ typedef enum client_t
   UNINITIALIZED
 };
 
-class CommandPacket;
-
-class ServerNetConnection;
-
-
-class NetConnection
-{
+class NetConnection {
 public:
   NetConnection         ()
-    : id(0), the_socket(-1), address(""), connected(false), state(NOT_INITIALIZED) {}
+    : id(0), the_socket(-1),/* address(""),*/ connected(false), state(NOT_INITIALIZED) {}
   virtual ~NetConnection() { close_socket(); }
 
   virtual void close_socket     ();
@@ -63,16 +70,20 @@ public:
   friend class SocketServer;
   friend class MetaServerSocket;
   friend class SocketClient;
+  friend class SocketChat;
+  friend class SocketRobot;
 
   friend class CommandPacket;
   friend class ChatMessagePacket;    //Only use name
   friend class InitializationPacket; //Only use name
+  friend class LaunchRobotPacket;    //Use address and the_socket
+
 protected:
   enum connection_state { NOT_INITIALIZED, INITIALIZED, IN_GAME };
 
   int id;
   int the_socket;
-  string address;
+  //  string address;
 
   deque<string> read_buffers; //All the read but not parsed packets
   deque<string> write_buffers;  //All the buffers to send next time

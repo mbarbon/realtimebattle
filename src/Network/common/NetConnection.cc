@@ -1,3 +1,23 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
@@ -45,13 +65,13 @@ NetConnection::read_data()
 	  //Read the size of the packet
 	  bytes_read = read( the_socket, size_c, 2);
 	  
-	  if( bytes_read > 0 )
+	  if( bytes_read > 0 ) //Something has been read
 	    ;
-	  else if( bytes_read == 0 )
+	  else if( bytes_read == 0 ) //Nothing here... Problem...
 	    {
 	      return -1;
 	    }
-	  else if( errno == EWOULDBLOCK || errno == EAGAIN )
+	  else if( errno == EWOULDBLOCK || errno == EAGAIN ) //Come back latter
 	    return 0;
 	    
 	  //Now make the size become an int      
@@ -71,7 +91,6 @@ NetConnection::read_data()
 	}
       else if( bytes_read == 0 )
 	{
-	  cerr << "Can't read the all message : Premature EOF on socket!" << endl;
 	  return -1;
 	}
       else if( errno == EWOULDBLOCK || errno == EAGAIN )
