@@ -33,4 +33,4 @@ libRTBGui_Gtk_la_SOURCES = \
 	ScoreWindow.cc ScoreWindow.h \
 	StartTournamentWindow.cc StartTournamentWindow.h \
 	StatisticsWindow.cc StatisticsWindow.h \
-	Window.h
+	Window.cc Window.h
