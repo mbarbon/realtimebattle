@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -90,6 +90,7 @@ GIMain( GuiClientInterface* _gi_p )
 
 Gui::Gui()
 {
+  main_opts = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
 
@@ -299,6 +300,29 @@ Gui::get_information()
             const list<message_t>& message_list
               = ((MessageInfo*)info_p)->get_message_list();
             messagewindow.add_messages( message_list );
+          }
+          break;
+        case INFO_OPTION_DEFINITION:
+          {
+            if( main_opts != NULL )
+              break;
+
+            const OptionDefinitionInfo* od_info_p =
+              (OptionDefinitionInfo*)info_p;
+            string section_name = od_info_p->get_section_name();
+            vector< string > group_names = od_info_p->get_group_names();
+            map< string, Option* > all_options_copy;
+
+            map< string, Option* >::const_iterator soci;
+            for( soci  = od_info_p->get_all_options().begin();
+                 soci != od_info_p->get_all_options().end();
+                 soci++ )
+              {
+                all_options_copy[ soci->first ] = soci->second;
+              }
+            main_opts = new OptionHandler( section_name,
+                                           all_options_copy,
+                                           group_names );
           }
           break;
         }
