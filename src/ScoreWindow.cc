@@ -72,8 +72,8 @@ ScoreWindow::ScoreWindow( const int default_width,
   gtk_widget_show ( scrolled_win );
 #endif
 
-  char * titles[6] = { "", _("Name"), _("Energy "), _("Place "),
-                       _("Last "), _("Score  ") };
+  char * titles[6] = { "", _("Name"), _("Energy"), _("Place"),
+                       _("Last"), _("Score") };
   clist = gtk_clist_new_with_titles( 6, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ), GTK_SELECTION_BROWSE );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
@@ -99,8 +99,13 @@ ScoreWindow::ScoreWindow( const int default_width,
                       (GtkSignalFunc) new_robot_selected, this );
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_column_resizeable( GTK_CLIST( clist ), 0, FALSE );
+  gtk_clist_set_column_max_width( GTK_CLIST( clist ), 0, 5 );
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
+
+  for( int i=2; i <=5; i++ )
+    gtk_clist_set_column_auto_resize( GTK_CLIST( clist ), i, TRUE );
 
   GtkStyle* clist_style = gtk_style_new();
   clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
@@ -166,9 +171,9 @@ ScoreWindow::hide_window( GtkWidget* widget, GdkEvent* event,
         {
           GtkWidget* menu_item = controlwindow_p->get_show_score_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #else
-          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #endif
         }
     }
@@ -208,6 +213,34 @@ ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
 
       if( row == robotp->get_row_in_score_clist() )
         scorewindow_p->set_selected_robot( robotp );
+    }
+}
+
+//
+// This function updates all information about all robots in the sequence
+//
+
+void
+ScoreWindow::update_robots()
+{
+  if( the_arena.get_game_nr() == 1 )
+    {
+      add_robots();
+      return;
+    }
+
+  Robot* robot_p;
+  List<Shape>* object_lists = the_arena.get_object_lists();
+  ListIterator<Shape> li;
+  
+  for( object_lists[ROBOT].first(li); li.ok(); li++ )
+    {
+      robot_p = (Robot*)li();
+      robot_p->reset_last_displayed();
+      for( int i = 2; i <=5 ; i++ )
+        gtk_clist_set_text( GTK_CLIST( clist ),
+                            robot_p->get_row_in_score_clist(), i, "" );
+      robot_p->display_score();
     }
 }
 
