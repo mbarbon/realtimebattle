@@ -935,6 +935,8 @@ Robot::get_messages()
                   if( val > 2 ) val = 2;
                   send_rotation_reached = val;
                   break;
+                case USE_NON_BLOCKING:
+                  break;
                 default:
                   send_message(WARNING, UNKNOWN_OPTION, msg_name);
                   break;

@@ -117,10 +117,12 @@ enum game_option_type
 
 enum robot_option_type
 {
-  SIGNAL=2,                   // 0 - no signal, > 1 signal to send (e.g. SIGUSR1 or SIGUSR2) 
+  SIGNAL=2,                   // 0 - no signal, > 1 - signal to send (e.g. SIGUSR1 or SIGUSR2) 
   SEND_SIGNAL=0,              // 0 - false, 1 - true
-  SEND_ROTATION_REACHED=1     // 0 - no messages, 1 - messages when RotateTo and RotateAmount finished, 
-                              // 2 - messages also when sweep direction is changed 
+  SEND_ROTATION_REACHED=1,    // 0 - no messages
+                              // 1 - messages when RotateTo and RotateAmount finished
+                              // 2 - messages also when sweep direction is changed
+  USE_NON_BLOCKING=3          // 0 - false, 1 - true (default=true)
 };
 
 enum object_type 
