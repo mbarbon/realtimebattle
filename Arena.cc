@@ -17,6 +17,7 @@ Arena::Arena()
   game_mode = NORMAL_MODE;
   halted = false;
   halt_next = false;
+  paus_after_next_game = false;
   timer = g_timer_new();
   reset_timer();
   
@@ -456,6 +457,9 @@ Arena::timeout_function()
           add_mine();
       }
       break;
+    case PAUSING_BETWEEN_GAMES:
+      if( !paus_after_next_game ) start_game();
+      break;
 
     case EXITING:
       return false;
@@ -484,7 +488,9 @@ Arena::update_timer()
   gdouble last_timer = current_timer;
   gulong microsecs;
   current_timer = g_timer_elapsed(timer, &microsecs);
-  timestep = min( (current_timer - last_timer) * the_opts.get_d(OPTION_TIMESCALE), the_opts.get_d(OPTION_MAX_TIMESTEP) );
+  gdouble timescale = 1.0;
+  if( state == GAME_IN_PROGRESS ) timescale = the_opts.get_d(OPTION_TIMESCALE);
+  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_d(OPTION_MAX_TIMESTEP) );
   total_time += timestep;
 }
 
@@ -688,6 +694,10 @@ Arena::paus_game_toggle()
       halted = !halted; 
       halt_next = false; 
     }
+  else
+    {
+      paus_after_next_game = !paus_after_next_game;
+    }
 }
 
 void
@@ -786,6 +796,12 @@ void
 Arena::start_game()
 {
   // put the arena together
+
+  if( paus_after_next_game )
+    {
+      state = PAUSING_BETWEEN_GAMES;
+      return;
+    }
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
@@ -817,7 +833,7 @@ Arena::start_game()
       if( !found_space )
         throw Error("Couldn't find space for all robots", "Arena::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
-      robotp->set_initial_values(pos, angle);
+      robotp->set_values_before_game(pos, angle);
       g_list_append(object_lists[ROBOT], gl->data);
       robots_left++;
       ((Robot*)gl->data)->live();
@@ -833,10 +849,12 @@ Arena::start_game()
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
+  reset_timer();  // Time should be zero in score window
+
   the_gui.setup_arena_window( boundary );
   the_gui.setup_score_window();
 
-  reset_timer();
+  reset_timer();  // Game starts !
   next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
 }
 

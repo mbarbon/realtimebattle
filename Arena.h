@@ -24,7 +24,7 @@ extern class Gui the_gui;
 class Arena 
 {
 public:
-  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
+  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
   enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
@@ -142,6 +142,7 @@ private:
   game_mode_t game_mode;
   bool halted;
   bool halt_next;
+  bool paus_after_next_game;
 };
 
 // ---------------------  ArenaObject ---------------------
