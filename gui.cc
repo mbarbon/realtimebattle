@@ -177,21 +177,20 @@ Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 void
 Gui::setup_control_window()
 {
-  GtkWidget *window;
   GtkWidget *button;
   GtkWidget *toptable,*bottomtable;
   GtkWidget *vbox;
 
   // Window 
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Control Window");
-  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
+  control_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control Window");
+  gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), this);
-  gtk_container_border_width (GTK_CONTAINER (window), 12);
+  gtk_container_border_width (GTK_CONTAINER (control_window), 12);
 
   vbox = gtk_vbox_new (FALSE, 10);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_container_add (GTK_CONTAINER (control_window), vbox);
   gtk_widget_show (vbox);
 
   // Top Table 
@@ -257,14 +256,13 @@ Gui::setup_control_window()
   gtk_widget_show (button);
   gtk_widget_show (bottomtable);
 
-  gtk_widget_show (window);
+  gtk_widget_show (control_window);
 }
 
 void
 Gui::setup_score_window( void * the_arenap )
 {
   int robot_number=0;
-  GtkWidget * window;
   GtkWidget * rltable, * rhtable;
   GtkWidget * hbox, * scr_vbox, * robothbox;
   GtkWidget * label;
@@ -282,17 +280,17 @@ Gui::setup_score_window( void * the_arenap )
 
   // Window 
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Score Window");
-  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-                      GTK_SIGNAL_FUNC (delete_event), this);
-  gtk_container_border_width (GTK_CONTAINER (window), 12);
+  score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (score_window), "RealTimeBattle Score Window");
+  gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
+  gtk_container_border_width (GTK_CONTAINER (score_window), 12);
 
   // VBox in Scrolled Window 
 
   scr_vbox = gtk_vbox_new (FALSE, 10);
   gtk_container_border_width (GTK_CONTAINER (scr_vbox), 10);
-  gtk_container_add (GTK_CONTAINER (window), scr_vbox);
+  gtk_container_add (GTK_CONTAINER (score_window), scr_vbox);
   gtk_widget_show (scr_vbox);
 
   // Robot Tables 
@@ -371,13 +369,12 @@ Gui::setup_score_window( void * the_arenap )
   gtk_widget_show (rhtable);
   gtk_widget_show (rltable);
 
-  gtk_widget_show (window);
+  gtk_widget_show (score_window);
 }
 
 void
 Gui::setup_message_window()
 {
-  GtkWidget * window;
   GtkWidget * vbox;
   GtkWidget * messagetable;
   GtkWidget * vscrollbar;
@@ -385,16 +382,16 @@ Gui::setup_message_window()
 
   // Window 
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Message Window");
-  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-                      GTK_SIGNAL_FUNC (delete_event), this);
-  gtk_container_border_width (GTK_CONTAINER (window), 12);
+  message_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (message_window), "RealTimeBattle Message Window");
+  gtk_signal_connect (GTK_OBJECT (message_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(message_window));
+  gtk_container_border_width (GTK_CONTAINER (message_window), 12);
 
   // The VBox 
 
   vbox = gtk_vbox_new (FALSE, 10);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_container_add (GTK_CONTAINER (message_window), vbox);
   gtk_widget_show (vbox);
 
   // Message Table 
@@ -430,31 +427,29 @@ Gui::setup_message_window()
   gtk_widget_realize (message_output);
   gtk_text_freeze (GTK_TEXT (message_output));
 
-  gtk_widget_show (window);
+  gtk_widget_show (message_window);
 }
 
 void
 Gui::setup_arena_window( Vector2D bound[] )
 {
-  GtkWidget *window;
-
   boundary[0] = bound[0];
   boundary[1] = bound[1];
 
   // Window 
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Arena Window");
-  gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-                      GTK_SIGNAL_FUNC (delete_event), this);
-  gtk_container_border_width (GTK_CONTAINER (window), 12);  
+  arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena Window");
+  gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
+  gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
 
   // Scrolled Window 
 
   da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (window), da_scrolled_window);
+  gtk_container_add (GTK_CONTAINER (arena_window), da_scrolled_window);
   gtk_widget_set_usize(da_scrolled_window,204,204);
   gtk_widget_show (da_scrolled_window);
 
@@ -467,7 +462,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
   gtk_widget_show (drawing_area);
 
-  gtk_widget_show (window);  
+  gtk_widget_show (arena_window);  
 
   // Background Colour 
 
@@ -478,4 +473,28 @@ Gui::setup_arena_window( Vector2D bound[] )
   gdk_color_alloc (colormap, &background_colour);
   gdk_window_set_background (drawing_area->window, &background_colour);
   gdk_window_clear (drawing_area->window);
+}
+
+void
+Gui::close_control_window()
+{
+  gtk_widget_destroy ( control_window );
+}
+
+void
+Gui::close_score_window()
+{
+  gtk_widget_destroy ( score_window );
+}
+
+void
+Gui::close_message_window()
+{
+  gtk_widget_destroy ( message_window );
+}
+
+void
+Gui::close_arena_window()
+{
+  gtk_widget_destroy ( arena_window );
 }
