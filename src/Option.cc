@@ -233,3 +233,62 @@ StringOption::change_value( const string& newval, const bool def )
     default_value = newval;
   return true;
 }
+
+const bool
+BooleanOption::change_value( const bool  v,
+                             const bool  def )
+{
+  value = v;
+  if( def )
+    default_value = v;
+
+  return true;
+}
+
+const bool
+BooleanOption::change_value( const string&  v,
+                             const bool     def )
+{
+  bool b_val;
+  if( lowercase(v) == "true" )
+    b_val = true;
+  else if( lowercase(v) == "false" )
+    b_val = false;
+  else
+    return false;
+
+  value = b_val;
+  if( def )
+    default_value = b_val;
+
+  return true;
+}
+
+// TODO: Maybe a better variant.
+string&
+BooleanOption::make_correct_string_val( string& v ) const
+{
+  string lower_v( lowercase(v) );
+  if( v.empty() || v == "" )
+    {
+      v = "false";
+    }
+  else if( lower_v != "true" && lower_v != "false" )
+    {
+      if( lower_v[0] == 't' )
+        v = v[0] + "rue";
+      else if( lower_v[0] == 'f' )
+        v = v[0] + "alse";
+      else
+        v = "false";
+    }
+  return v;
+}
+
+string
+BooleanOption::make_string_of_bool( const bool v ) const
+{
+  if( v == true )
+    return "true";
+  return "false";
+}

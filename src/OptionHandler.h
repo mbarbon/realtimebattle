@@ -35,7 +35,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // All Option*:s within the map supplied to Optionhandler are deleted
 // when OptionHandler is destructed.
 // ---------------------------------------------------------------------------
-
 class OptionHandler
 {
 public:
@@ -45,14 +44,15 @@ public:
   ~OptionHandler                         ();
 
   inline const long int get_l            ( const string& option ) const;
-  inline const double get_d              ( const string& option ) const;
-  inline const string get_s              ( const string& option ) const;
+  inline const double   get_d            ( const string& option ) const;
+  inline const string   get_s            ( const string& option ) const;
+  inline const bool     get_b            ( const string& option ) const;
 
   void log_all_options                   () const;
 
-  void save_options_to_file              ( const string&, const bool ) const;
+  bool save_options_to_file              ( const string&, const bool ) const;
   void read_options_from_rtbrc           ();
-  void read_options_file                 ( const string&, const bool );
+  bool read_options_file                 ( const string&, const bool );
 
   // set_option_from_value() uses the real value
   void set_option_from_value             ( const string&, const long int,
@@ -86,6 +86,8 @@ private:
                                            const string&, Option&, const bool );
   void save_option_to_file               ( string& strfile, string::size_type&,
                                            const string&, const Option& ) const;
+
+  string get_default_rc_file             () const;
 
   string section_name;
 
@@ -123,6 +125,16 @@ OptionHandler::get_s( const string& option ) const
   assert( mci != all_options.end() &&
           ((mci->second)->get_value_type() == OPTION_VALUE_STRING) );
   return (((StringOption*)mci->second)->get_value());
+}
+
+inline const bool
+OptionHandler::get_b( const string& option ) const
+{
+  map<string,Option*>::const_iterator mci;
+  mci = all_options.find( option );
+  assert( mci != all_options.end() &&
+          ((mci->second)->get_value_type() == OPTION_VALUE_BOOLEAN) );
+  return (((BooleanOption*)mci->second)->get_value());
 }
 
 #endif __OPTIONHANDLER__

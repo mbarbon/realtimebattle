@@ -27,7 +27,8 @@ enum option_value_t
 {
   OPTION_VALUE_LONG,
   OPTION_VALUE_DOUBLE,
-  OPTION_VALUE_STRING
+  OPTION_VALUE_STRING,
+  OPTION_VALUE_BOOLEAN
 };
 
 // ---------------------------------------------------------------------------
@@ -39,11 +40,11 @@ enum option_value_t
 class Option
 {
 public:
-  Option::Option                       () {}
-  Option::Option                       ( option_value_t v, const int g,
+  Option                               () {}
+  Option                               ( option_value_t v, const int g,
                                          const bool br, const bool lo, const char* t )
     : value_type(v), group(g), broadcast_option(br), log_option(lo), description(t) {}
-  virtual Option::~Option              () {}
+  virtual ~Option                      () {}
 
   virtual const string get_string_val  () const = 0;
   virtual const string get_string_min  () const = 0;
@@ -78,15 +79,15 @@ private:
 class LongOption : public Option
 {
 public:
-  LongOption::LongOption               () {}
-  LongOption::LongOption               ( const int g, const long int val,
+  LongOption                           () {}
+  LongOption                           ( const int g, const long int val,
                                          const long int mn, const long int mx,
                                          const bool br, const bool lo,
                                          const char* t,
                                          const bool hex = false )
     : Option(OPTION_VALUE_LONG,g,br,lo,t), value(val), default_value(val),
     min_value(mn), max_value(mx), hexadecimal(hex) {}
-  LongOption::~LongOption              () {}
+  ~LongOption                          () {}
 
   const long int get_value             () const { return value; }
   const string get_string_val          () const { return make_string_val( value ); }
@@ -123,14 +124,14 @@ private:
 class DoubleOption : public Option
 {
 public:
-  DoubleOption::DoubleOption           () {}
-  DoubleOption::DoubleOption           ( const int g, const double val,
+  DoubleOption                         () {}
+  DoubleOption                         ( const int g, const double val,
                                          const double mn, const double mx,
                                          const bool br, const bool lo,
                                          const char* t )
     : Option(OPTION_VALUE_DOUBLE,g,br,lo,t), value(val), default_value(val),
     min_value(mn), max_value(mx) {}
-  DoubleOption::~DoubleOption          () {}
+  ~DoubleOption                        () {}
 
   const double& get_value              () const { return value; }
   const string get_string_val          () const;
@@ -161,14 +162,14 @@ private:
 class StringOption : public Option
 {
 public:
-  StringOption::StringOption           () {}
-  StringOption::StringOption           ( const int g, const string& val,
+  StringOption                         () {}
+  StringOption                         ( const int g, const string& val,
                                          const unsigned int mc,
                                          const bool br, const bool lo,
                                          const char* t )
     : Option(OPTION_VALUE_STRING,g,br,lo,t), value(val),
       default_value(val), max_chars(mc) {}
-  StringOption::~StringOption          () {}
+  ~StringOption                        () {}
 
   const string& get_value              () const { return value; }
   const string get_string_val          () const { return value; }
@@ -185,6 +186,48 @@ private:
   string default_value;
 
   unsigned int max_chars;
+};
+
+// ---------------------------------------------------------------------------
+// class BooleanOption
+// ---------------------------------------------------------------------------
+// Options that can be just two values, true or false,
+// represented as 0 or 1.
+// ---------------------------------------------------------------------------
+
+class BooleanOption : public Option
+{
+public:
+  BooleanOption                        () {}
+  BooleanOption                        ( const int             g,
+                                         const bool            val,
+                                         const bool            br,
+                                         const bool            lo,
+                                         const char*           t )
+    : Option( OPTION_VALUE_BOOLEAN, g, br, lo, t ),
+      value( val ), default_value( val ) {}
+  ~BooleanOption                       () {}
+
+  const bool get_value                 () const { return value; }
+  const string get_string_val          () const
+  { return make_string_of_bool(value); }
+  const string get_string_min          () const { return "false"; }
+  const string get_string_max          () const { return "true"; }
+  const string get_string_def          () const
+  { return make_string_of_bool(default_value); }
+
+  const bool change_value              ( const bool            v,
+                                         const bool            def = false );
+  const bool change_value              ( const string&         v,
+                                         const bool            def = false );
+
+  string& make_correct_string_val      ( string&               v ) const;
+
+private:
+  string make_string_of_bool           ( const bool            v ) const;
+
+  bool value;
+  bool default_value;
 };
 
 #endif __OPTION__

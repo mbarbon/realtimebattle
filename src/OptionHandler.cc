@@ -83,16 +83,12 @@ OptionHandler::log_all_options() const
 //            all_string_options[i]().c_str() );
 }
 
+// Try to read all options from the default_rc.
+// TODO: If default_rc does not exist, create it.
 void
 OptionHandler::read_options_from_rtbrc()
 {
-  char* home_dir;
-  if( NULL == ( home_dir = getenv("HOME") ) )
-    return;
-
-  //TODO: this should be .rtbrc in the released version
-  // It is like this to not overwrite the old .rtbrc
-  string resource_file = string(home_dir) + "/.rtbrc_v2";
+  string resource_file = get_default_rc_file();
   read_options_file(resource_file,true);
 }
 
@@ -311,12 +307,12 @@ OptionHandler::save_option_to_file( string& strfile, string::size_type& section_
     }
 }
 
-void
+bool
 OptionHandler::read_options_file( const string& file_string, const bool as_default )
 {
   string option_string = "";
   if( !load_file_into_string( option_string, file_string ) )
-    cerr << "Couldn't open options file for input." << endl;
+    return false;
 
   string::size_type section_pos = 0;
   locate_section_in_file( option_string, section_name, section_pos, false );
@@ -325,22 +321,21 @@ OptionHandler::read_options_file( const string& file_string, const bool as_defau
   for( mi = all_options.begin(); mi != all_options.end(); mi++ )
     read_option_from_file( option_string, section_pos,
                            mi->first, *(mi->second), as_default );
+
+  return true;
 }
 
-void
+bool
 OptionHandler::save_options_to_file( const string& fname, const bool as_default ) const
 {
   string filename = fname;
   if( as_default )
     {
-      char* home_dir;
-      if( NULL == ( home_dir = getenv("HOME") ) )
-        return;
-
-      //TODO: this should be .rtbrc in the released version
-      // It is like this to not overwrite the old .rtbrc
-      filename = string(home_dir) + "/.rtbrc_v2";
+      filename = get_default_rc_file();
     }
+
+  if( filename.empty() )
+    return false;
 
   string option_string = "";
   if( !load_file_into_string( option_string, filename ) )
@@ -354,8 +349,20 @@ OptionHandler::save_options_to_file( const string& fname, const bool as_default 
     save_option_to_file( option_string, section_pos, mci->first, *(mci->second) );
 
   if( !dump_string_to_file( option_string, filename ) )
-    {
-      cerr << "Couldn't open save file for output" << endl;
-      return;
-    }
+    return false;
+
+  return true;
+}
+
+string
+OptionHandler::get_default_rc_file() const
+{
+  string filename;
+
+  char* home_dir;
+  if( NULL == ( home_dir = getenv("HOME") ) )
+    return filename;
+
+  filename = string(home_dir) + "/.rtb_v2/default_rc";
+  return filename;
 }
