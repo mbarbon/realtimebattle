@@ -98,7 +98,9 @@ class EventHandler
   void insert_RT_event (Event* ev, bool absolute_time=false);
   void insert_GT_event (Event* ev, bool absolute_time=false);
   
-  double get_time();
+  double get_time() { return current_time; }
+  double get_game_time() { return current_game_time; }
+
   void pause_game() ;  //Pause/unPause the game
   void set_game_speed( const double speed );
 

@@ -113,7 +113,7 @@ EventHandler::main_loop()
       
       for(;;) 
         {
-          timer.double2timeval( time_for_next_event, time_to_wait );          
+          timer.double2timeval( time_for_next_event, time_to_wait );
 
           //          current_time = timer.get_realtime();
 
@@ -199,13 +199,6 @@ void
 EventHandler::quit()
 {
   finished = true;
-}
-
-
-double 
-EventHandler::get_time() 
-{ 
-  return current_time; 
 }
 
 void
