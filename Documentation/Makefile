@@ -1,22 +1,19 @@
 
 target: RealTimeBattle.html
 
-all: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info
+all: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt
 
-documents = RealTimeBattle.udo Introduction.udo Usage.udo Options.udo RobotConstruction.udo ArenaConstruction.udo
+RealTimeBattle.html: RealTimeBattle.sgml
+	sgml2html --imagebuttons RealTimeBattle.sgml
 
-RealTimeBattle.html: $(documents)
-	udo --html --verbose -o RealTimeBattle.html RealTimeBattle.udo
+RealTimeBattle.dvi: RealTimeBattle.sgml
+	sgml2latex -p a4 -o dvi RealTimeBattle.sgml
 
-RealTimeBattle.latex: $(documents)
-	udo --tex --verbose  -o RealTimeBattle.latex RealTimeBattle.udo
+RealTimeBattle.info: RealTimeBattle.sgml
+	sgml2info RealTimeBattle.sgml
 
-RealTimeBattle.dvi: RealTimeBattle.latex
-	latex2dvi RealTimeBattle.latex 
-
-RealTimeBattle.info: $(documents)
-	udo --info  --verbose -o RealTimeBattle.texinfo RealTimeBattle.udo; \
-	makeinfo RealTimeBattle.texinfo
+RealTimeBattle.txt: RealTimeBattle.sgml
+	sgml2txt RealTimeBattle.sgml
 
 clean:
 	rm -f *~ *.{aux,log,toc,latex,dvi,html,texinfo,info,ulh,ult,uli,gif}

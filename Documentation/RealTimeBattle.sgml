@@ -1,0 +1,780 @@
+<!doctype linuxdoc system>
+
+<article>
+<titlepag>   
+<title>RealTimeBattle User Manual
+<author>Erik Ouchterlony and Ragnar Ouchterlony, ragou603@student.liu.se
+<date>November 27, 1998
+
+<abstract>
+
+*Short descrition of RealTimeBattle*
+
+</titlepag>
+
+<toc>
+
+
+<!--   ################      Introduction      ##################   -->
+
+<sect>Introduction<label id="Introduction">
+<p>
+RealTimeBattle is a programming game, in which robots controlled by
+the competitors programs are fighting each other. The goal is to
+destroy the opponents, using the radar to examine the environment and
+the cannon to shoot.
+
+Features include:
+
+<itemize>
+<item> Game progresses in real time, with the robot programs running
+as child processes to RealTimeBattle and communication with standard
+input and output.
+
+<item> Robots can be construct in almost any programming language.
+
+<item> Up to 120 robots competing simultaneously.
+
+<item> A simple messaging language is used for communication, which
+makes easy to start constructing robots.
+
+<item> Robots behave like real physical object.
+
+<item> High configurability.
+
+</itemize>
+
+<sect1>Requirements<label id="Requirements">
+<p>
+The hardware requirements is very much dependent on what you do.
+Running a few robots should be possible to do on any computer on which
+linux or any other Unixes can be run. The demand on hardware will,
+however, grow the robots you want on the battlefield simultaneously;
+running 120 advanced robots is certainly demanding for any personal
+computer.
+
+RealTimeBattle is only available on Unix. It is developed on a linux-machine, but it should compile
+on other Unixes too. Running in <ref id="Command line options" name="competition-mode"> is currently
+only possible in linux, because of the need to read the <tt>/proc</tt> directory for information on
+CPU usage.
+
+The only software requirement is <htmlurl url="http://www.gtk.org" name="gtk+">, which is used for
+the graphical user interface.
+
+
+<sect1>Background<label id="Background">
+<p>
+The project started in August 1998. Inspiration came from 
+<htmlurl url="http://www.robotbattle.com/" name="RobotBattle">, a very interesting game, which
+however suffers from two major drawbacks: 
+
+<itemize>
+<item> It is only available on Windows.
+
+<item> The robots are written in an own language, which restricts the
+possibilities to write intelligent robots severely.
+
+</itemize>
+We therefore decided to construct a Unix-version, which makes use of
+features of a modern OS.
+
+
+<sect1>License<label id="License">
+<p>
+RealTimeBattle is copyrighted under the <htmlurl url="http://???" name="General Public License">, in
+the spirit of the <htmlurl url="http://www.linux.org" name="Linux"> community. Official versions of
+RealTimeBattle will,only be released by the authors.
+
+
+<!--   ################         Usage          ##################   -->
+
+<sect>Usage<label id="Usage">
+<p>
+In this chapter it is described how to use the program itself. If you find it boring to read it
+through, feel free to use trial and error as usual, and return here if you stumble upon something
+confusing in the user interface. It is, however, a good idea to read the short section on 
+<ref id="Command line options" name="command line options">. Note also that there is no built-in
+help in the program - here is where you should search for help.
+
+
+<sect1>Command line options<label id="Command line options">
+<p>
+In the current version, RealTimeBattle has only three command line
+options, all of which determine in which competition-mode the program
+will run: <tt>debug</tt>, <tt>normal</tt> or <tt>competition</tt> mode.
+
+Usage:
+
+<tt> RealTimeBattle </tt> <em>options</em>
+
+Options:
+<itemize>
+<item> <tt> -d </tt> debug mode
+
+<item> <tt> -n </tt> normal mode (default)
+
+<item> <tt> -c </tt> competition mode
+
+</itemize>
+The differences between the three modes are shown in the following
+table
+
+<#if output="info|txt" >
+<code>
++---------------------------------+-------+--------+-------------+
+| Mode                            | Debug | Normal | Competition |
++---------------------------------+-------+--------+-------------+
+| Debug command available         |  Yes  |   No   |      No     |
+| Pause in game                   |  Yes  |  Yes   |      No     |
+| Step through game               |  Yes  |   No   |      No     |
+| Robots may start childprocesses |  Yes  |   No   |      No     |
+| Robots may open files           |  Yes  |   No   |      No     |
+| Robot CPU time unlimited        |  Yes  |  Yes   |      No     |
++---------------------------------+-------+--------+-------------+
+</code>
+
+</#if>
+<#unless output="info|txt" >
+<table loc="htb">
+<tabular ca="|l|ccc|"> <hline>
+Mode                            | Debug | Normal | Competition @ <hline>
+Debug command available         |  Yes  |  No    |     No      @
+Pause in game                   |  Yes  |  Yes   |     No      @
+Step through game               |  Yes  |  No    |     No      @
+Robots may start childprocesses |  Yes  |  No    |     No      @
+Robots may open files           |  Yes  |  No    |     No      @
+Robot CPU time unlimited        |  Yes  |  Yes   |     No      @ <hline>
+</tabular>
+</table>
+</#if>
+
+<sect1>Control window<label id="Control window">
+<p>
+<descrip>
+<tag>New tournament:</tag> This will start a new tournament. Section
+<ref id="Start new tournament window" name="Start new tournament window"> will give more
+information. 
+
+<tag>Pause:</tag> Pauses for game, in <ref id="Command line options" name="competition-mode"> the
+pausing will be postponed until the end of the current game.
+
+<tag>Step:</tag> In a paused game this will move one time step
+forward. It is intended to simplify debugging of the robots and is
+only available in <ref id="Command line options" name="debug-mode">.
+
+<tag>End:</tag> Stops the current tournament.
+
+<tag>Options:</tag> Brings up the <ref id="Options_window" name="options window">.
+
+<tag>Statistics:</tag> Displays the <ref id="Statistics window" name="statistics window">.
+
+<tag>Quit:</tag> Terminates the program.
+
+</descrip>
+
+<sect1>Start new tournament window<label id="Start new tournament window">
+<p>
+To select robots and arenas for the tournament, mark the files to the
+right and press the <tt>add</tt> button. Selected files are shown to
+the left and can be removed correspondingly.
+
+<label id="NumberOfGames">
+A <ref id="A_tournament" name="tournament"> consists of a number of 
+<ref id="A_sequence" name="sequences"> of <ref id="A_game" name="games">. In each sequence the same
+robots are playing in all games. Here you select the number of games and sequences as well as the
+number of robots in each sequence. If you intend to play with all robots every game you are advised
+to choose only one sequence and instead increase the number of game. The reason is to avoid
+restarting of the robot processes which can take a wail, especially if the number of robots is
+large.
+
+You have to select at least two robots and one arena to be able to
+start.
+
+<sect1>Arena window<label id="Arena_window">
+<p>
+This is where the battle takes place. If you want to watch the game i
+more detailed, use the zoom buttons!
+
+<sect1>Score window<label id="Score window">
+<p>
+In this window the robots playing in the current sequence are listed.
+
+<sect1>Message window<label id="Message window">
+<p>
+Here are messages sent by the robots using <ref id="Print" name="Print and Debug"> displayed.
+
+<sect1>Options window<label id="Options_window">
+<p>
+Here you can change a number of options. In the <ref id="Options" name="Options chapter"> you can
+get detailed information on each option. The changes are not applied until the <tt>apply</tt> button
+is pressed.
+
+You can choose in to save your file in the <ref id="OptionsSavefile" name="options savefile">.
+
+
+<sect1>Statistics window<label id="Statistics window">
+<p>
+You can study the statistics of the current tournament in some
+different ways. You can either display
+
+<itemize>
+<item> statistics on individual <bf>Robot</bf>s,
+
+<item> the result of a <bf>game</bf>,
+
+<item> the <bf>sequence total</bf> or
+
+<item> the <bf>total</bf> of the tournament.
+
+</itemize>
+Pressing the arrowed buttons will move you to the first, back one,
+forward one or to the last elemant respectively. The middle bar will
+show what is display and pressing this will update the statistics if
+the game is in progress.
+
+
+<!--   ################       Structure        ##################   -->
+
+<sect>Structure<label id="Structure">
+<p>
+
+
+<sect1>A game<label id="A_game">
+<p>
+At the start of a game, the robots are given a random position on the arena, with random
+orientation. The radar and the cannon are both pointing forwards and the 
+<ref id="ShotEnergy" name="shot energy"> is set at zero. The goal for the robots is now to survive
+as long as possible and at the same time to destroy the other robots. A robot will get one point for
+each of the enemy robot it outlives. One extra point is, however, given to all the participating
+robots. Robots dying at the same time will get the mean value of the points they would have got if
+they didn't die simultaneously (or in other word, they get half a point for each of the other dying
+at the same time).
+
+A game is finished either if the number of living robots is less than
+two or the <ref id="Timeout" name="time is up">.
+
+
+<sect1>A sequence<label id="A_sequence">
+<p>
+A sequence is a series of games, where the same robots are fighting.
+At the beginning of a sequence the robot processes are started. The
+number of robots in a sequence is limited to 120, due to the limit on
+256 open filedescriptors in linux. For every robot two pipes are
+opened as communication channels to the robot.
+
+Thereafter a <ref id="NumberOfGames" name="number of games"> are played and finally the robot
+processes are killed.
+
+
+<sect1>A tournament<label id="A_tournament">
+<p>
+A tournament is a collection of sequences.
+
+The number of robots in a tournament is (theoretically) unlimited.
+
+Any number of sequences is allowed, but to make the tournament fair,
+you should choose a number of sequences, such that all robots will
+play the same number of games (i.e. &num;sequence = &num;robots per
+game / GCD( &num;robots per game, &num;robots in the tournament).
+
+
+<!--   ################   Robot Construction   ##################   -->
+
+<sect>Robot construction<label id="Robot construction">
+<p>
+This chapter will describe what you need to know in order to build
+your own robot. Most important to know is the messaging language,
+which is a set of about 35 commands used to communicate with the
+server program. It is also instructive to study the example robots in
+the <tt>Robots/</tt> directory.
+
+
+<sect1>General information<label id="General information">
+<p>
+At the beginning of each sequence the robot processes are launched by
+the server program and assigned two pipes, one for input and the other
+for output. These are connected to the <tt>stdin</tt> and
+<tt>stdout</tt>, so that from the robots point of view, it is
+communicating with the server via the standard input and output ports.
+
+This approach mean that the robots can be written in any programming
+languages. However, there is one catch, the robot must be able to know
+when it has received a message. One solution is to tell the server to
+<ref id="RobotOption" name="send a signal"> after sending the message. This requires the robot
+program to be able to handle signals. This can be done in many languages including c, c++ and
+perl. Another method is to use the libc function <tt>select()</tt> to wait until a message has
+arrived.
+
+Note that it is not a good idea to do &dquot;busy wait&dquot;, i.e., to repeatedly look for a
+message until you get one. This will slow things down considerably and, worse, in 
+<ref id="Command line options" name="competition-mode"> the robot will rapidly run out of CPU-time
+and die.
+
+
+<sect1>Messagetypes.h<label id="Messagetypes.h">
+<p>
+The file <tt>Messagetypes.h</tt> is a good source of information on the
+messaging language. It is a c/c++ include file, but you can easily
+rewrite it to use with other languages. There you can find listing of
+messages, warning types, objects, game options and robot options.
+
+
+<sect1>Messages to robots<label id="Messages to robots">
+<p>
+<descrip>
+<label id="Initialize">
+
+<tag>Initialize [first? (int)]</tag> This is the very first message the robot will get. If the
+argument is one, it is the first sequence in the tournament and it should send 
+<ref id="NameAndColour" name="Name and Colour"> to the server, otherwise it should
+wait for YourName and YourColour messages (see below).
+
+<label id="YourName">
+<tag>YourName [name (string)]</tag> Current name of the robot, don't
+change it if you don't have very good reasons.
+
+<label id="YourColour">
+<tag>YourColour [colour (hex)]</tag> Current colour of the robot,
+change if you find it ugly.
+
+<label id="BinDataTo">
+<tag>BinData [number of bytes (int)] [binary data]</tag> If you request to 
+<ref id="LoadData" name="load data"> in binary form, this message will be send to you. The number of
+bytes is less than 500.
+
+<tag>AsciiData [data (string)]</tag> As above, but data in an ascii
+string. The string length is less than 500.
+
+<tag>LoadDataFinished</tag> Signals that all data has been transfered.
+
+<tag>GameOption [optionnr (int)] [value (double)]</tag> At the beginning of each game the robots
+will be sent a number of settings, which can be useful to the robot. For a complete list of these,
+look in the file <ref id="Messagetypes.h" name="Messagetypes.h"> for the <tt>game_option_type</tt>
+enum. In the <ref id="Options" name="options chapter"> you can get more detailed information on each
+option.
+
+<tag>GameStarts</tag> This message is sent when the game starts
+(surprise!)
+
+
+<tag>Radar [distance (double)] [observed object type (int)] [radar angle (double)]</tag>
+ This message given information each turn from the radar. Remember
+that the radar-angle is relative to the robot front; it is given in
+radians.
+
+
+<tag>Info [time (double)] [speed (double)] [cannon angle (double)]</tag> The <bf>Info</bf> message
+does always follow the <bf>Radar</bf> message. It gives more general information on the state of the
+robot.  The time is the game-time elapsed since the start of the game. This is not necessarily the
+same as the real time elapsed, due to <ref id="TimeScale" name="time scale"> and 
+<ref id="MaxTimestep" name="max timestep">.
+
+<tag>RobotInfo [energy level (double)] [enemy? (int)]</tag> If you
+detect a robot with your radar, this message will follow, giving some
+information on the robot. The opponents energy level will be given in
+the same manner as your own energy (see below). The second argument is
+only interesting i team-mode (which current isn't implemented), 1
+means a team-mate and 0 an enemy.
+
+<tag>Energy [energy level]</tag> The end of each round the robot will
+get to know its energy level. It will not, however, get the exact
+energy, instead it is discretized into a number of <ref id="EnergyLevels" name="energy levels">.
+
+<tag>RobotsLeft [number of robots (int)]</tag> At the beginning of the
+game and when a robot is killed the number of remaining robots is
+broadcasted to all living robots.
+
+
+<tag>Collision [colliding object type (int)] [angle relative robot (double)]</tag>
+ When a robot hits (or is hit by) something it gets this message. In
+the file <ref id="Messagetypes.h" name="Messagetypes.h"> you can find a list of the object types.
+
+<tag>Warning [warning type (int)] [message (string)]</tag> A warning
+message can be sent for various reasons
+
+<descrip>
+<tag>Unknown message:</tag> The server received a message it couldn't
+recognize.
+
+<tag>Process time low:</tag> The CPU usage has reached the 
+<ref id="CPUWarningPercentage" name="CPU warning percentage">. Only
+in <ref id="Command line options" name="competition-mode">.
+
+<tag>Message sent in illegal state:</tag> The message received couldn't be handled in this state of
+the program. For example <ref id="Rotate" name="Rotate"> is sent before the game has started.
+
+</descrip>
+<tag>Dead</tag> Robot died. Do not try to send more messages to the
+server until the end of the game, the server doesn't read them.
+
+<tag>GameFinishes</tag> Current game is finished, get prepared for the
+next!
+
+<tag>SaveData</tag> The current sequence is finished. If you want to store some data, do it now!
+When finished saving you should send a <ref id="SaveDataFinished" name="SaveDataFinished">
+message. Thereafter you will get the message ...
+
+<label id="ExitRobot">
+<tag>ExitRobot</tag> Exit from the program immediately! Otherwise it
+will be killed forcefully.
+
+</descrip>
+
+<sect1>Messages from robots<label id="Messages from robots">
+<p>
+<descrip>
+<label id="RobotOption">
+<tag>RobotOption [option nr (int)] [value (int)]</tag> Currently only
+one option is available, SEND_SIGNAL, which tells the server to send
+SIGUSR1 when there is a message waiting. Send this message (with
+argument 0=true) as soon as you are prepared to receive the signal.
+
+<label id="NameAndColour">
+<tag>Name [name (string)]</tag> When receiving the <ref id="Initialize" name="Initialize"> message
+with argument 1, indicating that this is the first sequence, you should send both your name and your
+colour.
+
+<tag>Colour [home colour (hex)] [away colour (hex)]</tag> See above.
+
+<label id="LoadData">
+<tag>LoadData [type (int)]</tag> Tell to load stored data. Type of
+data: 0 - binary, 1 - ascii.
+
+<label id="Rotate">
+<tag>Rotate [what to rotate (int)] [angular velocity (double)]</tag>
+Set the angular velocity for the robot, its cannon and/or its radar.
+Set 'what to rotate' to 1 for robot, 2 for cannon, 4 for radar or to a
+sum of these to rotate more objects at the same time. The angular
+velocity is given is radians per second and is limited by 
+<ref id="RobotMaxRotateSpeed" name="Robot (cannon/radar) max rotate speed">.
+
+
+<tag>RotateTo [what to rotate (int)] [angular velocity (double)] [end angle (double)]</tag>
+ As <bf>Rotate</bf>, but will rotate to a given angle. Note that radar
+and cannon angles are relative to the robot angle. You cannot use this
+command to rotate the robot itself, use <bf>RotateAmount</bf> instead!
+
+
+<tag>RotateAmount [what to rotate (int)] [angular velocity (double)] [angle (double)]</tag>
+ As <bf>Rotate</bf>, but will rotate relative the current angle.
+
+
+<tag>Sweep [what to rotate (int)] [angular velocity (double)] [left angle (double)] 
+[right angle (double)]</tag>
+ As <bf>rotate</bf>, but sets the radar and/or the cannon (not
+available for the robot itself) in a sweep mode.
+
+<tag>Accelerate [value (double)]</tag> Set the robot acceleration.
+Value is bounded by <ref id="RobotMaxAcceleration" name="Robot max/min acceleration">.
+
+<tag>Break [portion (double)]</tag> Set the break. Full break (portion
+= 1.0) means that the friction in the robot direction is equal to
+<ref id="SlideFriction" name="Slide friction">.
+
+<tag>Shoot [shot energy (double)]</tag> Shoot with the given energy.
+<ref id="Shot options" name="The shot options"> give more information.
+
+<label id="Print">
+<tag>Print [message (string)]</tag> Print message on the 
+<ref id="Message window" name="message window">.
+
+<tag>Debug [message (string)]</tag> Print message on the 
+<ref id="Message window" name="message window"> if in
+<ref id="Command line options" name="debug-mode">.
+
+<tag>BinData [number of bytes (int)] [binary data]</tag> Send data to
+be stored. Be sure to send the correct number of bytes!
+
+<tag>AsciiData [data (string)]</tag> Send data to be store. The string
+is terminated by an endline character.
+
+<label id="SaveDataFinished">
+<tag>SaveDataFinished</tag> Tell the server that saving is finished.
+The robot will thereafter get an <ref id="ExitRobot" name="ExitRobot"> message.
+
+</descrip>
+
+
+<!--   ################        Options         ##################   -->
+
+<sect>Options<label id="Options">
+<p>
+RealTimeBattle is configurable with a bunch of options, collected in
+differnt groups. The philosophy is to give you full freedom to set up
+the game in the way you like. This does mean, however, that some
+settings of the options may give bad combination, which can cause
+troubles for the program.
+
+
+<sect1>Environmental options<label id="Environmental options">
+<p>
+<descrip>
+<tag>Gravitational Constant:</tag> The acceleration due to
+gravitation. It is about 9.8 on the earth. An increase will increase
+the friction, thereby slowing robots down.
+
+<tag>Air resistance:</tag> As it sounds. Increases with speed.
+
+<label id="RollFriction">
+<tag>Roll friction:</tag> The friction in the direction of the robot
+if not breaking.
+
+<label id="SlideFriction">
+<tag>Slide friction:</tag> The friction orthogonal to the robot
+direction. Also the maximum friction if breaking.
+
+</descrip>
+
+<sect1>Robot options<label id="Robot options">
+<p>
+<descrip>
+<label id="RobotMaxAcceleration">
+<tag>Robot max acceleration:</tag> Robots are not allowed to
+accelerate faster than this and ...
+
+<tag>Robot min acceleration:</tag> slower than this.
+
+<label id="RobotRadius">
+<tag>Robot radius:</tag> Determines the size of the robot.
+
+<tag>Robot mass:</tag> Large robot mass will increase the impact of
+collisions.
+
+<tag>Robot bounce coefficient:</tag> Affects how well the robots will
+bounce.
+
+<tag>Robot hardness coefficient:</tag> Determines how servere injuries
+the robots will get when colliding, this will by multiplied by the ...
+
+<tag>Robot protection coefficient:</tag> to get how much to reduce the
+robot energy.
+
+<tag>Robot frontszie:</tag> The front of the robot is a section with
+different materials, usually harder and more protective, so robots can
+injure each other by ramming.
+
+<tag>Robot front bounce coefficient:</tag> See previous four items.
+
+<tag>Robot front hardness coefficient:</tag> See previous five items.
+
+<tag>Robot front protection coefficient:</tag> See previous six items.
+
+<tag>Robot start energy:</tag> The amount of energy the robots will
+have at the beginning of each game.
+
+<tag>Robot max energy:</tag> By eating cookie, the robot can increase
+its energy; not more than this, though.
+
+<label id="RobotMaxRotateSpeed">
+<tag>Robot max rotate speed:</tag> How fast the robot itself may
+rotate. Unit: radians/s .
+
+<tag>Robot cannon max rotate speed:</tag> Maximum cannon rotate speed.
+Note that the cannon and the radar move relative to the robot, so the
+actual rotation speed may be higher.
+
+<tag>Robot radar max rotate speed:</tag> Maximum radar rotate speed.
+See note above.
+
+<label id="EnergyLevels">
+<tag>Robot energy levels:</tag> The robot will only know its energy
+approximately. This will decide how many discretation levels will be
+used.
+
+</descrip>
+
+<sect1>Shot options<label id="Shot options">
+<p>
+<descrip>
+<tag>Shot radius:</tag> Size of shots. Should be less than 
+<ref id="RobotRadius" name="robot radius">.
+
+<tag>Shot speed:</tag> Shots are moving in this speed in the direction
+of the cannon plus the velocity of the robot.
+
+<tag>Shooting penalty:</tag> When shooting the robot itself get
+damaged. This is the factor, by which the shot energy is multiplied,
+to get the damaging energy. If the number of robots is large, this
+number is reduced, so that you never lose in average by shooting (if
+you hit).
+
+<tag>Shot min energy:</tag> The lowest shot energy allowed. A robot
+trying to shoot with less energy will fail to shoot.
+
+<label id="ShotEnergy">
+<tag>Shot max energy:</tag> The robots have a shot energy, which
+increase with time, but will never exceed this value.
+
+<tag>Shot energy increase speed:</tag> Determines how fast the robots
+shot energy noted above, will increase. Unit: energy/s .
+
+</descrip>
+
+<sect1>Extras options<label id="Extras options">
+<p>
+<descrip>
+<tag>Cookie max energy:</tag> The cookie energy is a random number
+between cookie max energy and cookie min energy.
+
+<tag>Cookie min energy:</tag> See above.
+
+<tag>Cookie frequency:</tag> The number of cookie per second that will
+appear in average.
+
+<tag>Cookie radius:</tag> Size of cookie.
+
+<tag>Mine max energy:</tag> The mine energy is a random number between
+mine max energy and mine min energy.
+
+<tag>Mine min energy:</tag> See above.
+
+<tag>Mine frequency:</tag> The number of mine per second that will
+appear in average.
+
+<tag>Mine radius:</tag> Size of mine.
+
+<tag>Cookie colour:</tag> Cookie colour in hexadecimal red-green-blue
+form.
+
+<tag>Mine colour:</tag> As above.
+
+</descrip>
+
+<sect1>Time options<label id="Time options">
+<p>
+<descrip>
+<label id="Timeout">
+<tag>Timeout:</tag> This is the longest time a game will take. When
+the time is ut all remaining robots are killed, without getting any
+more points.
+
+<label id="MaxTimestep">
+<tag>Max timestep:</tag> If the computer is temporarily slowed down,
+the time between updates can be to long. Setting this option will make
+the program artificially slow down the clock in those cases and
+therefore violate the realtimeness.
+
+<label id="TimeScale">
+<tag>Time scale:</tag> Increasing time scale than one means that the
+game clock will go faster relative to an ordinary clock. Changing this
+value can be usefull if you either want to give the robots more time
+or if you have a fast computer you may want to speed the game up.
+
+<tag>Start CPU time:</tag> In <ref id="Command line options" name="competition-mode"> a robots CPU
+usage is limited. At the beginning of a sequence a robot will get this amount of CPU time to spent.
+
+<tag>Extra CPU time:</tag> When the start CPU time is spended, the
+robot will get this amount of extra CPU time.
+
+<tag>Extra CPU period:</tag> The extra CPU time must last the an
+entire CPU period, otherwise the robot will die in the current game.
+
+<label id="CPUWarningPercentage">
+<tag>CPU warning percentage:</tag> When the robot has used up this
+amount of its CPU time it will receive a warning message.
+
+<tag>Process check interval:</tag> In <ref id="Command line options" name="competition-mode"> this
+will decide how often the program will check for CPU usage.
+
+</descrip>
+
+<sect1>Miscellaneous options<label id="Miscellaneous options">
+<p>
+<descrip>
+<label id="ArenaScale">
+<tag>Arena scale:</tag> Overall scale of the arena. A value of 2 give
+double sidelength, i.e. four times bigger area.
+
+<tag>Background colour:</tag> Background colour and ...
+
+<tag>Foreground colour:</tag> foreground colour for the arena.
+
+<tag>Statistics savefile:</tag> File to store <ref id="Statistics window" name="statistics">.
+
+<label id="OptionsSavefile">
+<tag>Options savefile:</tag> File to store <ref id="Options_window" name="options">.
+
+</descrip>
+
+
+<!--   ################   Arena Construction   ##################   -->
+
+<sect>Arena construction<label id="Arena construction">
+<p>
+In RealTimeBattle, it is very simple to construct your own arenas. The
+language consists of only eight commands, and there are essentially
+three building blocks: line, circle and inner_circle. This is mainly
+because of speed reason, for circles and lines it is very easy to
+check if a collision has occured. Circle and inner_circle prevents
+robots from entering into a circle or getting outside a circle
+respectively. The line stops the robots from entering through the long
+side, but no check is made on the short side, so you have to put
+circles at each end of the line to make it a solid object. The
+commands <tt>polygon</tt> and <tt>closed_polygon</tt> are intended to
+simplify this procedure, always giving a proper object.
+
+Note that RealTimeBattle does no check on whether the arena file gives
+a correct arena, it is entirely up to you, however, it will complain
+if there are violations to the language rules.
+
+Arena files should be given the postfix <tt>.arena</tt> and be stored
+in the arena directory, for RealTimeBattle to find it.
+
+The <tt>bounce coefficient</tt> and <tt>hardness</tt> argument given to
+all wall creating commands, determines the material of the wall. They
+are both values between 0 and 1. Harder walls will injure colliding
+robots more and higher bounce coefficient make them bounce better.
+
+You are also encouraged to study the arenas included and learn from
+the examples.
+
+
+
+<sect1>Arena commands<label id="Arena_commands">
+<p>
+A command consists of the command name and the arguments separated by
+whitespace. Be sure to give the right number of arguments!
+
+In the command list, the arguments are given in square brackets.
+
+<descrip>
+<tag>scale [value]</tag> This value times the <ref id="ArenaScale" name="arena scale"> will give the
+scale factor, by which all coordinates are multiplied. This command must be, if exists, the very
+first in the file, default is 1.0.
+
+<tag>boundary [left] [up] [right] [down]</tag> The boundary encloses the area, in which robot,
+cookies and mines are placed. It also determines the visible area in the 
+<ref id="Arena_window" name="arena window">. This command is required and may only be preceded by
+<tt>scale</tt>.
+
+<tag>inner_circle [bounce] [hardness] [center_x] [center_y] [radius]</tag>
+ Robots are limited to the inside of this circle.
+
+<tag>circle [bounce] [hardness] [center_x] [center_y] [radius]</tag>
+Circle shaped wall.
+
+
+<tag>polygon [bounce] [hardness] [thickness] [number of vertices] ([center_x] [center_y])...</tag>
+ This will create a number of circles, connected by lines.
+
+
+<tag>closed_polygon [bounce] [hardness] [thickness] [number of vertices]
+([center_x] [center_y])...</tag>
+ As a <tt>polygon</tt>, but the first and the last vertices are also
+connected by a line.
+
+
+<tag>line [bounce] [hardness] [thickness] [start_x] [start_y] [end_x] [end_y]</tag> Creates a
+line. See the <ref id="Arena construction" name="beginning of the chapter"> for more informations.
+
+<tag>exclusion_point [position_x] [position_y]</tag> When the arena
+inside the boundary consists of several separated areas, you should
+exclude all but one by inserting exclusion points. All points from
+which you can draw a straight line to an exclusion point without
+crossing a wall, are considered to be outside the arena.
+
+</descrip>
+</article>
+
+
+
