@@ -124,23 +124,23 @@ binomial(const int n, const int k)
     return INT_MAX;
 }
 
-void 
-reorder_pointer_array(void** array, int size)
-{
-  int n1, n2;
-  void* temp_p;
-  for(int i=0; i<size*5; i++)
-    {
-      n1 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
-      n2 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
-      if( n1 != n2 )
-        {
-          temp_p = array[n1];
-          array[n1] = array[n2];
-          array[n2] = temp_p;
-        }
-    }
-}
+//  void 
+//  reorder_pointer_array(void** array, int size)
+//  {
+//    int n1, n2;
+//    void* temp_p;
+//    for(int i=0; i<size*5; i++)
+//      {
+//        n1 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
+//        n2 = (int)floor(size*((double)rand() / (double)RAND_MAX)) ;
+//        if( n1 != n2 )
+//          {
+//            temp_p = array[n1];
+//            array[n1] = array[n2];
+//            array[n2] = temp_p;
+//          }
+//      }
+//  }
 
 void
 read_robotdirs_from_system(list<string>& robotdirs)

@@ -49,7 +49,7 @@ int factorial(const int n);
 
 int binomial(const int n, const int k);
 
-void reorder_pointer_array(void** array, int size);
+//void reorder_pointer_array(void** array, int size);
 
 void read_robotdirs_from_system(list<string>& robotdirs);
 void read_arenadirs_from_system(list<string>& arenadirs);
