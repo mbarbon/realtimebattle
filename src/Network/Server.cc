@@ -39,6 +39,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/stat.h>
 #include <signal.h>
 #include <stdio.h>
+#include <sys/socket.h>
 
 #include <string>
 
@@ -202,7 +203,7 @@ server(int socket_fd)
               exit_cleanly( SIGALRM );
             }
 
-          //          cout << buffer;      
+          cout << buffer << endl;
           ofifo_stream << buffer << endl;      
           //          cout << "!" << flush;   
         }
@@ -219,7 +220,7 @@ server(int socket_fd)
               sleep(3);
             }
 
-          //          cout << buffer;      
+          cout << buffer << endl;      
           out_socket << buffer << endl;
           
           if( out_socket.fail() )

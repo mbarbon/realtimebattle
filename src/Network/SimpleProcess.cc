@@ -45,9 +45,6 @@ SimpleProcess::SimpleProcess(const string& filenm)
 
   process_running = false;
 
-  send_usr_signal = false;
-  signal_to_send = 0;
-  
   use_non_blocking = get_default_non_blocking_state();
 
   cerr << "use_non_blocking: " << use_non_blocking << endl;
@@ -61,7 +58,7 @@ SimpleProcess::SimpleProcess(const string& filenm)
 
 SimpleProcess::~SimpleProcess()
 {
-  if( is_process_running() ) kill_forcefully();
+  if( is_running() ) kill_forcefully();
   delete_pipes();
 }
 
@@ -191,36 +188,36 @@ SimpleProcess::start()
       in_pipe = pipe_in[0];
 
       // Make the pipes non-blocking
-//        int pd_flags;
-//        if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
-//          {
-//            cerr << "Error in SimpleProcess::start, parent: "
-//                 << "Couldn't get pd_flags for pipe_in in robot " << filename << endl;
-//            exit(EXIT_FAILURE);
-//          }
+      int pd_flags;
+      if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
+        {
+          cerr << "Error in SimpleProcess::start, parent: "
+               << "Couldn't get pd_flags for pipe_in in robot " << filename << endl;
+          exit(EXIT_FAILURE);
+        }
 
-//        pd_flags |= O_NONBLOCK;
-//        if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
-//          {
-//            cerr << "Error in SimpleProcess::start, parent: "
-//                 << "Couldn't change pd_flags for pipe_in in robot " << filename << endl; 
-//            exit(EXIT_FAILURE);
-//          }
+      pd_flags |= O_NONBLOCK;
+      if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
+        {
+          cerr << "Error in SimpleProcess::start, parent: "
+               << "Couldn't change pd_flags for pipe_in in robot " << filename << endl; 
+          exit(EXIT_FAILURE);
+        }
 
-//        if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 )
-//          {
-//            cerr << "Error in SimpleProcess::start, parent: "
-//                 << "Couldn't get pd_flags for pipe_out in robot " << filename << endl; 
-//            exit(EXIT_FAILURE);
-//          }
+      if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 )
+        {
+          cerr << "Error in SimpleProcess::start, parent: "
+               << "Couldn't get pd_flags for pipe_out in robot " << filename << endl; 
+          exit(EXIT_FAILURE);
+        }
 
-//        pd_flags |= O_NONBLOCK;
-//        if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
-//          {
-//            cerr << "Error in SimpleProcess::start, parent: "
-//                 << "Couldn't change pd_flags for pipe_out in robot " << filename << endl; 
-//            exit(EXIT_FAILURE);
-//          }
+      pd_flags |= O_NONBLOCK;
+      if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
+        {
+          cerr << "Error in SimpleProcess::start, parent: "
+               << "Couldn't change pd_flags for pipe_out in robot " << filename << endl; 
+          exit(EXIT_FAILURE);
+        }
 
       opipe_streamp = new ofstream( out_pipe );
       ipipe_streamp = new ifstream( in_pipe );
@@ -229,25 +226,10 @@ SimpleProcess::start()
   process_running = true;
 }
 
-bool
-SimpleProcess::is_process_running()
-{
-  return process_running;
-}
-
 void
-SimpleProcess::send_signal()
+SimpleProcess::send_signal(const int sig)
 {
-  if( send_usr_signal )
-    kill(pid, signal_to_send);
-}
-
-void
-SimpleProcess::set_signal_to_send(const bool do_send, const int sig)
-{
-  send_usr_signal = do_send;
-  signal_to_send = sig;
-  if( do_send ) send_signal();
+    kill(pid, sig);
 }
 
 void

@@ -77,22 +77,13 @@ main ( int argc, char* argv[] )
 
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
-
-
+        
   string robotname = string(argv[1]);
 
   out_socket << robotname << endl; // send robot name;
 
 
-  // Start robot process
-
-  
-
   SimpleProcess robot_process( robotname );
-
-  robot_process.start();
-
-
 
 
 
@@ -109,9 +100,14 @@ main ( int argc, char* argv[] )
       time_to_wait.tv_sec = 0;
       time_to_wait.tv_usec = 300000;
 
+
+      
       FD_ZERO( &pipe_and_socket );
       FD_SET( socket_fd, &pipe_and_socket );
-      FD_SET( robot_process.in_pipe, &pipe_and_socket );
+      
+      if( robot_process.is_running() )
+        FD_SET( robot_process.in_pipe, &pipe_and_socket );
+
 
       select(FD_SETSIZE, &pipe_and_socket, NULL, NULL, &time_to_wait);
 
@@ -122,8 +118,50 @@ main ( int argc, char* argv[] )
           in_socket.clear();
           in_socket.get(buffer, 80, '\n');
 
-          //          cout << buffer << flush; 
-          *robot_process.opipe_streamp << buffer << endl;      
+          if( in_socket.fail() )
+                {
+                  cerr << "Reading in_socket failed!" << endl;
+                  sleep(3);
+                }
+
+          if( buffer[0] == '@' )  // special message
+            {
+              cerr << "Special message: " << buffer << endl;
+              switch( buffer[1] )
+                {
+                case 'R':  // Run process
+                  if( robot_process.is_running() )
+                    robot_process.kill_forcefully();
+                  robot_process.start();
+                  break;
+
+                case 'K':  // Kill process
+                  robot_process.kill_forcefully();
+                  break;
+
+                case 'B':  // Blocking
+                  robot_process.set_non_blocking_state( false );
+                  break;
+
+                case 'N':  // Non-Blocking
+                  robot_process.set_non_blocking_state( true );
+                  break;
+
+                case 'S':   // Signal
+                  int signr = (int)( buffer[2] - '0' );
+                  if( buffer[3] <= '9' && buffer[3] >= '0' )
+                    signr = 10*signr + (int)( buffer[3] - '0' );
+
+                  robot_process.send_signal(signr);
+                  break;
+                }
+              
+            }
+          else if( robot_process.is_running() )
+            *robot_process.opipe_streamp << buffer << endl;
+
+          cout << buffer << endl; 
+
 
 //            if( robot_process.opipe_streamp->fail() )
 //              {
@@ -135,12 +173,13 @@ main ( int argc, char* argv[] )
           //          cout << "!" << flush;   
         }
 
-      if( FD_ISSET( robot_process.in_pipe, &pipe_and_socket) )
+      if( robot_process.is_running() && 
+          FD_ISSET( robot_process.in_pipe, &pipe_and_socket) )
         {      
           *robot_process.ipipe_streamp >> ws;
           robot_process.ipipe_streamp->clear();
           robot_process.ipipe_streamp->peek();
-          if( !robot_process.ipipe_streamp->eof() )
+          while( !robot_process.ipipe_streamp->eof() )
             {
               robot_process.ipipe_streamp->get(buffer, 80, '\n');
               
@@ -150,7 +189,7 @@ main ( int argc, char* argv[] )
                   sleep(3);
                 }
 
-              //              cout << buffer << flush;      
+              cout << buffer << endl;
               out_socket << buffer << endl;
               //              cout << "%" << flush;  
 
@@ -161,9 +200,9 @@ main ( int argc, char* argv[] )
                 }
 
 
-//                *robot_process.ipipe_streamp >> ws;
-//                robot_process.ipipe_streamp->clear();
-//                robot_process.ipipe_streamp->peek();
+              *robot_process.ipipe_streamp >> ws;
+              robot_process.ipipe_streamp->clear();
+              robot_process.ipipe_streamp->peek();
             }
 
           //          robot_process.ipipe_streamp->clear();

@@ -39,10 +39,9 @@ public:
   //  void set_name_and_robot(const string& filenm, Robot* rbt);
   
   void start();
-  bool is_process_running();
+  bool is_running() {  return process_running; }
   
-  void send_signal();
-  void set_signal_to_send(const bool do_send, const int sig);
+  void send_signal(const int sig);
 
   bool get_default_non_blocking_state();
   void set_non_blocking_state(const bool use_non_blocking);
