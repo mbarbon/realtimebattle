@@ -176,7 +176,6 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 	    str_buffer.erase( str_buffer.length() - 1 );
 	  else
 	    keep_reading_line = false;
-
         }
 
       vector<string> wordlist;
@@ -207,8 +206,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                    equal_strings_nocase( wordlist[0], "Define" ) &&
                    wordlist.size() > 2 )  
             {
-	      cout<<"Starting a definition\n";
-	      cout<<wordlist[1]<<"  "<<wordlist[2]<<endl;
+	      cout<<"Starting a definition " << wordlist[1] << "  " << wordlist[2] << endl;
               Gadget* gadget =
                 AllGadgets::create_gadget_by_stringtype( wordlist[1],
                                                          wordlist[2].c_str(),
@@ -216,11 +214,18 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 
               assert( gadget != NULL );
 	      cout<<"Gadget created\n";
+
               current_gadget->get_my_gadgets().add( gadget->get_info() );
-              current_gadget = (Gadget*)gadget;
-              if( gadget->get_info().type == GAD_SCRIPT )
+              current_gadget = dynamic_cast<Gadget*> (gadget);  //Is it necessary ?
+
+              if( gadget->get_info().type == GAD_SCRIPT )  //Use a stack instead !!!
                 mode = LAF_SCRIPT_MODE;
+	      else if( gadget->get_info().type == GAD_ENVIRONMENT )
+		mode = LAF_GEOMETRY_MODE;
+	      else if( gadget->get_info().type == GAD_VARIABLE )
+		mode = LAF_VARIABLE_MODE;
             }
+
           else if( equal_strings_nocase( wordlist[0], "EndDefine" ) )
             {
               if( wordlist.size() > 2 && wordlist[2] != current_gadget->get_name() )
@@ -234,16 +239,9 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Function" ) &&
                    wordlist.size() > 2 )
-            {
-              Gadget* gadp = (*(current_gadget->get_my_gadgets().
-				find_by_name( wordlist[1] ))).gadgetp;
-	     
-              //NOTE : assert( typeid(gadp) == typeid(Function*) ); doesn't work !!! why ?
-	      //TODO : Gadget must be a virtual class 
-	      //NOTE : dynamic_cast<Function*> gadp; neither ?!?!
-
-	      assert( gadp != NULL );
-              Function* func_p = (Function*) gadp;
+            { //Is this the right place for this ???
+	      Function* func_p = dynamic_cast<Function*> ( current_gadget->get_my_gadgets().find_by_name( wordlist[1] ) );
+	      assert( func_p != NULL );
 
               if( equal_strings_nocase( wordlist[2], "default" ) )
                 {
@@ -259,7 +257,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   //Set Function allowance to false
 		  func_p->set_enable( false );
                 }
-            }              
+            }          
           else if( mode == LAF_VARIABLE_MODE )
             {
 	      cout<<"Setting a variable :\n";
@@ -269,36 +267,62 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             }
           else if( mode == LAF_SCRIPT_MODE )
             {
-	      cout<<"LAF_SCRIPT_MODE\n";
-              assert( typeid(current_gadget) == typeid(Script*) );
-              ((Script*)current_gadget)->add_script_line( wordlist );
+              (dynamic_cast<Script*>(current_gadget))->add_script_lines( wordlist );
             }            
           else if( mode == LAF_GEOMETRY_MODE )
-            {
-              // TODO: Set Geometry-info
+            {//Hmmm
+	      if(equal_strings_nocase( wordlist[0], "Define" ) &&
+		 wordlist.size() > 2 )
+		{  
+
+		  Gadget* gadget =
+		    AllGadgets::create_gadget_by_stringtype( wordlist[1],
+							     wordlist[2].c_str(),
+							     current_gadget );
+		  
+		  assert( gadget != NULL );
+		  cout<<"Gadget created\n";
+		  
+		  current_gadget->get_my_gadgets().add( gadget->get_info() );
+		  current_gadget = dynamic_cast<Gadget*> (gadget);  //Is it necessary ?
+		  
+		}	      
             }
           else if( wordlist.size() > 1 )
             {
-              Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                                find_by_name( wordlist[0] ))).gadgetp;
-
-	      assert( gadp != NULL );
-	      Variable* var_p = (Variable*) gadp;
-
-	      if(var_p->type() == DOUBLE_V) {
-		istrstream is(wordlist[1].c_str()); double d;
-		is >> d;
-		(*var_p) = Value( d );
-	      } else if(var_p->type() == INT_V) {
-		int i;
-		istrstream is(wordlist[1].c_str());
-		is>>i;
-		(*var_p) = Value( i );
-	      } else if(var_p->type() == BOOL_V) {
-		bool b = (wordlist[1] == string("true"));
-		var_p->make_bool( b );
-	      }
-	      sleep( 1 );
+	      if(wordlist[1][0] == '$')
+		{ //This is a particular variable of the system
+		  Gadget* gadp = current_gadget->get_my_gadgets().
+		    find_by_name( wordlist[1].substr(1, wordlist[1].length() - 1) );
+		  assert( gadp != NULL );
+		  Gadget* gad_res = current_gadget->create_instance(wordlist[0], gadp);
+		  assert( gad_res != NULL );
+		}
+	      else
+		{
+		  Gadget* gadp;
+		  
+		  if( (gadp = (current_gadget->get_my_gadgets().
+			       find_by_name( wordlist[0] ))))
+		    { //This is a normal variable ;
+		      Variable* var_p = (Variable*) gadp;
+		      
+		      if(var_p->type() == DOUBLE_V) {
+			istrstream is(wordlist[1].c_str()); double d;
+			is >> d;
+			(*var_p) = Value( d );
+		      } else if(var_p->type() == INT_V) {
+			int i;
+			istrstream is(wordlist[1].c_str());
+			is>>i;
+			(*var_p) = Value( i );
+		      } else if(var_p->type() == BOOL_V) {
+			bool b = (wordlist[1] == string("true"));
+			var_p->make_bool( b );
+		      }
+		    }
+		}
+	      //sleep( 1 );
 
               //assert( typeid(gadp) == typeid(Variable*) );
               // TODO: set value to the found gadget

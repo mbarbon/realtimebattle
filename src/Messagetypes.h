@@ -60,6 +60,7 @@ static const char gadget_types[][LAST_GADGET] =
   "Equipment",
   "Environment",
   "RobotBody",
+  "Scoring",
 
   "Variable", 
   "Function",
