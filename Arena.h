@@ -71,6 +71,7 @@ public:
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
+  Vector2D * get_boundary() { return boundary; }
   
 private:
   gdouble timestep;
