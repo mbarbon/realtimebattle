@@ -26,6 +26,8 @@ others as well to prepare for the installation.
 Now change directory and compile <verb>% cd RealTimeBattle
 % make</verb>
 
+If you would like to debug RealTimeBattle, type instead '<tt>make DEBUG=true</tt>'.
+
 Hopefully everything will compile well. If not, please ensure that <tt>gtk+</tt> is correctly
 installed. You can check this by typing <verb>% gtk-config --version</verb>. Currently only version 
 1.0.x of <tt>gtk+</tt> will work.
