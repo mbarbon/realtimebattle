@@ -28,8 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shape.h"
 #include "Various.h"
 #include "OptionHandler.h"
-
-extern class OptionHandler the_opts;
+#include "ArenaController.h"
 
 Shape::Shape()
 {

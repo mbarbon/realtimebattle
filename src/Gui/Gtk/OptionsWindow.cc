@@ -34,7 +34,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "String.h"
 
-extern class OptionHandler the_opts;
 extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
 

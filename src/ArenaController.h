@@ -24,7 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <list>
 
 #include "ArenaBase.h"
-
+#include "OptionHandler.h"
 
 class GuiInterface;
 
@@ -44,12 +44,14 @@ public:
   void start_realtime_arena();
   void start_replay_arena();
 
+  OptionHandler* get_main_opts() const { return main_opts; }
   ArenaBase* get_the_arena() { return my_arena; }
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
 private:
   
+  void initialize_options();
   void print_help_message();
 
   bool started;
@@ -58,6 +60,8 @@ private:
   list<GuiInterface*> gui_list;
   // Mutex for locking processes.
   pthread_mutex_t gi_mutex;
+
+  OptionHandler* main_opts;
 
   ArenaBase* my_arena;
 

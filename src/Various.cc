@@ -52,9 +52,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "Structs.h"
 #include "String.h"
+#include "ArenaController.h"
 
-extern class OptionHandler the_opts;
-extern bool no_graphics;
+//extern bool no_graphics;
 
 void
 Error(const bool fatal, const string& error_msg, const string& function_name)
