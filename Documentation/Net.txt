@@ -84,17 +84,21 @@ Robot : The robot client
 
 Message types :
 @I : Message for initialisation
-@M : Message to print (i.e. a dialog between 2 chatters)
-@C : A Command to execute
-@S : Submit a robot (i.e. message from a chat to submit a robot)
+@M : Message from a chater to the server for other chaters...                  Chater           Server             Chater
+@m : Message from server send by a chater for other chaters                    mes  ----@M----->  mes  ----@m-----> receive
 
-@s : A modification in statistics
-@r : A modification on robot position 
-@m : A message to display in the message window
-@a : Add a new objetc on the arena
-@A : The arena definition is coming (only the 'picture')
+@C : A Command to execute (see below)
+@S : Submit a robot/arena (i.e. message from a chat to submit a robot)
 
-@R : a robot command...
+st : A modification in statistics
+rp : A modification on robot position 
+rm : A message to display in the message window (message from a robot)
+aa : Add a new objetc on the arena
+ad : The arena definition is coming (only the 'picture')
+
+@R : a robot command... (Maybe we will have to split it...)
+
+@B : We are going to start the game!!!
 
 ... [Add everything that could be fine...] ...
 
@@ -103,6 +107,18 @@ Only one message : "<lentgh>@I <protocol_version> <connection_type> <name>"
 courant protocol version : RTBNetV1
 connection type : see above
 This may be the only message using the @I message type
+
+Submit:
+add robots : @SR <robot1><robot2><robot3><...>
+add arenas : @SA <arena1><arena2><arena3><...>
+del robots : @Sr <robot1><robot2><robot3><...>
+del arenas : @Sa <arena1><arena2><arena3><...>
+Reply this submit with @s(R|A|r|a) and list of added/deleted elements
+
+Messages:
+@M[dest]message : Chat1 send the message to the server (dest = "all" to send it to everybody)
+@m[from]message : Server send the message from Chat1 to the "dest" specified in the previous message
+
 
 Command form a Root connection (don't forget to start with @C):
 * quit : close the server (this will send the "@C Close" message to everybody)
