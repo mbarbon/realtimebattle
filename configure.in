@@ -117,7 +117,7 @@ changequote(,)dnl
 if test "x$use_rpm" = "xyes"; then
    CXXFLAGS="$enable_rpm" 	
    CFLAGS="$enable_rpm" 	
-	DOCS_DIR=['${prefix}/doc/RealTimeBattle-${VERSION}']
+	DOCS_DIR='${prefix}/doc/RealTimeBattle-${VERSION}'
 	INSTALL_INFO=no
 fi
 changequote([,])dnl
