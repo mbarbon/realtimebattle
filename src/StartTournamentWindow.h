@@ -107,13 +107,19 @@ public:
                                          GdkEventButton *event,
                                          class StartTournamentWindow* stw_p );
 
-  void set_deletion_resp_for_tournament_lists( const bool resp );
-  static void dummy_result             ( int result ) {}
-  void new_lists            ( const List<start_tournament_info_t>& robotfilename_list, 
+  static void new_tournament_from_tournament_file
+  ( const List<start_tournament_info_t>& robotfilename_list, 
+    const List<start_tournament_info_t>& arenafilename_list, 
+    const int robots_p_game, const int games_p_sequence, const int n_o_sequences,
+    StartTournamentWindow* stw_p );
+
+  void new_tournament       ( const List<start_tournament_info_t>& robotfilename_list, 
                               const List<start_tournament_info_t>& arenafilename_list, 
                               const int robots_p_game, 
                               const int games_p_sequence, 
                               const int n_o_sequences );
+
+  static void dummy_result             ( int result ) {}
 
 private:
 
@@ -126,7 +132,8 @@ private:
   start_tournament_info_t* find_row_in_clist
                                        ( const int row,
                                          List<start_tournament_info_t>* info_list );
-  void load_tournament_file            ( const String& full_filename );
+  void load_tournament_file            ( const String& full_filename,
+                                         bool display_fail_message );
   void save_tournament_file            ( const String& full_filename );
 
   GtkWidget* get_filesel          () { return filesel; }

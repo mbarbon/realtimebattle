@@ -48,11 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "List.h"
 #include "Dialog.h"
 
-class List<start_tournament_info_t> robots_in_last_tournament;
-class List<start_tournament_info_t> arenas_in_last_tournament;
-int games_per_sequence_in_last_tournament = 1;
-int robots_per_sequence_in_last_tournament = 2;
-int number_of_sequences_in_last_tournament = 1;
+const String tmp_tournament_file( "/tmp/rtb/tmp.tour" );
 
 StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_height,
@@ -60,14 +56,6 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_y_pos )
 {
   filesel = NULL;
-
-  // Set the selected_robot_tournament List to be equal to 
-  // robots_in_last_tournament. The same for arena;
-
-  selected_robot_tournament = robots_in_last_tournament;
-  selected_arena_tournament = arenas_in_last_tournament;
-  selected_robot_tournament.set_deletion_responsibility(true);
-  selected_arena_tournament.set_deletion_responsibility(true);
 
   // The window widget
 
@@ -146,31 +134,6 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       tour_clist = gtk_clist_new_with_titles( 1, tour_title );
 
       add_clist( tour_clist, hbox );
-
-      ListIterator<start_tournament_info_t> st_li;
-      for( tour_list->first(st_li); st_li.ok(); st_li++ )
-        {
-          char* lst[] = { "" };
-
-          int row = gtk_clist_append( GTK_CLIST( tour_clist ), lst );
-          gtk_clist_set_foreground( GTK_CLIST( tour_clist ), row, 
-                                    the_gui.get_fg_gdk_colour_p());
-          gtk_clist_set_background( GTK_CLIST( tour_clist ), row, 
-                                    the_gui.get_bg_gdk_colour_p());
-
-          String fname = st_li()->filename;
-          fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_clist_set_text( GTK_CLIST( tour_clist ),
-                              row, 0, fname.chars() );
-#else
-          gtk_clist_set_text( GTK_CLIST( tour_clist ),
-                              row, 0, fname.non_const_chars() );
-#endif
-          st_li()->selected = false;
-          st_li()->row = row;
-        }
 
       char* button_labels[] = { " Remove ", " Select All ",
                                 " Unselect All ", " Add ",
@@ -299,16 +262,11 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       switch(i)
         {
         case 0:
-          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
-                              String(games_per_sequence_in_last_tournament).chars() );
+        case 2:
+          gtk_entry_set_text( GTK_ENTRY( entries[i] ), "1" );
           break;
         case 1:
-          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
-                              String(robots_per_sequence_in_last_tournament).chars() );
-          break;
-        case 2:
-          gtk_entry_set_text( GTK_ENTRY( entries[i] ),
-                              String(number_of_sequences_in_last_tournament).chars() );
+          gtk_entry_set_text( GTK_ENTRY( entries[i] ), "2" );
           break;
         }
 
@@ -422,6 +380,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       }
   }  
 
+  load_tournament_file( tmp_tournament_file, false );
   gtk_widget_show( window_p );
 }
 
@@ -480,13 +439,6 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
 }
 
 void
-StartTournamentWindow::set_deletion_resp_for_tournament_lists( const bool resp )
-{
-  selected_robot_tournament.set_deletion_responsibility( resp );
-  selected_arena_tournament.set_deletion_responsibility( resp );
-}
-
-void
 StartTournamentWindow::delete_event_occured( GtkWidget* widget,
                                              GdkEvent* event,
                                              class StartTournamentWindow* stw_p )
@@ -530,7 +482,8 @@ StartTournamentWindow::load_file_selected( GtkWidget* widget,
 {
   stw_p->load_tournament_file
     ( String( gtk_file_selection_get_filename
-              ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ) );
+              ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ),
+      true );
   destroy_filesel( stw_p->get_filesel(), stw_p );
 }
 
@@ -576,18 +529,40 @@ StartTournamentWindow::destroy_filesel( GtkWidget* widget,
 }
 
 void
-StartTournamentWindow::load_tournament_file( const String& full_filename )
+StartTournamentWindow::load_tournament_file( const String& full_filename,
+                                             bool display_fail_message )
 {
-  cout << full_filename << endl;
+  if(!parse_tournament_file( full_filename,
+                             (StartTournamentFunction)
+                             StartTournamentWindow::new_tournament_from_tournament_file,
+                             this, false ) && display_fail_message )
+    {
+      String error_msg = "\nCouldn't parse specified tournament file";
+      List<String> button_list;
+      button_list.insert_last( new String( " Ok " ) );
+      Dialog( "Tournament could not be saved." + error_msg, button_list, 
+              (DialogFunction) StartTournamentWindow::dummy_result );
+    }
+}
+
+void
+StartTournamentWindow::new_tournament_from_tournament_file
+( const List<start_tournament_info_t>& robotfilename_list, 
+  const List<start_tournament_info_t>& arenafilename_list, 
+  const int robots_p_game, const int games_p_sequence, const int n_o_sequences,
+  StartTournamentWindow* stw_p )
+{
+  stw_p->new_tournament( robotfilename_list, arenafilename_list, robots_p_game,
+                         games_p_sequence, n_o_sequences );
 }
 
 void
 StartTournamentWindow::
-new_lists( const List<start_tournament_info_t>& robotfilename_list, 
-           const List<start_tournament_info_t>& arenafilename_list, 
-           const int robots_p_game, 
-           const int games_p_sequence, 
-           const int n_o_sequences )
+new_tournament( const List<start_tournament_info_t>& robotfilename_list, 
+                const List<start_tournament_info_t>& arenafilename_list, 
+                const int robots_p_game, 
+                const int games_p_sequence, 
+                const int n_o_sequences )
 {
 
   for( int i = 0; i<2; i++ )
@@ -641,12 +616,14 @@ new_lists( const List<start_tournament_info_t>& robotfilename_list,
                                   ( info->row, false, info->filename, info->directory ) );
         }
     }
+  gtk_entry_set_text( GTK_ENTRY( entries[1] ), String(robots_p_game).chars() );
+  gtk_entry_set_text( GTK_ENTRY( entries[0] ), String(games_p_sequence).chars() );
+  gtk_entry_set_text( GTK_ENTRY( entries[2] ), String(n_o_sequences).chars() );
 }
 
 void
 StartTournamentWindow::save_tournament_file( const String& full_filename )
 {
-  cout << full_filename << endl;
   int value[3];
   int robot_number = get_selected_robot_tournament()->number_of_elements();
 
@@ -815,19 +792,9 @@ StartTournamentWindow::start( GtkWidget* widget,
 
       // create the tmp rtb dir if it exists and save the current tournament there
       create_tmp_rtb_dir();
-      stw_p->save_tournament_file( "/tmp/rtb/tmp.tour" );
+      stw_p->save_tournament_file( tmp_tournament_file );
 
-      // Are there memory leaks here?
-      robots_in_last_tournament.set_deletion_responsibility(false);
-      arenas_in_last_tournament.set_deletion_responsibility(false);
-      robots_in_last_tournament = *(stw_p->get_selected_robot_tournament());
-      arenas_in_last_tournament = *(stw_p->get_selected_arena_tournament());
-      games_per_sequence_in_last_tournament = value[0];
-      robots_per_sequence_in_last_tournament = value[1];
-      number_of_sequences_in_last_tournament = value[2];
-      robots_in_last_tournament.set_deletion_responsibility(true);
-      arenas_in_last_tournament.set_deletion_responsibility(true);
-      stw_p->set_deletion_resp_for_tournament_lists(false);
+      // close down StartTournamentWindow
       the_gui.close_starttournamentwindow();
     }
 }
