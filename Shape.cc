@@ -69,11 +69,11 @@ Line::within_distance(const Vector2D& pos, const double size)
 }
 
 void
-Line::draw_shape(Gui& the_gui, bool erase)
+Line::draw_shape(bool erase)
 {
   if( erase )
     the_gui.draw_line(last_drawn_start_point, last_drawn_direction, last_drawn_length, 
-                      last_drawn_thickness, *(the_gui.get_the_arena()->get_background_colour_p()));
+                      last_drawn_thickness, *(the_arena.get_background_colour_p()));
   last_drawn_start_point = start_point;
   last_drawn_direction = direction;
   last_drawn_length = length;
@@ -127,11 +127,11 @@ Circle::get_normal(const Vector2D& pos)
 }
 
 void
-Circle::draw_shape(Gui& the_gui, bool erase)
+Circle::draw_shape(bool erase)
 {
   if( erase )
     the_gui.draw_circle(last_drawn_center, last_drawn_radius,
-                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
+                        *(the_arena.get_background_colour_p()), true);
   last_drawn_center = center;
   last_drawn_radius = radius;
   the_gui.draw_circle(center,radius,colour,true);
@@ -182,15 +182,15 @@ InnerCircle::get_normal(const Vector2D& pos)
 }
 
 void
-InnerCircle::draw_shape(Gui& the_gui, bool erase)
+InnerCircle::draw_shape(bool erase)
 {
   if( erase )
     the_gui.draw_circle(last_drawn_center, last_drawn_radius,
-                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
+                        *(the_arena.get_background_colour_p()), true);
   last_drawn_center = center;
   last_drawn_radius = radius;
-  the_gui.draw_rectangle(the_gui.get_the_arena()->get_boundary()[0],
-                         the_gui.get_the_arena()->get_boundary()[1],
+  the_gui.draw_rectangle(the_arena.get_boundary()[0],
+                         the_arena.get_boundary()[1],
                          colour, true);
-  the_gui.draw_circle(center,radius,*(the_gui.get_the_arena()->get_background_colour_p()),true);
+  the_gui.draw_circle(center,radius,*(the_arena.get_background_colour_p()),true);
 }

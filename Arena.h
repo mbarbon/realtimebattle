@@ -19,7 +19,9 @@
 static const double infinity = 1.0e10;
 static const double eps = 1.0e-2;
 
-static class Options opts;
+extern class Options the_opts;
+extern class Arena the_arena;
+extern class Gui the_gui;
 
 
 // --------------------------  Arena --------------------------
@@ -47,8 +49,9 @@ public:
                         int number_of_sequences);   
 
   void broadcast(enum message_to_robot_type ...);
-  long find_free_color(const long home_colour, const long away_colour, const class Robot*);
-  friend GdkColor make_gdk_color(const long col);
+  void set_colours();
+  long find_free_colour(const long home_colour, const long away_colour, const class Robot*);
+  friend GdkColor make_gdk_colour(const long col);
   void quit_ordered();
   void delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list);
 
@@ -57,7 +60,6 @@ public:
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
-  Gui* get_the_gui() { return the_gui; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
@@ -66,7 +68,7 @@ public:
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
-  double get_shooting_penalty() { return opts.get_shooting_penalty() / max(1.0, ((double)robots_left)/10.0); }
+  double get_shooting_penalty() { return the_opts.get_shooting_penalty() / max(1.0, ((double)robots_left)/10.0); }
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
@@ -130,8 +132,6 @@ private:
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   state_t state;
-
-  Gui* the_gui;
 };
 
 // ---------------------  ArenaObject ---------------------
@@ -139,13 +139,11 @@ private:
 class ArenaObject
 {
 public:
-  ArenaObject() {the_arena = NULL;}
-  ArenaObject(Arena* ap) : the_arena(ap) {}
+  ArenaObject() {}
   virtual ~ArenaObject() {}
   virtual object_type get_object_type() = 0;
   //  class Error;
 protected:
-  Arena* the_arena;
 };
 
 // ---------------------  Explosion : ArenaObject  -------------------
@@ -166,8 +164,8 @@ private:
 class Shape
 {
 public:
-  Shape() {colour = make_gdk_color( 0x000000 ); }
-  Shape(long col) { colour = make_gdk_color( col ); }
+  Shape() {colour = make_gdk_colour( 0x000000 ); }
+  Shape(long col) { colour = make_gdk_colour( col ); }
 
   virtual ~Shape() {}
 
@@ -175,7 +173,7 @@ public:
                               const double size) = 0;
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos) = 0;
-  virtual void draw_shape(Gui& the_gui, bool erase) = 0;
+  virtual void draw_shape(bool erase) = 0;
   //virtual void get_args(istream&) = 0;
 
   GdkColor get_colour() { return colour; }
@@ -204,7 +202,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
-  void draw_shape(Gui& the_gui, bool erase);
+  void draw_shape(bool erase);
 
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
@@ -236,7 +234,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
-  void draw_shape(Gui& the_gui, bool erase);
+  void draw_shape(bool erase);
   
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -264,7 +262,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
-  void draw_shape(Gui& the_gui, bool erase);
+  void draw_shape(bool erase);
   
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -328,7 +326,7 @@ public:
 class Cookie : public virtual Extras, public virtual Circle
 {
 public:
-  Cookie(const Vector2D& c, const double r, const double e, Arena* ap); 
+  Cookie(const Vector2D& c, const double r, const double e); 
   ~Cookie() {}
   
   object_type get_object_type() { return COOKIE; }
@@ -346,7 +344,7 @@ private:
 class Mine : public virtual Extras, public virtual Circle
 {
 public:
-  Mine(const Vector2D& c, const double r, const double e, Arena* ap); 
+  Mine(const Vector2D& c, const double r, const double e); 
   ~Mine() {}
 
   object_type get_object_type() { return MINE; }
@@ -409,8 +407,8 @@ struct rotation_t
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
-  Robot(char* filename, Arena* ap);
-  //Robot(const Vector2D& c, const double r, char* filename, Arena* ap); 
+  Robot(char* filename);
+  //Robot(const Vector2D& c, const double r, char* filename); 
   ~Robot();
   
   void move(const double timestep);  
@@ -446,7 +444,7 @@ public:
   void display_place();
   void display_last();
   void display_score();
-  void draw_radar_and_cannon( Gui& the_gui );
+  void draw_radar_and_cannon();
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -491,7 +489,7 @@ class Shot : public virtual MovingObject, public virtual Circle
 {
 public:
   Shot(const Vector2D& c, const double r, 
-       const Vector2D& velocity, Arena* ap, const double energy); 
+       const Vector2D& velocity, const double energy); 
   ~Shot() {}
 
   void move(const double timestep);

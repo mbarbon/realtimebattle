@@ -7,6 +7,10 @@
 #include "Vector2D.h"
 #include "gui.h"
 
+class Options the_opts;
+class Arena the_arena;
+class Gui the_gui;
+
 void 
 print_help_message()
 {
@@ -15,12 +19,12 @@ print_help_message()
 }
 
 gint
-update_function(gpointer the_arenap)
+update_function(gpointer data)
 {  
   gint res;
   try
     {
-      res = ((Arena*)the_arenap)->timeout_function();
+      res = the_arena.timeout_function();
     }
   catch ( Error the_error )
 	 {
@@ -59,6 +63,7 @@ main ( int argc, char* argv[] )
   gint timeout_tag;
 
   gtk_init (&argc, &argv);
+  the_arena.set_colours();
 
   srand(time(0));
   
@@ -120,23 +125,21 @@ main ( int argc, char* argv[] )
 
   signal(SIGCHLD, sigchld_handler);
     
-  Arena* the_arena = new Arena;
   try
     {
-      the_arena->get_the_gui()->setup_control_window();
-      the_arena->start_tournament( robotnames, arenanames, nr_robots, 5, 8);
+      the_gui.setup_control_window();
+      the_arena.start_tournament( robotnames, arenanames, nr_robots, 5, 8);
     }
   catch ( Error the_error )
 	 {
 		the_error.print_message();
-      delete the_arena;
 		return EXIT_FAILURE;
 	 }
 
   for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
   delete [] robotnames;
   
-  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) the_arena);
+  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
 
   gtk_main();
 

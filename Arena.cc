@@ -15,13 +15,8 @@ Arena::Arena()
   arena_filenames = g_list_alloc();
   exclusion_points = g_list_alloc();
 
-  background_colour = make_gdk_color(opts.get_background_colour());
-  foreground_colour = make_gdk_color(opts.get_foreground_colour());
-
   for(int i=ROBOT; i<=EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
-
-  the_gui = new Gui(this);
 }
 
 Arena::~Arena()
@@ -37,6 +32,13 @@ Arena::~Arena()
   g_list_free(exclusion_points);
   for(int i=ROBOT; i<EXPLOSION; i++)
     g_list_free(object_lists[i]);
+}
+
+void
+Arena::set_colours()
+{  
+  background_colour = make_gdk_colour(the_opts.get_background_colour());
+  foreground_colour = make_gdk_colour(the_opts.get_foreground_colour());
 }
 
 void
@@ -356,10 +358,10 @@ Arena::timeout_function()
       //   TODO:    if( total_time > next_check_time ) check_robots();
 
         // Place mines and cookies
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*opts.get_cookie_frequency() )
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_cookie_frequency() )
           add_cookie();
 
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*opts.get_mine_frequency() )
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_mine_frequency() )
           add_mine();
       }
       break;
@@ -377,7 +379,7 @@ Arena::update()
   //update_explosions();
   move_shots();
   update_robots();
-  the_gui->draw_objects();
+  the_gui.draw_objects();
 }
 
 void
@@ -386,7 +388,7 @@ Arena::update_timer()
   gdouble last_timer = current_timer;
   gulong microsecs;
   current_timer = g_timer_elapsed(timer, &microsecs);
-  timestep = min( (current_timer - last_timer) * timescale, opts.get_max_timestep() );
+  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_max_timestep() );
   total_time += timestep;
 }
 
@@ -402,11 +404,11 @@ Arena::reset_timer()
 void
 Arena::add_cookie()
 {
-  double en = opts.get_cookie_min_energy() + 
-    (opts.get_cookie_max_energy() - opts.get_cookie_min_energy()) * 
+  double en = the_opts.get_cookie_min_energy() + 
+    (the_opts.get_cookie_max_energy() - the_opts.get_cookie_min_energy()) * 
     (double)rand() / (double)RAND_MAX;
   bool found_space = false;
-  double r = opts.get_cookie_radius();
+  double r = the_opts.get_cookie_radius();
   Vector2D pos;
 
   for( int i=0; i<100 && !found_space; i++)
@@ -416,18 +418,18 @@ Arena::add_cookie()
     }
   
   if( !found_space ) throw Error("Couldn't find space for cookie", "Arena::timeout_function");
-  Cookie* cookiep = new Cookie(pos, r, en, this);
+  Cookie* cookiep = new Cookie(pos, r, en);
   g_list_append(object_lists[COOKIE], cookiep);
 }
 
 void
 Arena::add_mine()
 {
-  double en = opts.get_mine_min_energy() + 
-    (opts.get_mine_max_energy() - opts.get_mine_min_energy()) * 
+  double en = the_opts.get_mine_min_energy() + 
+    (the_opts.get_mine_max_energy() - the_opts.get_mine_min_energy()) * 
     (double)rand() / (double)RAND_MAX;
   bool found_space = false;
-  double r = opts.get_cookie_radius();
+  double r = the_opts.get_cookie_radius();
   Vector2D pos;
 
   for( int i=0; i<100 && !found_space; i++)
@@ -437,7 +439,7 @@ Arena::add_mine()
     }
   
   if( !found_space ) throw Error("Couldn't find space for mine", "Arena::timeout_function");
-  Mine* minep = new Mine(pos, r, en, this);
+  Mine* minep = new Mine(pos, r, en);
   g_list_append(object_lists[MINE], minep);
 }
 
@@ -503,7 +505,7 @@ Arena::update_robots()
 }
 
 GdkColor
-make_gdk_color(const long col)
+make_gdk_colour(const long col)
 {
   GdkColormap *cmap;
   GdkColor colour;
@@ -549,7 +551,7 @@ Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* 
 }
 
 long
-Arena::find_free_color(const long home_colour, const long away_colour, const Robot* robotp)
+Arena::find_free_colour(const long home_colour, const long away_colour, const Robot* robotp)
 {  
   long tmp_colour;
 
@@ -670,7 +672,7 @@ Arena::start_game()
       for( int i=0; i<100 && !found_space; i++)
         {
           pos = get_random_position();
-          found_space = space_available(pos, opts.get_robot_radius()*1.2);
+          found_space = space_available(pos, the_opts.get_robot_radius()*1.2);
         }
 
       if( !found_space )
@@ -687,8 +689,8 @@ Arena::start_game()
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
-  the_gui->setup_arena_window( boundary );
-  the_gui->setup_score_window();
+  the_gui.setup_arena_window( boundary );
+  the_gui.setup_score_window();
 
   reset_timer();
 }
@@ -698,8 +700,8 @@ Arena::end_game()
 {
   // Close Score, Message and Control Windows
 
-  the_gui->close_score_window();
-  the_gui->close_arena_window();
+  the_gui.close_score_window();
+  the_gui.close_arena_window();
 
   broadcast(GAME_FINISHES);
 
@@ -811,14 +813,14 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 {
   // Create robot classes and to into the list all_robots_in_tournament
 
-  //  the_gui->setup_control_window();
-  the_gui->setup_message_window();
+  //  the_gui.setup_control_window();
+  the_gui.setup_message_window();
 
   Robot* robotp;
 
   for(int i=0; robotfilename_list[i] != NULL; i++)
     {
-      robotp = new Robot(robotfilename_list[i], this);
+      robotp = new Robot(robotfilename_list[i]);
       g_list_append(all_robots_in_tournament, robotp);
     }
 
@@ -853,6 +855,6 @@ Arena::end_tournament()
 
   state = FINISHED;
 
-  the_gui->close_message_window();
-  //  the_gui->close_control_window();
+  the_gui.close_message_window();
+  //  the_gui.close_control_window();
 }

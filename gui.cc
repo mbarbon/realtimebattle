@@ -29,39 +29,38 @@ static char * colour_square[] =
 };
 
 void
-no_zoom_callback(GtkWidget *widget, gpointer guip)
+no_zoom_callback(GtkWidget *widget, gpointer data)
 {
-  ((Gui *)guip)->change_zoom( NO_ZOOM );
+  the_gui.change_zoom( NO_ZOOM );
 }
 
 void
-zoom_in_callback(GtkWidget *widget, gpointer guip)
+zoom_in_callback(GtkWidget *widget, gpointer data)
 {
-  ((Gui *)guip)->change_zoom( ZOOM_IN );
+  the_gui.change_zoom( ZOOM_IN );
 }
 
 void
-zoom_out_callback(GtkWidget *widget, gpointer guip)
+zoom_out_callback(GtkWidget *widget, gpointer data)
 {
-  ((Gui *)guip)->change_zoom( ZOOM_OUT );
+  the_gui.change_zoom( ZOOM_OUT );
 }
 
 gint
-redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer guip)
+redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
-  ((Gui *)guip)->draw_all_walls();
+  the_gui.draw_all_walls();
   return FALSE;
 }
 
 void
-delete_event(GtkWidget *widget, gpointer guip)
+delete_event(GtkWidget *widget, gpointer data)
 {
-  ((Gui *)guip)->quit_event();
+  the_gui.quit_event();
 }
 
-Gui::Gui(Arena * arenap)
+Gui::Gui()
 {
-  the_arena = arenap;
   zoomfactor = 1;
   statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
@@ -156,29 +155,29 @@ Gui::draw_objects()
   GList* gl;
   Robot* robotp;
 
-  object_lists = the_arena->get_object_lists();
+  object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
       if( robotp->get_object_type() == ROBOT )
         if( robotp->is_alive() )
           {
-            robotp->draw_shape( *this , true );
-            robotp->draw_radar_and_cannon( *this );
+            robotp->draw_shape( true );
+            robotp->draw_radar_and_cannon();
           }
     }
 
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
-      ((Shot*)gl->data)->draw_shape( *this , true );
+      ((Shot*)gl->data)->draw_shape( true );
 
   for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
     if( ((Mine*)gl->data)->is_alive() )
-      ((Mine*)gl->data)->draw_shape( *this , true );
+      ((Mine*)gl->data)->draw_shape( true );
 
   for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
     if( ((Cookie*)gl->data)->is_alive() )
-      ((Cookie*)gl->data)->draw_shape( *this , true );
+      ((Cookie*)gl->data)->draw_shape( true );
 }
 
 void
@@ -187,9 +186,9 @@ Gui::draw_all_walls()
   GList** object_lists;
   GList* gl;
 
-  object_lists = the_arena->get_object_lists();
+  object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-    ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
+    ((Shape*)(WallCircle*)gl->data)->draw_shape( false ); // Strange, but it works!
 }
 
 void
@@ -263,7 +262,7 @@ Gui::clear_area()
   GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, the_arena->get_background_colour_p() );
+  gdk_gc_set_foreground( colour_gc, the_arena.get_background_colour_p() );
 
   gdk_draw_rectangle (drawing_area->window,
                       colour_gc,
@@ -292,7 +291,6 @@ Gui::draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colou
 void
 Gui::quit_event()
 {
-  delete the_arena;
   gtk_main_quit();
 }
 
@@ -325,7 +323,7 @@ Gui::setup_control_window()
   control_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control");
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
-                      GTK_SIGNAL_FUNC (delete_event), (gpointer) this);
+                      GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
 
   vbox = gtk_vbox_new (FALSE, 10);
@@ -341,7 +339,7 @@ Gui::setup_control_window()
 
   button = gtk_button_new_with_label ("New Tournament");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (start_tournament_button_callback), (gpointer) this );
+                      GTK_SIGNAL_FUNC (start_tournament_button_callback), (gpointer) NULL );
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 0, 4, 0, 1);
   gtk_widget_show (button);
 
@@ -365,7 +363,7 @@ Gui::setup_control_window()
 
   button = gtk_button_new_with_label ("Statistics");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this );
+                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) NULL );
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 5, 10, 1, 2);
   gtk_widget_show (button);
 
@@ -390,7 +388,7 @@ Gui::setup_control_window()
 
   button = gtk_button_new_with_label ("Quit");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (delete_event), (gpointer) this);
+                      GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_table_attach_defaults (GTK_TABLE(bottomtable), button, 1, 3, 0, 1);
   gtk_widget_show (button);
   gtk_widget_show (bottomtable);
@@ -407,7 +405,7 @@ Gui::setup_score_window()
   GList* gl;
   Robot* robotp;
 
-  object_lists = the_arena->get_object_lists();
+  object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
@@ -457,15 +455,15 @@ Gui::setup_score_window()
         }
 
       int row = gtk_clist_append(GTK_CLIST(score_clist), list);
-      gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena->get_foreground_colour_p());
-      gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena->get_background_colour_p());
+      gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena.get_foreground_colour_p());
+      gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena.get_background_colour_p());
 
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
       char ** col_sq;
 
       colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
-                                                    the_arena->get_background_colour_p(),
+                                                    the_arena.get_background_colour_p(),
                                                     get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
@@ -560,19 +558,19 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   button = gtk_button_new_with_label ("No Zoom");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (no_zoom_callback), (gpointer) this);
+                      GTK_SIGNAL_FUNC (no_zoom_callback), (gpointer) NULL);
   gtk_table_attach_defaults (GTK_TABLE(button_table), button, 0, 1, 0, 1);
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Zoom In");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (zoom_in_callback), (gpointer) this);
+                      GTK_SIGNAL_FUNC (zoom_in_callback), (gpointer) NULL);
   gtk_table_attach_defaults (GTK_TABLE(button_table), button, 1, 2, 0, 1);
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Zoom Out");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (zoom_out_callback), (gpointer) this);
+                      GTK_SIGNAL_FUNC (zoom_out_callback), (gpointer) NULL);
   gtk_table_attach_defaults (GTK_TABLE(button_table), button, 2, 3, 0, 1);
   gtk_widget_show (button);
 
@@ -593,7 +591,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
   drawing_area = gtk_drawing_area_new ();
   gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),400,400);
   gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
-                      (GtkSignalFunc) redraw_arena, (gpointer) this);
+                      (GtkSignalFunc) redraw_arena, (gpointer) NULL);
   gtk_widget_set_events (drawing_area, GDK_EXPOSURE_MASK);
   gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
   gtk_widget_show (drawing_area);
@@ -602,7 +600,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   // Background Colour 
 
-  gdk_window_set_background (drawing_area->window, the_arena->get_background_colour_p());
+  gdk_window_set_background (drawing_area->window, the_arena.get_background_colour_p());
   gdk_window_clear (drawing_area->window);
 
   clear_area();
