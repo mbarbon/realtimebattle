@@ -370,6 +370,9 @@ RotateAndFire::radar_cookie( const double dist, const double angle )
            << current_x_coordinate + dist*cos(angle + current_robot_angle)
            << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
            << ")" << endl;
+      cout << "Debug " << _("I am at") << " "
+           << " (" << current_x_coordinate << "," << current_y_coordinate
+           << ") " << _("at angle") << " " << current_robot_angle << endl;
     }
 }
 
@@ -391,6 +394,9 @@ RotateAndFire::radar_mine( const double dist, const double angle )
            << current_x_coordinate + dist*cos(angle + current_robot_angle)
            << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
            << ")" << endl;
+      cout << "Debug " << _("I am at") << " "
+           << " (" << current_x_coordinate << "," << current_y_coordinate
+           << ") " << _("at angle") << " " << current_robot_angle << endl;
     }
 }
 
