@@ -29,14 +29,24 @@ Cookie::Cookie(const Vector2D& c, const double r, const double e)
 {
   energy = e;
   alive = true;
-  draw_shape( false );
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    draw_shape( false );
+#endif
+
+   id = the_arena.increase_cookie_count();
 }
 
 void
 Cookie::die()
 {
    alive = false;
-   the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#ifndef NO_GRAPHICS
+   if (!no_graphics )
+     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#endif
+
+   the_arena.print_to_logfile('D', 'C', id);
 }
 
 Mine::Mine(const Vector2D& c, const double r, const double e)
@@ -44,14 +54,24 @@ Mine::Mine(const Vector2D& c, const double r, const double e)
 {
   energy = e;
   alive = true;
-  draw_shape( false );
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    draw_shape( false );
+#endif
+
+  id = the_arena.increase_mine_count();
 }
 
 void
 Mine::die()
 {
    alive = false;
-   the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#ifndef NO_GRAPHICS
+   if (!no_graphics )
+     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+#endif
+
+   the_arena.print_to_logfile('D', 'M', id);
 }
 
 
