@@ -414,7 +414,7 @@ msgstr "Loggingfrequenz [Jedes n:te Update-Intervall]"
 
 #: src/Options.cc:305
 msgid "Max robots allowed simultaneously"
-msgstr ""
+msgstr "Anzahl max. gleichzeitig erlaubter Roboter"
 
 #: src/Options.cc:309
 msgid "Robot search path"
@@ -596,8 +596,8 @@ msgid ""
 "    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
 msgstr ""
-"    --debug_level [0-5],         -D   Setzt den anfänglichen "
-"Debug-Level.Bezieht -d mit ein"
+"    --debug_level [0-5],         -D   Setzt den anfänglichen Debug-Level. "
+"Bezieht -d mit ein"
 
 #: src/RealTimeBattle.cc:95
 msgid "    --normal_mode,               -n   normal mode (default)"
