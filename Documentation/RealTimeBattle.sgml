@@ -192,8 +192,8 @@ Options:
                                                 autostart a tournament
 <item> <tt> --statistics_file [file], -s </tt> file to print the statistics to
                                                 when autostarting
-<item> <tt> --message_file [file],    -m </tt> redirect messages to 'file'.
-                                                '-' as 'file' is equivalent to STDOUT.
+<item> <tt> --message_file [file],    -m </tt> redirect messages to 'file', '-' as 'file' 
+                                                is equivalent to STDOUT.
                                                 If both log and messages are send
                                                 to STDOUT, '-m' will be ignored
 
