@@ -23,19 +23,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 #include <list>
 
-#include "Messagetypes.h"
 #include "DrawingObjects.h"
+
+#include "GuiRequest.h"
+#include "Messagetypes.h"
 #include "OptionHandler.h"
 #include "Structs.h"
 
-class ControlWindow;
 class ArenaWindow;
+class ControlWindow;
+class GuiClientInterface;
 class MessageWindow;
 class OptionsWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
-class GuiClientInterface;
 class Vector2D;
 
 class Gui;
@@ -59,6 +61,7 @@ public:
   int main_loop                                ( GuiClientInterface* );
   int timeout_function                         ();
   void get_information                         ();
+  void apply_request                           ( GuiRequest* req );
   void set_colours                             ();
   void quit                                    ( bool exit_program = true );
   void error                                   ( const bool fatal,

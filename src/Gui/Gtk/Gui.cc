@@ -26,24 +26,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <typeinfo>
 #include <string>
 
-#include "Gui.h"
-#include "GuiFunctions.h"
-#include "GuiInterface.h"
-#include "IntlDefs.h"
 #include "ArenaWindow.h"
+#include "ControlWindow.h"
+#include "Dialog.h"
+#include "DrawingObjects.h"
+#include "Gui.h"
+#include "GuiVarious.h"
 #include "MessageWindow.h"
 #include "OptionsWindow.h"
 #include "ScoreWindow.h"
-#include "ControlWindow.h"
 #include "StatisticsWindow.h"
 #include "StartTournamentWindow.h"
-#include "Dialog.h"
-#include "DrawingObjects.h"
+
+#include "GuiFunctions.h"
+#include "GuiInterface.h"
+#include "InfoClasses.h"
+#include "IntlDefs.h"
+#include "Messagetypes.h"
 #include "Option.h"
 #include "OptionHandler.h"
-#include "GuiVarious.h"
+#include "Structs.h"
 #include "Various.h"
-#include "InfoClasses.h"
 
 int gui_returncode;
 class Gui* gui_p;
@@ -75,7 +78,7 @@ GIInit( int argc, char** argv )
   gui_p = new Gui();
   return (gui_p != NULL);
 }
-//TODO: How do we get the_opts?
+
 int
 GIMain( GuiClientInterface* _gi_p )
 {
@@ -95,6 +98,7 @@ Gui::Gui()
   starttournamentwindow_p = NULL;
 
   debug_level = 0;
+  state = NO_STATE;
 
   initialize_gtk_options();
 }
@@ -125,9 +129,6 @@ Gui::initialize_gtk_options()
   const int GROUP_SIZE_OF_WINDOWS = 0;
 
   // ---------- Size of Windows ----------
-
-  // TODO: There's something very strange with the Options (occurs only in Gui)
-  //       Newly created Option-objects does not contain the values they should.
 
   all_options["Arena window xsize"] = (Option*) new
     LongOption( GROUP_SIZE_OF_WINDOWS, 350, 185, 10000, false, false,
@@ -296,6 +297,12 @@ Gui::get_information()
           break;
         }
     }
+}
+
+void
+Gui::apply_request( GuiRequest* req )
+{
+  guiinterface_p->apply_request( req );
 }
 
 void
