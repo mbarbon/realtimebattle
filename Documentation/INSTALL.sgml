@@ -3,8 +3,9 @@
 <notes>
 <title>Installation
 
-Installing RealTimeBattle should not be too difficult; if you get problems, please send a bug report
-to <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> and tell what
+Installing RealTimeBattle should not be too difficult; in case you get problems, please send your
+bug report to 
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> and tell what
 went wrong. 
 
 <enum>
@@ -18,10 +19,10 @@ the file are extracted to the directory <tt>RealTimeBattle</tt>.
 
 <item> Compile
 <p>
-Change directory to <tt>RealTimeBattle</tt> and type <verb>make</verb>
+Change directory to <tt>RealTimeBattle</tt> and type <verb>% make</verb>
 
 Hopefully will everything compile fine. If not, please ensure that <tt>gtk+</tt> is correctly
-installed. You can check this by typing <verb>gtk-config --version</verb>
+installed. You can check this by typing <verb>% gtk-config --version</verb>
 
 <item> Install
 <p>
