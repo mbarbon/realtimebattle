@@ -94,14 +94,11 @@ rpm-install:
 	gzip -c Documentation/RealTimeBattle.info > $(infodir)/RealTimeBattle.info.gz
 
 rpm: tar.gz
-	SOURCEDIR=`rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//"` && \
-	SPECDIR=`rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//"` && \
-	RPMDIR=`rpm --showrc | grep "^rpmdir" | sed "s/rpmdir[  ]*: *//"` && \
-	SRCRPMDIR=`rpm --showrc | grep "^srcrpmdir" | sed "s/srcrpmdir[  ]*: *//"` && \
-	BUILDARCH=`rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//"` && \
+	cp RealTimeBattle.tar.gz $(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//") && \
+	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RTB_RPM_RELEASE)/" RealTimeBattle.spec > $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
+	rpm -ba $(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
+	cp $(shell rpm --showrc | grep "^rpmdir" | sed "s/rpmdir[  ]*: *//")/$(shell rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).$(shell rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//").rpm . && \
+	cp $(shell rpm --showrc | grep "^srcrpmdir" | sed "s/srcrpmdir[  ]*: *//")/RealTimeBattle-$(RTB_RPM_VERSION).src.rpm . 
 
-	cp RealTimeBattle.tar.gz $SOURCEDIR && \
-	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > "$SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec" && \
-	rpm -ba "$SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec" && \
-	cp "$RPMDIR/$BUILDARCH/RealTimeBattle-$(VERSION)-$(RELEASE).$BUILDARCH.rpm" . && \
-	cp "$SRCRPMDIR/RealTimeBattle-$(VERSION)-$(RELEASE).src.rpm" . 
+
+
