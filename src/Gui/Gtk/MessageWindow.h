@@ -17,70 +17,69 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __MESSAGE_WINDOW__
-#define __MESSAGE_WINDOW__
+#ifndef RTB_GTKGUI__MESSAGE_WINDOW__
+#define RTB_GTKGUI__MESSAGE_WINDOW__
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
+#include <gtk/gtk.h>
+
+#include <list>
+#include <map>
 #include <string>
 
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-union _GdkEvent;
-typedef union _GdkEvent GdkEvent;
+#include "Structs.h"
+#include "Window.h"
 
-class DrawingRobot;
-
-class MessageWindow
+class MessageWindow : public Window
 {
 public:
-  MessageWindow                  ( const int default_width  = -1,
-                                   const int default_height = -1,
-                                   const int default_x_pos  = -1,
-                                   const int default_y_pos  = -1 );
+  MessageWindow                  ();
   ~MessageWindow                 ();
 
+  void create                    ( const int&             default_width  = -1,
+                                   const int&             default_height = -1,
+                                   const int&             default_x_pos  = -1,
+                                   const int&             default_y_pos  = -1 );
+  void destroy                   ();
+
   void set_window_title          ();
-  void add_message               ( const string& name_of_messager, 
-                                   const string& message );
 
-  static void hide_window        ( GtkWidget* widget, GdkEvent* event,
-                                   class MessageWindow* messagewindow_p );
-  static void show_window        ( GtkWidget* widget,
-                                   class MessageWindow* messagewindow_p );
-
-  // warning Do not use the widget variable. It may be NULL.
-  static void clear_clist        ( GtkWidget* widget,
-                                   class MessageWindow* messagewindow_p );
-  static void show_one_robot     ( GtkWidget* widget,
-                                   class MessageWindow* messagewindow_p );
-  static void show_all           ( GtkWidget* widget,
-                                   class MessageWindow* messagewindow_p );
-
-  void freeze_clist              ();
-  void thaw_clist                ();
-
-  void set_viewed_robot          ( class DrawingRobot* robot_p );
-  void set_window_shown          ( bool win_shown );
-
-  GtkWidget* get_window_p        () { return window_p; }
-  bool is_window_shown           () { return window_shown; }
-  GtkWidget* get_clist           () { return clist; }
+  void add_messages              ( const list<message_t>& message_list );
 
 private:
 
-  GtkWidget* window_p;
-  GtkWidget* clist;
-  DrawingRobot* viewed_robot;
+  // Data
+  string                         viewed_robot;
+  map<string, list<string> >     message_history;
 
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  GtkStyle* rtb_message_row_style;
-  GtkStyle* robot_message_row_style;
-#endif
+private:
 
-  bool window_shown;
+  // Graphics helper functions.
+
+  void set_styles                ();
+  void set_viewed_robot_label    ();
+  void add_messages_to_clist     ( const int&             n_o_new_messages,
+                                   const int&             n_o_removed_messages );
+  void add_a_message             ( const string&          message );
+  void change_robot              ( const string&          robot_name );
+
+  // Graphics callbacks
+  static gint close_window       ( GtkWidget*             widget,
+                                   GdkEvent*              event,
+                                   MessageWindow*         object_p );
+  static void change_callback    ( GtkWidget*             widget,
+                                   MessageWindow*         object_p );
+
+  // Graphics data
+
+  GtkWidget*                     viewed_robot_label;
+  GtkWidget*                     robot_data_view;
+  GtkWidget*                     message_view;
+
+  GtkStyle*                      style_rtb_message;
 };
 
-#endif __MESSAGE_WINDOW__
+#endif RTB_GTKGUI__MESSAGE_WINDOW__

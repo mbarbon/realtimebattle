@@ -17,306 +17,285 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <gtk/gtk.h>
+
+#include <list>
+#include <map>
 #include <string>
 
-#include "MessageWindow.h"
-#include "DrawingObjects.h"
-#include "IntlDefs.h"
-#include "ScoreWindow.h"
-#include "ControlWindow.h"
 #include "Gui.h"
 #include "GuiVarious.h"
+#include "IntlDefs.h"
+#include "MessageWindow.h"
+#include "Structs.h"
 #include "String.h"
 
-
-MessageWindow::MessageWindow( const int default_width,
-                              const int default_height,
-                              const int default_x_pos,
-                              const int default_y_pos )
+MessageWindow::MessageWindow()
 {
-  // The window widget
-
-  viewed_robot = NULL;
-
-  window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
-  gtk_widget_set_name( window_p, "RTB Message" );
-
-  set_window_title();
-
-  gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
-
-  if( default_width != -1 && default_height != -1 )
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-    {
-      gtk_window_set_default_size( GTK_WINDOW( window_p ),
-                                   default_width, default_height );
-      gtk_widget_set_usize( window_p , 300, 110 );
-    }
-#else
-    gtk_widget_set_usize( window_p, default_width, default_height );
-#endif
-  if( default_x_pos != -1 && default_y_pos != -1 )
-    gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
-
-  gtk_signal_connect( GTK_OBJECT( window_p ), "delete_event",
-                      (GtkSignalFunc) MessageWindow::hide_window,
-                      (gpointer) this );
-
-  // Main box
-
-  GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_p ), vbox );
-  gtk_widget_show( vbox );
-
-  // Buttons
-
-  GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
-  gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
-  gtk_widget_show( hbox );
-
-  struct button_t { string label; GtkSignalFunc func; };
-  struct button_t buttons[] = {
-    { (string)_(" Clear all messages "), 
-      (GtkSignalFunc) MessageWindow::clear_clist },
-    { (string)_(" Show only marked robot "), 
-      (GtkSignalFunc) MessageWindow::show_one_robot },
-    { (string)_(" Show all "),
-      (GtkSignalFunc) MessageWindow::show_all } };
-  for(int i = 0;i < 3; i++)
-    {
-      GtkWidget* button =
-        gtk_button_new_with_label( buttons[i].label.c_str() );
-      gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                          (GtkSignalFunc) buttons[i].func,
-                          (gpointer) this );
-      gtk_box_pack_start( GTK_BOX( hbox ), button,
-                          TRUE, TRUE, 0 );
-      gtk_widget_show( button );
-    }
-    
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  GtkObject* hadj = gtk_adjustment_new( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkObject* vadj = gtk_adjustment_new( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkWidget* scrolled_win =
-    gtk_scrolled_window_new( GTK_ADJUSTMENT( hadj ),
-                             GTK_ADJUSTMENT( vadj ) );
-  gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( scrolled_win ),
-                                  GTK_POLICY_AUTOMATIC,
-                                  GTK_POLICY_AUTOMATIC );
-
-  gtk_box_pack_start( GTK_BOX (vbox), scrolled_win, TRUE, TRUE, 0 );
-  gtk_widget_show( scrolled_win );
-#endif
-
-  char* titles[2] = { _(" Robot "), _(" Message ") };
-  clist = gtk_clist_new_with_titles( 2, titles );
-  gtk_clist_set_selection_mode( GTK_CLIST( clist ),
-                                GTK_SELECTION_BROWSE );
-  gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 130 );
-  gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 1000 );
-  gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
-                                      GTK_JUSTIFY_LEFT );
-  gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
-                                      GTK_JUSTIFY_LEFT );
-  gtk_clist_column_titles_passive( GTK_CLIST( clist ) );
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
-  gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
-
-  GtkStyle* clist_style = gtk_rc_get_style(window_p);
-  if( clist_style == NULL )
-    clist_style = gtk_style_new();
-  else
-    clist_style = gtk_style_copy(clist_style);
-  clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
-  clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
-  clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
-  clist_style->fg[GTK_STATE_SELECTED] = *(the_gui.get_fg_gdk_colour_p());
-  gtk_widget_set_style( clist, clist_style );
-#else
-  gtk_clist_set_border( GTK_CLIST( clist ), GTK_SHADOW_IN );
-  gtk_clist_set_policy( GTK_CLIST( clist ),
-                        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  gtk_box_pack_start( GTK_BOX( vbox ), clist, TRUE, TRUE, 0 );
-#endif
-  gtk_widget_show( clist );
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  rtb_message_row_style = gtk_rc_get_style(window_p);
-  if( rtb_message_row_style == NULL )
-    rtb_message_row_style = gtk_style_new();
-  else
-    rtb_message_row_style = gtk_style_copy(rtb_message_row_style);
-  rtb_message_row_style->base[GTK_STATE_NORMAL] =
-    make_gdk_colour( the_gui.get_bg_rgb_colour() );
-  rtb_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
-  rtb_message_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
-  rtb_message_row_style->fg[GTK_STATE_NORMAL] = 
-    *( the_gui.get_rtb_message_gdk_colour_p() );
-  rtb_message_row_style->fg[GTK_STATE_SELECTED] =
-    *( the_gui.get_rtb_message_gdk_colour_p() );
-
-  robot_message_row_style = gtk_rc_get_style(window_p);
-  if( robot_message_row_style == NULL )
-    robot_message_row_style = gtk_style_new();
-  else
-    robot_message_row_style = gtk_style_copy(robot_message_row_style);
-  robot_message_row_style->base[GTK_STATE_NORMAL] =
-    make_gdk_colour( the_gui.get_bg_rgb_colour() );
-  robot_message_row_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
-  robot_message_row_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
-  robot_message_row_style->fg[GTK_STATE_NORMAL] = *( the_gui.get_fg_gdk_colour_p() );
-  robot_message_row_style->fg[GTK_STATE_SELECTED] = *( the_gui.get_fg_gdk_colour_p() );
-#endif
-
-  if( window_shown = ( the_controlwindow.is_messagewindow_checked() ) )
-    gtk_widget_show_now( window_p );
+  viewed_robot.erase();
 }
 
 MessageWindow::~MessageWindow()
 {
-  gtk_widget_destroy( window_p );
+  destroy();
+}
+
+void
+MessageWindow::create( const int&  default_width,
+                       const int&  default_height,
+                       const int&  default_x_pos,
+                       const int&  default_y_pos )
+{
+  // Check that the window isn't already created
+
+  if( is_window_shown() )
+    return;
+
+  // Create the window.
+
+  Window::create( GTK_WINDOW_TOPLEVEL,
+                  "Message",
+                  300, 110, // Subject to change
+                  default_width,
+                  default_height,
+                  default_x_pos,
+                  default_y_pos );
+
+  set_window_title();
+  gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
+
+  gtk_signal_connect( GTK_OBJECT( window_p ),
+                      "delete_event",
+                      (GtkSignalFunc) MessageWindow::close_window,
+                      (gpointer) this );
+
+  // Main box
+
+  GtkWidget* main_box = gtk_vbox_new( false, 10 );
+  gtk_container_add( GTK_CONTAINER( window_p ), main_box );
+  gtk_widget_show( main_box );
+
+  // Create change robot button.
+
+  GtkWidget* button = gtk_button_new_with_label( _("Change robot" ) );
+  gtk_box_pack_start( GTK_BOX( main_box ), button, false, true, 0 );
+  gtk_signal_connect( GTK_OBJECT( button ),
+                      "clicked",
+                      (GtkSignalFunc) MessageWindow::change_callback,
+                      (gpointer) this );
+  gtk_widget_show( button );
+
+  // Create a label to hold the currently viewed robot.
+
+  viewed_robot_label = gtk_label_new( "" );
+  gtk_box_pack_start( GTK_BOX( main_box ), viewed_robot_label, false, true, 0 );
+  gtk_widget_show( viewed_robot_label );
+
+  set_viewed_robot_label();
+
+  // Create a paned view that separate robot info view and message view.
+
+  GtkWidget* the_pane = gtk_vpaned_new();
+  gtk_paned_set_gutter_size( GTK_PANED( the_pane ), 14 );
+  gtk_box_pack_start( GTK_BOX( main_box ), the_pane, true, true, 0 );
+  gtk_widget_show( the_pane );
+
+  // Create the scolled window to contain the robot info clist.
+
+  GtkWidget* scroll_window = gtk_scrolled_window_new( 0, 0 );
+  gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( scroll_window ),
+                                  GTK_POLICY_AUTOMATIC,
+                                  GTK_POLICY_ALWAYS );
+  gtk_paned_pack1( GTK_PANED( the_pane ),
+                   scroll_window,
+                   true, true );
+  gtk_widget_show( scroll_window );
+
+  // Create the robot info view.
+  // The robot info view is thought to contain information such
+  // as netload, used cputime.
+
+  robot_data_view = gtk_clist_new( 2 );
+  gtk_clist_column_titles_hide( GTK_CLIST( robot_data_view ) );
+  gtk_clist_set_selection_mode( GTK_CLIST( robot_data_view ),
+                                GTK_SELECTION_BROWSE );
+  gtk_container_add( GTK_CONTAINER( scroll_window ), robot_data_view );
+  gtk_widget_show( robot_data_view );
+
+  // Create the scrolled window to contatin the message view.
+
+  scroll_window = gtk_scrolled_window_new( 0, 0 );
+  gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( scroll_window ),
+                                  GTK_POLICY_AUTOMATIC,
+                                  GTK_POLICY_ALWAYS );
+  gtk_paned_pack2( GTK_PANED( the_pane ),
+                   scroll_window,
+                   true, true );
+  gtk_widget_show( scroll_window );
+
+  // Create the message view.
+
+  message_view = gtk_clist_new( 2 );
+  gtk_clist_column_titles_hide( GTK_CLIST( message_view ) );
+  gtk_clist_set_selection_mode( GTK_CLIST( message_view ),
+                                GTK_SELECTION_BROWSE );
+  gtk_container_add( GTK_CONTAINER( scroll_window ), message_view );
+  gtk_widget_show( message_view );
+
+  gtk_widget_show( window_p );
+
+  set_styles();
+}
+
+void
+MessageWindow::destroy()
+{
+  Window::destroy();
 }
 
 void
 MessageWindow::set_window_title()
 {
-  string title = (string)_("Messages");
-  if( viewed_robot != NULL )
-    title += "  -  " + viewed_robot->get_name();
+  gtk_window_set_title( GTK_WINDOW( window_p ), _("Robot messages") );
+}
+
+void
+MessageWindow::set_viewed_robot_label()
+{
+  string label;
+  if( viewed_robot.empty() )
+    label = (string)_("No robot is being viewed.");
   else
-    title += "  -  " + (string)_(" All ");
+    label = (string)_("Viewed_robot:") + (string)" " + viewed_robot;
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
+  gtk_label_set_text( GTK_LABEL( viewed_robot_label ), label.c_str() );
 }
 
 void
-MessageWindow::add_message( const string& name_of_messager, 
-                            const string& message )
+MessageWindow::set_styles()
 {
-  if( window_shown )
+  style_rtb_message = gtk_rc_get_style( message_view );
+  if( style_rtb_message == 0 )
+    style_rtb_message = gtk_style_new();
+  else
+    style_rtb_message = gtk_style_copy( style_rtb_message );
+
+  GdkColor colour_rtb_message =
+    make_gdk_colour( the_gui.get_gtk_opts()->get_l( "RTB message colour" ) );
+
+  style_rtb_message->fg[GTK_STATE_NORMAL] = colour_rtb_message;
+  style_rtb_message->fg[GTK_STATE_SELECTED] = colour_rtb_message;
+}
+
+void
+MessageWindow::add_messages( const list<message_t>& message_list )
+{
+  int viewed_robot_new_messages = 0;
+  int viewed_robot_removed_messages = 0;
+
+  bool viewed_is_sender = false;
+  list<string>* string_list_p = 0;
+  list<message_t>::const_iterator mci;
+  for( mci  = message_list.begin();
+       mci != message_list.end();
+       mci++ )
     {
-      //      gtk_clist_freeze( GTK_CLIST( clist ) );
-      if( viewed_robot != NULL &&
-          viewed_robot->get_name() != name_of_messager &&
-          name_of_messager != "RealTimeBattle" )
-        return;
+      viewed_is_sender = ((*mci).sender == viewed_robot);
+      string_list_p = &( message_history[ (*mci).sender ] );
+      string_list_p->push_front( (*mci).message );
 
-      char* nom = copy_to_c_string( name_of_messager );
-      char* cmess = copy_to_c_string( message );
-      char* lst[2] = { nom, cmess };
+      if( viewed_is_sender )
+        viewed_robot_new_messages++;
 
-      int row = 0;
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      row = gtk_clist_insert( GTK_CLIST( clist ), row, lst );
-#else
-      gtk_clist_insert( GTK_CLIST( clist ), row, lst );
-#endif
-
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      if( name_of_messager == "RealTimeBattle" )
-        gtk_clist_set_row_style( GTK_CLIST( clist ), row, rtb_message_row_style );
-      else
-        gtk_clist_set_row_style( GTK_CLIST( clist ), row, robot_message_row_style );
-#else
-      GdkColor* fg_colour = NULL;
-      if( name_of_messager == "RealTimeBattle" )
-        fg_colour = the_gui.get_rtb_message_gdk_colour_p();
-      else
-        fg_colour = the_gui.get_fg_gdk_colour_p();
-
-      gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                                fg_colour );
-      gtk_clist_set_background( GTK_CLIST( clist ), row,
-                                the_gui.get_bg_gdk_colour_p() );
-#endif
-      //      gtk_clist_thaw( GTK_CLIST( clist ) );
-      delete [] nom;
-      delete [] cmess;
-    }
-}
-
-void
-MessageWindow::freeze_clist()
-{
-  if( window_shown )
-    gtk_clist_freeze( GTK_CLIST( clist ) );
-}
-
-void
-MessageWindow::thaw_clist()
-{
-  if( window_shown )
-    gtk_clist_thaw( GTK_CLIST( clist ) );
-}
-
-void
-MessageWindow::set_viewed_robot( class DrawingRobot* robot_p )
-{
-  viewed_robot = robot_p;
-}
-
-void
-MessageWindow::set_window_shown( bool win_shown )
-{
-  window_shown = win_shown;
-}
-
-// Warning: event can be NULL, do not use event!
-void
-MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
-                            class MessageWindow* messagewindow_p )
-{
-  if( messagewindow_p->is_window_shown() )
-    {
-      gtk_widget_hide( messagewindow_p->get_window_p() );
-      messagewindow_p->set_window_shown( false );
-      if( the_controlwindow.is_messagewindow_checked() )
+      if( string_list_p->size() >
+          (unsigned long)the_gui.get_gtk_opts()->get_l( "Message history length" ) )
         {
-          GtkWidget* menu_item = the_controlwindow.get_show_message_menu_item();
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
-#else
-          gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
-#endif
+          string_list_p->pop_back();
+          if( viewed_is_sender )
+            viewed_robot_removed_messages++;
         }
     }
+
+  add_messages_to_clist( viewed_robot_new_messages,
+                         viewed_robot_removed_messages );
 }
 
 void
-MessageWindow::show_window( GtkWidget* widget,
-                            class MessageWindow* messagewindow_p )
+MessageWindow::add_messages_to_clist( const int&  n_o_new_messages,
+                                      const int&  n_o_removed_messages )
 {
-  if( !messagewindow_p->is_window_shown() )
+  if( !is_window_shown() )
+    return;
+
+  gtk_clist_freeze( GTK_CLIST( message_view ) );
+
+  list<string>* string_list_p = &( message_history[ viewed_robot ] );
+  int counter = 0;
+  list<string>::const_iterator sci;
+  for( sci  = string_list_p->begin();
+       sci != string_list_p->end() || counter < n_o_new_messages;
+       sci++ )
     {
-      gtk_widget_show_now( messagewindow_p->get_window_p() );
-      messagewindow_p->set_window_shown( true );
+      add_a_message( *sci );
+      counter++;
     }
-}
 
-// warning Do not use the widget variable. It may be NULL.
-void
-MessageWindow::clear_clist( GtkWidget* widget,
-                            class MessageWindow* messagewindow_p )
-{
-  gtk_clist_clear( GTK_CLIST( messagewindow_p->get_clist() ) );
-}
+  for( int i = 0; i < n_o_removed_messages; i++ )
+    gtk_clist_remove( GTK_CLIST( message_view ),
+                      the_gui.get_gtk_opts()->get_l( "Message history length" ) );
 
-void
-MessageWindow::show_one_robot( GtkWidget* widget,
-                               class MessageWindow* messagewindow_p )
-{
-  messagewindow_p->set_viewed_robot
-    ( the_gui.get_scorewindow_p()->get_selected_robot() );
-  messagewindow_p->set_window_title();
+  gtk_clist_thaw( GTK_CLIST( message_view ) );
 }
 
 void
-MessageWindow::show_all( GtkWidget* widget,
-                         class MessageWindow* messagewindow_p )
+MessageWindow::add_a_message( const string&  message )
 {
-  messagewindow_p->set_viewed_robot( NULL );
-  messagewindow_p->set_window_title();
+  if( !is_window_shown() )
+    return;
+
+  char* cmessage;
+  if( message.substr( 0, 4 ) == "RTB:" )
+    cmessage = copy_to_c_string( message.substr( 4, string::npos ) );
+  else
+    cmessage = copy_to_c_string( message );
+  char* row_strings[1] = { cmessage };
+
+  int row = 0;
+  row = gtk_clist_insert( GTK_CLIST( message_view ), row, row_strings );
+
+  if( message.substr( 0, 4 ) == "RTB:" )
+    gtk_clist_set_row_style( GTK_CLIST( message_view ),
+                             row,
+                             style_rtb_message );
+
+  delete cmessage;
+}
+
+void
+MessageWindow::change_robot( const string&  robot_name )
+{
+  viewed_robot = robot_name;
+  gtk_clist_clear( GTK_CLIST( message_view ) );
+  add_messages_to_clist( -1, 0 );
+  // TODO: Change the robot info view.
+}
+
+gint
+MessageWindow::close_window( GtkWidget*      widget,
+                             GdkEvent*       event,
+                             MessageWindow*  object_p )
+{
+  object_p->destroy();
+  return true;
+}
+
+void
+MessageWindow::change_callback( GtkWidget*      widget,
+                                MessageWindow*  object_p )
+{
+  // TODO
 }
