@@ -128,7 +128,7 @@ ArenaReplay::parse_this_interval()
       }
   else
     {
-      search_backwards();
+      search_backwards( "T" );
     }
   
   if( log_file.eof() )
@@ -515,34 +515,43 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
     speed = REWIND;
 }
 
-void
-ArenaReplay::search_forward( const char search_letter )
+String
+ArenaReplay::search_forward( const String& search_letters )
 {
   if( log_from_stdin )
-    return;
+    return "";
 
   char letter='?';
   char buffer[400];
-  while( letter != search_letter && !log_file.eof() )
+  while( search_letters.find( letter ) == -1 && !log_file.eof() )
     {
       log_file.get( buffer, 400, '\n' );
       log_file >> ws;
-      letter = log_file.peek();
+      log_file >> letter;
     }
+  log_file.get( buffer, 400, '\n' );
+  beginning_of_current_line();
+
+  return (String) buffer;
 }
 
-void
-ArenaReplay::search_backwards( const char search_letter )
+String
+ArenaReplay::search_backwards( const String& search_letters )
 {
   if( log_from_stdin )
-    return;
+    return "";
 
   char letter='?';
-  while( letter != search_letter && log_file.tellg() != 0 )
+  while( search_letters.find( letter ) == -1 && log_file.tellg() != 0 )
     {
       beginning_of_prev_line();
       letter = log_file.peek();
     }
+  char buffer[400];
+  log_file.get( buffer, 400, '\n' );
+  beginning_of_current_line();
+
+  return (String) buffer;
 }
 
 void
@@ -560,6 +569,18 @@ ArenaReplay::beginning_of_prev_line()
           already_found_one_line = true;
           letter = '?';
         }
+    }
+  log_file.get( letter );
+}
+
+void
+ArenaReplay::beginning_of_current_line()
+{
+  char letter='?';
+  while( letter != '\n' && log_file.tellg() != 0 )
+    {
+      log_file.seekg( -1, ios::cur );
+      letter = log_file.peek();
     }
   log_file.get( letter );
 }

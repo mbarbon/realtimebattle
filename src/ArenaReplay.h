@@ -40,8 +40,8 @@ public:
                                   const String& statistics_fname,
                                   const String& option_fname );
   void change_speed             ( const bool forward, const bool fast );
-  void search_forward           ( const char searh_letter = 'T' );
-  void search_backwards         ( const char searh_letter = 'T' );
+  String search_forward         ( const String& search_letters );
+  String search_backwards       ( const String& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
 
@@ -55,6 +55,7 @@ private:
   char parse_log_line           ();
   void parse_this_interval      ();
   void beginning_of_prev_line   ();
+  void beginning_of_current_line();
 
   ifstream log_file;
 
