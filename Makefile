@@ -23,7 +23,7 @@ export libdirs = -L/usr/lib -L/usr/X11R6/lib
 export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o
-stdincludes = Vector2D.h gui.h Various.o Options.h Arena.h messagetypes.h
+stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h
 
 all: RealTimeBattle robots
 
@@ -35,14 +35,11 @@ RealTimeBattle: $(objects)
 #implicit rule for c++-file: N.o: $(CXX) -c N.cc $(CPPFLAGS) $(CXXFLAGS)
 
 Vector2D.o: Vector2D.cc Vector2D.h
-	g++ $(CXXFLAGS) -c Vector2D.cc
-Various.o: Various.cc Various.h
-	g++ $(CXXFLAGS) -c Various.cc
-
+Various.o: Various.cc Various.h Error.h
 gui.o: gui.cc $(stdincludes)
 RealTimeBattle.o: RealTimeBattle.cc $(stdincludes)
 Arena.o: Arena.cc $(stdincludes)
-Error.o: Error.cc $(stdincludes)
+Error.o: Error.cc Error.h
 MovingObject.o: MovingObject.cc $(stdincludes)
 Shape.o: Shape.cc $(stdincludes)
 Extras.o: Extras.cc $(stdincludes)
