@@ -31,7 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <sys/stat.h>
 #include <stdlib.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 #include <iostream.h>
 
@@ -50,7 +50,7 @@ void
 Error(const bool fatal, const String& error_msg, const String& function_name)
 {
   cerr << "RealTimeBattle: Error in " << function_name << ": " << error_msg << endl;
-  perror("RealTimeBattle: errno message");
+  //  perror("RealTimeBattle: errno message");
 
   if( fatal == true )
     {
