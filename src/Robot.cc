@@ -1448,7 +1448,7 @@ Robot::get_default_non_blocking_state()
   return true;
 }
 
-// If non_blocking is _not_ used, a file, /tmp/.rtb/"robotname", is created.
+// If non_blocking is _not_ used, a file, /tmp/rtb/"robotname", is created.
 //
 void
 Robot::set_non_blocking_state(const bool non_bl)
