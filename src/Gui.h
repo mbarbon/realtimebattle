@@ -114,7 +114,7 @@ class Gui
 {
 public:
   Gui();
-  ~Gui();
+  ~Gui() {}
 
   void setup_control_window();
   void setup_score_window();
@@ -132,8 +132,6 @@ public:
   void close_question_window();
 
   void quit_event();
-
-  void read_dirs_from_system();
 
   void clear_message_clist();
   void set_show_messages_for_robot( Robot* robotp );
@@ -182,15 +180,12 @@ public:
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget* get_score_clist() { return score_clist; }
-  GList* get_robotdirs() { return robotdirs; }
-  GList* get_arenadirs() { return arenadirs; }
   Robot* get_selected_robot() { return selected_robot; }
   double get_zoom() { return zoom; }
   GtkWidget* get_filesel_widget() { return filesel_widget; }
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
 private:
-  void split_colonseparated_dirs(String& dirs, GList * gl);
 
   bool statistics_up;
   bool start_tournament_up;
@@ -237,9 +232,6 @@ private:
   GList* selected_items_in_robot_directory;
   GList* selected_items_in_arena_tournament;
   GList* selected_items_in_arena_directory;
-
-  GList* robotdirs;
-  GList* arenadirs;
 
   int zoomfactor;
   double zoom;

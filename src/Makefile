@@ -7,7 +7,11 @@
 # Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
 # Add '-DBSD_FP' if the program dies with FPE (floating point exception) on a BSD system.
 
-CXXFLAGS = -DINSTALLDIR='"$(INSTALLDIR)"'
+CXXFLAGS = 
+
+ifdef INSTALLDIR
+CXXFLAGS += -DINSTALLDIR='"$(INSTALLDIR)"' 
+endif
 
 OPTIMIZEFLAGS = -O
 
@@ -53,7 +57,7 @@ RealTimeBattle: $(objects)
 
 String.o: String.cc String.h
 Vector2D.o: Vector2D.cc Vector2D.h
-Various.o: Various.cc Various.h Error.h String.h
+Various.o: Various.cc Various.h Error.h String.h Options.h
 Error.o: Error.cc Error.h String.h
 Gui.o: Gui.cc $(stdincludes)
 RealTimeBattle.o: RealTimeBattle.cc Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h

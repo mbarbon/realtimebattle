@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "Arena.h"
 #include "String.h"
+#include "Various.h"
 
 // This function is called whenever the user presses one of the min buttons
 void
@@ -429,7 +430,10 @@ Gui::setup_start_tournament_window()
   int all_clists_width=150;
   int all_clists_height=150;
 
-  read_dirs_from_system();
+  GList* robotdirs;
+  GList* arenadirs;
+
+  read_dirs_from_system(robotdirs, arenadirs);
 
   selected_items_in_robot_tournament = g_list_alloc();
   selected_items_in_robot_directory = g_list_alloc();
@@ -728,6 +732,9 @@ Gui::setup_start_tournament_window()
           closedir( adir );
         }
     }
+
+
+  clean_dir_glists(robotdirs, arenadirs);
 
   // Choose Number of games per sequence, Number of robots per sequence and Number of sequences
 

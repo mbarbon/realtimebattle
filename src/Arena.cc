@@ -161,7 +161,10 @@ Arena::set_filenames(String& log_fname, const String& statistics_fname,
 void
 Arena::parse_tournament_file( String& fname )
 {
-  the_gui.read_dirs_from_system();
+  GList* robotdirs;
+  GList* arenadirs;
+
+  read_dirs_from_system(robotdirs, arenadirs);
 
   ifstream file(fname.chars());
   if( !file )
@@ -207,6 +210,8 @@ Arena::parse_tournament_file( String& fname )
             delete (start_tournament_glist_info_t*)(gl->data);
           g_list_free(arena_glist);
 
+          clean_dir_glists(robotdirs, arenadirs);
+          
           return;
         }
       //        return;
@@ -254,7 +259,7 @@ Arena::parse_tournament_file( String& fname )
                 start_tournament_glist_info_t* info;
                 info = new start_tournament_glist_info_t(0,false,word,"");
                 GList* gl;
-                for(gl=g_list_next(the_gui.get_robotdirs());gl != NULL; gl=g_list_next(gl))
+                for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
                   {
                     String* current_dir = (String*)gl->data;
 
@@ -286,7 +291,7 @@ Arena::parse_tournament_file( String& fname )
                 start_tournament_glist_info_t* info;
                 info = new start_tournament_glist_info_t(0,false,word,"");
                 GList* gl;
-                for(gl=g_list_next(the_gui.get_arenadirs());gl != NULL; gl=g_list_next(gl))
+                for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
                   {
                     String* current_dir = (String*)gl->data;
 

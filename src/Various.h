@@ -20,7 +20,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __VARIOUS__
 #define __VARIOUS__
 
+#include <glib.h>
 #include <gdk/gdktypes.h>
+
+#include "String.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -55,6 +58,10 @@ long gdk2hex_colour(const GdkColor& col);
 void reorder_pointer_array(void** array, int size);
 
 void entry_handler( GtkWidget * entry, entry_t * entry_info );
+
+void read_dirs_from_system(GList*& robotdirs, GList*& arenadirs);
+void clean_dir_glists(GList*& robotdirs, GList*& arenadirs);
+void split_colonseparated_dirs(String& dirs, GList * gl);
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
 gint int_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
