@@ -58,6 +58,23 @@ new_robot_selected( GtkWidget * clist, gint row, gint column,
     the_gui.change_selected_robot( row );
 }
 
+void
+clear_message_clist_callback( GtkWidget* widget, gpointer data )
+{
+  the_gui.clear_message_clist();
+}
+
+void
+show_one_robots_messages_callback( GtkWidget* widget, gpointer data )
+{
+  the_gui.set_show_messages_for_robot( the_gui.get_selected_robot() );
+}
+
+void
+show_all_messages_callback( GtkWidget* widget, gpointer data )
+{
+  the_gui.set_show_messages_for_robot( NULL );
+}
 
 void
 pause_button_callback(GtkWidget * widget, gpointer data)
@@ -308,25 +325,40 @@ Gui::change_to_pixels_y(const double input)
 }
 
 void
+Gui::clear_message_clist()
+{
+  gtk_clist_clear(GTK_CLIST(message_clist));
+}
+
+void
+Gui::set_show_messages_for_robot( Robot* robotp )
+{
+  show_messages_for_robot = robotp;
+}
+
+void
 Gui::print_to_message_output (String from_robot, String output_text)
 {
-  char * lst[2];
-  
-  for(int j=0;j<2;j++)
+  if( show_messages_for_robot == NULL || show_messages_for_robot->get_robot_name() == from_robot  )
     {
-      lst[j] = new char[30];
-      strcpy(lst[j],"");
+      char * lst[2];
+  
+      for(int j=0;j<2;j++)
+        {
+          lst[j] = new char[30];
+          strcpy(lst[j],"");
+        }
+
+      int row = 0;
+      gtk_clist_insert(GTK_CLIST(message_clist), row, lst);
+      gtk_clist_set_foreground(GTK_CLIST(message_clist), row, the_arena.get_foreground_colour_p());
+      gtk_clist_set_background(GTK_CLIST(message_clist), row, the_arena.get_background_colour_p());
+      
+      gtk_clist_set_text(GTK_CLIST(message_clist), row, 0, from_robot.non_const_chars());
+      gtk_clist_set_text(GTK_CLIST(message_clist), row, 1, output_text.non_const_chars());
+      
+      for(int i=0; i<2; i++) delete [] lst[i];
     }
-
-  int row = 0;
-  gtk_clist_insert(GTK_CLIST(message_clist), row, lst);
-  gtk_clist_set_foreground(GTK_CLIST(message_clist), row, the_arena.get_foreground_colour_p());
-  gtk_clist_set_background(GTK_CLIST(message_clist), row, the_arena.get_background_colour_p());
-
-  gtk_clist_set_text(GTK_CLIST(message_clist), row, 0, from_robot.non_const_chars());
-  gtk_clist_set_text(GTK_CLIST(message_clist), row, 1, output_text.non_const_chars());
-
-  for(int i=0; i<2; i++) delete [] lst[i];
 }
 
 void
@@ -502,6 +534,7 @@ Gui::setup_control_window()
 
   control_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control");
+  gtk_widget_set_name (control_window, "RTB Control");
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
@@ -729,6 +762,7 @@ Gui::setup_score_window()
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_score_window_title();
+  gtk_widget_set_name (score_window, "RTB Score");
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
@@ -748,7 +782,7 @@ Gui::setup_score_window()
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 0);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 3, 38);
@@ -830,19 +864,42 @@ Gui::add_robots_to_score_list()
 void
 Gui::setup_message_window()
 {
-  GtkWidget * vbox;
-  GtkWidget * messagetable;
-  GtkWidget * vscrollbar;
-
-  // Window 
+  show_messages_for_robot = NULL;
 
   message_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (message_window), "RealTimeBattle Messages");
+  gtk_widget_set_name (message_window, "RTB Message");
   gtk_signal_connect (GTK_OBJECT (message_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(message_window));
   gtk_container_border_width (GTK_CONTAINER (message_window), 12);
   gtk_widget_set_usize(message_window,
                        (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_Y));
+
+  GtkWidget* vbox = gtk_vbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (message_window), vbox);
+  gtk_widget_show (vbox);
+
+  GtkWidget* hbox = gtk_hbox_new (FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  gtk_widget_show (hbox);
+
+  GtkWidget* button = gtk_button_new_with_label( " Clear all messages " );
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      (GtkSignalFunc)clear_message_clist_callback, NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+  gtk_widget_show(button);
+
+  button = gtk_button_new_with_label( " Show only marked robot " );
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      (GtkSignalFunc)show_one_robots_messages_callback, NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+  gtk_widget_show(button);
+
+  button = gtk_button_new_with_label( " Show all " );
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      (GtkSignalFunc)show_all_messages_callback, NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+  gtk_widget_show(button);
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
@@ -851,7 +908,7 @@ Gui::setup_message_window()
                                                      GTK_ADJUSTMENT ( vadj ) );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  gtk_container_add (GTK_CONTAINER (message_window), scrolled_win);
+  gtk_box_pack_start (GTK_BOX (vbox), scrolled_win, TRUE, TRUE, 0);
   gtk_widget_show ( scrolled_win );
 #endif
 
@@ -869,7 +926,7 @@ Gui::setup_message_window()
   gtk_clist_set_border(GTK_CLIST(message_clist), GTK_SHADOW_IN);
   gtk_clist_set_policy(GTK_CLIST(message_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (message_window), message_clist);
+  gtk_box_pack_start (GTK_BOX (vbox), message_clist, TRUE, TRUE, 0);
 #endif
   gtk_widget_show(message_clist);
 
@@ -906,6 +963,7 @@ Gui::setup_arena_window()
 
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_arena_window_title();
+  gtk_widget_set_name (arena_window, "RTB Arena");
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
@@ -982,6 +1040,7 @@ Gui::ask_user(String question, QuestionFunction function_name)
 {
   question_window = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_window_set_title (GTK_WINDOW (question_window), "RealTimeBattle");
+  gtk_widget_set_name (question_window, "RTB Question");
   gtk_window_set_policy(GTK_WINDOW (question_window), FALSE, FALSE, FALSE);
   gtk_window_position  (GTK_WINDOW (question_window), GTK_WIN_POS_CENTER);
   gtk_signal_connect (GTK_OBJECT (question_window), "delete_event",

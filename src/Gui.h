@@ -72,41 +72,51 @@ struct start_tournament_glist_info_t
   String directory;
 };
 
-void question_yes_callback(GtkWidget * widget, QuestionFunction function_name);
-void question_no_callback(GtkWidget * widget, QuestionFunction function_name);
-void new_robot_selected( GtkWidget * clist, gint row, gint column,
-                         GdkEventButton *event, gpointer data );
-void pause_button_callback(GtkWidget * widget, gpointer data);
-void step_button_callback(GtkWidget * widget, gpointer data);
-void end_game_button_callback(GtkWidget * widget, gpointer data);
-void kill_robot_button_callback(GtkWidget * widget, gpointer data);
-void decrease_debug_level_button_callback(GtkWidget * widget, gpointer data);
-void increase_debug_level_button_callback(GtkWidget * widget, gpointer data);
-void end_button_callback(GtkWidget * widget, gpointer data);
-void end_tournament(bool really);
-void statistics_button_callback(GtkWidget *widget, gpointer data);
-void start_tournament_min_callback(GtkWidget *widget, gpointer data);
-void start_tournament_max_callback(GtkWidget *widget, gpointer data);
-void start_tournament_full_round_callback(GtkWidget *widget, gpointer data);
-void start_tournament_all_arenas_callback(GtkWidget *widget, gpointer data);
-void start_tournament_button_callback(GtkWidget *widget, gpointer data);
-void kill_and_start_new_tournament(bool really);
-void delete_event( GtkWidget * widget, gpointer data );
-void no_zoom_callback(GtkWidget *widget, gpointer data);
-void zoom_in_callback(GtkWidget *widget, gpointer data);
-void zoom_out_callback(GtkWidget *widget, gpointer data);
-gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
+void question_yes_callback                            ( GtkWidget* widget, QuestionFunction function_name );
+void question_no_callback                             ( GtkWidget* widget, QuestionFunction function_name );
 
-void save_statistics_callback(GtkWidget *widget, gpointer data);
-void save_stats_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
-void destroy_stats_filesel();
-void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
+void new_robot_selected                               ( GtkWidget* clist, gint row, gint column,
+                                                        GdkEventButton* event, gpointer data );
 
-void start_tournament_start_callback(GtkWidget *widget, gpointer data);
-void start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p);
-void start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p);
-void start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
-                                      GdkEventButton *event, gpointer data );
+void clear_message_clist_callback                     ( GtkWidget* widget, gpointer data );
+void show_one_robots_messages_callback                ( GtkWidget* widget, gpointer data );
+void show_all_messages_callback                       ( GtkWidget* widget, gpointer data );
+
+void pause_button_callback                            ( GtkWidget* widget, gpointer data );
+void step_button_callback                             ( GtkWidget* widget, gpointer data );
+void end_game_button_callback                         ( GtkWidget* widget, gpointer data );
+void kill_robot_button_callback                       ( GtkWidget* widget, gpointer data );
+void decrease_debug_level_button_callback             ( GtkWidget* widget, gpointer data );
+void increase_debug_level_button_callback             ( GtkWidget* widget, gpointer data );
+void end_button_callback                              ( GtkWidget* widget, gpointer data );
+void end_tournament                                   ( bool really );
+
+void statistics_button_callback                       ( GtkWidget* widget, gpointer data );
+void save_statistics_callback                         ( GtkWidget* widget, gpointer data);
+void save_stats_filesel_ok_selected                   ( GtkWidget* widget, GtkFileSelection* fs);
+void destroy_stats_filesel                            ( );
+void stat_clist_column_callback                       ( GtkCList* clist, gint column, gpointer data);
+void buttons_in_statistics_callback                   ( GtkWidget* widget, gpointer type_p);
+
+void start_tournament_min_callback                    ( GtkWidget* widget, gpointer data );
+void start_tournament_max_callback                    ( GtkWidget* widget, gpointer data );
+void start_tournament_full_round_callback             ( GtkWidget* widget, gpointer data );
+void start_tournament_all_arenas_callback             ( GtkWidget* widget, gpointer data );
+void start_tournament_button_callback                 ( GtkWidget* widget, gpointer data );
+void kill_and_start_new_tournament                    ( bool really );
+void start_tournament_start_callback                  ( GtkWidget* widget, gpointer data);
+void start_tournament_select_robots_buttons_callback  ( GtkWidget* widget, gpointer button_number_p);
+void start_tournament_select_arenas_buttons_callback  ( GtkWidget* widget, gpointer button_number_p);
+void start_tournament_selection_made                  ( GtkWidget* clist, gint row, gint column,
+                                                        GdkEventButton* event, gpointer data );
+
+void delete_event                                     ( GtkWidget* widget, gpointer data );
+
+void no_zoom_callback                                 ( GtkWidget* widget, gpointer data );
+void zoom_in_callback                                 ( GtkWidget* widget, gpointer data );
+void zoom_out_callback                                ( GtkWidget* widget, gpointer data );
+
+gint redraw_arena                                     ( GtkWidget* widget, GdkEventExpose* event, gpointer data );
 
 class Gui
 {
@@ -131,6 +141,8 @@ public:
 
   void quit_event();
 
+  void clear_message_clist();
+  void set_show_messages_for_robot( Robot* robotp );
   void print_to_message_output(String from_robot, String text);
   void draw_objects(const bool clear_objects_first);
   void draw_all_walls();
@@ -148,6 +160,7 @@ public:
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
   void change_stat_type( stat_table_t type );
+  void change_sorting_in_clist( const int column );
   void change_statistics( int change, bool absoult_change );
   void add_new_row( void* rp, void* sp, int games_played );
   void add_the_statistics_to_clist();
@@ -188,6 +201,8 @@ private:
 
   bool statistics_up;
   bool start_tournament_up;
+
+  Robot* show_messages_for_robot;
 
   GtkWidget* message_clist;
   GtkWidget* drawing_area;
