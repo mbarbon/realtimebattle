@@ -35,13 +35,15 @@ public:
   void remove_from_solid_object_list(class SolidObject&);
   void start_robot(char* filename);
   void start_game();
+  void start_sequence_of_games(char** robotfilenamelist, char** arenafilenamelist);
+  void start_tournament(char**robotfilenamelist, char** arenafilenamelist);
   
 private:
   double timestep;
   double total_time;
 
   void parse_file(istream&);
-  void check_initialisation();
+  void check_initialization();
 
   GList object_lists[number_of_object_types];
 
@@ -221,8 +223,8 @@ public:
   void move(const double& timestep);  
   void update_radar_and_cannon();
   void change_energy(const double energy_diff);
-  char* get_message(char* readbuffer);
-  void send_message(enum message_type ...);
+  void get_messages();
+  void send_message(enum message_to_robot_type ...);
   void set_initial_position_and_direction(const Vector2D&, const Vector2D&);
 
   object_type get_object_type() { return ROBOT; }
@@ -230,6 +232,7 @@ public:
   bool is_alive() { return alive; }
 
 private:
+  message_from_robot_type name2msg_from_robot_type(char*);
   bool alive;
   double extra_air_resistance;
   double energy;
