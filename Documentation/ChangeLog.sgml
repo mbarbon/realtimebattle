@@ -7,7 +7,12 @@ Change log
 
 <item> <bf>0.9.8:</bf>
 <p>
-Some bugs in the new 'Rotate and Fire' code is fixed.
+A new Robot Option: USE_NON_BLOCKING. By setting this option to false
+robots input and output pipes are blocked, so that the robot automatically
+waits for the next message when reading from the STDIN. If you use this,
+signals are no longer necessary to inform about new messages.
+
+Some bugs in the new 'Rotate and Fire' code are fixed.
 
 The default RealTimeBattle installation-directory is now
 <tt>EPREFIX/games/RealTimeBattle</tt> instead of
