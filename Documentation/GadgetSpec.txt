@@ -125,7 +125,7 @@ Define Script name
   ;NE             VARTYPE
   ;THEN
   ;ELSE
-  ;GOTO           INT
+  ;GOTO           STRING
   ;WAIT           REAL
 
 EndDefine
