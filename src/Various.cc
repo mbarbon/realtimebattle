@@ -56,6 +56,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //extern bool no_graphics;
 
+#include "EventHandler.h"
+
 void
 Error(const bool fatal, const string& error_msg, const string& function_name)
 {
@@ -65,7 +67,7 @@ Error(const bool fatal, const string& error_msg, const string& function_name)
 
   if( fatal == true )
     {
-      Quit(false);
+      the_eventhandler.quit();
     }
 }
 
