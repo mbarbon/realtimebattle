@@ -61,6 +61,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #ifndef NO_GRAPHICS
 # include "ScoreWindow.h"
+# include "ControlWindow.h"
+#endif
+
+#ifndef NO_GRAPHICS
+extern class ControlWindow* controlwindow_p;
 #endif
 
 ArenaRealTime::ArenaRealTime()
@@ -562,18 +567,20 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
 void
 ArenaRealTime::quit_ordered()
 {
-  state = EXITING;
+  set_state( EXITING );
 }
 
 bool
 ArenaRealTime::timeout_function()
 {
-  if( halted ) return true;
 #ifndef NO_GRAPHICS
-  int old_total = (int)total_time;
-#endif
+      int old_total = (int)total_time;
+#endif NO_GRAPHICS
 
-  update_timer ();
+  if( state != PAUSED )
+    {
+      update_timer ();
+    }
 
   switch(state)
     {
@@ -587,11 +594,8 @@ ArenaRealTime::timeout_function()
         {
           if( statistics_file_name != "" )
             save_statistics_to_file( statistics_file_name );
-#ifndef NO_GRAPHICS
-          gtk_main_quit();
-#else NO_GRAPHICS
-          exit(EXIT_SUCCESS);
-#endif NO_GRAPHICS
+
+          Quit();
         }
       break;
       
@@ -634,9 +638,19 @@ ArenaRealTime::timeout_function()
             
             if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_MINE_FREQUENCY) )
               add_mine();
+
+              if( halt_next )
+                {
+                  set_state( PAUSED );
+                  halt_next = false;
+                }
           }
       }
       break;
+
+    case PAUSED:
+      break;
+
     case PAUSING_BETWEEN_GAMES:
       if( !pause_after_next_game ) start_game();
       break;
@@ -644,15 +658,11 @@ ArenaRealTime::timeout_function()
     case EXITING:
       return false;
       
+    case BEFORE_GAME_START:
     case NO_STATE:
-      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "ArenaRealTime::timeout_function");
+      Error(true, "Arena shouldn't be in this state here!!", "ArenaRealTime::timeout_function");
     }
 
-  if( halt_next )
-    {
-      halted = true;
-      halt_next = false;
-    }
   return true;
 }
 
@@ -897,7 +907,7 @@ ArenaRealTime::start_game()
 
   if( pause_after_next_game )
     {
-      state = PAUSING_BETWEEN_GAMES;
+      set_state( PAUSING_BETWEEN_GAMES );
       return;
     }  
   
@@ -931,8 +941,8 @@ ArenaRealTime::start_game()
   Vector2D pos;
 
   robots_left = 0;
-
-  state = BEFORE_GAME_START;
+  
+  set_state( BEFORE_GAME_START );
 
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
@@ -967,7 +977,7 @@ ArenaRealTime::start_game()
   for( object_lists[ROBOT_T].first(li2); li2.ok(); li2++ )
     ((Robot*)li2())->send_signal();
 
-  state = GAME_IN_PROGRESS;
+  set_state( GAME_IN_PROGRESS );
   games_remaining_in_sequence--;
 
 #ifndef NO_GRAPHICS
@@ -1040,7 +1050,7 @@ ArenaRealTime::start_sequence()
   
   // wait a second before checking
 
-  state = STARTING_ROBOTS;
+  set_state( STARTING_ROBOTS );
   sequence_nr++;
   sequences_remaining--;
   reset_timer();
@@ -1081,7 +1091,7 @@ ArenaRealTime::end_sequence()
 
   // wait a second before checking
 
-  state = SHUTTING_DOWN_ROBOTS;
+  set_state( SHUTTING_DOWN_ROBOTS);
   next_check_time = total_time + 1.0;
 }
 
@@ -1122,6 +1132,10 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
+      if( the_gui.is_messagewindow_up() ) the_gui.close_messagewindow();
+      if( the_gui.is_scorewindow_up() )   the_gui.close_scorewindow();
+      if( the_gui.is_arenawindow_up() )   the_gui.close_arenawindow();
+
       if( !use_message_file )
         the_gui.open_messagewindow();
       the_gui.open_arenawindow();
@@ -1254,14 +1268,14 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 void
 ArenaRealTime::end_tournament()
 {
-  state = FINISHED;
+  set_state( FINISHED );
 
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      if( !use_message_file )
-        the_gui.close_messagewindow();
-      the_gui.close_scorewindow();
+      //      if( !use_message_file )
+      //        the_gui.close_messagewindow();
+      //      the_gui.close_scorewindow();
       the_gui.close_arenawindow();
     }
 #endif
