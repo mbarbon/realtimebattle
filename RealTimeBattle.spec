@@ -1,11 +1,25 @@
-Summary: RealTimeBattle, a robot programming game for Unix
-Name: RealTimeBattle
-Version: #VERSION#
-Release: #RELEASE#
-Copyright: GPL
-Group: X11/Games
-Source: RealTimeBattle-#VERSION#.tar.gz
-URL: http://www.lysator.liu.se/realtimebattle
+#
+# spec file for package RealTimeBattle (Version 0.9.11)
+# 
+# Author: CW Zuckschwerdt <zany@triq.net>, Nov 1999 
+#
+
+%define prefix  /usr
+%define name    RealTimeBattle
+%define version 0.9.11
+%define release 1
+
+Summary:     RealTimeBattle, a robot programming game for Unix
+Name:        %{name}
+Version:     %{version}
+Release:     %{release}
+Copyright:   GPL
+Group:       X11/Games
+Source:      http://www.lysator.liu.se/realtimebattle/Download/%{name}-%{version}.tar.gz
+URL:         http://www.lysator.liu.se/realtimebattle
+BuildRoot:   /tmp/%{name}-%{version}
+Packager:    CW Zuckschwerdt <zany@triq.net>
+
 
 %description
 RealTimeBattle is a programming game, in which robots controlled by
@@ -16,15 +30,15 @@ using the radar to examine the environment and the cannon to shoot.
 %setup
 
 %build
-./configure --enable-rpm="$RPM_OPT_FLAGS"
+./configure --prefix=%{prefix} --enable-rpm="$RPM_OPT_FLAGS"
 make
 
 %install
-make install
-%post
-install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
-%preun
-install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+# %post
+# install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
+# %preun
+# install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 
 %files
 %doc BUGS COPYING FAQ ChangeLog README TODO 
@@ -40,45 +54,4 @@ install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 %doc Documentation/next.gif
 %doc Documentation/toc.gif
 
-%dir /usr/games/RealTimeBattle
-%dir /usr/games/RealTimeBattle/Arenas
-%dir /usr/games/RealTimeBattle/Robots
-%dir /usr/games/RealTimeBattle/Robots/empty
-%dir /usr/games/RealTimeBattle/Robots/seek_and_destroy
-%dir /usr/games/RealTimeBattle/Robots/rotate_and_fire
-
-/usr/bin/RealTimeBattle
-/usr/info/RealTimeBattle.info.gz
-
-/usr/games/RealTimeBattle/RealTimeBattle.xpm
-/usr/games/RealTimeBattle/tournament.txt
-/usr/games/RealTimeBattle/Messagetypes.h
-/usr/include/Messagetypes.h
-
-/usr/games/RealTimeBattle/Arenas/Circle.arena
-/usr/games/RealTimeBattle/Arenas/Circles.arena
-/usr/games/RealTimeBattle/Arenas/Cross.arena
-/usr/games/RealTimeBattle/Arenas/Diamond.arena
-/usr/games/RealTimeBattle/Arenas/Forest.arena
-/usr/games/RealTimeBattle/Arenas/Labyrinth.arena
-/usr/games/RealTimeBattle/Arenas/Nippon.arena
-/usr/games/RealTimeBattle/Arenas/Rooms.arena
-/usr/games/RealTimeBattle/Arenas/Square.arena
-/usr/games/RealTimeBattle/Arenas/Star.arena
-/usr/games/RealTimeBattle/Arenas/Triangle.arena
-
-/usr/games/RealTimeBattle/Robots/Makefile
-/usr/games/RealTimeBattle/Robots/empty/empty.c
-/usr/games/RealTimeBattle/Robots/empty/Makefile
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire.cc
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire.h
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_select.cc
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_signal.cc
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/rotate_and_fire_blocking.cc
-/usr/games/RealTimeBattle/Robots/rotate_and_fire/Makefile
-/usr/games/RealTimeBattle/Robots/seek_and_destroy/seek_and_destroy.cc
-/usr/games/RealTimeBattle/Robots/seek_and_destroy/Makefile
-
-/usr/games/RealTimeBattle/Robots/empty.robot
-/usr/games/RealTimeBattle/Robots/seek_and_destroy.robot
-/usr/games/RealTimeBattle/Robots/rotate_and_fire.robot
+%{prefix}/
