@@ -288,10 +288,11 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           break;
         }
 
-      entry_t * info = new entry_t( ENTRY_INT, false );
+      // TODO: use another entry_handler!
+//        entry_t * info = new entry_t( ENTRY_INT, false );
 
-      gtk_signal_connect(GTK_OBJECT(entries[i]), "changed",
-                         (GtkSignalFunc) entry_handler, info);
+//        gtk_signal_connect(GTK_OBJECT(entries[i]), "changed",
+//                           (GtkSignalFunc) entry_handler, info);
       gtk_table_attach_defaults( GTK_TABLE( entry_table ),
                                  entries[i], 0, 1, i, i + 1 );
       gtk_widget_set_usize(entries[i], 36,18);
