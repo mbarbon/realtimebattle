@@ -76,7 +76,7 @@ public:
   
   friend class Gadget;
 
-protected:
+  //protected:
 
   set<GadgetInfo> the_set;
 };

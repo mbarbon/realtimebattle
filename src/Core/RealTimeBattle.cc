@@ -68,7 +68,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "EventHandler.h"
 
-#include "Gadgets/Gadget.h"
+#include "Gadget.h"
 
 #include "EventRT.h"
 #include "EventHandler.h"

@@ -35,7 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <assert.h>
 
 #include "Arena.h"
-#include "Gadgets/AllGadgets.h"
+#include "AllGadgets.h"
 #include "Vector2D.h"
 #include "String.h"
 #include "Messagetypes.h"

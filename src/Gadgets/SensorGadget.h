@@ -26,8 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gadget.h"
 #include "Variable.h"
 #include "Function.h"
-#include "../Arena.h"
-#include "../EventHandler.h"
+#include "Arena.h"
+#include "EventHandler.h"
 
 class SensorGadget : public Gadget
 {

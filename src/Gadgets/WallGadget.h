@@ -27,8 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Variable.h"
 #include "Function.h"
 #include "ShotGadget.h"
-#include "../Arena.h"
-#include "../EventHandler.h"
+#include "Arena.h"
+#include "EventHandler.h"
 #include "Script.h"
 
 class WallGadget : public Gadget

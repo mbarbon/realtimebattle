@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "DrawingObjects.h"
 
 #include "ArenaWindow.h"
-#include "GuiRequest.h"
 #include "Messagetypes.h"
 #include "MessageWindow.h"
 #include "OptionHandler.h"
@@ -35,7 +34,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Structs.h"
 
 class ControlWindow;
-class GuiClientInterface;
 class StatisticsWindow;
 class StartTournamentWindow;
 class Vector2D;
@@ -58,10 +56,10 @@ public:
   Gui();
   ~Gui();
 
-  int main_loop                                ( GuiClientInterface*  );
+  int main_loop                                (  );
   int timeout_function                         ();
   void get_information                         ();
-  void apply_request                           ( GuiRequest* req );
+
   void set_colours                             ();
   void quit                                    ( bool exit_program = true );
   void error                                   ( const bool fatal,
@@ -70,7 +68,6 @@ public:
 
   const OptionHandler* get_main_opts           () const { return main_opts; }
   const OptionHandler* get_gtk_opts            () const { return gtk_opts; }
-  GuiClientInterface* get_guiinterface         () const { return gui_interface_p; }
 
   list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
 

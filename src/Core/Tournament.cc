@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <strstream>
 
 #include "Tournament.h"
-#include "Gadgets/ArenaGadget.h"
+#include "ArenaGadget.h"
 #include "Structs.h"
 #include "String.h"
 #include "Various.h"

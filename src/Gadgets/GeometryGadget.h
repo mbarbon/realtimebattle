@@ -27,8 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gadget.h"
 #include "Variable.h"
 #include "Function.h"
-#include "../Arena.h"
-#include "../EventHandler.h"
+#include "Arena.h"
+#include "EventHandler.h"
 
   class WallGadget;
 
@@ -37,6 +37,8 @@ class GeometryGadget : public Gadget
 public:
 
   GeometryGadget( const char* name, Gadget* const p );
+
+  ~GeometryGadget();
 
   static Gadget* new_geometrygadget( const char* name, Gadget* const p )
   {
@@ -50,7 +52,7 @@ public:
   void set_shape(vector<string>&, WallGadget*);
 
 private:
-  set<Shape*> walls;
+  set<Wall*> walls;
 
   double scale;
   double boundary[4];

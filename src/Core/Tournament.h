@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <vector>
 #include <string>
 
-#include "Gadgets/ArenaGadget.h"
+#include "ArenaGadget.h"
 #include "Robot.h"
 #include "Structs.h"
 

@@ -27,8 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gadget.h"
 #include "Variable.h"
 #include "Function.h"
-#include "../Arena.h"
-#include "../EventHandler.h"
+#include "Arena.h"
+#include "EventHandler.h"
 
 class EnvironmentGadget : public Gadget
 {
@@ -54,6 +54,8 @@ public:
   void set_geometry_list( const vector<string> & );
 
 private:
+  
+  vector<string> geometry_list;
 
   const static VariableDefinition variable_def[LAST_ENVIRONMENTVAR]; 
 

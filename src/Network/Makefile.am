@@ -4,8 +4,9 @@ if ENABLE_PROF
 PROFFLAGS = -pg
 endif
 
-INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src -I$(top_srcdir)/src/Gadgets/ \
-   $(PROFFLAGS) $(THREAD_FLAGS)
+INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src/Gadgets/ \
+	-I$(top_srcdir)/src/Common/ -I$(top_srcdir)/src/Core/ \
+	$(PROFFLAGS) $(THREAD_FLAGS)
 
 
 libRTB_Network_a_SOURCES = \

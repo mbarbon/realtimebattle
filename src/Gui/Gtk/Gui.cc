@@ -55,6 +55,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 int gui_returncode;
 class Gui* gui_p;
 
+//
+//TODO : Make this be a full application !!!
+//
+
 const string
 GIName()
 {
@@ -85,16 +89,16 @@ GIInit( int argc, char** argv )
 }
 
 int
-GIMain( GuiClientInterface*  _gi_p )
+main( int argc, char** argv )
 {
-  gui_p->main_loop( _gi_p );
+  gui_p->main_loop( );
 
   cout<<"End of the Gui main loop\n";
 
-  _gi_p->quit_program( true );
   delete gui_p;
-  return gui_returncode;
 }
+
+
 
 int
 GICommand( string command )

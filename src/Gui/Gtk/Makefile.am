@@ -1,4 +1,4 @@
-bin_PROGRAMS = libRTBGui_Gtk.so
+bin_PROGRAMS = rtb_V2_GtkClient
 
 if ENABLE_PROF
 PROFFLAGS = -pg
@@ -14,12 +14,12 @@ CCMALLOC_O =
 endif
 
 
-libRTBGui_Gtk_so_LDADD = 
-libRTBGui_Gtk_so_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+rtb_V2_GtkClient_LDADD = 
+rtb_V2_GtkClient_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-module $(STDCXX_LIBS) $(GTK_LIBS) $(CCMALLOC_O) \
 	-fPIC -shared
-libRTBGui_Gtk_so_DEPENDENCIES = $(INTLOBJS)
-libRTBGui_Gtk_so_SOURCES = \
+rtb_V2_GtkClient_DEPENDENCIES = $(INTLOBJS) $(top_builddir)/src/Network/libRTB_Net.a
+rtb_V2_GtkClient_SOURCES = \
 	ArenaDisplay.cc ArenaDisplay.h \
 	ArenaWindow.cc ArenaWindow.h \
 	ControlWindow.cc ControlWindow.h \

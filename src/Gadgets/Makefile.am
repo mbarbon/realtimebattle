@@ -5,6 +5,8 @@ PROFFLAGS = -pg
 endif
 
 INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src -I$(top_srcdir)/src/Network/ \
+	-I$(top_srcdir)/src/Core/ \
+	-I$(top_srcdir)/src/Common/ \
    $(PROFFLAGS) $(THREAD_FLAGS)
 
 

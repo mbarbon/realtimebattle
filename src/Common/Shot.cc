@@ -28,7 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "OptionHandler.h"
 
-#include "Gadgets/ShotGadget.h"
+#include "ShotGadget.h"
 
 Shot::Shot(const Vector2D& c, //const double r, 
            const Vector2D& vel, 

@@ -71,9 +71,7 @@ EnvironmentGadget::create_instance( const string & s, const Gadget* build_as )
 void
 EnvironmentGadget::set_geometry_list( const vector<string>& the_list )
 {
-  for(int i = 0; i < the_list.size(); i ++)
-    cout<<the_list[i]<<"  ";
-  cout<<endl;
+  geometry_list = the_list;
 }
 
 void

@@ -17,42 +17,40 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ROTATION__
-#define __ROTATION__
+#ifndef __SHOT__
+#define __SHOT__
 
-enum rotation_mode_t 
-{ 
-  NORMAL_ROT, 
-  SWEEP_LEFT, 
-  SWEEP_RIGHT, 
-  ROTATE_TO_RIGHT, 
-  ROTATE_TO_LEFT 
-};
+#include "MovingObject.h"
 
-struct Rotation
+#include "ShotGadget.h"
+#include "ExplosionGadget.h"
+
+
+class Shot : public MovingObject
 {
-  Rotation() : angle(0), vel(0), left(0), right(0), mode(NORMAL_ROT) {}
-  Rotation(const double a, const double v, 
-           const double l, const double r, const rotation_mode_t m) :
-    angle(a), vel(v), left(l), right(r), mode(m) {}
+public:
+  Shot(const Vector2D& c, const Vector2D& velocity, 
+       ShotGadget& sg, const int shot_id = -1); 
+  ~Shot() {}
 
-  void set_rot(const double a, const double v, const double l, 
-               const double r, const rotation_mode_t m) 
-    { 
-      angle=a; 
-      vel=v; 
-      left=l; 
-      right=r; 
-      mode=m; 
-    }
+  void move(const double timestep);
+  void move_no_check(const double timestep);
 
-  bool update(const double timestep, const int send_rotation_reached);
+  // TODO: Should be removed
+  bool is_alive() { return true; }
 
-  double angle;
-  double vel;
-  double left;
-  double right;
-  rotation_mode_t mode;
+
+
+  bool collided( const Shape* colliding_object );
+
+  friend bool operator<(const Shot& a, const Shot& b) 
+    { return a.my_shotgadget.get_unique_id() < b.my_shotgadget.get_unique_id(); }
+
+private:
+  bool alive;
+
+
+  ShotGadget my_shotgadget;
 };
 
-#endif // __ROTATION__
+#endif // __SHOT__

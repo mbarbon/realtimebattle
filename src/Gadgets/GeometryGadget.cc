@@ -27,11 +27,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Variable.h"
 #include "RobotBodyGadget.h"
 #include <string>
+#include "Vector2D.h"
 #include "String.h"
 
 GeometryGadget::GeometryGadget( const char* name, Gadget* const p ) 
   : Gadget(name, p, GAD_GEOMETRY)
 {
+}
+
+GeometryGadget::~GeometryGadget()
+{
+  for(set<Wall*>::iterator i = walls.begin();
+      i != walls.end(); i ++)
+    delete *i;
 }
 
 Gadget* 
@@ -75,7 +83,36 @@ GeometryGadget::set_boundary( vector<string>& b )
 }
 
 void 
-GeometryGadget::set_shape(vector<string>&, WallGadget*) 
+GeometryGadget::set_shape(vector<string>& the_shape, WallGadget* wg) 
 {
-  
+  //cout<<"creating a shape looking like "<<the_shape[0]<<" with a "<<wg->get_info().name<<" wall\n"; 
+
+  //Back to a full string
+  //NOTE : this is very stupid !!!
+  //TODO : implement pairs and lists in the parser !!!
+  string to_strstream;
+  for(unsigned int i = 2; i < the_shape.size(); i ++)
+    to_strstream += (the_shape[i] + " ");
+  istrstream args(to_strstream.c_str());
+
+  //Create the shape
+  Wall * new_wall;
+  if(the_shape[0] == "Line") {
+    Vector2D v1, v2; double len;
+    args >> v1 >> v2 >> len;
+    new_wall = new WallLine( v1, v2, len, wg );
+    walls.insert( new_wall );
+  } else if(the_shape[0] == "Circle") {
+    Vector2D center; double radius;
+    args >> center >> radius;
+    walls.insert( new WallCircle( center, radius, wg ) );
+  } else if(the_shape[0] == "InnerCircle") {
+    Vector2D center; double radius;
+    args >> center >> radius;
+    walls.insert( new WallInnerCircle( center, radius, wg ) );
+  } else if(the_shape[0] == "Arc") {
+    Vector2D center; double r1, r2, a1, a2;
+    args >> center >> r1 >> r2 >> a1 >> a2;
+    walls.insert( new WallArc( center, r1, r2, a1, a2, wg ) ); 
+  }
 }
