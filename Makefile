@@ -36,15 +36,15 @@ RealTimeBattle: $(objects)
 Vector2D.o: Vector2D.cc Vector2D.h
 	g++ $(CXXFLAGS) -c Vector2D.cc
 
-gui.o: gui.cc gui.h Arena.h Vector2D.h messagetypes.h
+gui.o: gui.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
 RealTimeBattle.o: RealTimeBattle.cc Vector2D.h Arena.h messagetypes.h gui.h
 Arena.o: Arena.cc Arena.h messagetypes.h Vector2D.h gui.h Options.h
 Error.o: Error.cc Arena.h messagetypes.h Vector2D.h
-MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h Options.h
-Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h
-Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h
+MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
+Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
+Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h Options.h gui.h
 Options.o: Options.cc Options.h
-Statistics.o: Statistics.cc gui.h Arena.h Vector2D.h messagetypes.h
+Statistics.o: Statistics.cc gui.h Arena.h Vector2D.h messagetypes.h Options.h
 
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
