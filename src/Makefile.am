@@ -27,20 +27,11 @@ CFLAGS += -pg
 endif
 
 if NO_GRAPHICS
-GRAPHICS_O = 
 CXXFLAGS += -DNO_GRAPHICS 
-else
-GRAPHICS_O = \
-	Gui.o ArenaWindow.o \
-	ControlWindow.o Dialog.o \
-	MessageWindow.o \
-	OptionsWindow.o \
-	ScoreWindow.o StatisticsWindow.o \
-	StartTournamentWindow.o Structs.o
 endif
 
-RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(INTLLIBS) $(CCMALLOC_O) $(GTK_LIBS) 
-RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O) $(INTLOBJS)
+RealTimeBattle_LDADD = $(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) 
+RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(INTLOBJS)
 RealTimeBattle_SOURCES = \
 	ArenaBase.cc ArenaBase.h \
 	ArenaController.cc ArenaController.h \
@@ -66,14 +57,5 @@ RealTimeBattle_SOURCES = \
 
 
 EXTRA_RealTimeBattle_SOURCES = \
-	ArenaWindow.cc ArenaWindow.h \
-	ControlWindow.cc ControlWindow.h \
-	Dialog.cc Dialog.h getopt.c getopt.h \
-	Gui.cc Gui.h \
-	MessageWindow.cc MessageWindow.h \
-	OptionsWindow.cc OptionsWindow.h \
-	ScoreWindow.cc ScoreWindow.h \
-	StartTournamentWindow.cc StartTournamentWindow.h \
-	StatisticsWindow.cc StatisticsWindow.h \
-	Structs.cc
+	getopt.c getopt.h
 
