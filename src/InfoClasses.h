@@ -115,7 +115,7 @@ public:
 
   const object_type get_type        () const { return type; }
   const int get_id                  () const { return id; }
-  const Vector2D get_position       () const { return position; }
+  const Vector2D& get_position      () const { return position; }
 
 private:
   object_type type;
