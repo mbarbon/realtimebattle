@@ -105,6 +105,7 @@ endif
 
 
 if SGML2LATEX
+%.ps: %.sgml
 	@if [ -f $< ]; then \
 		echo "sgml2latex  -p $(PAPER_SIZE) -D table=real -c latin -v -o ps $<"; \
 		sgml2latex  -p $(PAPER_SIZE)  -D table=real -c latin -v -o ps $<; \
