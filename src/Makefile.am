@@ -60,6 +60,7 @@ RealTimeBattle_SOURCES = \
 	String.cc String.h \
 	Structs.h \
 	SubSquare.h SubSquare.cc \
+	SubSquareIterators.h SubSquareIterators.cc \
 	Team.cc Team.h \
 	Timer.cc Timer.h \
 	Tournament.h Tournament.cc \
