@@ -8,9 +8,9 @@
 // #include <stdlib.h>
 #include "Vector2D.h"
 // #include "String.h"
-#include "messagetypes.h"
+#include "Messagetypes.h"
 #include "Options.h"
-#include "gui.h"
+#include "Gui.h"
 //#include "Various.h"
 
 static const double infinity = 1.0e10;

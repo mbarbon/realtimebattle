@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "gui.h"
+#include "Gui.h"
 #include "Arena.h"
 #include "MovingObject.h"
 

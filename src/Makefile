@@ -1,32 +1,30 @@
-ROBOTDIR = Robots
-DOCSDIR = Documentation
+CC = gcc
+CXX = g++
 
-export CC = gcc
-export CXX = g++
+ifndef DEBUG_MODE
+DEBUG_MODE=yes
+endif
 
+ifeq ($(DEBUG_MODE), yes)
 #debug-options
-export CPPFLAGS = $(gtkincludedirs)
-export CFLAGS = -g -Wall
-export CXXFLAGS = -g -Wall
-
-#normal-options
-#export CPPFLAGS = $(gtkincludedirs)
-#export CFLAGS = -Wall
-#export CXXFLAGS = -Wall
-
+CPPFLAGS = $(gtkincludedirs)
+CFLAGS = -g -Wall
+CXXFLAGS = -g -Wall
+else
 #final-options
-#export CPPFLAGS = $(gtkincludedirs)
-#export CFLAGS = -O
-#export CXXFLAGS = -O
+CPPFLAGS = $(gtkincludedirs)
+CFLAGS = -O
+CXXFLAGS = -O
+endif
 
 gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
-export libdirs = -L/usr/lib -L/usr/X11R6/lib
-export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
+libdirs = -L/usr/lib -L/usr/X11R6/lib
+libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
-stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
+objects = Vector2D.o Gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
+stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
 
-all: RealTimeBattle robots documentation
+target: RealTimeBattle
 
 RealTimeBattle: $(objects)
 	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
@@ -39,36 +37,18 @@ String.o: String.cc String.h
 Vector2D.o: Vector2D.cc Vector2D.h
 Various.o: Various.cc Various.h Error.h String.h
 Error.o: Error.cc Error.h String.h
-gui.o: gui.cc $(stdincludes)
-RealTimeBattle.o: RealTimeBattle.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h
+Gui.o: Gui.cc $(stdincludes)
+RealTimeBattle.o: RealTimeBattle.cc Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h
 Arena.o: Arena.cc $(stdincludes)
 MovingObject.o: MovingObject.cc $(stdincludes)
-Shape.o: Shape.cc Shape.h Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h
-Extras.o: Extras.cc Extras.h Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h Shape.h
-Options.o: Options.cc Options.h Vector2D.h gui.h Various.h Arena.h messagetypes.h String.h
-Statistics.o: Statistics.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h Shape.h MovingObject.h
-StartTournament.o: StartTournament.cc Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h String.h
-
-robots:
-	cd $(ROBOTDIR) && $(MAKE)
-
-documentation:
-	cd $(DOCSDIR) && $(MAKE)
-
-
-#$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
-#	cd $(ROBOTDIR); \
-#	gcc $(coptions) -o empty empty.o; \
-#	cd ..
-
-#$(ROBOTDIR)/empty.o: $(ROBOTDIR)/empty.c
-#	cd $(ROBOTDIR); \
-#	gcc $(coptions) -c -o empty.o empty.c; \
-#	cd ..
+Shape.o: Shape.cc Shape.h Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h String.h
+Extras.o: Extras.cc Extras.h Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h String.h Shape.h
+Options.o: Options.cc Options.h Vector2D.h Gui.h Various.h Arena.h Messagetypes.h String.h
+Statistics.o: Statistics.cc Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h String.h Shape.h MovingObject.h
+StartTournament.o: StartTournament.cc Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h String.h
 
 clean:
-	rm -f *~ *.o core* $(ROBOTDIR)/*~ $(ROBOTDIR)/*.o $(ROBOTDIR)/core*\
-	 $(DOCSDIR)/*~ $(DOCSDIR)/*.{aux,log,toc,latex,dvi,html,texinfo,info,ulh,ult,uli}
+	rm -f *~ *.o core*
 
 ETAGS:
 	etags *.cc *.h

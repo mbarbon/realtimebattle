@@ -7,7 +7,7 @@
 #include "Shape.h"
 #include "Extras.h"
 #include "Error.h"
-#include "gui.h"
+#include "Gui.h"
 #include "Various.h"
 #include "String.h"
 

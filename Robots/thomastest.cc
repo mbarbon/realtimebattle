@@ -5,7 +5,7 @@
 #include <time.h>
 #include <glib.h>
 #include <math.h>
-#include "../messagetypes.h"
+#include "../src/Messagetypes.h"
 
 #define abs(x) ((x>0) ? (x) : -(x))
 

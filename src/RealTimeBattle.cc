@@ -8,7 +8,7 @@
 #include "Options.h"
 #include "Error.h"
 #include "Vector2D.h"
-#include "gui.h"
+#include "Gui.h"
 
 class Options the_opts;
 class Arena the_arena;

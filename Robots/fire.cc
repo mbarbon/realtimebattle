@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../messagetypes.h"
+#include "../src/Messagetypes.h"
 
 volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;

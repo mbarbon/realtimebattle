@@ -9,8 +9,8 @@
 #include "Extras.h"
 #include "Error.h"
 #include "Options.h"
-#include "messagetypes.h"
-#include "gui.h"
+#include "Messagetypes.h"
+#include "Gui.h"
 
 Robot::Robot(const String& filename)
 {

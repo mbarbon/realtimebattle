@@ -1,12 +1,27 @@
+CC = gcc
+CXX = g++
+
+ifndef DEBUG_MODE
+DEBUG_MODE=yes
+endif
+
+ifeq ($(DEBUG_MODE), yes)
+#debug-options
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = -g -Wall
 CXXFLAGS = -g -Wall
+else
+#final-options
+CPPFLAGS = $(gtkincludedirs)
+CFLAGS = -O
+CXXFLAGS = -O
+endif
 
 gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 libdirs = -L/usr/lib -L/usr/X11R6/lib
 libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-all: empty fire thomastest thomas2
+target: empty fire thomastest thomas2
 
 empty: empty.o
 	$(CC) $(CFLAGS) empty.o -o empty
@@ -22,6 +37,9 @@ thomas2: thomas2.o
 
 
 empty.o: empty.c 
-fire.o: fire.cc ../messagetypes.h
-thomastest.o: thomastest.cc ../messagetypes.h
-thomas2.o: thomas2.cc ../messagetypes.h
+fire.o: fire.cc ../src/Messagetypes.h
+thomastest.o: thomastest.cc ../src/Messagetypes.h
+thomas2.o: thomas2.cc ../src/Messagetypes.h
+
+clean:
+	rm -f *~ *.o core*

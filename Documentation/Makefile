@@ -18,3 +18,5 @@ RealTimeBattle.info: $(documents)
 	udo --info  --verbose -o RealTimeBattle.texinfo RealTimeBattle.udo; \
 	makeinfo RealTimeBattle.texinfo
 
+clean:
+	rm -f *~ *.{aux,log,toc,latex,dvi,html,texinfo,info,ulh,ult,uli,gif}
