@@ -194,6 +194,7 @@ ArenaWindow::draw_everything()
 {
   if( window_shown )
     {
+      clear_area();
 
       if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
           ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
