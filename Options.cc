@@ -196,43 +196,50 @@ Options::get_options_from_rtbrc()
 void
 Options::set_all_options_from_gui()
 {
-  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+  if((the_arena.get_game_mode() == Arena::COMPETITION_MODE &&
+      (the_arena.get_state() == NO_STATE ||
+       the_arena.get_state() == NOT_STARTED ||
+       the_arena.get_state() == FINISHED)) ||
+     (the_arena.get_game_mode() != Arena::COMPETITION_MODE))
     {
-      double entry_value = str2dbl(gtk_entry_get_text(GTK_ENTRY(all_double_options[i].entry)));
-      if( entry_value > all_double_options[i].max_value )
-        entry_value = all_double_options[i].max_value;
-      if( entry_value < all_double_options[i].min_value )
-        entry_value = all_double_options[i].min_value;
+      for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+        {
+          double entry_value = str2dbl(gtk_entry_get_text(GTK_ENTRY(all_double_options[i].entry)));
+          if( entry_value > all_double_options[i].max_value )
+            entry_value = all_double_options[i].max_value;
+          if( entry_value < all_double_options[i].min_value )
+            entry_value = all_double_options[i].min_value;
 
-      all_double_options[i].value = entry_value;
+          all_double_options[i].value = entry_value;
+        }
+
+      for(int i=0;i<LAST_LONG_OPTION;i++)
+        {
+          long entry_value = 0;
+          if( all_long_options[i].datatype == ENTRY_INT )
+            entry_value = str2long(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
+          if( all_long_options[i].datatype == ENTRY_HEX )
+            entry_value = str2hex(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
+
+          if( entry_value > all_long_options[i].max_value )
+            entry_value = all_long_options[i].max_value;
+          if( entry_value < all_long_options[i].min_value )
+            entry_value = all_long_options[i].min_value;
+
+          all_long_options[i].value = entry_value;
+        }
+
+      for(int i=0;i<LAST_STRING_OPTION;i++)
+        {
+          String entry_value(gtk_entry_get_text(GTK_ENTRY(all_string_options[i].entry)));
+
+          all_string_options[i].value = entry_value;
+        }
+
+      the_arena.set_colours();
+
+      close_options_window();
     }
-
-  for(int i=0;i<LAST_LONG_OPTION;i++)
-    {
-      long entry_value = 0;
-      if( all_long_options[i].datatype == ENTRY_INT )
-        entry_value = str2long(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
-      if( all_long_options[i].datatype == ENTRY_HEX )
-        entry_value = str2hex(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
-
-      if( entry_value > all_long_options[i].max_value )
-        entry_value = all_long_options[i].max_value;
-      if( entry_value < all_long_options[i].min_value )
-        entry_value = all_long_options[i].min_value;
-
-      all_long_options[i].value = entry_value;
-    }
-
-  for(int i=0;i<LAST_STRING_OPTION;i++)
-    {
-      String entry_value(gtk_entry_get_text(GTK_ENTRY(all_string_options[i].entry)));
-
-      all_string_options[i].value = entry_value;
-    }
-
-  the_arena.set_colours();
-
-  close_options_window();
 }
 
 void
@@ -500,10 +507,17 @@ save_options_requested(GtkWidget * widget, gpointer data)
 void
 options_window_requested(GtkWidget * widget, gpointer data)
 {
-  if(the_opts.get_options_window_up() == false)
-    the_opts.setup_options_window();
-  else
-    the_opts.close_options_window();
+  if((the_arena.get_game_mode() == Arena::COMPETITION_MODE &&
+      (the_arena.get_state() == NO_STATE ||
+       the_arena.get_state() == NOT_STARTED ||
+       the_arena.get_state() == FINISHED)) ||
+     (the_arena.get_game_mode() != Arena::COMPETITION_MODE))
+    {
+      if(the_opts.get_options_window_up() == false)
+        the_opts.setup_options_window();
+      else
+        the_opts.close_options_window();
+    }
 }
 
 void
