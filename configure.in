@@ -198,5 +198,5 @@ AM_CONDITIONAL(NO_GETOPT_LONG, test x$getopt = xyes)
 
 # Finished !
 
-AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile Robots/Makefile po/Makefile.in Makefile],
+AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile po/Makefile.in Makefile],
 			[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
