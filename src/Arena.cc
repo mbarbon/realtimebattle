@@ -23,6 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "Gadget.h"
 #include "WeaponGadget.h"
+#include "Variable.h"
+#include "Function.h"
 #include "Vector2D.h"
 #include "String.h"
 #include "Messagetypes.h"
@@ -61,14 +63,14 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
               for( ;i < LAST_GADGET; i++ )
                 if( equal_strings_nocase( wordlist[1], gadget_types[i] ) )
                   break;
-              switch( i )
+              switch( gadget_t(i) )
                 {
                 case GAD_WEAPON:
                   {
                     // TODO: Remember to delete this somewehere!!!!!!!!!
                     WeaponGadget* gadget =
                       new WeaponGadget( wordlist[2].c_str(), current_gadget );
-                    current_gadget->my_gadgets.add( gadget->get_info() );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
                     current_gadget = gadget;
                     break;
                   }
@@ -82,7 +84,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_SENSOR: 
                   break;
-                case GAD_COMMUNICATION: 
+                case GAD_COMMUNICATION: //-
                   break;
                 case GAD_WALL: 
                   break;
@@ -90,7 +92,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_BALL: 
                   break;
-                case GAD_EQUIPMENT: 
+                case GAD_EQUIPMENT: //-
                   break;
                 case GAD_ENVIRONMENT: 
                   break;
@@ -98,19 +100,33 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_SCORING: 
                   break;
-                case GAD_ACTION: 
+                case GAD_ACTION: //-
                   break;
                 case GAD_VARIABLE: 
-                  break;
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    Variable* gadget =
+                      new Variable( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = gadget;
+                    break;
+                  }
+                case GAD_FUNCTION:
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    Function* gadget =
+                      new Function( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = gadget;
+                    break;
+                  }
                 }
-              // TODO: Create new Gadget in the hierarchy, might be:
-              // initialize_gadget( wordlist[1], wordlist[2] );
             }
           else if( wordlist[0] == "EndDefine" )
             {
               if( wordlist.size() > 2 && wordlist[2] != current_gadget->get_name() )
                 Error( true, "Ending wrong definition", "Arena::load_arena_file" );
-              current_gadget = current_gadget->parent;
+              current_gadget = current_gadget->get_parent();
             }
           else
             {
