@@ -2,63 +2,43 @@
 
 <notes>
 <title>Installation
-
+<p>
 Installing RealTimeBattle should not be too difficult; in case you get problems, please send your
 bug report to 
 <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> and tell what
 went wrong. 
 
-<enum>
-<item> Unpack the tar-file
-<p>
-Move RealTimeBattle.tar.gz to an appropriate directory and type 
-<verb>% tar -xzvf RealTimeBattle.tar.gz</verb> or 
-if your <tt>tar</tt> cannot uncompress, 
-<verb>% gunzip -c RealTimeBattle.tar.gz | tar -xvf -</verb> and 
-the file are extracted to the directory <tt>RealTimeBattle</tt>.
 
-<item> Compile
-<p>
-Before you compile the program, you may want to edit the <tt>Makefile</tt> (see also the install
-section below). Only the INSTALLDIR will have effect in the compilation phase, but you can edit the
-others as well to prepare for the installation.
 
-Now change directory and compile <verb>% cd RealTimeBattle
-% make</verb>
+To compile and install RealTimeBattle, you only need to execute the following commands:
+<verb>% ./configure [options]
+% make
+# make install</verb>
 
-If you would like to debug RealTimeBattle, type instead '<tt>make DEBUG=true</tt>'.
+You can change the settings by supplying options to configure, e.g. if you want a different install
+directory or compile in debug mode. A full list of options is listed by
+<verb>% ./configure --help</verb>
 
-Hopefully everything will compile well. If not, please ensure that <tt>gtk+</tt> is correctly
-installed. You can check this by typing <verb>% gtk-config --version</verb>. 
+The following options are especially useful:
+<verb>
+ --prefix=DIR            The root directory for all installed files, 
+                          default: /usr
+ --exec-prefix=DIR       Root for architecture-dependent files,
+                          default: prefix
+ --bindir=DIR            Where the RealTimeBattle binary is placed,
+                          default: eprefix/bin
+ --includedir=DIR        Where Messagetypes.h is installed,
+                          default: prefix/include
+ --infodir=DIR           Where info-files are stored,
+                          default: prefix/info
+ --with-rtb-dir          Directory for main installation,
+                          default: prefix/games/RealTimeBattle
 
-If it doesn't compile as it should, please first look in the makefiles <tt>src/Makefile</tt> and 
-<tt>Robots/Makefile</tt>, and read the comments. Maybe you can find a solution there.
-
-If you still have problems, please send a bug-report to 
-<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">. Don't forget to
-describe which system you are using.
-
-<item> Install
-<p>
-If you want, you can now install the program on your system. Before you
-do that, it is a good idea to look at the main <tt>Makefile</tt> and change the install-directories
-to whatever you wish.
-
-Note that you normally have to be root to do the installation (unless you change the directories to
-be in your home directory).
-<verb>% su
-# make install
-# exit
+ --enable-debug          Compile for debugging
+ --disable-graphics      Compile a version without a gui.
 </verb>
 
-If you like, you can do the installation by hand, in fact, the only important file to move is the
-binary <tt>src/RealTimeBattle</tt>, which should be moved to somewhere in your <tt>PATH</tt>.
+The <tt>gtk</tt> options can be useful too.
 
-<item> Test it!
-<p>
-Type <verb>% RealTimeBattle</verb>
-
-You may have to change the options <tt>Robots search path</tt> and <tt>Arena search path</tt> to
-make the program to find your robots and arenas. Read the manual for more details!
-</enum>
+Note that in order to install to directories other than your own, you have to be root.
 </notes>
