@@ -101,15 +101,6 @@ GuiInterface::quit( bool exit_program )
   the_arena_controller.quit_gui( this, exit_program );
 }
 
-int
-GuiInterface::get_game_nr()
-{
-  pthread_mutex_lock( mutex_p );
-  int res = 0;//the_arena.get_game_nr();
-  pthread_mutex_unlock( mutex_p );
-  return res;
-}
-
 // TODO: Make sure that the event is not deleted before the gui uses it!
 const InfoBase*
 GuiInterface::get_information()

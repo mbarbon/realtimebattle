@@ -24,13 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <list>
 #include <string>
 
-#include "OptionHandler.h"
-//#include "ArenaBase.h"
-#include "Structs.h"
-
-class ArenaController;
-class Vector2D;
-class InfoBase;
+#include "InfoClasses.h"
 
 // ---------------------------------------------------------------------------
 // class GuiInterface
@@ -49,65 +43,28 @@ public:
 
   // Start up and Shut down the gui
 
-  void startup                                ();
-  void shutdown                               ();
+  void startup                         ();
+  void shutdown                        ();
 
   // Functions that supplies information to the Gui.
 
-  string get_current_arena_filename           ();
-  int get_game_nr                             ();
-  int get_games_per_sequence                  ();
-  int get_sequence_nr                         ();
-  int get_sequences_in_tournament             ();
-  int get_robots_per_game                     ();
-  int get_number_of_robots                    ();
-  double get_total_time                       ();
-  state_t get_state                           ();
-  Vector2D* get_boundary                      ();
-  enum game_mode_t get_game_mode              ();
-  int get_debug_level                         ();
-  int get_max_debug_level                     ();
-
-  const double   get_opt_d                    ( option_double_t option );
-  const long int get_opt_l                    ( option_long_t   option );
-  const string   get_opt_s                    ( option_string_t option );
+  // Don't know what functions is needed here yet!
 
   // Functions that enables the gui to have some influence over the server.
 
-  void quit                                   ( bool exit_program = false );
+  void quit                            ( bool exit_program = false );
 
-  int set_debug_level                         ( const int new_level );
-  void pause_game_toggle                      ();
-  void step_paused_game                       ();
-
-  void interrupt_tournament                   ();
-  void end_game                               ();
-
-  void start_tournament    ( const list<start_tournament_info_t>& robotfilename_list, 
-                             const list<start_tournament_info_t>& arenafilename_list, 
-                             const int robots_p_game, 
-                             const int games_p_sequence, 
-                             const int n_o_sequences );
-
-  void set_opt_d                              ( option_double_t option, double   val );
-  void set_opt_l                              ( option_long_t   option, long int val );
-  void set_opt_s                              ( option_string_t option, string   val );
-
-  const InfoBase* get_information             ();
+  const InfoBase* get_information      ();
 
   // Functions for the server.
 
-  pthread_t* get_thread_p                     ();
-
-  //TODO: Perhaps an eventqueue?
-  // push_event                                  ( guievent??? );
+  pthread_t* get_thread_p              ();
 
   // Gui functions
-  const string Name                           () const { return (*func_Name)(); }
-  const string UsageMessage                   () const
-    { return (*func_UsageMessage)(); }
-  int Main                                    ( GuiInterface* gi )
-    { return (*func_Main)( gi ); }
+  const string Name                    () const { return (*func_Name)(); }
+  const string UsageMessage            () const { return (*func_UsageMessage)(); }
+  int Main                             ( GuiInterface* gi )
+  { return (*func_Main)( gi ); }
 
 private:
 
@@ -122,11 +79,6 @@ private:
 
   string plain_name;
   string library_name;
-
-  //  list<message_t> messages;
-
-  // This should be the queue for guievents
-  //  queue<guievent???> eventlist
 
   pthread_t thread;
 
