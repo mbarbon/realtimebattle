@@ -24,6 +24,11 @@ private:
   double robot_hardness;
   double robot_protection;
 
+  double robot_front_protection;
+  double robot_front_hardness;
+  double robot_front_bounce_coeff;
+  double robot_cos_frontsize;
+
   double shot_radius;
   double shot_speed;
   double start_energy;
@@ -57,6 +62,11 @@ public:
   double get_robot_bounce_coeff() { return robot_bounce_coeff; } 
   double get_robot_hardness() { return robot_hardness; }
   double get_robot_protection() { return robot_protection; }
+
+  double get_robot_front_protection() { return robot_front_protection; }
+  double get_robot_front_hardness() { return robot_front_hardness; }
+  double get_robot_front_bounce_coeff() { return robot_front_bounce_coeff; }
+  double get_robot_cos_frontsize() { return robot_cos_frontsize; }
 
   double get_shot_radius() { return shot_radius; }
   double get_shot_speed() { return shot_speed; }

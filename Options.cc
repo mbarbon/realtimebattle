@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Options.h"
 
 // void
@@ -19,6 +20,11 @@ Options::Options()
   robot_bounce_coeff = 0.7;
   robot_hardness = 0.5;
   robot_protection = 0.5;
+
+  robot_front_protection = 0.9;
+  robot_front_hardness = 0.9;
+  robot_front_bounce_coeff = 0.7;
+  robot_cos_frontsize = cos(M_PI/6.0);   // 2*30 degrees
     
   shot_radius = 0.1;
   shot_speed = 10.0;
