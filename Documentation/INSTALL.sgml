@@ -18,6 +18,9 @@ To compile and install RealTimeBattle, you only need to execute the following co
 % make
 # make install</verb>
 
+Observe that <tt>GNU make</tt> should be used. If <tt>make</tt> fails, try
+<tt>gmake</tt> instead.
+
 You can change the settings by supplying options to configure, e.g. if you want a
 different install directory, compile in debug mode or turn off graphics or native
 language supprt. A full list of options is listed by
