@@ -59,6 +59,7 @@ public:
   String& insert(const String&, const int pos = 0);
   int find(const char c, const int start = 0, const bool reverse = false);
   friend String get_segment(const String& str, const int start, const int end);
+  friend String make_lower_case(const String& str);
 
   int get_length() { return length; }
   const char* chars() { return array; }

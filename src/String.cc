@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <strstream.h>
 #include <iomanip.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "String.h"
 
@@ -272,6 +273,15 @@ get_segment(const String& str, const int start, const int end)
   return segment;
 }
 
+String
+make_lower_case(const String& str)
+{
+  String lower_str(str);
+  for(int i = 0;i<lower_str.length;i++)
+    lower_str.array[i] = tolower(lower_str.array[i]);
+
+  return lower_str;
+}
 int
 str2int(const String& str)
 {
