@@ -172,7 +172,13 @@ Robot::set_initial_values(const Vector2D& pos, const double angle,
 void
 Robot::change_velocity(const double timestep)
 {
-  velocity = 0.99*velocity + timestep*acceleration*Vector2D(cos(robot_angle),sin(robot_angle));  // TODO: acceleration update
+  Vector2D dir = Vector2D(cos(robot_angle),sin(robot_angle));
+  double gt = the_arena->get_grav_const() * timestep;
+  velocity = -velocity* (the_arena->get_air_resistance() * 
+                       sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1])) +
+    timestep*acceleration*dir + 
+    dot(velocity, dir) * max(0.0, 1.0-gt*the_arena->get_roll_friction()) * dir +
+    vedge(velocity, dir) * max(0.0, 1.0-gt*the_arena->get_slide_friction()) * rotate90(dir);
 }
 
 void
