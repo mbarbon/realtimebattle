@@ -26,31 +26,34 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Messagetypes.h"
 #include "Vector2D.h"
 
+enum infoclass_t
+{
+  INFO_UNKNOWN,
+  INFO_STATE,
+  INFO_TOURNAMENT_STARTED,
+  INFO_TOURNAMENT_ENDED,
+  INFO_GAME_STARTED,
+  INFO_MESSAGE
+};
+
 class InfoBase
 {
 public:
-  InfoBase                () {}
-  ~InfoBase               () {}
+  InfoBase                   ( const infoclass_t t = INFO_UNKNOWN ) : type(t) {}
+  ~InfoBase                  () {}
+
+  const infoclass_t get_type () const { return type; }
+  const double get_game_time () const { return game_time; }
 
 private:
-};
-
-class GameTimeInfo : public InfoBase
-{
-public:
-  GameTimeInfo                ( const double t ) : game_time(t) {}
-  ~GameTimeInfo               () {}
-
-  const double get_game_time  () const { return game_time; }
-
-private:
+  infoclass_t type;
   double game_time;
 };
 
 class StateInfo : public InfoBase
 {
 public:
-  StateInfo                  ( const state_t s ) : state(s) {}
+  StateInfo                  ( const state_t s ) : InfoBase(INFO_STATE), state(s) {}
   ~StateInfo                 () {}
 
   const state_t get_state    () const { return state; }
@@ -63,7 +66,8 @@ class TournamentStartedInfo : public InfoBase
 {
 public:
   TournamentStartedInfo              ( const int nom, const int gpm )
-    : number_of_matches(nom), games_per_match(gpm) {}
+    : InfoBase(INFO_TOURNAMENT_STARTED), number_of_matches(nom),
+      games_per_match(gpm) {}
   ~TournamentStartedInfo             () {}
 
   const int get_number_of_matches    () const { return number_of_matches; }
@@ -78,19 +82,20 @@ private:
 class TournamentEndedInfo : public InfoBase
 {
 public:
-  TournamentEndedInfo  () {}
+  TournamentEndedInfo  () : InfoBase(INFO_TOURNAMENT_ENDED) {}
   ~TournamentEndedInfo () {}
 };
 
-class StartGameInfo : public InfoBase
+class GameStartedInfo : public InfoBase
 {
 public:
-  StartGameInfo                       ( const list<int> r, const int g, const int m
+  GameStartedInfo                     ( const list<int> r, const int g, const int m
                                         //, const Arena g
                                         )
-    : list_of_participating_robots(r), game(g), match(m) //, arena_geometry(g)
+    : InfoBase(INFO_GAME_STARTED), list_of_participating_robots(r),
+      game(g), match(m) //, arena_geometry(g)
     {}
-  ~StartGameInfo                      () {}
+  ~GameStartedInfo                    () {}
 
   const list<int>& get_list_of_participating_robots () const
     { return list_of_participating_robots; }
@@ -105,58 +110,11 @@ private:
   // Arena arena_geometry;
 };
 
-class ObjectMovedInfo : public InfoBase
-{
-public:
-  ObjectMovedInfo                   ( const object_type t, const int i,
-                                      const Vector2D& pos )
-    : type(t), id(i), position(pos) {}
-  ~ObjectMovedInfo                  () {}
-
-  const object_type get_type        () const { return type; }
-  const int get_id                  () const { return id; }
-  const Vector2D& get_position      () const { return position; }
-
-private:
-  object_type type;
-  int id;
-  Vector2D position;
-};
-
-class ObjectCreatedInfo : public InfoBase
-{
-public:
-  ObjectCreatedInfo            ( const object_type t, const int i ) : type(t), id(i) {}
-  ~ObjectCreatedInfo           () {}
-
-  const object_type get_type   () const { return type; }
-  const int get_id             () const { return id; }
-
-private:
-  object_type type;
-  int id;
-};
-
-class ObjectDiedInfo : public InfoBase
-{
-public:
-  ObjectDiedInfo                    ( const object_type t, const int i )
-    : type(t), id(i) {}
-  ~ObjectDiedInfo                   () {}
-
-  const object_type get_type        () const { return type; }
-  const int get_id                  () const { return id; }
-
-private:
-  object_type type;
-  int id;
-};
-
 class MessageInfo : public InfoBase
 {
 public:
   MessageInfo                       ( const string& s, const string& m )
-    : sender(s), message(m) {}
+    : InfoBase(INFO_MESSAGE), sender(s), message(m) {}
   ~MessageInfo                      () {}
   const string& get_sender          () const { return sender; }
   const string& get_message         () const { return message; }
