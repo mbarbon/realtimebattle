@@ -40,7 +40,7 @@ public:
 
   String& erase(const int pos, const int size = 1);
   String& insert(const String&, const int pos = 0);
-  String& find(String& res, const char c, const bool reverse);
+  int find(const char c, const startpos=0, const bool reverse=false);
   friend String get_segment(const String& str, const int start, const int end);
 
   int get_length() { return length; }

@@ -216,15 +216,22 @@ String::insert(const String& str, const int pos)
   return *this;
 }
 
-String&
-String::find(String& res, const char c, const bool reverse)
+//
+//
+//
+//
+int
+String::find(const char c, const int start, const bool reverse)
 {
-  if(!reverse)
-    res = (String)strchr(this->chars(),c);
-  else
-    res = (String)strrchr(this->chars(),c);
+  char * ans;
 
-  return res;
+  int st = ( start < 0 ? length + start : start );
+  if( st < 0 || st >= length ) return -1;
+
+  if(NULL != ( reverse ? (ans = strrchr(array + st, c)) : (ans = strchr(array+st, c))))
+    return (int)(ans-array);
+
+  return -1;
 }
 
 //   if start or end negativ, count from the end. -1 == the last.
