@@ -317,9 +317,34 @@ Arena::broadcast(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
-  GList* gl;
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
-    ((Robot*)gl->data)->send_message(msg_type, args);
+  String str = (String)message_to_robot[msg_type].msg + ' ';
+  for(int i=0; i<message_to_robot[msg_type].number_of_args; i++)
+    {
+      switch(message_to_robot[msg_type].arg_type[i])
+        {
+        case NONE: 
+          throw Error("Couldn't send message, no arg_type", "Robot::send_message");
+          break;
+        case INT:
+          str += (String)va_arg(args, int) + ' ';
+          break;
+        case DOUBLE:
+          str += String(va_arg(args, double), 6) + ' ';
+          break;
+        case STRING:
+          str += (String)va_arg(args, char*) + ' ';
+          break;   
+        case HEX:
+          str += hex2str(va_arg(args, int)) + ' ';
+          break;
+        default:
+          throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
+        }
+    }
+  str += '\n';
+
+  for(GList* gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    *(((Robot*)gl->data)->get_outstreamp()) << str;
 }
 
 void
@@ -698,6 +723,9 @@ Arena::start_game()
   broadcast(ROBOTS_LEFT, robots_left);
   the_opts.broadcast_opts();
 
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+    ((Robot*)gl->data)->send_signal();
+
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
@@ -746,7 +774,16 @@ Arena::start_sequence()
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
-      ((Robot*)gl->data)->start_process();
+      try
+        {
+          ((Robot*)gl->data)->start_process();
+        }
+      catch ( Error the_error )
+        {
+          the_error.print_message();
+          exit( EXIT_FAILURE );
+        }
+
     }
   
   // wait a second before checking
