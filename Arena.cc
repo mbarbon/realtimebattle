@@ -3,9 +3,6 @@
 #include "Arena.h"
 #include "gui.h"
 
-#define DEFAULT_WIDTH  600
-#define DEFAULT_HEIGHT 480
-
 Arena::Arena()
 {
   state = NOT_STARTED;
@@ -225,10 +222,10 @@ Arena::update_robots()
       robotp = (Robot*)gl->data;
       if( robotp->is_alive() )
         {
+          robotp->update_radar_and_cannon(timestep);  
           robotp->move(timestep);
           if( !robotp->is_alive() ) remove_from_solid_object_list(*(Shape*)robotp);
-          
-          robotp->update_radar_and_cannon(timestep);  
+          robotp->get_messages();
         }      
     }
 }
