@@ -90,6 +90,16 @@ public:
                                              class StartTournamentWindow* stw_p );
   static void start                    ( GtkWidget* widget,
                                          class StartTournamentWindow* stw_p );
+  static void load_tournament_selected ( GtkWidget* widget,
+                                         class StartTournamentWindow* stw_p );
+  static void load_file_selected       ( GtkWidget* widget,
+                                         class StartTournamentWindow* stw_p );
+  static void save_tournament_selected ( GtkWidget* widget,
+                                         class StartTournamentWindow* stw_p );
+  static void save_file_selected       ( GtkWidget* widget,
+                                         class StartTournamentWindow* stw_p );
+  static void destroy_filesel          ( GtkWidget* widget,
+                                         class StartTournamentWindow* stw_p );
   static void button_selected          ( GtkWidget* widget,
                                          struct select_buttons_t* button );
   static void selection_made           ( GtkWidget * clist,
@@ -98,6 +108,12 @@ public:
                                          class StartTournamentWindow* stw_p );
 
   void set_deletion_resp_for_tournament_lists( const bool resp );
+  static void dummy_result             ( int result ) {}
+  void new_lists            ( const List<start_tournament_info_t>& robotfilename_list, 
+                              const List<start_tournament_info_t>& arenafilename_list, 
+                              const int robots_p_game, 
+                              const int games_p_sequence, 
+                              const int n_o_sequences );
 
 private:
 
@@ -110,6 +126,11 @@ private:
   start_tournament_info_t* find_row_in_clist
                                        ( const int row,
                                          List<start_tournament_info_t>* info_list );
+  void load_tournament_file            ( const String& full_filename );
+  void save_tournament_file            ( const String& full_filename );
+
+  GtkWidget* get_filesel          () { return filesel; }
+  void set_filesel                ( GtkWidget* fs ) { filesel = fs; } 
   
   GtkWidget** get_entries              () { return entries; }
 
@@ -134,6 +155,7 @@ private:
   GtkWidget* window_p;
 
   GtkWidget* entries[3];
+  GtkWidget* filesel;
 
   GtkWidget* robots_in_tournament_clist;
   GtkWidget* robots_in_directory_clist;

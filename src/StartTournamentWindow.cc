@@ -46,6 +46,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 #include "Various.h"
 #include "List.h"
+#include "Dialog.h"
 
 class List<start_tournament_info_t> robots_in_last_tournament;
 class List<start_tournament_info_t> arenas_in_last_tournament;
@@ -58,6 +59,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_x_pos,
                                               const int default_y_pos )
 {
+  filesel = NULL;
+
   // Set the selected_robot_tournament List to be equal to 
   // robots_in_last_tournament. The same for arena;
 
@@ -376,6 +379,28 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_show( button_table );
 
   GtkWidget* vbox2 = gtk_vbox_new( FALSE, 10 );
+  gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, FALSE, 0);
+  gtk_widget_show (vbox2);
+
+  {
+    char * button_labels[] = { " Load tournament ", " Save tournament " };
+    for(int i=0;i<2;i++)
+      {
+        GtkWidget* button = gtk_button_new_with_label( button_labels[i] );
+        if(i==0)
+          gtk_signal_connect( GTK_OBJECT( button ), "clicked",
+                              (GtkSignalFunc) StartTournamentWindow::load_tournament_selected,
+                              (gpointer) this );          
+        if(i==1)
+          gtk_signal_connect( GTK_OBJECT( button ), "clicked",
+                              (GtkSignalFunc) StartTournamentWindow::save_tournament_selected,
+                              (gpointer) this );
+        gtk_box_pack_start( GTK_BOX(vbox2), button, TRUE, FALSE, 0);
+        gtk_widget_show( button );
+      }
+  }  
+
+  vbox2 = gtk_vbox_new( FALSE, 10 );
   gtk_box_pack_end( GTK_BOX(hbox2), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
@@ -474,6 +499,210 @@ StartTournamentWindow::cancel_new_tournament( GtkWidget* widget,
                                               class StartTournamentWindow* stw_p )
 {
   the_gui.close_starttournamentwindow();
+}
+
+void
+StartTournamentWindow::load_tournament_selected( GtkWidget* widget,
+                                                 class StartTournamentWindow* stw_p )
+{
+  if( stw_p->get_filesel() != NULL )
+    return;
+
+  GtkWidget* fs = gtk_file_selection_new( "Choose a tournament file to load" );
+  gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
+                      (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
+                      (gpointer) stw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
+      (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
+      (gpointer) stw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
+      (GtkSignalFunc) StartTournamentWindow::load_file_selected,
+      (gpointer) stw_p );
+  gtk_widget_show( fs );
+  stw_p->set_filesel( fs );
+}
+
+void
+StartTournamentWindow::load_file_selected( GtkWidget* widget,
+                                           class StartTournamentWindow* stw_p )
+{
+  stw_p->load_tournament_file
+    ( String( gtk_file_selection_get_filename
+              ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ) );
+  destroy_filesel( stw_p->get_filesel(), stw_p );
+}
+
+void
+StartTournamentWindow::save_tournament_selected( GtkWidget* widget,
+                                                 class StartTournamentWindow* stw_p )
+{
+  if( stw_p->get_filesel() != NULL )
+    return;
+
+  GtkWidget* fs = gtk_file_selection_new( "Choose a tournament file to load" );
+  gtk_signal_connect( GTK_OBJECT( fs ), "destroy",
+                      (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
+                      (gpointer) stw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->cancel_button ), "clicked",
+      (GtkSignalFunc) StartTournamentWindow::destroy_filesel,
+      (gpointer) stw_p );
+  gtk_signal_connect
+    ( GTK_OBJECT( GTK_FILE_SELECTION( fs )->ok_button ), "clicked",
+      (GtkSignalFunc) StartTournamentWindow::save_file_selected,
+      (gpointer) stw_p );
+  gtk_widget_show( fs );
+  stw_p->set_filesel( fs );
+}
+
+void
+StartTournamentWindow::save_file_selected( GtkWidget* widget,
+                                           class StartTournamentWindow* stw_p )
+{
+  stw_p->save_tournament_file
+    ( String( gtk_file_selection_get_filename
+             ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ) );
+  destroy_filesel( stw_p->get_filesel(), stw_p );
+}
+
+void
+StartTournamentWindow::destroy_filesel( GtkWidget* widget,
+                                        class StartTournamentWindow* stw_p )
+{
+  gtk_widget_destroy( stw_p->get_filesel() );
+  stw_p->set_filesel( NULL );
+}
+
+void
+StartTournamentWindow::load_tournament_file( const String& full_filename )
+{
+  cout << full_filename << endl;
+}
+
+void
+StartTournamentWindow::
+new_lists( const List<start_tournament_info_t>& robotfilename_list, 
+           const List<start_tournament_info_t>& arenafilename_list, 
+           const int robots_p_game, 
+           const int games_p_sequence, 
+           const int n_o_sequences )
+{
+
+  for( int i = 0; i<2; i++ )
+    {
+      GtkWidget* tour_clist;
+      List<start_tournament_info_t>* tour_list;
+      bool robot;
+      if( i == 0 )
+        {
+          tour_list = &selected_robot_tournament;
+          tour_clist = robots_in_tournament_clist;
+          robot = true;
+        }
+      else
+        {
+          tour_list = &selected_arena_tournament;
+          tour_clist = arenas_in_tournament_clist;
+          robot = false;
+        }
+
+      gtk_clist_clear( GTK_CLIST( tour_clist ) );
+      tour_list->delete_list();
+
+      ListIterator<start_tournament_info_t> li;
+      for( ( robot ? robotfilename_list.first(li) : arenafilename_list.first(li) );
+             li.ok(); li++ )
+        {
+          start_tournament_info_t* info = li();
+
+          char* lst[] = { "" };
+
+          int row = gtk_clist_append( GTK_CLIST( tour_clist ), lst );
+          gtk_clist_set_foreground( GTK_CLIST( tour_clist ), row, 
+                                    the_gui.get_fg_gdk_colour_p());
+          gtk_clist_set_background( GTK_CLIST( tour_clist ), row, 
+                                    the_gui.get_bg_gdk_colour_p());
+      
+          String fname = info->filename;
+          fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
+      
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_clist_set_text( GTK_CLIST( tour_clist ),
+                              row, 0, fname.chars() );
+#else
+          gtk_clist_set_text( GTK_CLIST( tour_clist ),
+                              row, 0, fname.non_const_chars() );
+#endif
+          info->selected = false;
+          info->row = row;
+          tour_list->insert_last( new start_tournament_info_t
+                                  ( info->row, false, info->filename, info->directory ) );
+        }
+    }
+}
+
+void
+StartTournamentWindow::save_tournament_file( const String& full_filename )
+{
+  cout << full_filename << endl;
+  int value[3];
+  int robot_number = get_selected_robot_tournament()->number_of_elements();
+
+  for( int i = 0; i < 3; i++ )
+    {
+      int min_value;
+      int max_value;
+
+      if(i != 1)
+        max_value = 10000;
+      else
+        {
+          max_value = min(120,robot_number);
+        }
+      if(i != 1)
+        min_value = 1;
+      else
+        min_value = 2;
+
+      value[i] = str2int( gtk_entry_get_text( GTK_ENTRY( get_entries()[i] ) ) );
+
+      value[i] = min( max_value, value[i] );
+      value[i] = max( min_value, value[i] );
+    }
+
+  ofstream file(full_filename.chars(), ios::out);
+  if( robot_number > 1 && file &&
+      !( selected_arena_tournament.is_empty() ) )
+    {
+      file << "Robots: " << endl;
+      ListIterator<start_tournament_info_t> li;
+      for( selected_robot_tournament.first(li); li.ok(); li++ )
+        file << li()->filename << " " << endl;
+
+      file << "Arenas: " << endl;
+      for( selected_arena_tournament.first(li); li.ok(); li++ )
+        file << li()->filename << " " << endl;
+
+      file << "Robots/Sequence: " << value[1] << endl;
+      file << "Games/Sequence: " << value[0] << endl;
+      file << "Sequences: " << value[2] << endl;
+    }
+  else
+    {
+      String error_msg;
+      if( robot_number <= 1 )
+        error_msg += "\nThere are too few robots in the tournament.";
+      if( selected_arena_tournament.is_empty() )
+        error_msg += "\nThere are no arenas in the tournament.";
+      if( !file )
+        error_msg += "\nCould not open file.";
+      List<String> button_list;
+      button_list.insert_last( new String( " Ok " ) );
+      Dialog( "Tournament could not be saved." + error_msg, button_list, 
+              (DialogFunction) StartTournamentWindow::dummy_result );
+    }
 }
 
 void
@@ -583,6 +812,10 @@ StartTournamentWindow::start( GtkWidget* widget,
       realtime_arena.start_tournament( *( stw_p->get_selected_robot_tournament() ),
                                        *( stw_p->get_selected_arena_tournament() ),
                                        value[1], value[0], value[2] );
+
+      // create the tmp rtb dir if it exists and save the current tournament there
+      create_tmp_rtb_dir();
+      stw_p->save_tournament_file( "/tmp/rtb/tmp.tour" );
 
       // Are there memory leaks here?
       robots_in_last_tournament.set_deletion_responsibility(false);
