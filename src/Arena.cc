@@ -47,7 +47,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
-#include "Error.h"
 #include "Various.h"
 #include "String.h"
 
