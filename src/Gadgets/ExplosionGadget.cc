@@ -39,6 +39,12 @@ ExplosionGadget::variable_def[ExplosionGadget::LAST_EXPLOSIONVAR] =
   {"Colour", INT_V, 0, 0, INT_MAX, 0, false, false, false}//How should a colour be represented?
 };
 
+const FunctionDefinition 
+ExplosionGadget::function_def[ExplosionGadget::LAST_EXPLOSIONFCN] = 
+{
+  { "Explode", true }
+};
+
 ExplosionGadget::ExplosionGadget( const char* name, Gadget* const p )
 {
   init_variables( variable_def, LAST_EXPLOSIONVAR );
