@@ -227,8 +227,8 @@ ArenaWindow::draw_circle( const Vector2D& center, const double radius,
       gdk_draw_arc( drawing_area->window,
                     colour_gc,
                     filled,
-                    boundary2pixel( center[0]-radius, 0 ),
-                    boundary2pixel( center[1]-radius, 1 ),
+                    boundary2pixel_x( center[0]-radius ),
+                    boundary2pixel_y( center[1]+radius ),
                     (int)(r*2.0), (int)(r*2.0),
                     0, GDK_360_DEGREES );
     }
@@ -236,8 +236,8 @@ ArenaWindow::draw_circle( const Vector2D& center, const double radius,
     {
       gdk_draw_point( drawing_area->window,
                       colour_gc,
-                      boundary2pixel( center[0], 0 ), 
-                      boundary2pixel( center[1], 1 ) );
+                      boundary2pixel_x( center[0] ), 
+                      boundary2pixel_y( center[1] ) );
     }
   gdk_gc_destroy( colour_gc );
 }
@@ -256,10 +256,10 @@ ArenaWindow::draw_rectangle( const Vector2D& start,
   gdk_draw_rectangle( drawing_area->window,
                       colour_gc,
                       filled,
-                      boundary2pixel( start[0], 0 ),
-                      boundary2pixel( start[1], 1 ),
-                      boundary2pixel( end[0] - start[0], 0 ),
-                      boundary2pixel( end[1] - start[1], 1 ) );
+                      boundary2pixel_x( start[0] ),
+                      boundary2pixel_y( end[1] ),
+                      boundary2pixel_x( end[0] - start[0] ),
+                      boundary2pixel_y( end[1] - start[1] ) );
 
   gdk_gc_destroy( colour_gc );
 }
@@ -286,14 +286,32 @@ ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
 
   for(int i=0;i<4;i++)
     {
-      g_points[i].x = boundary2pixel( vector_points[i][0], 0 );
-      g_points[i].y = boundary2pixel( vector_points[i][1], 1 );
+      g_points[i].x = boundary2pixel_x( vector_points[i][0] );
+      g_points[i].y = boundary2pixel_y( vector_points[i][1] );
     }
   gdk_draw_polygon( drawing_area->window, colour_gc, true, g_points, 4 );
 
   gdk_gc_destroy( colour_gc );
 }
 
+void
+ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
+                        const double length, GdkColor& colour )
+{
+  GdkGC * colour_gc;  
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &colour );
+
+  Vector2D end_point = start + length * direction;
+
+  gdk_draw_line( drawing_area->window, colour_gc,
+                 boundary2pixel_x( start[0] ), 
+                 boundary2pixel_y( start[1] ), 
+                 boundary2pixel_x( end_point[0] ), 
+                 boundary2pixel_y( end_point[1] ) );
+
+  gdk_gc_destroy( colour_gc );
+}
 void
 ArenaWindow::drawing_area_scale_changed()
 {

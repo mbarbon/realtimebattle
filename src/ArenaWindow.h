@@ -59,7 +59,9 @@ public:
                                      GdkEventExpose* event,
                                      class ArenaWindow* arenawindow_p );
 
-  inline int boundary2pixel        ( const double in, const int x_or_y );
+  inline int boundary2pixel_x      ( const double x );
+  inline int boundary2pixel_y      ( const double y );
+
 
   void clear_area                  ();
   void draw_everything             ();
@@ -73,6 +75,10 @@ public:
                                      const Vector2D& direction,
                                      const double length, 
                                      const double thickness,
+                                     GdkColor& colour );
+  void draw_line                   ( const Vector2D& start,
+                                     const Vector2D& direction,
+                                     const double length, 
                                      GdkColor& colour );
   void draw_rectangle              ( const Vector2D& start,
                                      const Vector2D& end,
@@ -101,11 +107,17 @@ private:
 
 #include "ArenaController.h"
 
-// x_or_y set to 0 means x and x_or_y set to 1 means y
 inline int
-ArenaWindow::boundary2pixel( const double in, const int x_or_y )
+ArenaWindow::boundary2pixel_x( const double x )
 {
-  return (int)( ( in - the_arena.get_boundary()[0][x_or_y] ) *
+  return (int)( ( x - the_arena.get_boundary()[0][0] ) * 
+                drawing_area_scale + 0.5 );
+}
+
+inline int
+ArenaWindow::boundary2pixel_y( const double y )
+{
+  return (int)( ( the_arena.get_boundary()[1][1] - y ) * 
                 drawing_area_scale + 0.5 );
 }
 
