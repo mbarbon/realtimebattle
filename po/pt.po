@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-15 18:12+0100\n"
+"POT-Creation-Date: 2000-01-21 18:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Rui Sousa <rsousa@grad.physics.sunysb.edu>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -526,7 +526,7 @@ msgid "Misc"
 msgstr "Vários"
 
 #: src/OptionsWindow.cc:135 src/OptionsWindow.cc:172
-#: src/StartTournamentWindow.cc:295
+#: src/StartTournamentWindow.cc:300
 msgid " Min "
 msgstr " Min "
 
@@ -535,7 +535,7 @@ msgid " Def "
 msgstr " Aut "
 
 #: src/OptionsWindow.cc:139 src/OptionsWindow.cc:176
-#: src/StartTournamentWindow.cc:329
+#: src/StartTournamentWindow.cc:334
 msgid " Max "
 msgstr " Máx"
 
@@ -563,12 +563,12 @@ msgstr " Gravar como automático "
 msgid " Apply "
 msgstr " Aplicar "
 
-#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
-#: src/StartTournamentWindow.cc:714 src/StartTournamentWindow.cc:849
+#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:570
+#: src/StartTournamentWindow.cc:719 src/StartTournamentWindow.cc:858
 msgid " Ok "
 msgstr " Ok "
 
-#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:379
+#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:384
 msgid " Cancel "
 msgstr " Cancelar "
 
@@ -657,7 +657,7 @@ msgstr ""
 "    --message_file [ficheiro],   -m   redirige mensagens para o 'ficheiro'.\n"
 "                                      Com '-' como 'ficheiro', é usado o\n"
 "                                      STDOUT.\n"
-"                                      Se mensagens e relatórios são ambos\n
+"                                      Se mensagens e relatórios são ambos\n"
 "                                      enviados para STDOUT, '-m' vai ser\n"
 "                                      ignorado"
 
@@ -770,113 +770,113 @@ msgstr " Sequência "
 msgid " Sequence: "
 msgstr " Sequência: "
 
-#: src/StartTournamentWindow.cc:68
+#: src/StartTournamentWindow.cc:73
 msgid "Start New Tournament"
 msgstr "Começar Novo Torneio"
 
-#: src/StartTournamentWindow.cc:117
+#: src/StartTournamentWindow.cc:122
 msgid "Robots in Tournament"
 msgstr "Robots no Torneio"
 
-#: src/StartTournamentWindow.cc:118
+#: src/StartTournamentWindow.cc:123
 msgid "Robots in Directory"
 msgstr "Robots na Directoria"
 
-#: src/StartTournamentWindow.cc:127
+#: src/StartTournamentWindow.cc:132
 msgid "Arenas in Tournament"
 msgstr "Arenas no Torneio"
 
-#: src/StartTournamentWindow.cc:128
+#: src/StartTournamentWindow.cc:133
 msgid "Arenas in Directory"
 msgstr "Arenas na Directoria"
 
-#: src/StartTournamentWindow.cc:145
+#: src/StartTournamentWindow.cc:150
 msgid " Remove "
 msgstr " Remover "
 
-#: src/StartTournamentWindow.cc:145 src/StartTournamentWindow.cc:147
+#: src/StartTournamentWindow.cc:150 src/StartTournamentWindow.cc:152
 msgid " Select All "
 msgstr " Selecionar Todos "
 
-#: src/StartTournamentWindow.cc:146 src/StartTournamentWindow.cc:147
+#: src/StartTournamentWindow.cc:151 src/StartTournamentWindow.cc:152
 msgid " Unselect All "
 msgstr "De-selecionar Todos"
 
-#: src/StartTournamentWindow.cc:146
+#: src/StartTournamentWindow.cc:151
 msgid " Add "
 msgstr " Adicionar "
 
 #. Choose Number of games per sequence, Number of robots per sequence
 #. and Number of sequences
-#: src/StartTournamentWindow.cc:237
+#: src/StartTournamentWindow.cc:242
 msgid "Games per sequence"
 msgstr "Jogos por sequência"
 
-#: src/StartTournamentWindow.cc:237
+#: src/StartTournamentWindow.cc:242
 msgid "Robots per sequence"
 msgstr "Robots por sequência"
 
-#: src/StartTournamentWindow.cc:238
+#: src/StartTournamentWindow.cc:243
 msgid "Number of sequences"
 msgstr "Número de sequências"
 
-#: src/StartTournamentWindow.cc:307
+#: src/StartTournamentWindow.cc:312
 msgid " All Arenas "
 msgstr " Todas as Arenas "
 
-#: src/StartTournamentWindow.cc:319
+#: src/StartTournamentWindow.cc:324
 msgid " Full Round "
 msgstr " Round Completo "
 
-#: src/StartTournamentWindow.cc:357
+#: src/StartTournamentWindow.cc:362
 msgid " Load tournament "
 msgstr " Ler torneio "
 
-#: src/StartTournamentWindow.cc:357
+#: src/StartTournamentWindow.cc:362
 msgid " Save tournament "
 msgstr " Gravar torneio "
 
-#: src/StartTournamentWindow.cc:379
+#: src/StartTournamentWindow.cc:384
 msgid " Start "
 msgstr " Começar "
 
-#: src/StartTournamentWindow.cc:485
+#: src/StartTournamentWindow.cc:490
 msgid "Choose a tournament file to load"
 msgstr "Escolha um ficheiro de torneio para ler"
 
-#: src/StartTournamentWindow.cc:519
+#: src/StartTournamentWindow.cc:524
 msgid "Choose file to save tournament into"
 msgstr "Escolha um ficheiro para o qual gravar o torneio"
 
-#: src/StartTournamentWindow.cc:563
+#: src/StartTournamentWindow.cc:568
 msgid "Error in specified tournament file."
 msgstr "Erro no ficheiro de torneio especificado."
 
-#: src/StartTournamentWindow.cc:566
+#: src/StartTournamentWindow.cc:571
 msgid "Tournament could not be loaded."
 msgstr "Torneio não pôde ser lido."
 
-#: src/StartTournamentWindow.cc:704
+#: src/StartTournamentWindow.cc:709
 msgid "There are too few robots in the tournament."
 msgstr "Existem robots a menos no torneio."
 
-#: src/StartTournamentWindow.cc:706 src/StartTournamentWindow.cc:844
+#: src/StartTournamentWindow.cc:711 src/StartTournamentWindow.cc:853
 msgid "There are no arenas in the tournament."
 msgstr "Não existem nenhumas arenas no torneio."
 
-#: src/StartTournamentWindow.cc:709
+#: src/StartTournamentWindow.cc:714
 msgid "Could not open file."
 msgstr "Não foi possível abrir ficheiro."
 
-#: src/StartTournamentWindow.cc:715
+#: src/StartTournamentWindow.cc:720
 msgid "Tournament could not be saved."
 msgstr "O torneio não pôde ser gravado."
 
-#: src/StartTournamentWindow.cc:842
+#: src/StartTournamentWindow.cc:851
 msgid "There must be at least two robots in the tournament."
 msgstr "Têm de haver pelo menos dois robots no torneio."
 
-#: src/StartTournamentWindow.cc:850
+#: src/StartTournamentWindow.cc:859
 msgid "Tournament could not be started."
 msgstr "Não foi possivel começar o torneio."
 
