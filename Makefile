@@ -4,23 +4,23 @@ export CC = gcc
 export CXX = g++
 
 #debug-options
-CPPFLAGS = $(gtkincludedirs)
+export CPPFLAGS = $(gtkincludedirs)
 export CFLAGS = -g -Wall
 export CXXFLAGS = -g -Wall
 
 #normal-options
-#CPPFLAGS = $(gtkincludedirs)
+#export CPPFLAGS = $(gtkincludedirs)
 #export CFLAGS = -Wall
 #export CXXFLAGS = -Wall
 
 #final-options
-#CPPFLAGS = $(gtkincludedirs)
+#export CPPFLAGS = $(gtkincludedirs)
 #export CFLAGS = -O
 #export CXXFLAGS = -O
 
 gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
-libdirs = -L/usr/lib -L/usr/X11R6/lib
-libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
+export libdirs = -L/usr/lib -L/usr/X11R6/lib
+export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o
 
