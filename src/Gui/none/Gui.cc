@@ -49,5 +49,6 @@ GIInit( int argc, char** argv )
 int
 GIMain( GuiInterface* _gi_p )
 {
+  _gi_p->quit();
   return true;
 }
