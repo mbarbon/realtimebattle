@@ -162,9 +162,7 @@ ArenaController::parse_command_line( int argc, char** argv )
 
         case 0:
           // If this option set a flag, do nothing else now.
-          // This is not the case for debug_mode
-          if( long_options[option_index].flag != 0 &&
-              option_index != 2 )
+          if( long_options[option_index].flag != 0 )
             break;
           
           switch( option_index )
@@ -193,8 +191,8 @@ ArenaController::parse_command_line( int argc, char** argv )
               replay_filename = (String)optarg;
               break;
             default:
-              Error( true, "Bad error, this shouldn't happen",
-                     "RealTimeBattle.cc:parse_command_line" );
+              Error( true, "Bad error: Nonexisting options. This shouldn't happen",
+                     "ArenaController.cc::parse_command_line" );
               exit( EXIT_FAILURE );
             }
           break;
