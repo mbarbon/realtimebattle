@@ -34,7 +34,7 @@ public:
   ArenaController();
   ~ArenaController();
 
-  int rtb_main( int, char** );
+  int init( int, char** );
   void parse_command_line( int, char** );
   
   void close_arena();
