@@ -17,123 +17,53 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ARENA_WINDOW__
-#define __ARENA_WINDOW__
+#ifndef RTB_GTKGUI__ARENA_WINDOW__
+#define RTB_GTKGUI__ARENA_WINDOW__
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
+#include <gtk/gtk.h>
+
 #include "Vector2D.h"
+#include "Window.h"
 
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-union _GdkEvent;
-typedef union _GdkEvent GdkEvent;
-struct _GdkEventKey;
-typedef struct _GdkEventKey GdkEventKey;
-struct _GdkEventExpose;
-typedef struct _GdkEventExpose GdkEventExpose;
-struct _GdkColor;
-typedef struct _GdkColor GdkColor;
-typedef void* gpointer;
-typedef int gint;
+class ArenaDisplay;
 
-
-class ArenaWindow
+class ArenaWindow : public Window
 {
 public:
-  ArenaWindow                      ( const int default_width  = -1,
-                                     const int default_height = -1,
-                                     const int default_x_pos  = -1,
-                                     const int default_y_pos  = -1 );
-  ~ArenaWindow                     ();
+  ArenaWindow                         ();
+  ~ArenaWindow                        ();
 
-  void set_window_title            ();
+  void create                         ( const int&           default_width  = -1,
+                                        const int&           default_height = -1,
+                                        const int&           default_x_pos  = -1,
+                                        const int&           default_y_pos  = -1 );
+  void destroy                        ();
 
-  static void hide_window          ( GtkWidget* widget, GdkEvent* event,
-                                     class ArenaWindow* arenawindow_p );
-  static void show_window          ( GtkWidget* widget,
-                                     class ArenaWindow* arenawindow_p );
-  static void no_zoom              ( GtkWidget* widget,
-                                     class ArenaWindow* arenawindow_p );
-  static void zoom_in              ( GtkWidget* widget,
-                                     class ArenaWindow* arenawindow_p );
-  static void zoom_out             ( GtkWidget* widget,
-                                     class ArenaWindow* arenawindow_p );
-  static gint redraw               ( GtkWidget* widget,
-                                     GdkEventExpose* event,
-                                     class ArenaWindow* arenawindow_p );
-  static gint keyboard_handler     ( GtkWidget *widget, GdkEventKey *event,
-                                     class ArenaWindow* arenawindow_p );
-
-
-  inline int boundary2pixel_x      ( const double x );
-  inline int boundary2pixel_y      ( const double y );
-
-
-  void clear_area                  ();
-  void draw_everything             ();
-  void draw_moving_objects         ( const bool clear_objects_first );
-  void drawing_area_scale_changed  ( const bool change_da_value = false );
-  void draw_circle                 ( const Vector2D& center,
-                                     const double radius,
-                                     GdkColor& colour,
-                                     const bool filled );
-  void draw_arc                    ( const Vector2D& center, 
-                                     const double inner_radius, const double outer_radius,
-                                     const double angle1, const double angle2,
-                                     GdkColor& colour );
-  void draw_line                   ( const Vector2D& start,
-                                     const Vector2D& direction,
-                                     const double length, 
-                                     const double thickness,
-                                     GdkColor& colour );
-  void draw_line                   ( const Vector2D& start,
-                                     const Vector2D& direction,
-                                     const double length, 
-                                     GdkColor& colour );
-  void draw_rectangle              ( const Vector2D& start,
-                                     const Vector2D& end,
-                                     GdkColor& colour,
-                                     const bool filled );
-
-  GtkWidget* get_drawing_area      () { return drawing_area; }
-  GtkWidget* get_scrolled_window   () { return scrolled_window; }
-  GtkWidget* get_window_p          () { return window_p; }
-  bool is_window_shown             () { return window_shown; }
-  void set_window_shown            ( bool win_shown );
-  int get_zoom                     () { return zoom; }
-  void set_zoom                    ( int z ) { zoom = z; }
-  double get_drawing_area_scale    () { return drawing_area_scale; }
+  void set_window_title               ();
 
 private:
+  // Graphics
+  static void no_zoom                 ( GtkWidget*           widget,
+                                        ArenaWindow*         object_p );
+  static void zoom_in                 ( GtkWidget*           widget,
+                                        ArenaWindow*         object_p );
+  static void zoom_out                ( GtkWidget*           widget,
+                                        ArenaWindow*         object_p );
+  static gint close_window            ( GtkWidget*           widget,
+                                        GdkEvent*            event,
+                                        ArenaWindow*         object_p );
+  static gint keyboard_handler        ( GtkWidget*           widget,
+                                        GdkEventKey*         event,
+                                        ArenaWindow*         object_p );
 
-  GtkWidget* window_p;
-  GtkWidget* scrolled_window;
-  GtkWidget* drawing_area;
+  ArenaDisplay* the_display;
 
-  Vector2D scrolled_window_size;
-  int zoom; // The zoom when pressed on one of the zoombuttons
-  double drawing_area_scale;
-
-  bool window_shown;
+  static const int arenawindow_min_width  = 185;
+  static const int arenawindow_min_height = 120;
 };
 
-#include "Gui.h"
-
-inline int
-ArenaWindow::boundary2pixel_x( const double x )
-{
-  return (int)( ( x - the_gui.get_arena_boundary()[0][0] ) * 
-                drawing_area_scale + 0.5 );
-}
-
-inline int
-ArenaWindow::boundary2pixel_y( const double y )
-{
-  return (int)( ( the_gui.get_arena_boundary()[1][1] - y ) * 
-                drawing_area_scale + 0.5 );
-}
-
-#endif __ARENA_WINDOW__
+#endif  RTB_GTKGUI__ARENA_WINDOW__
