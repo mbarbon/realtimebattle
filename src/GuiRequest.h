@@ -85,7 +85,7 @@ private:
   int number_of_matches;
   vector<string> robot_files;
   vector<string> arena_files;
-}
+};
 
 class EndTournamentRequest : public GuiRequest
 {
@@ -94,7 +94,7 @@ public:
   ~EndTournamentRequest        () {}
 private:
   void accept                  () const;
-}
+};
 
 class ChangeDebugLevelRequest : public GuiRequest
 {
@@ -106,6 +106,6 @@ private:
   void accept                  () const;
 
   int new_debug_level;
-}
+};
 
 #endif __GUIREQUEST__
