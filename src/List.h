@@ -49,8 +49,8 @@ public:
   T* get_nth(const int n) const;
   int  number_of_elements() const;
 
-  void first(ListIterator<T>& li) { li.listp = list_head->next; };
-  void last(ListIterator<T>& li)  { li.listp = list_head->prev; };
+  void first(ListIterator<T>& li) const { li.listp = list_head->next; };
+  void last(ListIterator<T>& li)  const { li.listp = list_head->prev; };
   //  void header(ListIterator<T>& li)  { li.listp = list_head; };
 
 
