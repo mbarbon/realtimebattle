@@ -31,6 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class ControlWindow;
 class ArenaWindow;
 class MessageWindow;
+class OptionsWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
@@ -68,7 +69,8 @@ public:
   const int get_debug_level                    () const { return debug_level; }
 
   const state_t get_state                      () const { return state; }
-
+  const game_mode_t get_game_mode              () const { return game_mode; }
+  
   const int get_number_of_matches              () const { return number_of_matches; }
   const int get_games_per_match                () const { return games_per_match; }
   const int get_match_nr                       () const { return match_nr; }
@@ -103,6 +105,13 @@ public:
     { return messagewindow_p; }
   void open_messagewindow                      ();
   void close_messagewindow                     ();
+
+  bool is_optionswindow_up                     () const
+    { return ( optionswindow_p != NULL ); }
+  OptionsWindow* get_optionswindow_p           () const
+    { return optionswindow_p; }
+  void open_optionswindow                      ();
+  void close_optionswindow                     ();
 
   bool is_scorewindow_up                       () const
     { return ( scorewindow_p != NULL ); }
@@ -144,6 +153,7 @@ private:
   Vector2D arena_boundary[2];
 
   state_t state;
+  game_mode_t game_mode;
 
   double game_time;
 
@@ -165,6 +175,7 @@ private:
   ControlWindow* controlwindow_p;
   ArenaWindow* arenawindow_p;
   MessageWindow* messagewindow_p;
+  OptionsWindow* optionswindow_p;
   ScoreWindow* scorewindow_p;
   StatisticsWindow* statisticswindow_p;
   StartTournamentWindow* starttournamentwindow_p;

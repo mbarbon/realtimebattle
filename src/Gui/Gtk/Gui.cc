@@ -19,7 +19,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+# include <config.h>
 #endif
 #include <stdlib.h>
 
@@ -31,6 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "ArenaWindow.h"
 #include "MessageWindow.h"
+#include "OptionsWindow.h"
 #include "ScoreWindow.h"
 #include "ControlWindow.h"
 #include "StatisticsWindow.h"
@@ -249,17 +250,16 @@ Gui::get_information()
                 switch( (*opi)->type )
                   {
                   case SHAPE_LINE:
-                    ds_p = new DrawingLine( id, 0 ); //Should the colour be fg_colour?
+                    ds_p = new DrawingLine( id, fg_rgb_colour );
                     break;
                   case SHAPE_CIRCLE:
-                    ds_p = new DrawingCircle( id, 0 ); //Should the colour be fg_colour?
+                    ds_p = new DrawingCircle( id, fg_rgb_colour );
                     break;
                   case SHAPE_INNER_CIRCLE:
-                    //Should the colour be fg_colour?
-                    ds_p = new DrawingInnerCircle( id, 0 );
+                    ds_p = new DrawingInnerCircle( id, fg_rgb_colour );
                     break;
                   case SHAPE_ARC:
-                    ds_p = new DrawingArc( id, 0 ); //Should the colour be fg_colour?
+                    ds_p = new DrawingArc( id, fg_rgb_colour );
                     break;
                   }
                 ds_p->set_position( *opi );
@@ -333,6 +333,23 @@ Gui::close_messagewindow()
     {
       delete messagewindow_p;
       messagewindow_p = NULL;
+    }
+}
+
+void
+Gui::open_optionswindow()
+{
+  if( NULL == optionswindow_p )
+    optionswindow_p = new OptionsWindow( -1, -1, -1, -1 );
+}
+
+void
+Gui::close_optionswindow()
+{
+  if( NULL != optionswindow_p )
+    {
+      delete optionswindow_p;
+      optionswindow_p = NULL;
     }
 }
 
