@@ -101,6 +101,12 @@ Shot::move(const double timestep)
 }
 
 void
+Shot::move_no_check(const double timestep)
+{
+  center += timestep*velocity;
+}
+
+void
 Shot::die()
 {
    alive = false;

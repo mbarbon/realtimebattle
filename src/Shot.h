@@ -31,6 +31,7 @@ public:
   ~Shot() {}
 
   void move(const double timestep);
+  void move_no_check(const double timestep);
   void die();
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
