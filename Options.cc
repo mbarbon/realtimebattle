@@ -159,6 +159,41 @@ Options::get_options_from_rtbrc()
 }
 
 void
+Options::set_all_options_from_gui()
+{
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    {
+      double entry_value = str2dbl(gtk_entry_get_text(GTK_ENTRY(all_double_options[i].entry)));
+      if( entry_value > all_double_options[i].max_value )
+        entry_value = all_double_options[i].max_value;
+      if( entry_value < all_double_options[i].min_value )
+        entry_value = all_double_options[i].min_value;
+
+      all_double_options[i].value = entry_value;
+    }
+
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    {
+      long entry_value = 0;
+      if( all_long_options[i].datatype == ENTRY_INT )
+        entry_value = str2long(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
+      if( all_long_options[i].datatype == ENTRY_HEX )
+        entry_value = str2hex(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
+
+      if( entry_value > (long)all_long_options[i].max_value )
+        entry_value = (long)all_long_options[i].max_value;
+      if( entry_value < (long)all_long_options[i].min_value )
+        entry_value = (long)all_long_options[i].min_value;
+
+      all_long_options[i].value = entry_value;
+    }
+
+  the_arena.set_colours();
+
+  close_options_window();
+}
+
+void
 Options::setup_options_window()
 {
   int options_per_column = 20;
@@ -172,8 +207,12 @@ Options::setup_options_window()
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(options_window));
   gtk_container_border_width (GTK_CONTAINER (options_window), 12);
 
+  GtkWidget * vbox = gtk_vbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (options_window), vbox);
+  gtk_widget_show (vbox);
+
   GtkWidget * hbox = gtk_hbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (options_window), hbox);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
   for(int i=0; i < number_of_columns; i++)
@@ -231,7 +270,7 @@ Options::setup_options_window()
       else if (all_long_options[i].datatype == ENTRY_HEX)
         gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), hex2str(all_long_options[i].value).chars() );
 
-      entry_t * info = new entry_t( ENTRY_DOUBLE, sign );
+      entry_t * info = new entry_t( all_long_options[i].datatype, sign );
 
       gtk_signal_connect(GTK_OBJECT(all_long_options[i].entry), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
@@ -239,6 +278,22 @@ Options::setup_options_window()
       gtk_widget_set_usize(all_long_options[i].entry, all_long_options[i].max_letters_in_entry * 9,18);
       gtk_widget_show(all_long_options[i].entry);
     }
+
+  hbox = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+  gtk_widget_show (hbox);
+
+  GtkWidget * button = gtk_button_new_with_label ("Apply");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (apply_options_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Cancel");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (options_window_requested), (gpointer) NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
+  gtk_widget_show (button);
 
   gtk_widget_show(options_window);
   options_window_up = true;
@@ -249,6 +304,12 @@ Options::close_options_window()
 {
   gtk_widget_destroy(options_window);
   options_window_up = false;
+}
+
+void
+apply_options_requested(GtkWidget *widget, gpointer data)
+{
+  the_opts.set_all_options_from_gui();
 }
 
 void

@@ -94,6 +94,7 @@ struct option_info_t
 };
 
 void options_window_requested(GtkWidget *widget, gpointer data);
+void apply_options_requested(GtkWidget *widget, gpointer data);
 
 class Options
 {
@@ -102,13 +103,19 @@ public:
   ~Options() {}
   //static void set_options();
 
-public:
   inline double get_d( option_double_t  option ) { return all_double_options[option].value; }
   inline long   get_l( option_long_t    option ) { return all_long_options[option].value; }
   //  String get_s( option_double_t option ) { return all_string_options[option]; }
   //  bool get_b( option_double_t option ) { return all_bool_options[option]; }
 
-private:  // other private variables and functions
+  void broadcast_opts();
+  void setup_options_window();
+  void close_options_window();
+  void set_all_options_from_gui();
+  void get_options_from_rtbrc();
+  bool get_options_window_up() { return options_window_up; }
+
+private:
 
   option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
   option_info_t<long> all_long_options[LAST_LONG_OPTION];
@@ -119,17 +126,5 @@ private:  // other private variables and functions
 
   bool options_window_up;
   GtkWidget * options_window;
-
-  set_option( double v );
-  set_option( long v );
-  set_option( String v );
-  set_option( bool v );
-
-public:  // other public variables and functions
-  void broadcast_opts();
-  void setup_options_window();
-  void close_options_window();
-  void get_options_from_rtbrc();
-  bool get_options_window_up() { return options_window_up; }
 };
 #endif __OPTIONS__
