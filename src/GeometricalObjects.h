@@ -41,7 +41,6 @@ public:
   bool is_inside_subsquare( const SubSquare& ss ) const { return true; }
   void find_subsquares() const {}
 
-
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
   double get_length() { return length; }
