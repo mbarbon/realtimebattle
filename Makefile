@@ -1,4 +1,5 @@
-export DEBUG_MODE = yes
+export DEBUG_MODE = no
+export PAPER_SIZE = A4
 
 SRCDIR=src
 ROBOTDIR=Robots
@@ -6,8 +7,8 @@ DOCSDIR=Documentation
 HTMLDIR=HTML
 ARENADIR=Arenas
 
-target: RealTimeBattle robots documentation
-all: RealTimeBattle robots all_documentation ETAGS
+target: RealTimeBattle robots
+all: RealTimeBattle robots docs ETAGS
 
 RealTimeBattle:
 	cd $(SRCDIR) && $(MAKE)
@@ -15,10 +16,10 @@ RealTimeBattle:
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
 
-documentation:
+html_docs:
 	cd $(DOCSDIR) && $(MAKE)
 
-all_documentation:
+docs:
 	cd $(DOCSDIR) && $(MAKE) all
 
 clean: root_clean rtb_clean robot_clean doc_clean
@@ -38,9 +39,12 @@ doc_clean:
 ETAGS:
 	cd $(SRCDIR) && $(MAKE) ETAGS
 
-tgz:
-	tar -czf RealTimeBattle.tgz Makefile COPYING src/*.cc src/*.h src/Makefile Documentation/RealTimeBattle*.html Documentation/RealTimeBattle.dvi Documentation/RealTimeBattle.info Arenas/*.arena Robots/*.c* Robots/Makefile
+tar.gz:
+	cd .. && tar -czf RealTimeBattle/RealTimeBattle.tar.gz RealTimeBattle/Makefile RealTimeBattle/BUGS RealTimeBattle/COPYING RealTimeBattle/FAQ RealTimeBattle/INSTALL RealTimeBattle/NEWS RealTimeBattle/README RealTimeBattle/TODO RealTimeBattle/src/*.cc RealTimeBattle/src/*.h RealTimeBattle/src/Makefile RealTimeBattle/Documentation/RealTimeBattle*.html RealTimeBattle/Documentation/RealTimeBattle.dvi RealTimeBattle/Documentation/RealTimeBattle.info RealTimeBattle/Arenas/*.arena RealTimeBattle/Robots/*.c* RealTimeBattle/Robots/Makefile 
 
 
 install:
 #NOT YET DONE!!!
+
+
+

@@ -2,7 +2,7 @@ CC = gcc
 CXX = g++
 
 ifndef DEBUG_MODE
-DEBUG_MODE=yes
+DEBUG_MODE=no
 endif
 
 ifeq ($(DEBUG_MODE), yes)
@@ -17,9 +17,8 @@ CFLAGS = -O
 CXXFLAGS = -O
 endif
 
-gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
-libdirs = -L/usr/lib -L/usr/X11R6/lib
-libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
+gtkincludedirs = `gtk-config --cflags`
+libs = `gtk-config --libs`
 
 target: empty fire thomastest thomas2
 
@@ -30,10 +29,10 @@ fire: fire.o
 	$(CXX) $(CFLAGS) fire.o -o fire
 
 thomastest: thomastest.o
-	$(CXX) $(CPPFLAGS) $(CFLAGS) thomastest.o -o thomastest $(libdirs) $(libraries)
+	$(CXX) $(CPPFLAGS) $(CFLAGS) thomastest.o -o thomastest $(libs)
 
 thomas2: thomas2.o
-	$(CXX) $(CPPFLAGS) $(CFLAGS) thomas2.o -o thomas2 $(libdirs) $(libraries)
+	$(CXX) $(CPPFLAGS) $(CFLAGS) thomas2.o -o thomas2 $(libs)
 
 
 empty.o: empty.c 

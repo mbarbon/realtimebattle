@@ -2,7 +2,7 @@ CC = gcc
 CXX = g++
 
 ifndef DEBUG_MODE
-DEBUG_MODE=yes
+DEBUG_MODE=no
 endif
 
 ifeq ($(DEBUG_MODE), yes)
@@ -17,9 +17,8 @@ CFLAGS = -O
 CXXFLAGS = -O
 endif
 
-gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
-libdirs = -L/usr/lib -L/usr/X11R6/lib
-libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
+gtkincludedirs = `gtk-config --cflags`
+libs = `gtk-config --libs`
 
 objects = Vector2D.o Gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
 stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
@@ -27,7 +26,7 @@ stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.
 target: RealTimeBattle
 
 RealTimeBattle: $(objects)
-	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
+	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libs)
 
 
 #implicit rule for c-file:   N.o: $(CC) -c N.c $(CPPFLAGS) $(CFLAGS) 
