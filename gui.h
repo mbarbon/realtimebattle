@@ -9,7 +9,7 @@
 #include "String.h"
 
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
-enum min_max_full_t { MMF_MIN, MMF_MAX, MMF_FULL_ROUND };
+enum min_max_full_t { MMF_MIN, MMF_MAX, MMF_FULL_ROUND, MMF_ALL_ARENAS };
 enum stat_button_t
 {
   STAT_BUTTON_TOTAL = 0,
@@ -57,6 +57,7 @@ void statistics_button_callback(GtkWidget *widget, gpointer data);
 void start_tournament_min_callback(GtkWidget *widget, gpointer data);
 void start_tournament_max_callback(GtkWidget *widget, gpointer data);
 void start_tournament_full_round_callback(GtkWidget *widget, gpointer data);
+void start_tournament_all_arenas_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
 void delete_event( GtkWidget * widget, gpointer data );
 void no_zoom_callback(GtkWidget *widget, gpointer data);
@@ -119,6 +120,7 @@ public:
   void stat_make_title_button();
   void save_statistics_to_file();
 
+  void set_control_window_title( const bool halted );
   void set_score_window_title();
 
   void start_new_tournament();
