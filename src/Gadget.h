@@ -23,6 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <list>
 
+#include "GadgetSet.h"
+
 class Variable;
 class Function;
 
@@ -30,26 +32,31 @@ class Gadget
 {
 public:
 
-  Gadget() {}
+  Gadget( const string& name ) : info(this, last_id_used++, name) {}
   ~Gadget() {}
 
-  long int get_unique_id() { return unique_id; }
-  string& get_name() { return name; }
+  long int get_unique_id() { return info.id; }
+  string& get_name() { return info.name; }
 
+  const GadgetInfo& get_info() { return info; }
 
-  friend bool operator<(const Gadget& a, const Gadget& b) { return a.unique_id < b.unique_id; } 
-
+  static void set_last_id_used() { last_id_used = 0; }
+  
 protected:
 
-  long int unique_id;
-  string name;  
+  GadgetInfo info;
 
 
-  list<Function*> functions;
-  list<Variable*> variables;
-  list<Gadget*> gadgets;
+  Gadget* parent;
+
+  // Pointer to the gadget in the GadgetDefinition hierarchy which defined
+  // this gadget
+  Gadget* defining_gadget;
+
+  GadgetSet my_gadgets;
+
+public:
+  static int last_id_used;
 };
-
-
 
 #endif __GADGET__
