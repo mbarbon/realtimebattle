@@ -15,7 +15,7 @@
 static const double infinity = 1.0e10;
 
 enum touch_type { NO_ACTION, BOUNCE, TRANSFORM };
-enum object_type { ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
+enum object_type { NOOBJECT, ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
 static const number_of_object_types = 6;
 
 
@@ -28,7 +28,7 @@ public:
   ~Arena();
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
-                               const double size, class Shape* closest_shape);
+                               const double size, object_type& closest_shape);
 
   bool space_available(const Vector2D& pos, const double margin);
 
@@ -115,7 +115,7 @@ protected:
 
 // ---------------------  Explosion : ArenaObject  -------------------
 
-class Explosion : private virtual ArenaObject
+class Explosion : public virtual ArenaObject
 {
 public:
   Explosion(const Vector2D& c, const double r, const double energy); 
@@ -153,7 +153,7 @@ protected:
 
 // ---------------------  Line : Shape ---------------------
 
-class Line : protected virtual Shape
+class Line : public virtual Shape
 {
 public:
   Line();
@@ -178,7 +178,7 @@ protected:
 
 // ---------------------  Circle : Shape ---------------------
 
-class Circle : protected virtual Shape 
+class Circle : public virtual Shape 
 {
 public:
   Circle();
@@ -201,20 +201,20 @@ protected:
 
 // ---------------------  Wall : ArenaObject ---------------------
 
-class Wall : protected virtual ArenaObject 
+class Wall : public virtual ArenaObject 
 {
 public:
   object_type get_object_type() { return WALL; }
 };
 
-class WallCircle : public virtual Wall, private virtual Circle
+class WallCircle : public virtual Wall, public virtual Circle
 {
 public:
   WallCircle(const Vector2D& c, const double r) : Circle(c, r) {}
   ~WallCircle() {}
 };
 
-class WallLine : public virtual Wall, private virtual Line
+class WallLine : public virtual Wall, public virtual Line
 {
 public:
   WallLine(const Vector2D& sp, const Vector2D& d, const double len, 
@@ -227,7 +227,7 @@ public:
 
 class Robot;
 
-class Extras : protected virtual ArenaObject
+class Extras : public virtual ArenaObject
 {
 public:
   //Extras(const Vector2D& c, const double r); 
@@ -238,7 +238,7 @@ public:
 
 // ---------------------  Cookie : Extras  ---------------------
 
-class Cookie : private virtual Extras, private virtual Circle
+class Cookie : public virtual Extras, public virtual Circle
 {
 public:
   Cookie(const Vector2D& c, const double r, const double e); 
@@ -252,7 +252,7 @@ private:
 
 // ---------------------  Mine : Extras  ---------------------
 
-class Mine : private virtual Extras, private virtual Circle
+class Mine : public virtual Extras, public virtual Circle
 {
 public:
   Mine(const Vector2D& c, const double r, const double e); 
@@ -266,7 +266,7 @@ private:
 
 // ----------------  MovingObject : ArenaObject  ---------------------
 
-class MovingObject : protected virtual ArenaObject
+class MovingObject : public virtual ArenaObject
 {
 public:
   //MovingObject(const Vector2D& c, const double r); 
@@ -281,7 +281,7 @@ protected:
 
 // ---------------------  Robot : MovingObject  ---------------------
 
-class Robot : private virtual MovingObject, private virtual Circle
+class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
   Robot(char* filename, Arena* ap);
@@ -298,6 +298,8 @@ public:
   bool is_process_running();
   void end_process();
   void kill_process_forcefully();
+  void live();
+  void die();
  
   object_type get_object_type() { return ROBOT; }
   char* get_robotname();
@@ -327,7 +329,7 @@ private:
 
 // ---------------------  Shot : MovingObject  ---------------------
 
-class Shot : private virtual MovingObject, private virtual Circle
+class Shot : public virtual MovingObject, public virtual Circle
 {
 public:
   Shot(const Vector2D& c, const double r, 
