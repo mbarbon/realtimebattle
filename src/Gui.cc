@@ -117,7 +117,7 @@ Gui::Gui()
 
   control_window_size = Vector2D(294,110);
   start_tournament_window_size = Vector2D(485,410);
-  arena_window_size = Vector2D(150,150);
+  arena_window_size = Vector2D(350,350);
   score_window_size = Vector2D(359,374);
   message_window_size = Vector2D(294,110);
   statistics_window_size = Vector2D(499,428);
