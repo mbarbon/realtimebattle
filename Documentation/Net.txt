@@ -88,7 +88,7 @@ Message types :
 @m : Message from server send by a chater for other chaters                    mes  ----@M----->  mes  ----@m-----> receive
 
 @C : A Command to execute (see below)
-@S : Submit a robot/arena (i.e. message from a chat to submit a robot)
+S_ : Submit a robot/arena (i.e. message from a chat to submit a robot)
 
 st : A modification in statistics
 rp : A modification on robot position 
@@ -107,13 +107,14 @@ Only one message : "<lentgh>@I <protocol_version> <connection_type> <name>"
 courant protocol version : RTBNetV1
 connection type : see above
 This may be the only message using the @I message type
+Maybe we can reply with a welcome message ...
 
 Submit:
-add robots : @SR <robot1><robot2><robot3><...>
-add arenas : @SA <arena1><arena2><arena3><...>
-del robots : @Sr <robot1><robot2><robot3><...>
-del arenas : @Sa <arena1><arena2><arena3><...>
-Reply this submit with @s(R|A|r|a) and list of added/deleted elements
+add robots : "SR <robot1><robot2><robot3><...>"
+add arenas : "SA <arena1><arena2><arena3><...>"
+del robots : "Sr <robot1><robot2><robot3><...>"
+del arenas : "Sa <arena1><arena2><arena3><...>"
+Reply this submit with s(R|A|r|a) and list of added/deleted elements
 
 Messages:
 @M[dest]message : Chat1 send the message to the server (dest = "all" to send it to everybody)
@@ -128,9 +129,7 @@ Command form a Root connection (don't forget to start with @C):
 * ...
 * kick : my favorite game
 
-Command from every basic chater (even root) :
-* addarena : add an arena to the list of arena (only root can do that?)
-* delarena : delete an arena from the list     (          "           )
+Command from every basic chater :
 * quit : quit the game (don't forget to delete every robot he could have launched...)
 
 Command from server to chat :
