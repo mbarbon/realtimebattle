@@ -487,7 +487,11 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
         LOG_FILE << (char)obj_type    << " ";  // object type to kill
         LOG_FILE << va_arg(args, int) << " ";  // object id
         if( obj_type == 'R' )
-          LOG_FILE << va_arg(args, double);    // robot points received
+          {
+            LOG_FILE << setprecision(1) 
+                     <<  va_arg(args, double) << " "; // robot points received
+            LOG_FILE << va_arg(args, int);            // position this game
+          }
       }
       break;
 
