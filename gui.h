@@ -36,6 +36,7 @@ public:
   void print_to_message_output( char * from_robot, char * text, GdkColor colour);
   void draw_objects();
 
+  double get_zoom();
   int change_to_pixels_x(double input);
   int change_to_pixels_y(double input);
 
@@ -64,6 +65,8 @@ private:
 
   GdkColormap * colormap;
   GdkColor background_colour;
+
+  double zoomfactor;
 
   Vector2D boundary[2];
 

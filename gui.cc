@@ -25,16 +25,30 @@ delete_event(GtkWidget *widget, gpointer guip)
 Gui::Gui(Arena * arenap)
 {
   the_arena = arenap;
+  zoomfactor = 1.0;
   statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
+}
+
+double
+Gui::get_zoom()
+{
+  double w = (double)(drawing_area->allocation.width);
+  double h = (double)(drawing_area->allocation.height);
+  double bw = boundary[1][0] - boundary[0][0];
+  double bh = boundary[1][1] - boundary[0][1];
+  if( w / bw >= h / bh )
+    return( zoomfactor * (h / bh) );
+  else
+    return( zoomfactor * (w / bw) );
 }
 
 int
 Gui::change_to_pixels_x(double input)
 {
   double res;
-  res = (input-boundary[0][0])*ZOOMFACTOR;
+  res = (input-boundary[0][0])*get_zoom();
   return (int)res;
 }
 
@@ -42,7 +56,7 @@ int
 Gui::change_to_pixels_y(double input)
 {
   double res;
-  res = (input-boundary[0][1])*ZOOMFACTOR;
+  res = (input-boundary[0][1])*get_zoom();
   return (int)res;
 }
 
@@ -95,7 +109,7 @@ Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
                 colour_gc,
                 filled,
                 change_to_pixels_x(center[0]-radius),change_to_pixels_y(center[1]-radius),
-                (int)(2.0*radius*ZOOMFACTOR), (int)(2.0*radius*ZOOMFACTOR),
+                (int)(2.0*radius*get_zoom()), (int)(2.0*radius*get_zoom()),
                 0, GDK_VARV);
 
   gdk_gc_destroy( colour_gc );
@@ -496,15 +510,13 @@ Gui::setup_arena_window( Vector2D bound[] )
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (arena_window), da_scrolled_window);
-  gtk_widget_set_usize(da_scrolled_window,564,564);
+  gtk_widget_set_usize(da_scrolled_window,404,404);
   gtk_widget_show (da_scrolled_window);
 
   // Drawing Area 
 
   drawing_area = gtk_drawing_area_new ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),
-                         change_to_pixels_x(boundary[1][0]),
-                         change_to_pixels_y(boundary[1][1]));
+  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),400,400);
   gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
   gtk_widget_show (drawing_area);
 
