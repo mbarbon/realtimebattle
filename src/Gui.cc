@@ -377,10 +377,19 @@ Gui::setup_score_window()
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_window_set_default_size( GTK_WINDOW( score_window ),
+                               (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),
+                               (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y) );
+  gtk_widget_set_usize( score_window, 175, 80 );
+#else
   gtk_widget_set_usize(score_window,
-                       (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y));
+                       (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),
+                       (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y));
+#endif
   gtk_widget_set_uposition(score_window,
-                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_X),(int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_Y));
+                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_X),
+                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_Y));
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
@@ -493,10 +502,19 @@ Gui::setup_arena_window()
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_arena_window_title();
   gtk_widget_set_name (arena_window, "RTB Arena");
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_window_set_default_size( GTK_WINDOW( arena_window ),
+                               (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_X),
+                               (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_Y) );
+  gtk_widget_set_usize( arena_window, 185, 120 );
+#else
   gtk_widget_set_usize(arena_window,
-                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_Y));
+                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_X),
+                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_Y));
+#endif
   gtk_widget_set_uposition(arena_window,
-                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_X),(int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_Y));
+                           (int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_X),
+                           (int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_Y));
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  

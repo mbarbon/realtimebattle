@@ -627,8 +627,16 @@ Gui::setup_statistics_window()
   gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
   gtk_container_border_width (GTK_CONTAINER (statistics_window), 12);  
-  gtk_widget_set_usize(statistics_window,
-                       (int)the_opts.get_l(OPTION_STATISTICS_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_STATISTICS_WINDOW_SIZE_Y));
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_window_set_default_size( GTK_WINDOW( statistics_window ),
+                               (int)the_opts.get_l(OPTION_STATISTICS_WINDOW_SIZE_X),
+                               (int)the_opts.get_l(OPTION_STATISTICS_WINDOW_SIZE_Y) );
+  gtk_widget_set_usize( statistics_window, 320, 130 );
+#else
+  gtk_widget_set_usize( statistics_window,
+                        (int)the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
+                        (int)the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ) );
+#endif
 
   vbox = gtk_vbox_new (FALSE, 5);
   gtk_container_add (GTK_CONTAINER (statistics_window), vbox);

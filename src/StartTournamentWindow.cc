@@ -62,7 +62,12 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
   if( default_width != -1 && default_height != -1 )
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+    gtk_window_set_default_size( GTK_WINDOW( window_p ),
+                                 default_width, default_height );
+#else
     gtk_widget_set_usize( window_p, default_width, default_height );
+#endif
   if( default_x_pos != -1 && default_y_pos != -1 )
     gtk_widget_set_uposition( window_p, default_x_pos, default_y_pos );
 
