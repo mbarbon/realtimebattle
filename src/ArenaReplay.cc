@@ -24,8 +24,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaReplay.h"
 #include "Various.h"
+#include "Options.h"
 #include "Extras.h"
 #include "Shot.h"
+#include "MessageWindow.h"
 
 ArenaReplay::ArenaReplay()
 {
@@ -58,15 +60,18 @@ ArenaReplay::timeout_function()
 void 
 ArenaReplay::start_tournament()
 {
-  if( the_gui.is_messagewindow_up() ) the_gui.close_messagewindow();
-  if( the_gui.is_scorewindow_up() )   the_gui.close_scorewindow();
-  if( the_gui.is_arenawindow_up() )   the_gui.close_arenawindow();
-  
-  //  if( !use_message_file )
-    the_gui.open_messagewindow();
-  the_gui.open_arenawindow();
-  the_gui.open_scorewindow();
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      if( the_gui.is_messagewindow_up() )
+        MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
+      else //if( !use_message_file )
+        the_gui.open_messagewindow();
 
+      if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
+      if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
+    }
+#endif
 }
   
 void 
@@ -107,7 +112,7 @@ ArenaReplay::parse_log_line( ifstream& file )
   file >> ws;
   file.get( first_letter );
 
-  cout << "first letter: " << first_letter << endl;
+  cerr << "first letter: " << first_letter << endl;
   //  bool get_the_rest_of_the_line = true;
   switch( first_letter )
     {
@@ -122,7 +127,7 @@ ArenaReplay::parse_log_line( ifstream& file )
     case 'T': // Time
       {
         file >> next_check_time;
-        cout << next_check_time << "  " << total_time << endl;
+        cerr << next_check_time << "  " << total_time << endl;
       }
       break;
     case 'P': // Print a robot message
@@ -229,51 +234,44 @@ ArenaReplay::parse_log_line( ifstream& file )
       break;
     case 'O': // Option
       {
-        char temp, option_type = '?';
+        char temp;
         char label[200];
-        file.get( option_type );
         file.get( label, 200, ':');
         file.get( temp );
-
-//          switch( option_type )
-//            {
-//            case 'D':
-//              {
-//                double value;
-//                file >> value;
-//                // set_double_opt( label, value, ENTRY_DOUBLE );
-//              }
-//              break;
-//            case 'L':
-//              {
-//                long value;
-//                file >> value;
-//                // set_long_opt( label, value, ENTRY_LONG );
-//              }              
-//              break;
-//            case 'H':
-//              {
-//                long value;
-//                file >> value;
-//                // set_long_opt( label, value, ENTRY_HEX );
-//              }
-//              break;
-//            case 'S':
-//              {
-//                char text[400];
-//                file.get( text, 400, '\n' );
-//                // set_string_opt( label, value, ENTRY_STRING );
-//                //              get_the_rest_of_the_line = false;
-//              }
-//              break;
-//            case '?':
-//            default:
-//              Error( false, "Unknown option type", "ArenaReplay::parse_log_line" );
-//              break;
-//      }
-        char line[400];
-        file.get( line, 400, '\n' );
-
+        option_return_t opt = the_opts.get_option_from_string( String( label ) );
+        switch( opt.datatype )
+          {
+          case ENTRY_INT:
+          case ENTRY_HEX:
+            {
+              long val;
+              file >> val;
+              cerr << label << ": " << val << endl;
+              the_opts.get_all_long_options()[opt.option_number].value = val;
+            }
+            break;
+          case ENTRY_DOUBLE:
+            {
+              double val;
+              file >> val;
+              cerr << label << ": " << val << endl;
+              the_opts.get_all_double_options()[opt.option_number].value = val;
+            }
+            break;
+          case ENTRY_CHAR:
+            {
+              char val[400];
+              file.get( val, 400, '\n' );
+              cerr << label << ": " << val << endl;
+              the_opts.get_all_string_options()[opt.option_number].value = val;
+            }
+            break;
+          case ENTRY_BOOL:
+            break;
+          default:
+            Error( true, "Unknown datatype", "ArenaReplay::parse_log_line" );
+            break;
+          }
       }
       break;
 
