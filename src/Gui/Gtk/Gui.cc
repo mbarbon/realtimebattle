@@ -45,6 +45,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "InfoClasses.h"
 
+int gui_returncode;
 class Gui* gui_p;
 
 const string
@@ -70,6 +71,7 @@ GIInit( int argc, char** argv )
 
   gtk_init (&argc, &argv);
 
+  gui_returncode = EXIT_SUCCESS;
   gui_p = new Gui();
   return (gui_p != NULL);
 }
@@ -77,17 +79,10 @@ GIInit( int argc, char** argv )
 int
 GIMain( GuiClientInterface* _gi_p )
 {
-  int returncode = the_gui.main_loop( _gi_p );
+  the_gui.main_loop( _gi_p );
   _gi_p->quit_program( true );
   delete gui_p;
-  return returncode;
-}
-
-void
-Gtk_GIExit_pre( int result )
-{
-  delete gui_p;
-  GIExit( result );
+  return gui_returncode;
 }
 
 Gui::Gui()
@@ -216,7 +211,7 @@ Gui::main_loop( GuiClientInterface* _gi_p )
 
   gtk_main();
 
-  return EXIT_SUCCESS;
+  return gui_returncode;
 }
 
 int
@@ -319,10 +314,10 @@ Gui::set_colours()
 void
 Gui::quit( bool exit_program )
 {
-  gtk_main_quit();
   if( exit_program )
     guiinterface_p->quit_program( EXIT_SUCCESS );
-  Gtk_GIExit_pre( EXIT_SUCCESS );
+  gui_returncode = EXIT_SUCCESS;
+  gtk_main_quit();
 }
 
 // TODO: Cleanly destruct everything in the gui
@@ -333,9 +328,9 @@ Gui::error( const bool fatal, const string& error_msg, const string& function_na
        << function_name << ": " << error_msg << endl;
   if( fatal )
     {
-      gtk_main_quit();
       guiinterface_p->quit_program( EXIT_FAILURE );
-      Gtk_GIExit_pre( EXIT_FAILURE );
+      gui_returncode = EXIT_FAILURE;
+      gtk_main_quit();
     }
 }
 
