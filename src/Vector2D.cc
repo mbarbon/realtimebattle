@@ -182,7 +182,7 @@ length(const Vector2D& vec)
 double
 vec2angle(const Vector2D& vec)
 {
-  return atan2(vec.vector[0], vec.vector[1]);
+  return atan2(vec.vector[1], vec.vector[0]);
 }
 
 

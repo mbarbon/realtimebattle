@@ -717,7 +717,7 @@ Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vect
   double injury = en_diff * 0.5 * (h + hardness_c ) * (1.0-e) * (1.0-p);
   change_energy(-injury);
 
-  send_message(COLLISION, WALL, -vec2angle(normal)-robot_angle.pos);
+  send_message(COLLISION, WALL, vec2angle(-normal)-robot_angle.pos);
 }
 
 void
@@ -760,16 +760,17 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   robot1.velocity += tmp;
   robot2.velocity -= tmp;
 
-  double an = vec2angle(normal);
+  double an = vec2angle(-normal);
   double en_diff = 0.5 * mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
   robot1.send_message(COLLISION, ROBOT, an-robot1.robot_angle.pos);
 
+  an = vec2angle(normal);
   en_diff = 0.5 * mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
-  robot2.send_message(COLLISION, ROBOT, -an-robot2.robot_angle.pos);
+  robot2.send_message(COLLISION, ROBOT, an-robot2.robot_angle.pos);
 }
 
 void
