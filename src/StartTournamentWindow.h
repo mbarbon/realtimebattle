@@ -119,6 +119,10 @@ public:
                               const int games_p_sequence, 
                               const int n_o_sequences );
 
+  bool get_tournament_started_flag     () { return tournament_started_flag; }
+  void set_tournament_started_flag     ( bool started )
+    { tournament_started_flag = started; }
+
   static void dummy_result             ( int result ) {}
 
 private:
@@ -175,6 +179,8 @@ private:
   List<start_tournament_info_t> selected_robot_directory;
   List<start_tournament_info_t> selected_arena_tournament;
   List<start_tournament_info_t> selected_arena_directory;
+
+  bool tournament_started_flag;
 };
 
 #endif NO_GRAPHICS
