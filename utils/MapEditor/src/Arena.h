@@ -4,14 +4,13 @@
 
 #include <stdio.h>
 #include <vector>
-#include "Gadget.h"
+#include "AllGadgets.h"
 
 
 class Arena
 {
 public:
-  Arena() 
-    : TheGadgets(0) {};
+  Arena()  {};
   ~Arena();
   void Read(char*);
 protected:
@@ -19,7 +18,7 @@ protected:
   int ReadHead(FILE*);
   void Write();
 
-  vector<Gadget*> TheGadgets;
+  vector<GadgetDefinition*> GlobalGadgetDefinitions;
 
   //Gadget *TheGadgets;
 };

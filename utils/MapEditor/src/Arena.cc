@@ -1,15 +1,17 @@
 #include <iostream.h>
 #include "Arena.h"
-#include "Gadget.h"
+#include "AllGadgets.h"
 #include <algorithm>
 
 using namespace std;
 
 void Arena::Write()
 {  
-  for(vector<Gadget*>::iterator i=TheGadgets.begin(); i!=TheGadgets.end(); i++)
+  for(vector<GadgetDefinition*>::iterator i=GlobalGadgetDefinitions.begin();
+      i!=GlobalGadgetDefinitions.end();
+      i++)
     {
-      (*i)->Print();
+      (*i)->theGadget->Print();
     }
 }
 
@@ -21,8 +23,10 @@ template<class T> struct deallocator
 
 Arena::~Arena()
 {
-  for_each(TheGadgets.begin(), TheGadgets.end(),deallocator<Gadget*>());
-  TheGadgets.clear();
+  for_each(GlobalGadgetDefinitions.begin(), 
+	   GlobalGadgetDefinitions.end(),
+	   deallocator<GadgetDefinition*>());
+  GlobalGadgetDefinitions.clear();
 }
 
 
