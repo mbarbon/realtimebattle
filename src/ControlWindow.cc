@@ -111,11 +111,16 @@ ControlWindow::ControlWindow( const int default_width,
   extra_vbox = NULL;
   filesel = NULL;
 
-  if( the_arena_controller.is_started() &&
-      !( the_arena_controller.is_realtime() ) )
-    display_replay_widgets();
-  else if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
+  remove_replay_widgets();
+}
+
+void
+ControlWindow::remove_replay_widgets()
+{
+  if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
     display_debug_widgets();
+  else
+    clear_extra_widgets();
 }
 
 void
@@ -208,7 +213,9 @@ ControlWindow::display_replay_widgets()
   gtk_box_pack_start( GTK_BOX( extra_vbox ), hbox, FALSE, FALSE, 0 );
   gtk_widget_show( hbox );
 
-  GtkObject* adjustment = gtk_adjustment_new (0.0, 0.0, 101.0, 0.1, 1.0, 1.0);
+  GtkObject* adjustment = gtk_adjustment_new ( 0.0, 0.0,
+                                               the_opts.get_d( OPTION_TIMEOUT ) + 1.0,
+                                               0.1, 1.0, 1.0 );
 
   GtkWidget* scale = gtk_hscale_new( GTK_ADJUSTMENT( adjustment ) );
   gtk_widget_set_usize( GTK_WIDGET( scale ), 150, 30 );
@@ -363,7 +370,6 @@ ControlWindow::replay( GtkWidget* widget,
     ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
   the_arena_controller.start_replay_arena();
   destroy_filesel( cw_p->get_filesel(), cw_p );
-  cw_p->display_replay_widgets();
 }
 
 void
