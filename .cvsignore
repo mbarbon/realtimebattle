@@ -1,0 +1,16 @@
+Makefile
+Makefile.in
+configure
+config.h
+config.log
+config.cache
+config.status
+stamp-h
+.deps
+TAGS
+BUGS
+ChangeLog
+FAQ
+INSTALL
+README
+TODO
