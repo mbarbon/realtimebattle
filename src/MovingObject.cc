@@ -20,12 +20,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/resource.h>
-#include <sys/stat.h>
 
 #ifdef USE_SYS_TIME_H
 #include <sys/time.h>
 #endif
+
+#include <sys/resource.h>
+#include <sys/stat.h>
 
 #ifdef USE_STDARG_H
 #include <stdarg.h>
@@ -581,7 +582,7 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
   points_this_game = 0.0;
-  break_percent = 0.0;
+  brake_percent = 0.0;
   acceleration = 0.0;
 }
 
@@ -616,8 +617,8 @@ Robot::change_velocity(const double timestep)
 {
   Vector2D dir = angle2vec(robot_angle.pos);
   double gt = the_opts.get_d(OPTION_GRAV_CONST) * timestep;
-  double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - break_percent) + 
-    the_opts.get_d(OPTION_SLIDE_FRICTION) * break_percent;
+  double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - brake_percent) + 
+    the_opts.get_d(OPTION_SLIDE_FRICTION) * brake_percent;
   velocity = -velocity* min(the_opts.get_d(OPTION_AIR_RESISTANCE) * timestep, 0.5) +
     timestep*acceleration*dir + 
     dot(velocity, dir) * max(0.0, 1.0-gt*fric) * dir +
@@ -1046,14 +1047,15 @@ Robot::get_messages()
             acceleration = acc;
           }
           break;
-        case BREAK:
+        case BREAK:  // Used only for compabillity reasons
+        case BRAKE:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
           {
             double brk;
             *instreamp >> brk;
             brk = max( brk, 0.0);
             brk = min( brk, 1.0);
-            break_percent = brk;
+            brake_percent = brk;
           } 
           break;
         case LOAD_DATA:

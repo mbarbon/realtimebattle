@@ -157,7 +157,7 @@ private:
 
   double energy; 
   double extra_air_resistance;
-  double break_percent;
+  double brake_percent;
 
   rotation_t robot_angle;
   rotation_t cannon_angle;

@@ -57,6 +57,7 @@ enum message_from_robot_type
   ROTATE_AMOUNT,
   SWEEP,
   ACCELERATE,
+  BRAKE,
   BREAK,
   SHOOT,
   PRINT,
@@ -127,7 +128,7 @@ enum object_type
   EXPLOSION 
 };
 
-static const number_of_object_types = 6;
+static const int number_of_object_types = 6;
 
 struct Message
 {
@@ -175,7 +176,8 @@ static const struct Message message_from_robot[25] =
   {"Sweep",        4, {INT, DOUBLE, DOUBLE, DOUBLE}}, // first and second arg: as in 'Rotate', but only cannon and radar
                                                       // third arg: left_angle, fourth arg: right_angle  (relative robot)
   {"Accelerate", 1, {DOUBLE}},             // arg: accelerate (m/s^2)  
-  {"Break",        1, {DOUBLE}},             // arg: break precentage, 0 = no break, 1 = full break 
+  {"Brake",        1, {DOUBLE}},             // arg: brake precentage, 0 = no brake, 1 = full brake 
+  {"Break",        1, {DOUBLE}},             // Wrong spelling, included for compabillity reasons.
   {"Shoot",        1, {DOUBLE}},             // arg: amount of energy
   {"Print",        1, {STRING}},             // arg: message to print   
   {"Debug",        1, {STRING}},             // arg: debug message

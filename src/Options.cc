@@ -44,7 +44,7 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.002, 0.0, 1.0, 12,"Roll friction", NULL);
 
   all_double_options[OPTION_SLIDE_FRICTION] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,"Slide/break friction", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,"Slide/brake friction", NULL);
 
   all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,"Robot max acceleration", NULL);
