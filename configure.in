@@ -61,7 +61,7 @@ AC_SUBST(LT_AGE)
 # Define available translations
 # ---------------------------------------------------------------------------
 
-ALL_LINGUAS="de es gl ja pl pt sv"
+ALL_LINGUAS="de es fr gl ja pl pt sv"
 
 # ---------------------------------------------------------------------------
 # Directories
