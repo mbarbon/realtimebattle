@@ -1009,10 +1009,15 @@ ArenaRealTime::start_game()
   the_opts.broadcast_opts();
 
 
+  print_to_logfile('T', 0.0);
 
   ListIterator<Shape> li2;
   for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
-    ((Robot*)li2())->send_signal();
+    {
+      robotp = (Robot*)li2();
+      robotp->send_signal();
+      robotp->move(0.0);  // To log current position
+    }
 
   set_state( GAME_IN_PROGRESS );
   game_nr++;
