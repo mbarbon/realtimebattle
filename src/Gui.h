@@ -141,6 +141,11 @@ public:
   GtkWidget* get_filesel_widget() { return filesel_widget; }
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
+  MessageWindow* get_messagewindow_p           ()
+    { return messagewindow_p; }
+  void open_messagewindow                      ();
+  void close_messagewindow                     ();
+
   ScoreWindow* get_scorewindow_p               ()
     { return scorewindow_p; }
   void open_scorewindow                        ();
@@ -151,11 +156,6 @@ public:
   static void kill_and_start_new_tournament    ( bool really );
   void open_starttournamentwindow              ();
   void close_starttournamentwindow             ();
-
-  MessageWindow* get_messagewindow_p           ()
-    { return messagewindow_p; }
-  void open_messagewindow                      ();
-  void close_messagewindow                     ();
 
 private:
 
