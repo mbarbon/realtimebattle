@@ -169,4 +169,4 @@ protected:
   bool is_ok;
 };
 
-#endif __SUBSQUARE_ITERATOS__
+#endif // __SUBSQUARE_ITERATOS__

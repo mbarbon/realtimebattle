@@ -160,4 +160,4 @@ struct message_t
 #define OPTION_STATISTICS_WINDOW_SIZE_X "Statistics window xsize"
 #define OPTION_STATISTICS_WINDOW_SIZE_Y "Statistics window ysize"
 
-#endif __STRUCTS__
+#endif // __STRUCTS__

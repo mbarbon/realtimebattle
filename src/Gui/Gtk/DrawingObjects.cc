@@ -207,12 +207,12 @@ DrawingArc::set_position( const object_pos_info* pos )
 }
 
 void
-DrawingArc::set_position( const Vector2D& c, const double ir, const double or,
+DrawingArc::set_position( const Vector2D& c, const double ir, const double outr,
                           const double sa, const double ea )
 {
   center = c;
   inner_radius = ir;
-  outer_radius = or;
+  outer_radius = outr;
   start_angle = sa;
   end_angle = ea;
 }

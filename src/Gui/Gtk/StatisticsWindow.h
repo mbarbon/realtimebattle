@@ -120,4 +120,4 @@ private:
   int looking_at_nr;
 };
 
-#endif __STATISTICS_WINDOW__
+#endif // __STATISTICS_WINDOW__

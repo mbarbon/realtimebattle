@@ -83,4 +83,4 @@ private:
 };
 
 
-#endif __WEAPON_GADGET__
+#endif // __WEAPON_GADGET__

@@ -95,4 +95,4 @@ public:
   static int last_id_used;
 };
 
-#endif __GADGET__
+#endif // __GADGET__

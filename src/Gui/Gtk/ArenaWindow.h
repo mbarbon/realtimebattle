@@ -66,4 +66,4 @@ private:
   static const int arenawindow_min_height = 120;
 };
 
-#endif  RTB_GTKGUI__ARENA_WINDOW__
+#endif // RTB_GTKGUI__ARENA_WINDOW__

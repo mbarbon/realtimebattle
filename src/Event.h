@@ -54,4 +54,4 @@ struct lt_event
 };
 
 
-#endif __EVENT__
+#endif // __EVENT__

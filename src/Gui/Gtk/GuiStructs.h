@@ -49,4 +49,4 @@ struct rgb_gdk_colour_t
   GdkColor gdk_colour;
 };
 
-#endif __GUISTRUCTS__
+#endif // __GUISTRUCTS__

@@ -75,4 +75,4 @@ public:  // to get faster and easier access
   bool is_double;
 };
 
-#endif __RTB_VALUE__
+#endif // __RTB_VALUE__

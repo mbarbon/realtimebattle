@@ -117,4 +117,4 @@ FileSelector<T>::bring_down( const bool result_ok )
     }
 }
 
-#endif __FILESELECTOR__
+#endif // __FILESELECTOR__

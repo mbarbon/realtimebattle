@@ -64,4 +64,4 @@ private:
 };
 
 
-#endif __COMMUNICATION_GADGET__
+#endif // __COMMUNICATION_GADGET__

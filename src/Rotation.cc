@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Rotation.h"
 #include <math.h>
+#include <float.h>
 
 bool
 Rotation::update(const double timestep, const int send_rotation_reached)

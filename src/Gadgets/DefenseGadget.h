@@ -65,4 +65,4 @@ private:
 };
 
 
-#endif __DEFENSE_GADGET__
+#endif // __DEFENSE_GADGET__

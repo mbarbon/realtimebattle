@@ -46,4 +46,4 @@ protected:
   double end_time;
 };
 
-#endif __EXPLOSION__
+#endif // __EXPLOSION__

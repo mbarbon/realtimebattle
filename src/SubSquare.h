@@ -66,4 +66,4 @@ protected:
 
 
 
-#endif __SUBSQUARE__
+#endif // __SUBSQUARE__

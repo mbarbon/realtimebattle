@@ -55,4 +55,4 @@ private:
 };
 
 
-#endif __FUNCTION_GADGET__
+#endif // __FUNCTION_GADGET__

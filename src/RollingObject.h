@@ -51,4 +51,4 @@ protected:
   Vector2D acceleration;
 };
 
-#endif __ROLLING_OBJECT__
+#endif // __ROLLING_OBJECT__

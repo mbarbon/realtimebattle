@@ -144,4 +144,4 @@ private:
   void* (*func_Main_pre)( void* );
 };
 
-#endif __GUIINTERFACE__
+#endif // __GUIINTERFACE__

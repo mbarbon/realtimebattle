@@ -68,4 +68,4 @@ private:
 };
 
 
-#endif __EXPLOSION_GADGET__
+#endif // __EXPLOSION_GADGET__

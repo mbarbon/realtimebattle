@@ -96,4 +96,4 @@ private:
   game_mode_t game_mode;
 };
 
-#endif __PROCESS__
+#endif // __PROCESS__

@@ -142,4 +142,4 @@ private:
   FileSelector<ControlWindow>* filesel;
 };
 
-#endif __CONTROL_WINDOW__
+#endif // __CONTROL_WINDOW__

@@ -136,7 +136,7 @@ public:
 
   virtual void draw_shape  ( ArenaDisplay* display_p );
   void set_position        ( const object_pos_info* pos );
-  void set_position        ( const Vector2D& c, const double ir, const double or,
+  void set_position        ( const Vector2D& c, const double ir, const double outr,
                              const double sa, const double ea );
 
 protected:
@@ -238,4 +238,4 @@ private:
   pixmap_t stat_pixmap;
 };
 
-#endif __DRAWINGOBJECTS__
+#endif // __DRAWINGOBJECTS__

@@ -82,10 +82,10 @@ struct object_inner_circle_pos_info : public object_pos_info
 
 struct object_arc_pos_info : public object_pos_info
 {
-  object_arc_pos_info( const Vector2D& c, const double ir, const double or,
+  object_arc_pos_info( const Vector2D& c, const double ir, const double outr,
                        const double sa, const double ea )
     : object_pos_info( SHAPE_ARC ), center(c),
-      inner_radius(ir), outer_radius(or), start_angle(sa), end_angle(ea) {}
+      inner_radius(ir), outer_radius(outr), start_angle(sa), end_angle(ea) {}
   Vector2D center;
   double inner_radius;
   double outer_radius;
@@ -234,4 +234,4 @@ private:
 };
 
 
-#endif RTB__INFOCLASSES_H__
+#endif // RTB__INFOCLASSES_H__

@@ -131,4 +131,4 @@ protected:
   double debug_level;
 };
 
-#endif __ROTATE_AND_FIRE__
+#endif // __ROTATE_AND_FIRE__

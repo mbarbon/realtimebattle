@@ -53,4 +53,4 @@ private:
   ShotGadget my_shotgadget;
 };
 
-#endif __SHOT__
+#endif // __SHOT__

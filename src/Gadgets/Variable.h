@@ -108,4 +108,4 @@ private:
 };
 
 
-#endif __VARIABLE_GADGET__
+#endif // __VARIABLE_GADGET__

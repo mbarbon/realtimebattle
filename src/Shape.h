@@ -104,4 +104,4 @@ protected:
   bool killed;
 };
 
-#endif __SHAPE__
+#endif // __SHAPE__

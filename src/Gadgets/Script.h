@@ -85,4 +85,4 @@ private:
 
 
 
-#endif __SCRIPT_GADGET__
+#endif // __SCRIPT_GADGET__

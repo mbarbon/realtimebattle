@@ -67,4 +67,4 @@ public:
                                                 Gadget* const     p );
 };
 
-#endif  __ALLGADGETS__
+#endif // __ALLGADGETS__

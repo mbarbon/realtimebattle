@@ -82,4 +82,4 @@ private:
   GtkStyle*                      style_rtb_message;
 };
 
-#endif RTB_GTKGUI__MESSAGE_WINDOW__
+#endif // RTB_GTKGUI__MESSAGE_WINDOW__

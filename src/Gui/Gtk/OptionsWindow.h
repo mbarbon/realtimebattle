@@ -121,4 +121,4 @@ private:
   FileSelector<OptionsWindow>         the_fileselector;
 };
 
-#endif RTB_GTKGUI__OPTIONS_WINDOW__
+#endif // RTB_GTKGUI__OPTIONS_WINDOW__

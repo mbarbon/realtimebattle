@@ -57,4 +57,4 @@ private:
 };
 
 
-#endif __ARENA_GADGET__
+#endif // __ARENA_GADGET__

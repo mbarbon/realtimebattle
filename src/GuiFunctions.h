@@ -103,4 +103,4 @@ GIExit( int returncode )
 }
 #endif
 
-#endif __GUIFUNCTIONS_H__
+#endif // __GUIFUNCTIONS_H__

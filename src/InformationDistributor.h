@@ -66,4 +66,4 @@ private:
   int next_reader_id;
 };
 
-#endif __INFORMATIONDISTRIBUTOR__
+#endif // __INFORMATIONDISTRIBUTOR__

@@ -76,4 +76,4 @@ protected:
 };
 
 
-#endif __GADGET_SET__
+#endif // __GADGET_SET__

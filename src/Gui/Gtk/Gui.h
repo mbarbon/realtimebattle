@@ -185,4 +185,4 @@ private:
   StartTournamentWindow* starttournamentwindow_p;
 };
 
-#endif __GUI__
+#endif // __GUI__

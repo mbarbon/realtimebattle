@@ -236,4 +236,4 @@ private:
   bool default_value;
 };
 
-#endif __OPTION__
+#endif // __OPTION__

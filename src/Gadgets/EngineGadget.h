@@ -64,4 +64,4 @@ private:
 };
 
 
-#endif __ENGINE_GADGET__
+#endif // __ENGINE_GADGET__

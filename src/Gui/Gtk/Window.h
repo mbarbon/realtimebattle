@@ -51,4 +51,4 @@ protected:
   GtkWidget* window_p;
 };
 
-#endif RTB_GTKGUI__WINDOW__
+#endif // RTB_GTKGUI__WINDOW__

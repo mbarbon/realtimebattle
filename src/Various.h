@@ -77,4 +77,4 @@ void clear_and_delete_pointer_list( list<ListClass*> the_list )
   the_list.clear();
 }
 
-#endif __VARIOUS__
+#endif // __VARIOUS__

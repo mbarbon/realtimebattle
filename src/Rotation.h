@@ -55,4 +55,4 @@ struct Rotation
   rotation_mode_t mode;
 };
 
-#endif __ROTATION__
+#endif // __ROTATION__

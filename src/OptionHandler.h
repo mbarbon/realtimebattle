@@ -137,4 +137,4 @@ OptionHandler::get_b( const string& option ) const
   return (((BooleanOption*)mci->second)->get_value());
 }
 
-#endif __OPTIONHANDLER__
+#endif // __OPTIONHANDLER__

@@ -132,5 +132,5 @@ class EventHandler
   int nb_GT_event;
 };
 
-#endif __EVENT_HANDLER__
+#endif // __EVENT_HANDLER__
 

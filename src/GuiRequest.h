@@ -108,4 +108,4 @@ private:
   int new_debug_level;
 };
 
-#endif __GUIREQUEST__
+#endif // __GUIREQUEST__

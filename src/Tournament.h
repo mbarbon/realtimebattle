@@ -101,4 +101,4 @@ private:
 
 };
 
-#endif __TOURNAMENT__
+#endif // __TOURNAMENT__

@@ -69,4 +69,4 @@ private:
   double current_time;
 };
 
-#endif __TIMER__
+#endif // __TIMER__

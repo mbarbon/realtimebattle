@@ -71,4 +71,4 @@ private:
 };
 
 
-#endif __SHOT_GADGET__
+#endif // __SHOT_GADGET__

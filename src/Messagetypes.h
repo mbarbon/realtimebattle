@@ -248,4 +248,4 @@ static const struct Message message_from_robot[25] =
   {"",             0, {}}
 };
 
-#endif __MESSAGETYPES__
+#endif // __MESSAGETYPES__

@@ -64,4 +64,4 @@ string hex2string  ( const long );
 long int chars2hex( const char* );
 char* hex2chars   ( const long );
 
-#endif __RTB_STRING__
+#endif // __RTB_STRING__

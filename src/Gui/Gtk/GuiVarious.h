@@ -34,4 +34,4 @@ gint string_case_sensitive_compare(GtkCList *clist, gconstpointer row1, gconstpo
 gint string_case_insensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 #endif
 
-#endif __GUIVARIOUS__
+#endif // __GUIVARIOUS__

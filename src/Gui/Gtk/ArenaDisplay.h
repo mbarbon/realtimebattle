@@ -121,4 +121,4 @@ ArenaDisplay::boundary2pixel_y( const double& y )
                   the_gui.get_arena_boundary()[0][1] ) + 0.5 );
 }
 
-#endif RTB_GUIGTK__ARENADISPLAY_H__
+#endif // RTB_GUIGTK__ARENADISPLAY_H__

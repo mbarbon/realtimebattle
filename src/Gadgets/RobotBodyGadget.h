@@ -69,4 +69,4 @@ private:
 };
 
 
-#endif __ROBOTBODY_GADGET__
+#endif // __ROBOTBODY_GADGET__

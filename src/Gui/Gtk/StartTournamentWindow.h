@@ -183,4 +183,4 @@ private:
   bool tournament_started_flag;
 };
 
-#endif __START_TOURNAMENT_WINDOW__
+#endif // __START_TOURNAMENT_WINDOW__

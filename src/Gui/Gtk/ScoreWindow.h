@@ -74,4 +74,4 @@ private:
   GtkWidget*                          robot_view;
 };
 
-#endif RTB_GTKGUI__SCORE_WINDOW__
+#endif // RTB_GTKGUI__SCORE_WINDOW__
