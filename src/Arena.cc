@@ -19,6 +19,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <stack>
 #include <fstream>
+#include <typeinfo>
 
 #include "Arena.h"
 #include "Gadget.h"
@@ -55,9 +56,10 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
       vector<string> wordlist = split_string( buffer, wordlist );
       if( wordlist.size() > 0 )
         {
-          if( wordlist[0] == "Include" )
+          if( equal_strings_nocase( wordlist[0], "Include" ) )
             file_stack.push( new ifstream( wordlist[1].c_str() ) );
-          else if( wordlist[0] == "Define" && wordlist.size() > 2 )
+          else if( equal_strings_nocase( wordlist[0], "Define" ) &&
+                   wordlist.size() > 2 )
             {
               int i = 0;
               for( ;i < LAST_GADGET; i++ )
@@ -71,7 +73,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     WeaponGadget* gadget =
                       new WeaponGadget( wordlist[2].c_str(), current_gadget );
                     current_gadget->get_my_gadgets().add( gadget->get_info() );
-                    current_gadget = gadget;
+                    current_gadget = (Gadget*)gadget;
                     break;
                   }
                 case GAD_SHOT: 
@@ -108,7 +110,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     Variable* gadget =
                       new Variable( wordlist[2].c_str(), current_gadget );
                     current_gadget->get_my_gadgets().add( gadget->get_info() );
-                    current_gadget = gadget;
+                    current_gadget = (Gadget*)gadget;
                     break;
                   }
                 case GAD_FUNCTION:
@@ -117,20 +119,35 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     Function* gadget =
                       new Function( wordlist[2].c_str(), current_gadget );
                     current_gadget->get_my_gadgets().add( gadget->get_info() );
-                    current_gadget = gadget;
+                    current_gadget = (Gadget*)gadget;
                     break;
                   }
                 }
             }
-          else if( wordlist[0] == "EndDefine" )
+          else if( equal_strings_nocase( wordlist[0], "EndDefine" ) )
             {
               if( wordlist.size() > 2 && wordlist[2] != current_gadget->get_name() )
                 Error( true, "Ending wrong definition", "Arena::load_arena_file" );
               current_gadget = current_gadget->get_parent();
             }
+          else if( equal_strings_nocase( wordlist[0], "Function" ) &&
+                   wordlist.size() > 2 )
+            {
+              Gadget* gadp = (*(current_gadget->get_my_gadgets().
+                find_by_name( GadgetInfo( NULL, wordlist[1], 0 ) ))).gadgetp;
+              if( typeinfo(gadp) == typeinfo(Function*) )// TODO: A better way to do this.
+                {
+                  // TODO: Set Function allowance to true, false or default
+                }              
+            }
           else
             {
-              // TODO: Check if this sets a function or variable in the current Gadget
+              Gadget* gadp = (*(current_gadget->get_my_gadgets().
+                find_by_name( GadgetInfo( NULL, wordlist[0], 0 ) ))).gadgetp;
+              if( typeinfo(gadp) == typeinfo(Variable*) )// TODO: A better way to do this.
+                {
+                  // TODO: Assign variable with value in wordlist[1]
+                }
             }
         }
     }
