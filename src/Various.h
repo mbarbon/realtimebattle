@@ -34,23 +34,6 @@ typedef void (*StartTournamentFunction)( const list<start_tournament_info_t>&,
 #define abs(a) ((a) > 0 ? (a) : -(a))
 #define sgn(a) ((a) > 0 ? 1 : -1)
 
-enum entry_datatype_t
-{
-  ENTRY_INT,
-  ENTRY_DOUBLE,
-  ENTRY_HEX,
-  ENTRY_CHAR,
-  ENTRY_BOOL
-};
-
-struct entry_t
-{
-  entry_t(entry_datatype_t d, bool s) :
-    datatype(d), allow_sign(s) {}
-  entry_datatype_t datatype;
-  bool allow_sign;
-};
-
 void Error(const bool fatal, const string& error_msg, const string& function_name);
 void Quit(const bool success = true);
 
