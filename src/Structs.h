@@ -76,12 +76,12 @@ struct start_tournament_info_t
 #define OPTION_ROBOT_FRONT_BOUNCE_COEFF "Robot front bounce coeff"
 #define OPTION_ROBOT_FRONT_HARDNESS     "Robot front hardness"
 #define OPTION_ROBOT_FRONT_PROTECTION   "Robot front protection"
-#define OPTION_ROBOT_START_ENERGY       "Start energy"
-#define OPTION_ROBOT_MAX_ENERGY         "Robot max energy"
+#define OPTION_ROBOT_START_HEALTH       "Start health"
+#define OPTION_ROBOT_MAX_HEALTH         "Robot max health"
 #define OPTION_ROBOT_MAX_ROTATE         "Robot max rotate"
 #define OPTION_ROBOT_CANNON_MAX_ROTATE  "Cannon max rotate"
 #define OPTION_ROBOT_RADAR_MAX_ROTATE   "Radar max rotate"
-#define OPTION_ROBOT_ENERGY_LEVELS      "energy_levels"
+#define OPTION_ROBOT_HEALTH_LEVELS      "health_levels"
 
 // ---------- Shot ----------
 
