@@ -44,6 +44,9 @@ public:
 
   const GadgetInfo& get_info() { return info; }
 
+  Gadget* get_parent() { return parent; }
+  GadgetSet& get_my_gadgets() { return my_gadgets; }
+
   static void set_last_id_used() { last_id_used = 0; }
   
   void eval_function(const int fcn) {}
