@@ -67,6 +67,8 @@ ArenaWindow::ArenaWindow( const int default_width,
                       (GtkSignalFunc) ArenaWindow::hide_window,
                       (gpointer) this );
 
+  gtk_widget_realize( window_p );
+
   // Main box
 
   GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
@@ -132,14 +134,13 @@ ArenaWindow::ArenaWindow( const int default_width,
   gtk_signal_connect( GTK_OBJECT( window_p ), "key_press_event",
                       (GtkSignalFunc) ArenaWindow::keyboard_handler, this );
 
-  gtk_widget_show( window_p );
+  gtk_widget_show_now( window_p );
 
   gdk_window_set_background( drawing_area->window,
                              the_gui.get_bg_gdk_colour_p() );
   gdk_window_clear( drawing_area->window );
 
-  // TODO: A good way of not showing the arena window when marked as hidden.
-  if( !window_shown ) // Not a good way :)
+  if( !window_shown )
     gtk_widget_hide( window_p );
 }
 
