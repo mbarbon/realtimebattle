@@ -1132,7 +1132,7 @@ Robot::get_messages()
 
               if( realtime_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
-                  Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
+                  Shot* shotp = new Shot( shot_center, shot_vel, en );
                   realtime_arena.get_object_lists()[SHOT].insert_last( shotp );
 
                   realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
