@@ -279,7 +279,7 @@ Options::setup_options_window()
       gtk_signal_connect(GTK_OBJECT(all_long_options[i].entry), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
       gtk_box_pack_start (GTK_BOX (option_hbox), all_long_options[i].entry, FALSE, FALSE, 0);
-      gtk_widget_set_usize(all_long_options[i].entry, all_long_options[i].max_letters_in_entry * 9,18);
+      gtk_widget_set_usize(all_long_options[i].entry, 108,18);
       gtk_widget_show(all_long_options[i].entry);
     }
 
