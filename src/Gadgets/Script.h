@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __SCRIPT_GADGET__
 
 #include <list>
+#include <vector>
 #include <stack>
 
 #include "Gadget.h"
@@ -34,11 +35,13 @@ class Script : public Gadget
 {
 public:
   
-  Script() {}
+  Script( const char* name, Gadget* const p ) : Gadget(name,p) {}
   ~Script() {}
 
   void run();
   void continue_script() {}
+
+  void add_script_line( vector<string>& strings ) {} // TODO: Actually add a line
 
   enum ScriptFunction
   {
