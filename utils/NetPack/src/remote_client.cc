@@ -34,7 +34,6 @@ public:
   {
     istrstream is(buffer);
     string command;
-    is >> command;
 
     if( command == "quit")   //The quit event (maybe a click for a chat)
       {
@@ -54,6 +53,7 @@ class ClientsLinkPacketFactory : public PacketFactory {
  public:
   Packet* MakePacket( string & s, NetConnection* nc)
   {
+	 cout<<"I'm here\n";
     if( s == "@CQuit" )
       exit( 0 );
     else if(s.substr(0, 10) == "TCRunRobot")
@@ -84,9 +84,13 @@ class ClientServerLinkFactory : public PacketFactory{
     int next_port;
     istrstream is ( s.c_str() );
     is >> next_port;
+    cout<<"Connecting to the 'local' client on port "<<next_port<<endl;
     sc.connect_to_server( "localhost", next_port );
+    cout<<"Done\n";
+    cout<<"Setting the packet factory\n";
     sc.set_packet_factory( new ClientsLinkPacketFactory );
-
+    cout<<"Done\n";
+    /*
     if( s == "@CQuit" )
       exit( 0 );
     else if(s.substr(0, 10) == "TCRunRobot")
@@ -102,7 +106,7 @@ class ClientServerLinkFactory : public PacketFactory{
       }
     else
       cout<<s<<endl; 
-
+    */
     return NULL;
   };
 protected:

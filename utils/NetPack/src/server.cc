@@ -88,12 +88,12 @@ public:
       }
       else
         cout<<"Not enough remote clients\n";
-      cout<<"Tell him to quit \n";
-      nc->send_data( "@CQuit" );
+      //cout<<"Tell him to quit \n";
+      //nc->send_data( "@CQuit" );
       //nc->send_data("Hello");
-      cout<<"Message sent\n";
-      nc->close_socket();
-      cout<<"Done\n";
+      //cout<<"Message sent\n";
+      //nc->close_socket();
+      //cout<<"Done\n";
     }
     return NULL;
   }
