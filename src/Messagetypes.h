@@ -123,15 +123,14 @@ enum robot_option_type
 enum object_type 
 { 
   NOOBJECT = -1, 
-  ROBOT, 
-  SHOT, 
-  WALL, 
-  COOKIE, 
-  MINE, 
-  EXPLOSION 
+  ROBOT = 0, 
+  SHOT = 1, 
+  WALL = 2, 
+  COOKIE = 3, 
+  MINE = 4
 };
 
-static const int number_of_object_types = 6;
+static const int number_of_object_types = 5;
 
 struct Message
 {
