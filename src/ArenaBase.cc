@@ -31,6 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream.h>
 #include <iomanip.h>
 #include <stdarg.h>
+#include <string.h>
 
 #if HAVE_DIRENT_H
 # include <dirent.h>
