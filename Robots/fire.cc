@@ -119,7 +119,7 @@ check_messages(int sig)
           cerr << "Fire: Help, I got a yellow card!" << endl;
           break;
         case EXIT_ROBOT:
-          cout << "Fire: Shutting down and leaving" << endl;
+          cout << "Print Shutting down and leaving" << endl;
           exit_robot = true;
           break;
         default:
@@ -137,8 +137,13 @@ main(int argc, char * argv[])
 
   for(;;sleep(1))
     {
-      if( exit_robot ) break; 
+      if( exit_robot ) 
+        {
+          //          cerr << "Fire: Exiting normally!" << endl;
+          return(EXIT_SUCCESS);
+        }
     }
-
   return(EXIT_SUCCESS);
 }
+
+

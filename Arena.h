@@ -24,6 +24,10 @@ static const number_of_object_types = 6;
 class Arena 
 {
 public:
+  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
+                 SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
+  
+
   Arena();
   ~Arena();
 
@@ -54,9 +58,7 @@ public:
   double get_slide_friction() { return slide_friction; }
   double get_grav_const() { return grav_const; }
   int get_robots_left() { return robots_left; }
-
-  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
-                 SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
+  state_t get_state() { return state; }
   
 private:
   gdouble timestep;
@@ -326,6 +328,7 @@ public:
                           const double size, const double start_energy);
   void start_process();
   bool is_process_running();
+  void send_signal();
   void end_process();
   void kill_process_forcefully();
   void live();
