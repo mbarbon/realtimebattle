@@ -91,7 +91,7 @@ main ( int argc, char* argv[] )
   Arena the_arena;
   try
     {
-      the_arena.start_tournament( robotnames, arenanames, 3, 3);
+      the_arena.start_tournament( robotnames, arenanames, nr_robots, 3);
     }
   catch ( Error the_error )
 	 {
