@@ -42,7 +42,7 @@ StatisticsWindow::StatisticsWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Statistics" );
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle Statistics" );
+  gtk_window_set_title( GTK_WINDOW( window_p ), "Statistics" );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 

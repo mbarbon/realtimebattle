@@ -138,7 +138,7 @@ ArenaWindow::~ArenaWindow()
 void
 ArenaWindow::set_window_title()
 {
-  String title = "RealTimeBattle Arena  " +
+  String title = "Arena   " +
     the_arena.get_current_arena_filename();
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }

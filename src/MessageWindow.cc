@@ -141,11 +141,11 @@ MessageWindow::~MessageWindow()
 void
 MessageWindow::set_window_title()
 {
-  String title( "RealTimeBattle Messages" );
+  String title( "Messages" );
   if( viewed_robot != NULL )
-    title += " - " + viewed_robot->get_robot_name();
+    title += "  -  " + viewed_robot->get_robot_name();
   else
-    title += " - All ";
+    title += "  -  All ";
 
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }

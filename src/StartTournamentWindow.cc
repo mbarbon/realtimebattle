@@ -58,7 +58,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
   gtk_widget_set_name( window_p, "RTB StartTournament" );
 
   gtk_window_set_title( GTK_WINDOW( window_p ),
-                        "RealTimeBattle Start New Tournament" );
+                        "Start New Tournament" );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
 
