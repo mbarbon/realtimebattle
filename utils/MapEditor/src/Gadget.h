@@ -5,33 +5,46 @@
 #include <string>
 #include <iostream.h>
 
+#include "GadgetSet.h"
+
+class Variable;
+class Function;
+
+struct VariableDefinition;
+struct FunctionDefinition;
 
 class Gadget
 {
 public:
-  Gadget() 
-    : Next(0), myName("") {};
-  Gadget(char* Name) 
-    : Next(0), myName(Name) {};
+  Gadget() : 
+    info(this, 0, ""),
+    parent(NULL)
+    /*variables(NULL), functions(NULL)*/  
+    {}
+
+  Gadget( const char* Name, Gadget* const p ) : 
+    info(this, last_id_used++, Name),
+    parent(p)
+    /*variables(NULL), functions(NULL)*/
+    {
+      cout<<"NbGadgets : "<<last_id_used<<endl;
+    }
+
+  static int last_id_used;
+
+  ~Gadget();
+
   virtual int Read(FILE* /* fp */)
   {
     return 0;
   };
-  virtual void Print();
-  virtual Gadget* NewInstance() { return new(Gadget); };
 
-  Gadget * Next;
+  virtual void Print();
+  virtual Gadget* NewInstance( const char* Name, Gadget* const p ) 
+    { return new Gadget(Name, p); }
 
   /*
     public:
-    Gadget() : 
-    info(this, 0, ""), 
-    variables(NULL), functions(NULL) {}
-    Gadget( const char* name, Gadget* const p ) : 
-    info(this, last_id_used++, name), 
-    parent(p), 
-    variables(NULL), functions(NULL) {}
-    ~Gadget();
     long int get_unique_id() const { return info.id; }
     const string& get_name() const { return info.name; }
     const GadgetInfo& get_info() const { return info; }
@@ -44,52 +57,35 @@ public:
     protected:
     void init_variables( const VariableDefinition* var_def, const int last_var );
     void init_functions( const FunctionDefinition* fcn_def, const int last_fcn );
-    GadgetInfo info;
-    Gadget* parent;
-    GadgetSet my_gadgets;
-    Variable* variables;
-    Function* functions;
-    public:
-    static int last_id_used;
+
   */
 
-protected:
-  string myName;
+ protected:
   string info_string;
-};
+  GadgetInfo info;
+  Gadget* parent;
+  //GadgetSet my_gadgets;
+  Variable* variables;
+  //Function* functions;
 
-
-class ShotGadget : public Gadget
-{
- public:
-   Gadget* NewInstance() { cout<<"Creating a new ShotGadget\n"; return NULL; };
- 
-};
-
-class WeaponGadget : public Gadget
-{
- public:
-   Gadget* NewInstance() { cout<<"Creating a new Weapon\n"; return NULL; };
 };
 
 class ExplosionGadget : public Gadget
 {
  public:
-   Gadget* NewInstance() { cout<<"Creating a new Explosion\n"; return NULL; };
-};
-
-
-
-class Wall : public Gadget
-{
-public:
-  Wall(char* Name) 
-    : Gadget(Name), mySize(0) {};
-  int Read(FILE*);
-  void Print();
+  ExplosionGadget( const char* Name, Gadget* const p ) : Gadget(Name, p)
+    {}
+  Gadget* NewInstance( const char* Name, Gadget* const p ) 
+    { 
+      cout<<"Creating a new Explosion\n"; 
+      return new ExplosionGadget(Name, p); 
+    };
+   int Read(FILE*);
 protected:
-  float mySize;
+   //float mySize;
 };
-
 
 #endif
+
+
+

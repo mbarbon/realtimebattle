@@ -6,6 +6,8 @@
 #include "Gadget.h"
 #include "ShotGadget.h"
 #include "WeaponGadget.h"
+#include "WallGadget.h"
+
 
 struct BasicGadget
 {
@@ -14,6 +16,8 @@ struct BasicGadget
 };
 
 extern BasicGadget AllGadgets[]; 
+
+Gadget* createGadget(string /* GadgetType */, const char*, Gadget* const);
 
 
 #endif

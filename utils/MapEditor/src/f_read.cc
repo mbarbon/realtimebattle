@@ -5,6 +5,7 @@
 #include "Gadget.h"
 #include "AllGadgets.h"
 #include "f_read.hh"
+#include "Variable.h"
 
 #define	BUF_SIZE	1024
 char		 buf[BUF_SIZE];		// input buffer
@@ -51,28 +52,7 @@ int Arena::Read(FILE *fp)
 	  return (num_object != 0? 0: -1);     // ok if any objects have been read 
 	}
 
-      
-      Obj = NULL;
-
-      for(int i = 0; AllGadgets[i].theGadget != 0; i++)
-	{
-	  if(AllGadgets[i].Name == Value)
-	    {
-	      Obj = AllGadgets[i].theGadget->NewInstance();
-	      break;
-	    }
-	}
-      /*
-	if(!strcmp(Value, "Wall"))    //Maybe we shoud find it in a table
-	{
-	Obj = new Wall(GadgetName);
-	Obj->Read(fp);
-	TheGadgets.push_back(Obj);
-	printf("Add a Wall to the list\n");
-	}
-	else
-      */
-      if(Obj)
+      if( Obj=createGadget(Value, GadgetName, NULL) /* != NULL */ )
 	{
 	  Obj->Read(fp);
 	  TheGadgets.push_back(Obj);
@@ -88,12 +68,12 @@ int Arena::Read(FILE *fp)
 		{
 		  NbDefine--;
 		}
-	      if(!strcmp(type, "Define"))     //There could be an other definition in it...
+	      if(!strcmp(type, "Define"))//There could be an other definition in it...
 		{
 		  NbDefine++;
 		}
 
-	      if(NbDefine < 1)                       //This is the end of the unknown object
+	      if(NbDefine < 1)     //This is the end of the unknown object
 		break;
 	    }
 	  num_object ++;
@@ -119,7 +99,7 @@ int Arena::ReadHead(FILE *fp)
     }
 }
 
-int Wall::Read(FILE *fp)
+int WallGadget::Read(FILE *fp)
 {
   int n;
   int NbDefine = 0;
@@ -131,16 +111,6 @@ int Wall::Read(FILE *fp)
 	  if(!strcmp(type, "InfoString"))
 	    {
 	      info_string = read_info_string(fp);
-	    }
-	  
-	  if(!strcmp(type, "Size"))
-	    {
-	      n = sscanf(buf, "%*s %f", &mySize);
-	      if(n != 1)
-		{
-		  printf("%d\n", n);
-		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
-		}
 	    }
 	  
 	  //Skip a couple of things...
@@ -163,20 +133,12 @@ int ExplosionGadget::Read(FILE *fp)
     {
       if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
 	{
-	  
 	  if(!strcmp(type, "InfoString"))
 	    {
 	      info_string = read_info_string(fp);
 	    }
-	  
-	  if(!strcmp(type, "Size"))
+	  else if(!strcmp(type, "Define"))
 	    {
-	      n = sscanf(buf, "%*s %f", &mySize);
-	      if(n != 1)
-		{
-		  printf("%d\n", n);
-		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
-		}
 	    }
 	  
 	  //Skip a couple of things...
@@ -204,14 +166,29 @@ int  WeaponGadget::Read(FILE *fp)
 	    {
 	      info_string = read_info_string(fp);
 	    }
-	  
-	  if(!strcmp(type, "Size"))
+	  else if(!strcmp(type, "Define"))
 	    {
-	      n = sscanf(buf, "%*s %f", &mySize);
-	      if(n != 1)
+	      
+	    }
+	  else
+	    {
+	      int i;
+	      for(i = 0; i < LAST_WEAPONVAR; i++)
 		{
-		  printf("%d\n", n);
-		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
+		  if(!strcmp(type, variable_def[i].name))
+		    {
+		      break;
+		    }
+		}
+	      if(i < LAST_WEAPONVAR)
+		{
+		  double THEValue;
+		  sscanf(buf, "%*s %d", &THEValue);
+		  cout<<variable_def[i].name<<" as the value of "<<THEValue<<endl;
+		}
+	      else
+		{
+		  cout<<"The variable is not a known variable\n";
 		}
 	    }
 	  
@@ -240,16 +217,6 @@ int  ShotGadget::Read(FILE *fp)
 	  if(!strcmp(type, "InfoString"))
 	    {
 	      info_string = read_info_string(fp);
-	    }
-	  
-	  if(!strcmp(type, "Size"))
-	    {
-	      n = sscanf(buf, "%*s %f", &mySize);
-	      if(n != 1)
-		{
-		  printf("%d\n", n);
-		  printf("There is a little problem : no size specified in line %d.\n", line_no); 
-		}
 	    }
 	  
 	  //Skip a couple of things...
@@ -328,10 +295,4 @@ string read_info_string(FILE *fp)
 
   return To_return;
 }
-
-
-
-
-
-
 

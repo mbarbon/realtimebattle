@@ -1,6 +1,7 @@
 #include "ShotGadget.h"
 
 
+/*
 const VariableDefinition 
 ShotGadget::variable_def[ShotGadget::LAST_SHOTVAR] =
 {
@@ -20,6 +21,7 @@ ShotGadget::variable_def[ShotGadget::LAST_SHOTVAR] =
   {"Price", DOUBLE_V, 0, 0, DBL_MAX, 0, false, true, false},
   {"Mass", DOUBLE_V, 0, 0, DBL_MAX, 0, false, true, false}
 };
+*/
 
 ShotGadget::ShotGadget( const char* name, Gadget* const p ) : Gadget ( name, p )
 {

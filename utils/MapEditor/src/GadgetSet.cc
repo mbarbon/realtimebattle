@@ -33,7 +33,7 @@ GadgetSet::add(const GadgetInfo& gi)
 {
   if(  the_set.insert(gi).second == false )
     {
-      Error(true, "Couldn't add element", "GagdetSet::add");
+      //Error(true, "Couldn't add element", "GagdetSet::add");
     }
 }
 
@@ -43,7 +43,7 @@ GadgetSet::remove(const GadgetInfo& gi)
 {
   if(  the_set.erase(gi) == 0 )
     {
-      Error(true, "No elements removed", "GagdetSet::remove");
+      //Error(true, "No elements removed", "GagdetSet::remove");
     }
     
 }
