@@ -455,8 +455,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_border(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width(GTK_CLIST(robots_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(robots_in_tournament_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(robots_in_tournament_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
@@ -507,8 +507,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_border(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width(GTK_CLIST(robots_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(robots_in_directory_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(robots_in_directory_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
@@ -561,8 +561,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_border(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(arenas_in_tournament_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(arenas_in_tournament_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
@@ -613,8 +613,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_border(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(arenas_in_directory_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(arenas_in_directory_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);

@@ -732,8 +732,8 @@ Gui::setup_score_window()
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 3, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 4, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_signal_connect(GTK_OBJECT(score_clist), "select_row",
                      GTK_SIGNAL_FUNC(new_robot_selected), NULL);
   gtk_widget_set_usize(score_clist, 335, 350);
