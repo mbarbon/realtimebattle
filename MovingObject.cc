@@ -1,12 +1,18 @@
 #include <fcntl.h>
-#include <errno.h>
+//#include <errno.h>
 #include <unistd.h>
-#include <strstream.h>
+//#include <strstream.h>
 #include <signal.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+
+#include "MovingObject.h"
 #include "Arena.h"
+#include "Extras.h"
 #include "Error.h"
+#include "Options.h"
+#include "messagetypes.h"
+#include "gui.h"
 
 Robot::Robot(const String& filename)
 {
@@ -343,7 +349,7 @@ Robot::update_radar_and_cannon(const double timestep)
 }
 
 void
-bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
+bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& normal)
 {
   double h, p, b;
   
@@ -355,16 +361,16 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
     }
   else
     {
-      h = robot.hardness_coeff;
-      b = robot.bounce_coeff;
-      p = robot.protection_coeff;
+      h = the_opts.get_d(OPTION_ROBOT_HARDNESS);
+      b = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+      p = the_opts.get_d(OPTION_ROBOT_PROTECTION);
     }  
 
   double e = b * wall.bounce_coeff;
   Vector2D start_vel = robot.velocity;
   robot.velocity -= (1.0 + e) * dot(normal, robot.velocity) * normal;
 
-  double en_diff = 0.5 * robot.mass * lengthsqr(start_vel - robot.velocity);
+  double en_diff = 0.5 * the_opts.get_d(OPTION_ROBOT_MASS) * lengthsqr(start_vel - robot.velocity);
   double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
   robot.change_energy(-injury);
 
@@ -385,9 +391,9 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
     }
   else
     {
-      h1 = robot1.hardness_coeff;
-      b1 = robot1.bounce_coeff;
-      p1 = robot1.protection_coeff;
+      h1 = the_opts.get_d(OPTION_ROBOT_HARDNESS);
+      b1 = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+      p1 = the_opts.get_d(OPTION_ROBOT_PROTECTION);
     }
 
   if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
@@ -398,26 +404,26 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
     }
   else
     {
-      h2 = robot2.hardness_coeff;
-      b2 = robot2.bounce_coeff;
-      p2 = robot2.protection_coeff;
+      h2 = the_opts.get_d(OPTION_ROBOT_HARDNESS);
+      b2 = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+      p2 = the_opts.get_d(OPTION_ROBOT_PROTECTION);
     }
 
   double e = b1*b2;
   Vector2D start_vel1 = robot1.velocity;
   Vector2D start_vel2 = robot2.velocity;
-  double mass_quotient = robot1.mass / robot2.mass;
-  Vector2D tmp = ((1.0 + e) / ( 1 + mass_quotient )) * dot(robot2.velocity - robot1.velocity, normal) * normal;
+  double mass = the_opts.get_d(OPTION_ROBOT_MASS);
+  Vector2D tmp = ((1.0 + e) / 2.0) * dot(robot2.velocity - robot1.velocity, normal) * normal;
   robot1.velocity += tmp;
-  robot2.velocity -= mass_quotient * tmp;
+  robot2.velocity -= tmp;
 
   double an = vec2angle(normal);
-  double en_diff = 0.5 * robot1.mass * lengthsqr(start_vel1 - robot1.velocity);
+  double en_diff = 0.5 * mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
   robot1.send_message(COLLISION, ROBOT, -injury, an-robot1.robot_angle.pos);
 
-  en_diff = 0.5 * robot2.mass * lengthsqr(start_vel2 - robot2.velocity);
+  en_diff = 0.5 * mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
   robot2.send_message(COLLISION, ROBOT, -injury, -an-robot2.robot_angle.pos);
@@ -432,10 +438,6 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   radar_angle.set (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   shot_energy = 0.0;
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
-  protection_coeff = the_opts.get_d(OPTION_ROBOT_PROTECTION);
-  hardness_coeff = the_opts.get_d(OPTION_ROBOT_HARDNESS);
-  bounce_coeff = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
-  mass = the_opts.get_d(OPTION_ROBOT_MASS);
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
@@ -482,7 +484,7 @@ Robot::move(const double timestep, int iterstep)
         case WALL:
           {
             Vector2D normal = ((Shape*)(WallCircle*)colliding_object)->get_normal(center);
-            bounce_on_wall(*this, *(Shape*)(WallCircle*)colliding_object, normal);
+            bounce_on_wall(*this, *(Wall*)(WallCircle*)colliding_object, normal);
           }
           break;
         case ROBOT:
@@ -893,59 +895,36 @@ Robot::change_energy(const double energy_diff)
 void
 Robot::display_energy()
 {
-  strstream ss;
-  char str_energy[25];
-
-  ss << (int)energy;
-  ss >> str_energy;
   gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
                      the_gui.get_robot_nr( this, the_arena.get_all_robots_in_sequence()),
-                     2, str_energy);
+                     2, String((int)energy).non_const_chars());
 }
 
 void
 Robot::display_place()
 {
-  strstream ss;
-  char str_place[25];
-
-  ss << position_this_game;
-  ss >> str_place;
-
   gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
                      the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                     3, str_place);
+                     3, String(position_this_game).non_const_chars());
 }
 
 void
 Robot::display_last()
 {
-  strstream ss;
-  char str_last[25];
-
   if(get_last_position() != 0)
     {
-      ss << get_last_position();
-      ss >> str_last;
-
       gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
                          the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                         4, str_last);
+                         4, String(get_last_position()).non_const_chars());
     }
 }
 
 void
 Robot::display_score()
 {
-  strstream ss;
-  char str_score[25];
-
-  ss << get_total_points();
-  ss >> str_score;
-
   gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
                      the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                     5, str_score);
+                     5, String(get_total_points()).non_const_chars());
 }
 
 void
