@@ -28,13 +28,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #include "Wall.h"
 
+#include "ArenaObjectCollector.h"
+
 class Vector2D;
 class Shape;
 class Gadget;
 class Shot;
 class Robot;
 
-// The Arena class is string all geometric information of the current 
+// The Arena class is storing all geometric information of the current 
 // arena. It can determine the closest object and find objects in given 
 // directions and sectors.
 
@@ -64,7 +66,7 @@ public:
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, enum object_type& closest_shape, 
                                Shape*& colliding_object, 
-                               const class Robot* the_robot = NULL ) {}
+                               const class Robot* the_robot = NULL ) { return 0.0;}
 
   void find_closest_object( const Vector2D& point, const Vector2D& direction, 
                             Shape* closest_shape, double distance );
@@ -81,14 +83,7 @@ protected:
   set<Shot> shots;  
   set<Robot*> robots;
 
-
-  // The arena is divided into subsquares, so that not all objects must be
-  // check to closest objects, etc.
-
-  set<Shape>** objects_in_subsquare;
-
-
-
+  ArenaObjectCollector object_collection;
 };
 
 
