@@ -133,10 +133,10 @@ void
 Robot::die()
 {
    alive = false;
+   send_message(DEAD);
    position_this_game = the_arena->get_robots_left();
    the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,the_arena->get_the_gui()->get_background_color(),true);
 }
-
 
 void
 Robot::update_radar_and_cannon(const double timestep)
@@ -147,17 +147,18 @@ Robot::update_radar_and_cannon(const double timestep)
   object_type closest_shape;
   void* col_obj;
   double dist = the_arena->get_shortest_distance(center, Vector2D(cos(radar_angle), sin(radar_angle)), 0.0, closest_shape, col_obj);
-  send_message(RADAR, dist, closest_shape);
+  send_message(RADAR, dist, closest_shape, radar_angle);
+  send_message(INFO, the_arena->get_total_time(), length(velocity), cannon_angle); 
 }
 
 void
 bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 {
   double e = robot.bounce_coeff * wall.bounce_coeff;
-  double start_speedsqr = lengthsqr(robot.velocity);
+  Vector2D start_vel = robot.velocity;
   robot.velocity -= (1.0 + e) * dot(normal, robot.velocity) * normal;
 
-  double en_diff = 0.5 * robot.mass * ( start_speedsqr - lengthsqr(robot.velocity) );
+  double en_diff = 0.5 * robot.mass * lengthsqr(start_vel - robot.velocity);
   double injury = en_diff * 0.5 * (robot.hardness_coeff + wall.hardness_coeff ) * (1.0-e) * (1.0-robot.protection_coeff);
   robot.change_energy(-injury);
 
@@ -168,19 +169,19 @@ void
 bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
 {
   double e = robot1.bounce_coeff * robot2.bounce_coeff;  
-  double start_speedsqr1 = lengthsqr(robot1.velocity);
-  double start_speedsqr2 = lengthsqr(robot2.velocity);
+  Vector2D start_vel1 = robot1.velocity;
+  Vector2D start_vel2 = robot2.velocity;
   double mass_quotient = robot1.mass / robot2.mass;
   Vector2D tmp = ((1.0 + e) / ( 1 + mass_quotient )) * dot(robot2.velocity - robot1.velocity, normal) * normal;
   robot1.velocity += tmp;
   robot2.velocity -= mass_quotient * tmp;
   
-  double en_diff = 0.5 * robot1.mass * ( start_speedsqr1 - lengthsqr(robot1.velocity) );
+  double en_diff = 0.5 * robot1.mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot1.protection_coeff);
   robot1.change_energy(-injury);
   robot1.send_message(COLLISION, ROBOT, -injury);
 
-  en_diff = 0.5 * robot2.mass * ( start_speedsqr2 - lengthsqr(robot2.velocity) );
+  en_diff = 0.5 * robot2.mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot2.protection_coeff);
   robot2.change_energy(-injury);
   robot2.send_message(COLLISION, ROBOT, -injury);
@@ -326,7 +327,13 @@ Robot::get_messages()
           instreamp->get(buffer, 80, '\n');
           break;
         case NAME:
-          if( the_arena->get_state() != Arena::STARTING_ROBOTS ) break;
+          if( the_arena->get_state() != Arena::STARTING_ROBOTS ) 
+            {
+              cout << "Server: Warning sent for message: " << msg_name << "     State: " << the_arena->get_state() << endl;
+              send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE, msg_name);
+              instreamp->get(buffer, 80, '\n');
+              break;
+            }
           *instreamp >> text;
           g_string_assign(&robot_name, text);
           // TODO: Tell gui to change name
