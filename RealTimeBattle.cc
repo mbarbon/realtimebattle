@@ -88,10 +88,11 @@ main ( int argc, char* argv[] )
       return EXIT_FAILURE;
     }
     
-  Arena the_arena;
+  Arena* the_arena = new Arena;
   try
     {
-      the_arena.start_tournament( robotnames, arenanames, nr_robots, 3);
+      the_arena->get_the_gui()->setup_control_window();
+      the_arena->start_tournament( robotnames, arenanames, nr_robots, 2, 2);
     }
   catch ( Error the_error )
 	 {
@@ -102,7 +103,7 @@ main ( int argc, char* argv[] )
   for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
   delete [] robotnames;
   
-  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) &the_arena);
+  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) the_arena);
 
   gtk_main();
 
