@@ -32,10 +32,42 @@ public:
   Arena() {}
   ~Arena() {}
 
+  void load_arena_file(const string filename);
+
+  void setup_at_roundstart();
+
+  void update_shots();
+
 
 private:
   
+  void find_closest_object( const Vector2D& point, const Vector2D& direction, 
+                            Shape* closest_shape, double distance );
+  
+  void find_objects_in_sector( const Vector2D& point, const Vector2D& left_direction, 
+                               const Vector2D& right_direction,
+                               Shape** shapes_found);
+  
+  double get_heat_in_direction( const Vector2D& point, const Vector2D& direction );
+
+  
+  
+
+
+
 }
+
+class ShotUpdateEvent : public Event
+{
+public:
+  ShotUpdateEvent( const double time, Arena* ar) 
+    : Event(time), my_arena(ar) {}
+
+  void eval() const { my_arena->update_shots(); }
+
+protected:
+  Arena* my_arena;
+};
 
 
 #endif __ARENA__
