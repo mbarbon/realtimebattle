@@ -8,12 +8,12 @@
 #include "gui.h"
 
 void
-start_tournament_button_callback(GtkWidget *widget, gpointer guip)
+start_tournament_button_callback(GtkWidget *widget, gpointer data)
 {
-  if(((Gui *)guip)->get_start_tournament_up() == false)
-    ((Gui *)guip)->setup_start_tournament_window();
+  if(the_gui.get_start_tournament_up() == false)
+    the_gui.setup_start_tournament_window();
   else
-    ((Gui *)guip)->close_start_tournament_window();
+    the_gui.close_start_tournament_window();
 }
 
 void
@@ -106,8 +106,8 @@ Gui::setup_start_tournament_window()
                   char * list[] = { "" };
           
                   int row = gtk_clist_append(GTK_CLIST(robots_in_directory_clist), list);
-                  gtk_clist_set_foreground(GTK_CLIST(robots_in_directory_clist), row, the_arena->get_foreground_colour_p());
-                  gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena->get_background_colour_p());
+                  gtk_clist_set_foreground(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_foreground_colour_p());
+                  gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(robots_in_directory_clist), row, 0, entry->d_name);
                 }
@@ -173,13 +173,10 @@ Gui::setup_start_tournament_window()
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_directory_clist, TRUE, TRUE, 0);
   gtk_widget_show( arenas_in_directory_clist );
 
-  cout << "Open arenadir" << endl;
-
   DIR * arenadir;
   if( NULL != getenv("RTB_ARENADIR"))
     if( NULL != (arenadir = opendir(getenv("RTB_ARENADIR"))))
       {
-        cout << "Dir opened" << endl;
         struct dirent * entry;
         while (NULL != ( entry = readdir( arenadir ) ) )
           {
@@ -196,14 +193,35 @@ Gui::setup_start_tournament_window()
                   char * list[] = { "" };
           
                   int row = gtk_clist_append(GTK_CLIST(arenas_in_directory_clist), list);
-                  gtk_clist_set_foreground(GTK_CLIST(arenas_in_directory_clist), row, the_arena->get_foreground_colour_p());
-                  gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena->get_background_colour_p());
+                  gtk_clist_set_foreground(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_foreground_colour_p());
+                  gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(arenas_in_directory_clist), row, 0, entry->d_name);
                 }
           }
         closedir( arenadir );
       }
+
+  // Choose Number of games per sequence, Number of robots per sequence and Number of sequences
+
+  char * label_titles[] = { "Games per sequence", "Robots per sequence", "Number of sequences" };
+
+  for( int i=0;i<3;i++ )
+    {
+      hbox = gtk_hbox_new (FALSE, 5);
+      gtk_container_add (GTK_CONTAINER (vbox), hbox);
+      gtk_widget_show (hbox);
+
+      GtkWidget * label = gtk_label_new(label_titles[i]);
+      gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+      gtk_widget_show(label);
+
+      GtkWidget * entry = gtk_entry_new_with_max_length(4);
+      gtk_entry_set_text( GTK_ENTRY( entry ), "0");
+      gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
+      gtk_widget_set_usize(entry, 36,18);
+      gtk_widget_show(entry);
+    }
 
   gtk_widget_show( start_tournament_window );
   start_tournament_up = true;
