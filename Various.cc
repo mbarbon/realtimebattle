@@ -85,6 +85,8 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
 {
   String entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
   String old_entry_text = entry_text;
+  bool point_found = false;
+
   for(int i=0;i<entry_text.get_length();i++)
     {
       switch( entry_info->datatype )
@@ -95,6 +97,14 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
             entry_text.erase(i);
           break;
         case ENTRY_DOUBLE:
+          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') ||
+                (entry_text[i] == '.') ||
+                (entry_text[i] == '-' && i == 0 && entry_info->allow_sign ))  )
+            entry_text.erase(i);
+          if( entry_text[i] == '.' && !point_found )
+            point_found = true;
+          else if( entry_text[i] == '.' && point_found )
+            entry_text.erase(i);
           break;
         case ENTRY_HEX:
           if( !(((entry_text[i] >= '0' && entry_text[i] <= '9') || 
