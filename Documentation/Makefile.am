@@ -29,73 +29,88 @@ uninstall-local:
 
 PAPER_SIZE = a4
 
-docs: RTB.html RTB.dvi RTB.info RTB.txt note-files note-files.html
+docs: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt \
+		note-files note-files-html
 
-html_docs: RTB.html note-files.html
+html_docs: RealTimeBattle.html note-files-html
 
 note-files: ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO
 
-note-files.html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
-
-RTB.html: RealTimeBattle.sgml
-	sgml2html --imagebuttons RealTimeBattle.sgml
-
-RTB.dvi: RealTimeBattle.sgml
-	sgml2latex -p $(PAPER_SIZE) -o dvi RealTimeBattle.sgml
-
-RTB.ps: RealTimeBattle.sgml
-	sgml2latex -p $(PAPER_SIZE) -o ps RealTimeBattle.sgml
-
-RTB.info: RealTimeBattle.sgml
-	sgml2info RealTimeBattle.sgml
-
-RTB.txt: RealTimeBattle.sgml
-	sgml2txt RealTimeBattle.sgml
+note-files-html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
 
 
-BUGS.html: BUGS.sgml
-	sgml2html --split=0 BUGS.sgml
 
-../BUGS: BUGS.sgml
-	sgml2txt BUGS.sgml &&\
-	sed -e "s/.//g" BUGS.txt > ../BUGS
+# Targets to generate the files if the sgml source exists, otherwise nothing happens 
+
+%.html: %.sgml
+	@if [ -f RealTimeBattle.sgml ]; then \
+		echo "sgml2html --split=0 -c latin $<"; \
+		sgml2html --split=0 -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+RealTimeBattle.html: RealTimeBattle.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2html --imagebuttons -c latin $<"; \
+		sgml2html --imagebuttons -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.dvi: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2latex  -p $(PAPER_SIZE) -c latin -v -o dvi $<"; \
+		sgml2latex  -p $(PAPER_SIZE) -c latin -v -o dvi $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.ps: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2latex  -p $(PAPER_SIZE) -c latin -v -o ps $<"; \
+		sgml2latex  -p $(PAPER_SIZE) -c latin -v -o ps $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.info: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2info -c latin $<"; \
+		sgml2info -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.rtf: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2rtf -c latin $<"; \
+		sgml2rtf -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.lyx: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2lyx -c latin $<"; \
+		sgml2lyx -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+%.txt: %.sgml
+	@if [ -f $< ]; then \
+		echo "sgml2txt -f -c latin $<"; \
+		sgml2txt -f -c latin $<; \
+	elif [ ! -f $@ ]; then \
+		echo "Error: $@ is missing and cannot be generated"; \
+	fi
+
+../%: %.txt
+	cp $< $@ 
+
+#Just to allow for non-existing .sgml-file
+%.sgml: 
+	@true
 
 
-FAQ.html: FAQ.sgml
-	sgml2html --split=0 FAQ.sgml
-
-../FAQ: FAQ.sgml
-	sgml2txt FAQ.sgml &&\
-	sed -e "s/.//g" FAQ.txt > ../FAQ
-
-
-INSTALL.html: INSTALL.sgml
-	sgml2html --split=0 INSTALL.sgml
-
-../INSTALL: INSTALL.sgml
-	sgml2txt INSTALL.sgml &&\
-	sed -e "s/.//g" INSTALL.txt > ../INSTALL
-
-
-ChangeLog.html: ChangeLog.sgml
-	sgml2html --split=0 ChangeLog.sgml
-
-../ChangeLog: ChangeLog.sgml
-	sgml2txt ChangeLog.sgml &&\
-	sed -e "s/.//g" ChangeLog.txt > ../ChangeLog
-
-
-README.html: README.sgml
-	sgml2html --split=0 README.sgml
-
-../README: README.sgml
-	sgml2txt README.sgml &&\
-	sed -e "s/.//g" README.txt > ../README
-
-
-TODO.html: TODO.sgml
-	sgml2html --split=0 TODO.sgml
-
-../TODO: TODO.sgml
-	sgml2txt TODO.sgml &&\
-	sed -e "s/.//g" TODO.txt > ../TODO
