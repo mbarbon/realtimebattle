@@ -158,7 +158,8 @@ MessageWindow::add_message( const String& name_of_messager,
   if( window_shown )
     {
       if( viewed_robot != NULL &&
-          viewed_robot->get_robot_name() != name_of_messager )
+          viewed_robot->get_robot_name() != name_of_messager &&
+          name_of_messager != "RealTimeBattle" )
         return;
 
       char* lst[2];
