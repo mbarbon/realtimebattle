@@ -22,11 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <typeinfo>
 
 #include "Arena.h"
-#include "Gadget.h"
-#include "WeaponGadget.h"
-#include "ShotGadget.h"
-#include "Variable.h"
-#include "Function.h"
+#include "AllGadgets.h"
 #include "Vector2D.h"
 #include "String.h"
 #include "Messagetypes.h"
