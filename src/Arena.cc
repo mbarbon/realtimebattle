@@ -148,6 +148,9 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
       ifstream* current_file = file_stack.top();
       string str_buffer;
       bool first_time = true;
+
+      //Read a complete line (continue if the '\\' caracter is at the end)
+      //What happend if there is a space at the end : "\\ \n" ?
       while( str_buffer[str_buffer.length() - 1] != '\\' || first_time )
         {
           if( first_time )
@@ -164,10 +167,11 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           if( str_buffer[str_buffer.length() - 1] != '\\' )
             str_buffer.erase( str_buffer.length() - 1 );
         }
+
       vector<string> wordlist = special_split_string( buffer, wordlist );
       if( wordlist.size() > 0 )
         {
-          if( first_line && wordlist[0][0] == '!' )
+          if( first_line && wordlist[0][0] == '!' )  //This may be the arena version
             {
               if( !sufficient_arena_version( wordlist ) )
               first_line = false;
@@ -177,11 +181,11 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
               if( !find_full_arena_filename( wordlist[1], top_file_path, true ) )
                 Error( false, "Couldn't find this include file: " + wordlist[1],
                        "Arena::load_arena_file" );
-              file_stack.push( new ifstream( wordlist[1].c_str() ) );
+              file_stack.push( new ifstream( wordlist[1].c_str() ) );  //Put the include file on the top of the stack
             }
           else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Define" ) &&
-                   wordlist.size() > 2 )
+                   wordlist.size() > 2 )  //Why not wordlist.size() == 3
             {
               Gadget* gadget =
                 AllGadgets::create_gadget_by_stringtype( wordlist[1],
