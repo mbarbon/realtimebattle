@@ -1,7 +1,8 @@
 #include <glib.h>
 #include <fstream.h>
-#include "Vector2D.h"
 #include <stdlib.h>
+#include "Vector2D.h"
+#include "messagetypes.h"
 
 #ifndef __ARENA__
 #define __ARENA__
@@ -15,19 +16,61 @@ enum touch_type { NO_ACTION, BOUNCE, TRANSFORM };
 enum object_type { ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
 static const number_of_object_types = 6;
 
+
+
+// --------------------------  Arena --------------------------
+class Arena 
+{
+public:
+  Arena(char* filename);
+  ~Arena();
+
+  double get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, class SolidObject* closest_shape);
+  void update_robots();
+  void move_shots();
+  void update_explosions();
+  void add_to_list(class ArenaObject&);
+  void remove_from_list(class ArenaObject&);
+  void add_to_solid_object_list(class SolidObject&);
+  void remove_from_solid_object_list(class SolidObject&);
+  void start_robot(char* filename);
+  void start_game();
+  
+private:
+  double timestep;
+  double total_time;
+
+  void parse_file(istream&);
+  void check_initialisation();
+
+  GList object_lists[number_of_object_types];
+
+  GList solid_objects;
+
+  //Shape** shapes;       // To be removed!
+  int number_of_shapes; // -- "" ---
+
+  double air_resistance;
+  double roll_friction;
+  double slide_friction;
+};
+
 // ---------------------  ArenaObject ---------------------
 
 class ArenaObject
 {
 public:
+  ArenaObject() {the_arena = NULL;}
   virtual ~ArenaObject() {}
   virtual object_type get_object_type() = 0;
   //  class Error;
+protected:
+  Arena* the_arena;
 };
 
 // ---------------------  Explosion : ArenaObject  -------------------
 
-class Explosion : public ArenaObject
+class Explosion : private ArenaObject
 {
 public:
   Explosion(const Vector2D& c, const double r, const double energy); 
@@ -40,23 +83,24 @@ private:
 
 // ---------------------  SolidObject ---------------------
 
-// class SolidObject : public ArenaObject 
-// {
-// public:
-
-// };
-
-// ---------------------  Shape ---------------------
-
-class Shape : public ArenaObject
+class SolidObject : public ArenaObject 
 {
 public:
-  virtual ~Shape() {}
   virtual double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) = 0;
+};
+
+//---------------------  Shape ---------------------
+
+class Shape : protected ArenaObject
+{
+public:
+  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5;}
+  ~Shape() {}
+  object_type get_object_type() { return WALL; }
   //virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size) = 0;
   //virtual void get_args(istream&) = 0;
 
-private:
+protected:
   touch_type touch_action;
   double bounce_coeff;
 };
@@ -95,6 +139,10 @@ public:
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
   object_type get_object_type() { return WALL; }
   
+  double get_radius() { return radius; }
+  Vector2D get_center() { return center; }
+  void add_to_center(const Vector2D& diff) { center += diff; }
+  
 private:
   Vector2D center;
   double radius;
@@ -105,41 +153,41 @@ private:
 
 class Robot;
 
-class Extras : public ArenaObject //, public Circle 
+class Extras : protected ArenaObject //, public Circle 
 {
 public:
   //Extras(const Vector2D& c, const double r); 
   //~Extras() {}
   
-  virtual int touch_action(const class Robot&) = 0;
-private:
+  virtual int touch_action(class Robot&) = 0;
+protected:
   Circle my_shape;
 
 };
 
 // ---------------------  Cookie : Extras  ---------------------
 
-class Cookie : public Extras
+class Cookie : private Extras
 {
 public:
-  Cookie(const Vector2D& c, const double r, const double energy); 
+  Cookie(const Vector2D& c, const double r, const double e); 
   ~Cookie() {}
   
-  int touch_action(const class Robot&);
+  int touch_action(class Robot&);
   object_type get_object_type() { return COOKIE; }
 private:
-
+  double energy;
 };
 
 // ---------------------  Mine : Extras  ---------------------
 
-class Mine : public Extras
+class Mine : private Extras
 {
 public:
-  Mine(const Vector2D& c, const double r, const double energy); 
+  Mine(const Vector2D& c, const double r, const double e); 
   ~Mine() {}
 
-  int touch_action(const class Robot&);
+  int touch_action(class Robot&);
   object_type get_object_type() { return MINE; }
 private:
 };
@@ -147,7 +195,7 @@ private:
 
 // ----------------  MovingObject : ArenaObject  ---------------------
 
-class MovingObject : public ArenaObject//, public Circle 
+class MovingObject : protected ArenaObject//, public Circle 
 {
 public:
   //MovingObject(const Vector2D& c, const double r); 
@@ -171,21 +219,31 @@ public:
   ~Robot();
   
   void move(const double& timestep);  
-  void check_radar(double distance, object_type obj_type);
+  void update_radar_and_cannon();
+  void change_energy(const double energy_diff);
   char* get_message(char* readbuffer);
-  void send_message(const char* message);
+  void send_message(enum message_type ...);
+  void set_initial_position_and_direction(const Vector2D&, const Vector2D&);
 
   object_type get_object_type() { return ROBOT; }
   char* get_robotname();
+  bool is_alive() { return alive; }
 
 private:
+  bool alive;
   double extra_air_resistance;
+  double energy;
+  double radar_angle;
+  double radar_speed;
+  double cannon_angle;
+  double cannon_speed;
+
   GString robot_name;
   GString robot_filename;
   GString robot_dir;
   istream instream;
   ostream outstream;
-  pid_t robot_pid;  
+  pid_t robot_pid;    
 };
 
 // ---------------------  Shot : MovingObject  ---------------------
@@ -200,40 +258,6 @@ public:
   object_type get_object_type() { return SHOT; }
 private:
 
-};
-
-// --------------------------  Arena --------------------------
-
-
-class Arena 
-{
-public:
-  Arena(char* filename);
-  ~Arena();
-
-  double get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, int closest_shape);
-  void update_robots();
-  void move_shots();
-  void update_explosions();
-  void add_to_list(const class ArenaObject&);
-  void remove_from_list(const class ArenaObject&);
-  void add_to_solid_object_list(const class ArenaObject&);
-  void remove_from_solid_object_list(const class ArenaObject&);
-  void set_initial_position_and_direction(const Vector2D&, const Vector2D&);
-  
-private:
-  void parse_file(istream&);
-
-  GList object_lists[number_of_object_types];
-
-  GList SolidsObjects;
-
-  Shape** shapes;       // To be removed!
-  int number_of_shapes; // -- "" ---
-
-  double air_resistance;
-  double roll_friction;
-  double slide_friction;
 };
 
 class Error
