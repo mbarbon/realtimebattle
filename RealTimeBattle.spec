@@ -5,7 +5,7 @@ Release: #RELEASE#
 Copyright: GPL
 Group: X11/Games
 Source: RealTimeBattle-#VERSION#.tar.gz
-URL: http://realtimebattle.netpedia.net
+URL: http://www.lysator.liu.se/realtimebattle
 
 %description
 RealTimeBattle is a programming game, in which robots controlled by

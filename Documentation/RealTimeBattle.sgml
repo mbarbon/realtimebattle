@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 0.9.8 rev 1
+<title>RealTimeBattle User Manual, version 0.9.8 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 26 May 1999
+<date> 8 June 1999
 
 <!-- <abstract> -->
 
@@ -79,7 +79,7 @@ makes easy to start constructing robots.
 More information can be found in the <tt>INSTALL</tt>, <tt>BUGS</tt>, <tt>TODO</tt>,
 <tt>README</tt>, <tt>FAQ</tt> and <tt>ChangeLog</tt> files in the 
 distribution. More updated information is available on the 
-<url name="RealTimeBattle homepage" url="http://realtimebattle.netpedia.net/">, where 
+<url name="RealTimeBattle homepage" url="http://www.lysator.liu.se/realtimebattle/">, where 
 you can also find robots, news on tournaments as well as this manual in different formats.
 
 <sect1>Requirements<label id="Requirements">
@@ -146,7 +146,7 @@ If you find anything in this package which doesn't work, appears strange, is mis
 spellt wrong or is just confusing, don't hesitate to send in a bug report to the 
 <url name="authors" url="mailto: realtimebattle@telia.com">. But please check first the
 included bug list and the 
-<url name="bug list on the homepage" url="http://realtimebattle.netpedia.net/Documentation/BUGS.html">.
+<url name="bug list on the homepage" url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html">.
 
 
 <!--   ################         Usage          ##################   -->
@@ -168,42 +168,44 @@ RealTimeBattle. Here you can choose the option file, which determines the defaul
 the <ref name="options" id="Options">. You can also select in which game-mode the program
 will run: <tt>debug</tt>, <tt>normal</tt> or <tt>competition</tt> mode.
 
-Usage:
+<verb>
+ Usage: RealTimeBattle [options] 
 
-<tt> RealTimeBattle </tt> <em>options</em>
+ Options:
+    --debug_mode,                -d   debug mode
+    --debug_level [0-5],         -D   sets the initial debug level. implies -d
+    --normal_mode,               -n   normal mode (default)
+    --competition_mode,          -c   competition mode
 
-Options:
-<itemize>
-<item> <tt> --debug_mode,             -d </tt> debug mode
+    --no_graphics,               -g   no graphics will be displayed
+    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)
 
-<item> <tt> --normal_mode,            -n </tt> normal mode (default)
+    --log_file [file],           -l   make log file, if 'file' is '-'
+                                      the log is sent to STDOUT
 
-<item> <tt> --competition_mode,       -c </tt> competition mode
+    --tournament_file [file],    -t   specify a tournament file to
+                                      autostart a tournament
 
-<item> <tt> --no_graphics,            -g </tt> no graphics will be displayed
+    --statistics_file [file],    -s   file to print the statistics to
+                                       when autostarting
 
-<item> <tt> --option_file [file],     -o </tt> selects option-file (default: $HOME/.rtbrc)
+    --message_file [file],       -m   redirect messages to 'file'.
+                                      '-' as 'file' is equivalent to STDOUT.
+                                      If both log and messages are send
+                                      to STDOUT, '-m' will be ignored
 
-<item> <tt> --log_file [file],        -l </tt> make log file, if 'file' is '-'
-                                                the log is sent to STDOUT
-<item> <tt> --tournament_file [file], -t </tt> specify a tournament file to
-                                                autostart a tournament
-<item> <tt> --statistics_file [file], -s </tt> file to print the statistics to
-                                                when autostarting
-<item> <tt> --message_file [file],    -m </tt> redirect messages to 'file', '-' as 'file' 
-                                                is equivalent to STDOUT.
-                                                If both log and messages are send
-                                                to STDOUT, '-m' will be ignored
+    --replay [file]              -r   a log file to replay.
+                                      if '-' is specified as file,
+                                      input is taken from STDIN
 
-<item> <tt> --help,                   -h </tt> prints this information
+    --help,                      -h   prints this message
+    --version,                   -v   prints the version number
+</verb>
 
-<item> <tt> --version,                -v </tt> prints the version number
-
-</itemize>
 The differences between the three competition modes are shown in the following
 table
 
-<#if output="info|txt" >
+<#if table="char" >
 <code>
 +----------------------------------+-------+--------+-------------+
 | Mode                             | Debug | Normal | Competition |
@@ -217,7 +219,7 @@ table
 </code>
 
 </#if>
-<#unless output="info|txt" >
+<#if table="real" >
 <table loc="htb">
 <tabular ca="|l|ccc|"><hline>
 Mode                             | Debug | Normal | Competition @<hline>
