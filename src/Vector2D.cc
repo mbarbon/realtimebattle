@@ -25,8 +25,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Vector2D.h"
 #include "String.h"
 
-class String;
-
 void Error(const bool fatal, const String& function_name, const String& error_msg);
 
 Vector2D::Vector2D()
@@ -172,6 +170,8 @@ Vector2D::operator[](int index) const
 {
   if( index >= 0 && index <= 1 ) return( vector[index] );
   Error(true, "Vector index out of range", "Vector2D::operator[]");
+
+  return 0.0;
 }
 
 Vector2D&
