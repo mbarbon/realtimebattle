@@ -2,10 +2,7 @@
 
 Arena::Arena(char* filename)
 {
-  ifstream file(filename);
-  if( !file ) throw Error("Couldn't open file", filename, "Arena::Arena");
 
-  parse_file(file);
 }
 
 Arena::~Arena()
@@ -122,22 +119,61 @@ Arena::update_robots()
           robotp->move(timestep);
           if( !robotp->is_alive() ) remove_from_solid_object_list(*(SolidObject*)robotp);
           
-          robotp->update_radar_and_cannon();  
+          robotp->update_radar_and_cannon(timestep);  
         }      
     }
 }
 
 void
-Arena::start_game()
+Arena::start_game(int arenanr)
+{
+  
+  GString* filename = (GString*)g_list_nth(&arena_filenames, arenanr)->data;
+  ifstream file(filename->str);
+  if( !file ) throw Error("Couldn't open file", filename->str, "Arena::Arena");
+
+  parse_file(file);
+
+  GList* gl;
+  for( ; gl != NULL; gl=g_list_next(gl))
+    {
+      
+    }
+  
+  // start !
+
+  //  clear_object_list(WALL);
+  
+}
+
+void
+Arena::start_sequence_of_games(int first_arena)
 {
 }
 
 void
-Arena::start_sequence_of_games(char** robotfilenamelist, char** arenafilenamelist)
+Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_per_game)
 {
-}
+  Robot* robotp;
 
-void
-Arena::start_tournament(char** robotfilenamelist, char** arenafilenamelist)
-{
+  for(int i=0; robotfilename_list[i] != NULL; i++)
+    {
+      robotp = new Robot(robotfilename_list[i]);
+      g_list_append(&all_robots_in_tournament, robotp);
+    }
+
+  for(int i=0; arenafilename_list[i] != NULL; i++)
+    {
+      g_list_append(&arena_filenames, g_string_new(arenafilename_list[i]));
+    }
+
+  GList* gl = g_list_first(&all_robots_in_tournament);
+  
+  for(int i=0; i<robots_per_game; i++)
+    {
+      g_list_append(&object_lists[ROBOT], gl->data);
+      gl = g_list_next(gl);
+    }
+  start_sequence_of_games(1);
+    
 }

@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <gdk/gdk.h>
 #include <fstream.h>
 #include <stdlib.h>
 #include "Vector2D.h"
@@ -34,9 +35,9 @@ public:
   void add_to_solid_object_list(class SolidObject&);
   void remove_from_solid_object_list(class SolidObject&);
   void start_robot(char* filename);
-  void start_game();
-  void start_sequence_of_games(char** robotfilenamelist, char** arenafilenamelist);
-  void start_tournament(char**robotfilenamelist, char** arenafilenamelist);
+  void start_game(int arenanr);
+  void start_sequence_of_games(int first_arena);
+  void start_tournament(char**robotfilenamelist, char** arenafilenamelist, int robots_per_game); // NULL terminated lists
   
 private:
   double timestep;
@@ -46,11 +47,10 @@ private:
   void check_initialization();
 
   GList object_lists[number_of_object_types];
-
+  
+  GList all_robots_in_tournament;
   GList solid_objects;
-
-  //Shape** shapes;       // To be removed!
-  int number_of_shapes; // -- "" ---
+  GList arena_filenames;               // list of GStrings
 
   double air_resistance;
   double roll_friction;
@@ -220,12 +220,16 @@ public:
   Robot(const Vector2D& c, const double r, char* filename); 
   ~Robot();
   
-  void move(const double& timestep);  
-  void update_radar_and_cannon();
+  void move(const double timestep);  
+  void update_radar_and_cannon(const double timestep);  
   void change_energy(const double energy_diff);
   void get_messages();
   void send_message(enum message_to_robot_type ...);
   void set_initial_position_and_direction(const Vector2D&, const Vector2D&);
+  void start_process();
+  int check_process_started();
+  void end_process();
+  int check_procees_finished();
 
   object_type get_object_type() { return ROBOT; }
   char* get_robotname();
@@ -234,6 +238,7 @@ public:
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
   bool alive;
+  bool process_running;
   double extra_air_resistance;
   double energy;
   double radar_angle;
@@ -241,9 +246,13 @@ private:
   double cannon_angle;
   double cannon_speed;
 
+  GdkGC* colour_gc;
+  GdkColor colour;
   GString robot_name;
   GString robot_filename;
   GString robot_dir;
+  int points;
+
   istream instream;
   ostream outstream;
   pid_t robot_pid;    
