@@ -186,22 +186,22 @@ private:
 class MessageInfo : public InfoBase
 {
 public:
-  struct message
+  struct message_t
   {
-    message( const string& s, const string& m )
+    message_t( const string& s, const string& m )
       : sender(s), message(m) {}
     string sender;
     string message;
   };
   MessageInfo                       ( const string& s, const string& m )
-    : InfoBase(INFO_MESSAGE) { message_list.push_back( message( s, m ) ); }
-  MessageInfo                       ( const list<message>& ml )
+    : InfoBase(INFO_MESSAGE) { message_list.push_back( message_t( s, m ) ); }
+  MessageInfo                       ( const list<message_t>& ml )
     : InfoBase(INFO_MESSAGE), message_list(ml) {}
   ~MessageInfo                      () {}
-  const list<message>& get_message_list () const { return message_list; }
+  const list<message_t>& get_message_list () const { return message_list; }
 
 private:
-  list<message> message_list;
+  list<message_t> message_list;
 };
 
 
