@@ -33,6 +33,7 @@ typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
 class Robot;
+class DrawingRobot;
 struct stat_t;
 
 class StatisticsWindow
@@ -72,8 +73,8 @@ public:
   ~StatisticsWindow                  ();
 
   void make_title_button             ();
-  void add_new_row                   ( Robot* robot_p, stat_t average_stat,
-                                       int games_played );
+  void add_new_row                   ( Robot* robot_p, DrawingRobot* drobot_p,
+                                       stat_t average_stat, int games_played );
 
   static void delete_event_occured   ( GtkWidget* widget, GdkEvent* event,
                                        class StatisticsWindow* sw_p );

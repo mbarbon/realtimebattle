@@ -20,21 +20,24 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include "Gui.h"
 #include "ArenaWindow.h"
 #include "IntlDefs.h"
 #include "ArenaBase.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
 #include "ControlWindow.h"
+#include "DrawingObjects.h"
 #include "Extras.h"
 #include "Robot.h"
 #include "Shot.h"
 #include "String.h"
-#include "Structs.h"
+//#include "Structs.h" // is this necessary?
 #include "Vector2D.h"
 
 #define GDK_360_DEGREES 23040     // 64 * 360 degrees
 
+extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
 
 ArenaWindow::ArenaWindow( const int default_width,
@@ -232,10 +235,10 @@ ArenaWindow::draw_everything()
           return;
         }
       
-      List<Shape>* object_lists;
+      List<DrawingShape>* object_lists;
 
-      object_lists = the_arena.get_object_lists();
-      ListIterator<Shape> li;
+      object_lists = the_gui.get_drawing_object_lists();
+      ListIterator<DrawingShape> li;
 
       // Must begin with innercircles (they are destructive)
       for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
@@ -243,7 +246,7 @@ ArenaWindow::draw_everything()
           for( object_lists[obj_type].first(li); li.ok(); li++ )
             {
               if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
-                     !( (Extras*)li() )->is_alive() ) )
+                     !( (Extras*)(li()->get_shape()) )->is_alive() ) )
                 {
                   li()->draw_shape( false );
                 }
@@ -259,7 +262,7 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
 {
   if( window_shown )
     {
-      List<Shape>* object_lists = the_arena.get_object_lists();
+      List<DrawingShape>* object_lists = the_gui.get_drawing_object_lists();
       Robot* robotp;
 
       if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
@@ -269,20 +272,17 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
           return;
         }
 
-      ListIterator<Shape> li;
+      ListIterator<DrawingShape> li;
       for( object_lists[SHOT].first(li); li.ok(); li++ )
-        if( ((Shot*)li())->is_alive() )
-          ((Shot*)li())->draw_shape( clear_objects_first );
+        if( ((Shot*)(li()->get_shape()))->is_alive() )
+          li()->draw_shape( clear_objects_first );
 
-      ListIterator<Shape> li2;
-      for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
+      for( object_lists[ROBOT].first(li); li.ok(); li++ )
         {
-          robotp = (Robot*)li2();
-
-          if( robotp->is_alive() )
+          if( ((Robot*)(li()->get_shape()))->is_alive() )
             {
-              robotp->draw_shape( clear_objects_first );
-              robotp->draw_radar_and_cannon();
+              li()->draw_shape( clear_objects_first );
+              ((DrawingCircle*)li())->draw_radar_and_cannon();
             }
         }
     }
@@ -515,4 +515,3 @@ ArenaWindow::redraw( GtkWidget* widget, GdkEventExpose* event,
     arenawindow_p->draw_everything();
   return FALSE;
 }
-

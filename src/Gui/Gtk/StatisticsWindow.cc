@@ -25,9 +25,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "String.h"
 #include "Various.h"
+#include "GuiVarious.h"
 #include "Robot.h"
+#include "DrawingObjects.h"
 
-//extern class Gui the_gui;
+extern class Gui* gui_p;
 
 StatisticsWindow::StatisticsWindow( const int default_width,
                                     const int default_height,
@@ -527,24 +529,24 @@ StatisticsWindow::make_title_button()
       break;
     case STAT_TYPE_ROBOT:
       {
-        Robot* robot_p;
+        DrawingRobot* drobot_p;
 
         int i=0;
-        ListIterator<Robot> li;
-        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
+        ListIterator<DrawingRobot> li;
+        for( the_gui.get_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             i++;
-            robot_p = li();
+            drobot_p = li();
             if( looking_at_nr == i )
               {
                 GdkPixmap* col_pixmap;
                 GdkBitmap* bitmap_mask;
-                robot_p->get_stat_pixmap(window_p->window, col_pixmap, bitmap_mask);
+                drobot_p->get_stat_pixmap(window_p->window, col_pixmap, bitmap_mask);
                 GtkWidget* pixmap_w = gtk_pixmap_new( col_pixmap, bitmap_mask );
                 gtk_box_pack_start( GTK_BOX( title_button_hbox ),
                                     pixmap_w, FALSE, FALSE, 0 );
                 gtk_widget_show( pixmap_w );
-                title = robot_p->get_robot_name();
+                title = drobot_p->get_robot_p()->get_robot_name();
               }
           }
       }
@@ -557,8 +559,8 @@ StatisticsWindow::make_title_button()
 }
 
 void
-StatisticsWindow::add_new_row( Robot* robot_p, stat_t average_stat,
-                               int games_played )
+StatisticsWindow::add_new_row( Robot* robot_p, DrawingRobot* drobot_p, 
+                               stat_t average_stat, int games_played )
 {
   char* empty_list[] = { "", "", "", "", "", "", "", "" };
   int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
@@ -574,8 +576,8 @@ StatisticsWindow::add_new_row( Robot* robot_p, stat_t average_stat,
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
 
-      robot_p->get_stat_pixmap( window_p->window,
-                                colour_pixmap, bitmap_mask );
+      drobot_p->get_stat_pixmap( window_p->window,
+                                 colour_pixmap, bitmap_mask );
 
       gtk_clist_set_pixmap( GTK_CLIST( clist ), row, 0,
                             colour_pixmap, bitmap_mask );
@@ -623,8 +625,9 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
                                                class StatisticsWindow* sw_p )
 {
   Robot* robot_p = NULL;
+  DrawingRobot* drobot_p = NULL;
   stat_t* stat_p = NULL;
-  ListIterator<Robot> li;
+  ListIterator<DrawingRobot> li;
   ListIterator<stat_t> stat_li;
 
   GtkWidget* clist = sw_p->get_clist();
@@ -648,11 +651,11 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 
         int robot_nr = -1;
 
-        for( the_arena.get_all_robots_in_tournament()->first(li);
+        for( the_gui.get_robots_in_tournament()->first(li);
              li.ok(); li++ )
           {
             robot_nr++;
-            robot_p = li();
+            robot_p = li()->get_robot_p();
             points[robot_nr] = 0;
             for(robot_p->get_statistics()->first(stat_li);
                 stat_li.ok(); stat_li++)
@@ -675,11 +678,12 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
           }
 
         robot_nr = -1;
-        for( the_arena.get_all_robots_in_tournament()->first(li);
+        for( the_gui.get_robots_in_tournament()->first(li);
              li.ok(); li++ )
           {
             robot_nr++;
-            robot_p = li();
+            robot_p = li()->get_robot_p();
+            drobot_p = li();
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             int number_of_stat_found = 0;
             for(robot_p->get_statistics()->first(stat_li);
@@ -702,7 +706,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
                 average_stat.position = position[robot_nr];
                 average_stat.points /= number_of_stat_found;
                 average_stat.time_survived /= number_of_stat_found;
-                sw_p->add_new_row( robot_p, average_stat, number_of_stat_found );
+                sw_p->add_new_row( robot_p, drobot_p, 
+                                   average_stat, number_of_stat_found );
               }
           }
       }
@@ -718,16 +723,17 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
             sequence--;
           }
 
-        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
+        for( the_gui.get_robots_in_tournament()->first(li); li.ok(); li++ )
           {
-            robot_p = li();
-
+            robot_p = li()->get_robot_p();
+            drobot_p = li();
+            
             for(robot_p->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
               {
                 stat_p = stat_li();
                 if(stat_p->sequence_nr == sequence &&
                    stat_p->game_nr == game)
-                  sw_p->add_new_row( robot_p, *stat_p, -1 );
+                  sw_p->add_new_row( robot_p, drobot_p, *stat_p, -1 );
               }
           }
       }
@@ -736,15 +742,16 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
       {
         int i=0;
 
-        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
+        for( the_gui.get_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             i++;
-            robot_p = li();
+            robot_p = li()->get_robot_p();
+            drobot_p = li();
             if( i == number )
               for(robot_p->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
                 {
                   stat_p = stat_li();
-                  sw_p->add_new_row( robot_p, *stat_p, -1 );
+                  sw_p->add_new_row( robot_p, drobot_p,  *stat_p, -1 );
                 }
           }
       }

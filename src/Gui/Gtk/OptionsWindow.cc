@@ -31,10 +31,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StatisticsWindow.h"
 #include "Options.h"
 #include "String.h"
-#include "Various.h"
+#include "GuiVarious.h"
+#include "Gui.h"
 
 extern class Options the_opts;
-extern class Gui the_gui;
+extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
 
 OptionsWindow::OptionsWindow( const int default_width,

@@ -34,6 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "String.h"
 
+extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
 
 ControlWindow::ControlWindow( const int default_width,

@@ -21,19 +21,64 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <stdlib.h>
+
+#include <typeinfo>
 
 #include "Gui.h"
 #include "IntlDefs.h"
 #include "ArenaController.h"
+#include "Wall.h"
 #include "ArenaWindow.h"
 #include "MessageWindow.h"
 #include "ScoreWindow.h"
+#include "ControlWindow.h"
 #include "StatisticsWindow.h"
 #include "StartTournamentWindow.h"
 #include "Dialog.h"
+#include "DrawingObjects.h"
 #include "List.h"
 #include "Options.h"
 #include "String.h"
+#include "GuiVarious.h"
+
+class Gui* gui_p;
+
+//Move this into gui sometime soon.
+class ControlWindow* controlwindow_p;
+
+const String
+GIName()
+{
+  static const String name("Gtk+ based GUI");
+  return name;
+}
+
+const String
+GIUsageMessage()
+{
+  static const String usage("No options");
+  return usage;
+}
+
+bool
+GIInit( int argc, char** argv )
+{
+  gtk_set_locale();
+
+  gtk_init (&argc, &argv);
+
+  gui_p = new Gui();
+  return (gui_p != NULL);
+}
+//TODO: How do we get the_opts?
+int
+GIMain( ArenaController* _the_arenacontroller_p )
+{
+  int returncode = the_gui.main_loop( _the_arenacontroller_p );
+  //  _the_arenacontroller_p->Quit(); //TODO: How do we tell that RTB should Quit?
+  return returncode;
+}
 
 Gui::Gui()
 {
@@ -42,6 +87,104 @@ Gui::Gui()
   scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
+}
+
+int
+Gui::main_loop( ArenaController* _the_arenacontroller_p )
+{
+  set_colours();
+  controlwindow_p = 
+    new ControlWindow( -1, -1,
+                       the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
+                       the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
+
+  gint timeout_tag;      
+  double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
+  timeout_tag = gtk_timeout_add( (unsigned int) interval,
+                                 GtkFunction(Gui::update_function), (gpointer) NULL );
+
+  gtk_main();
+
+  return EXIT_SUCCESS;
+}
+
+int
+Gui::timeout_function()
+{
+  update_lists();
+  return true;
+}
+
+void
+Gui::update_lists()
+{
+  List<Shape>* object_lists;
+  object_lists = the_arena.get_object_lists();
+
+  ListIterator<Shape> li;
+  ListIterator<DrawingShape> draw_li;
+
+  for( int obj_type=ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
+    {
+      drawing_objects_lists[obj_type].first(draw_li);
+      for( object_lists[obj_type].first(li); li.ok(); li++ )
+        {
+          if( draw_li.ok() )
+            {
+              if( draw_li()->get_id() != li()->get_id() )
+                //TODO: remove the object from arena.
+                drawing_objects_lists[obj_type].remove(draw_li);
+              draw_li++;
+            }
+          else
+            {
+              switch( obj_type )
+                {
+                case ROBOT:
+                  {
+                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+                    drawing_objects_lists[obj_type].insert_last( p );
+                  }
+                  break;
+                case SHOT:
+                  {
+                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+                    drawing_objects_lists[obj_type].insert_last( p );
+                  }
+                  break;
+                case WALL:
+                  if( typeid( *li() ) == typeid( WallLine ) )
+                    {
+                      DrawingShape* p = (DrawingShape*) new DrawingLine( li() );
+                      drawing_objects_lists[obj_type].insert_last( p );
+                    }
+                  else if( typeid( *li() ) == typeid( WallCircle ) )
+                    {
+                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+                      drawing_objects_lists[obj_type].insert_last( p );
+                    }
+                  else if( typeid( *li() ) == typeid( WallInnerCircle ) )
+                    {
+                      DrawingShape* p = (DrawingShape*) new DrawingInnerCircle( li() );
+                      drawing_objects_lists[obj_type].insert_last( p );
+                    }
+                  break;
+                case COOKIE:
+                  {
+                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+                    drawing_objects_lists[obj_type].insert_last( p );
+                  }
+                  break;
+                case MINE:
+                  {
+                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+                    drawing_objects_lists[obj_type].insert_last( p );
+                  }
+                  break;
+                }
+            }
+        }
+    }
 }
 
 void
@@ -187,4 +330,14 @@ Gui::close_starttournamentwindow()
       delete starttournamentwindow_p;
       starttournamentwindow_p = NULL;
     }
+}
+
+gint
+Gui::update_function(gpointer data)
+{  
+  gint res = 1;
+
+  res = (gint)the_gui.timeout_function();
+
+  return res;
 }

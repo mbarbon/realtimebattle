@@ -24,7 +24,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <gtk/gtk.h>
 
+#include "Messagetypes.h"
+#include "List.h"
+
+class ArenaController;
 class ArenaWindow;
+class DrawingShape;
+class DrawingRobot;
 class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
@@ -32,13 +38,21 @@ class StartTournamentWindow;
 class Robot;
 class String;
 
+#define the_gui (*(gui_p))
+
 class Gui
 {
 public:
   Gui();
   ~Gui() {}
 
-  void set_colours();
+  int main_loop                                ( ArenaController* );
+  int timeout_function                         ();
+  void update_lists                            ();
+  void set_colours                             ();
+
+  List<DrawingShape>* get_drawing_object_lists () { return drawing_objects_lists; }
+  List<DrawingRobot>* get_robots_in_tournament () { return &robots_in_tournament; }
 
   GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
@@ -84,7 +98,12 @@ public:
   void open_starttournamentwindow              ();
   void close_starttournamentwindow             ();
 
+  static gint update_function                  (gpointer data);
+
 private:
+
+  List<DrawingShape> drawing_objects_lists[LAST_OBJECT_TYPE];
+  List<DrawingRobot> robots_in_tournament;
 
   long int bg_rgb_colour;
   long int fg_rgb_colour;

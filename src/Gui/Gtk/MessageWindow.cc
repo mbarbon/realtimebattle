@@ -28,8 +28,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaRealTime.h"
 #include "String.h"
 #include "Robot.h"
-#include "Various.h"
+#include "GuiVarious.h"
 
+extern class Gui* gui_p;
 extern class ControlWindow* controlwindow_p;
 
 MessageWindow::MessageWindow( const int default_width,
