@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
@@ -21,6 +22,8 @@
 #endif
 
 #include <Messagetypes.h>
+
+const double pi = 3.1415927;
 
 volatile bool quit_robot = false;
 
@@ -96,6 +99,32 @@ private:
 
   double robot_rotate;
   double acceleration;
+  double brake_value;
+
+  bool rotate_allowed;
+
+  int shots_hit;
+  double last_shot_hit_time;
+  double current_time;
+  int number_of_robots_left;
+
+  // game options
+
+  double robot_max_rotate;
+  double robot_cannon_max_rotate;
+  double robot_radar_max_rotate;
+  double robot_max_acceleration;
+  double robot_min_acceleration;
+  double robot_start_energy;
+  double robot_max_energy;
+  double robot_energy_levels;
+  double shot_speed;
+  double shot_min_energy;
+  double shot_max_energy;
+  double shot_energy_increase_speed;
+  double timeout;
+  double debug_level;
+
 };
 
 // Declare the class_object
@@ -107,6 +136,7 @@ RotateAndFire::RotateAndFire()
 {
   robot_rotate = 0.53;
   acceleration = 0.54;
+  brake_value = 0.0;
 
   robot_option( SIGNAL, SIGUSR1 );
 }
@@ -237,59 +267,141 @@ RotateAndFire::your_colour( const char* colour )
 void
 RotateAndFire::game_option( const int option, const double value )
 {
+  switch( option )
+    {
+    case ROBOT_MAX_ROTATE:
+      robot_max_rotate = value;
+      break;
+    case ROBOT_CANNON_MAX_ROTATE:
+      robot_cannon_max_rotate = value;
+      break;
+    case ROBOT_RADAR_MAX_ROTATE:
+      robot_radar_max_rotate = value;
+      break;
+    case ROBOT_MAX_ACCELERATION:
+      robot_max_acceleration = value;
+      break;
+    case ROBOT_MIN_ACCELERATION:
+      robot_min_acceleration = value;
+      break;
+    case ROBOT_START_ENERGY:
+      robot_start_energy = value;
+      break;
+    case ROBOT_MAX_ENERGY:
+      robot_max_energy = value;
+      break;
+    case ROBOT_ENERGY_LEVELS:
+      robot_energy_levels = value;
+      break;
+    case SHOT_SPEED:
+      shot_speed = value;
+      break;
+    case SHOT_MIN_ENERGY:
+      shot_min_energy = value;
+      break;
+    case SHOT_MAX_ENERGY:
+      shot_max_energy = value;
+      break;
+    case SHOT_ENERGY_INCREASE_SPEED:
+      shot_energy_increase_speed = value;
+      break;
+    case TIMEOUT:
+      timeout = value;
+      break;
+    case DEBUG_LEVEL:
+      debug_level = value;
+      break;
+    }
 }
 
 void
 RotateAndFire::game_starts()
 {
+  rotate_allowed = true;
+  shots_hit = 0;
+  last_shot_hit_time = 0;
+  current_time = 0;
+
   rotate( 1, robot_rotate );
-  rotate( 6, 1.5 );
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
   accelerate( acceleration );
 }
 
 void
 RotateAndFire::radar_noobject( const double dist, const double angle )
 {
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
 void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
+  rotate( 6, -robot_rotate );
+  if( dist < 2 )
+    {
+      acceleration = 0;
+      accelerate( 0 );
+    }
   shoot( 2 );
 }
 
 void
 RotateAndFire::radar_shot( const double dist, const double angle )
 {
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
 void
 RotateAndFire::radar_wall( const double dist, const double angle )
 {
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+
   double old_acc = acceleration;
-  if( dist < 0.6 )
-    acceleration = 0.0;
-  else
-    acceleration = 1.0;
+
+  double mod_angle = drem( angle, 2 * pi );
+
+  if( mod_angle > -pi / 3 && mod_angle < pi / 3 )
+    {
+      if( dist < 1.0 )
+        {
+          acceleration = 0.0;
+          brake_value = 1.0;
+        }
+      else
+        {
+          acceleration = 1.0;
+          brake_value = 0.0;
+        }
+    }
 
   if( old_acc != acceleration )
-    accelerate( acceleration );
+    {
+      accelerate( acceleration );
+      brake( brake_value );
+    }
 }
 
 void
 RotateAndFire::radar_cookie( const double dist, const double angle )
 {
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
 }
 
 void
 RotateAndFire::radar_mine( const double dist, const double angle )
 {
+  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  shoot( shot_min_energy );
 }
 
 void
 RotateAndFire::info( const double time, const double speed,
                      const double cannon_angle )
 {
+  current_time = time;
+
+  if( current_time - last_shot_hit_time < 2.0 )
+    shots_hit = 0;
 }
 
 void
@@ -300,6 +412,10 @@ RotateAndFire::robot_info( const double energy, int enemy )
 void
 RotateAndFire::rotation_reached( const int what )
 {
+  rotate_allowed = true;
+  int direction = rand() / (RAND_MAX/2);
+  if( direction == 0 ) direction = -1;
+  robot_rotate = 0.53 * direction;
 }
 
 void
@@ -310,6 +426,7 @@ RotateAndFire::energy( const double energylevel )
 void
 RotateAndFire::robots_left( const int number_of_robots )
 {
+  number_of_robots_left = number_of_robots;
 }
 
 void
@@ -325,6 +442,18 @@ RotateAndFire::collision_robot( const double angle )
 void
 RotateAndFire::collision_shot( const double angle )
 {
+  shots_hit++;
+  last_shot_hit_time = current_time;
+
+  if( shots_hit > 5 )
+    {
+      int direction = rand() / (RAND_MAX/2);
+      if( direction == 0 ) direction = -1;
+      robot_rotate = robot_max_rotate * direction;
+      rotate_amount( 1, robot_rotate, pi / 2 );
+      rotate_allowed = false;
+      shots_hit = 0;
+    }
 }
 
 void
@@ -375,7 +504,6 @@ RotateAndFire::warning( const int type, const char* message )
 void
 RotateAndFire::dead()
 {
-  print( "Too damaged, giving up." );
 }
 
 void
@@ -395,9 +523,9 @@ RotateAndFire::exit_robot()
 void
 RotateAndFire::pre_checking_messages()
 {
-  if(rand() < (RAND_MAX/100))
+  if(rand() < (RAND_MAX/100) && rotate_allowed )
     {
-      robot_rotate = - robot_rotate;
+      robot_rotate = -robot_rotate;
       rotate( 1, robot_rotate );
     }
 }
@@ -440,10 +568,17 @@ RotateAndFire::check_messages(int sig)
             raf_obj.your_colour( col );
           }
           break;
+        case GAME_OPTION:
+          {
+            int nr;
+            double value;
+            cin >> nr >> value;
+            raf_obj.game_option( nr, value );
+          }
+          break;
         case GAME_STARTS:
           raf_obj.game_starts();
           break;
-
         case RADAR:
           {
             double dist, angle;
@@ -474,6 +609,42 @@ RotateAndFire::check_messages(int sig)
                 cout << "Print Unknown Object seen!" << endl;
                 break;
               }
+          }
+          break;
+        case INFO:
+          {
+            double time, speed, cannon_angle;
+            cin >> time >> speed >> cannon_angle;
+            raf_obj.info( time, speed, cannon_angle );
+          }
+          break;
+        case ROBOT_INFO:
+          {
+            double energy;
+            int enemy;
+            cin >> energy >> enemy;
+            raf_obj.robot_info( energy, enemy );
+          }
+          break;
+        case ROTATION_REACHED:
+          {
+            int what;
+            cin >> what;
+            raf_obj.rotation_reached( what );
+          }
+          break;
+        case ENERGY:
+          {
+            double en;
+            cin >> en;
+            raf_obj.energy( en );
+          }
+          break;
+        case ROBOTS_LEFT:
+          {
+            int nr;
+            cin >> nr;
+            raf_obj.robots_left( nr );
           }
           break;
         case COLLISION:
@@ -516,6 +687,12 @@ RotateAndFire::check_messages(int sig)
             cin.getline(text,80,'\n');
             raf_obj.warning( type, text );
           }
+          break;
+        case DEAD:
+          raf_obj.dead();
+          break;
+        case GAME_FINISHES:
+          raf_obj.game_finishes();
           break;
         case EXIT_ROBOT:
           raf_obj.exit_robot();
