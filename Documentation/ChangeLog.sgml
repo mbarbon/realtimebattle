@@ -7,11 +7,33 @@
 <item> <bf>0.9.5:</bf>
 <p>
 
-The resource-file is now implemented. Please write your .rtbrc for your favourite settings.
+The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.
 
-Changing of Windowsizes has been implemented. Change your .rtbrc for new default sizes.
+Changing of Window sizes has been implemented. Change your <tt>.rtbrc</tt> for new default sizes.
 
 Added some buttons to the options window.
+
+Keyword <tt>Break</tt> is changed to the correct spelling <tt>Brake</tt>.
+
+New robot option: <tt>SIGNAL</tt>, which will replace the old <tt>SEND_SIGNAL</tt>. You can now
+specify which signal to be sent.
+
+A new warning message: <tt>OBSOLETE_KEYWORD</tt>. Please replace all the obsolete keywords with the
+corresponding new version as soon as possible, since obsolete keyword will be completely removed
+within a number of releases and certainly before 1.0.
+
+Bugfixes:
+
+Fixes for floating point problems in BSD (thanks to Dennis Cartier).
+
+Resent Linux kernels seems to block <tt>SIGUSR1</tt>, this was fixed by a patch from Oliver 
+Jowett. This bug applies to a lot of robots around, so be sure to add the corresponding code to your
+robot!
+
+And a lot of smaller bugs, which I am too lazy to write down (thanks to various people).
+
+
+
 
 <item> <bf>0.9.4:</bf>
 <p>

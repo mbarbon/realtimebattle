@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.4 rev 1
+<title>RealTimeBattle User Manual, version 0.9.5 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 3 January 1999
+<date> 15 January 1999
 
 <!-- <abstract> -->
 
@@ -265,7 +265,7 @@ A <ref id="A_tournament" name="tournament"> consists of a number of
 robots are playing in all games. Here you select the number of games and sequences as well as the
 number of robots in each sequence. If you intend to play with all robots every game you are advised
 to choose only one sequence and instead increase the number of game. The reason is to avoid
-restarting of the robot processes which can take a wail, especially if the number of robots is
+restarting of the robot processes which can take a while, especially if the number of robots is
 large.
 
 You have to select at least two robots and one arena to be able to
@@ -299,7 +299,7 @@ the change to take effect.
 
 <sect1>Arena window<label id="Arena_window">
 <p>
-This is where the battle takes place. If you want to watch the game i
+This is where the battle takes place. If you want to watch the game in
 more detailed, use the zoom buttons!
 
 <sect1>Score window<label id="Score window">
@@ -531,7 +531,7 @@ messages, warning types, objects, game options and robot options.
 <sect1>Cheating<label id="Cheating">
 <p>
 Since the battle is progressing in real-time with real processes, there may be possible to make
-programs which are 'cheating' in one way or another. For example by examine other robots or even
+programs which are 'cheating' in one way or another. For example by examining other robots or even
 RealTimeBattle itself to get more information, by using up a lot of resources to drain the other
 robot and so on. The processes are therefore given a very restricted environment to run in; in 
 <ref id="Command line options" name="competition-mode"> they are neither allowed to spawn child
@@ -596,7 +596,7 @@ same as the real time elapsed, due to <ref id="TimeScale" name="time scale"> and
 detect a robot with your radar, this message will follow, giving some
 information on the robot. The opponents energy level will be given in
 the same manner as your own energy (see below). The second argument is
-only interesting i team-mode (which current isn't implemented), 1
+only interesting in team-mode (which current isn't implemented), 1
 means a team-mate and 0 an enemy.
 
 <label id="RotationReached">
@@ -620,20 +620,28 @@ broadcasted to all living robots.
 the file <ref id="Messagetypes.h" name="Messagetypes.h"> you can find a list of the object types.
 
 <tag>Warning [warning type (int)] [message (string)]</tag> A warning
-message can be sent for various reasons
+message can be sent when robot has to be notified on different problems which have
+occured. Currently five different warning messages can be sent, namely
 
-<descrip>
-<tag>Unknown message:</tag> The server received a message it couldn't
+<tt>UNKNOWN&lowbar;MESSAGE:</tt> The server received a message it couldn't
 recognize.
 
-<tag>Process time low:</tag> The CPU usage has reached the 
+<tt>PROCESS&lowbar;TIME&lowbar;LOW:</tt> The CPU usage has reached the 
 <ref id="CPUWarningPercentage" name="CPU warning percentage">. Only
 in <ref id="Command line options" name="competition-mode">.
 
-<tag>Message sent in illegal state:</tag> The message received couldn't be handled in this state of
-the program. For example <ref id="Rotate" name="Rotate"> is sent before the game has started.
+<tt>MESSAGE&lowbar;SENT&lowbar;IN&lowbar;ILLEGAL&lowbar;STATE:</tt> The message received couldn't be
+handled in this state of the program. For example <ref id="Rotate" name="Rotate"> is sent before the
+game has started.
 
-</descrip>
+<tt>UNKNOWN&lowbar;OPTION:</tt> The robot sent a 
+<ref id="RobotOption" name="robot option"> with either illegal option name or illegal argument to
+that option.
+
+<tt>OBSOLETE_KEYWORD:</tt> The keyword sent is obsolete and should not be used any more, see the
+<tt>ChangeLog</tt> file for information on what to use instead.
+
+
 <tag>Dead</tag> Robot died. Do not try to send more messages to the
 server until the end of the game, the server doesn't read them.
 
@@ -657,9 +665,13 @@ will be killed forcefully.
 <tag>RobotOption [option nr (int)] [value (int)]</tag> Currently only
 two options are available:
 
+<tt>SIGNAL:</tt> Tells the server to send a signal when there is a message waiting. The
+argument will determine which signal. Send this message (with argument e.g. SIGUSR1) as soon as you
+are prepared to receive the signal.  Default is 0, which means don't send any signals.
+
 <tt>SEND&lowbar;SIGNAL:</tt> Tells the server to send
 SIGUSR1 when there is a message waiting. Send this message (with
-argument 0=true) as soon as you are prepared to receive the signal.
+argument 1 (= true)) as soon as you are prepared to receive the signal.
 Default is false.
 
 <tt>SEND&lowbar;ROTATION&lowbar;REACHED:</tt> If you want the server to send a 
@@ -785,8 +797,8 @@ collisions.
 
 <label id="BounceCoefficient">
 <tag>Robot bounce coefficient:</tag> Affects how well the robots will
-bounce. If zero the robots will cling together when colliding, if one they will act like perfect
-billiard balls.
+bounce. If zero the robots will cling together when colliding, if the value is one they will act
+like perfect billiard balls.
 
 <tag>Robot hardness coefficient:</tag> Determines how seriously damaged  
 the robots will be when colliding. The lower value, the softer material.
@@ -895,7 +907,7 @@ form.
 <descrip>
 <label id="Timeout">
 <tag>Timeout:</tag> This is the longest time a game will take. When
-the time is ut all remaining robots are killed, without getting any
+the time is up all remaining robots are killed, without getting any
 more points.
 
 <label id="MaxTimestep">
@@ -912,7 +924,7 @@ or if you have a fast computer you may want to speed the game up.
 
 <label id="CPUOptions">
 <tag>Start CPU time:</tag> In <ref id="Command line options" name="competition-mode"> a robots CPU
-usage is limited. At the beginning of a sequence a robot will get this amount of CPU time to spent.
+usage is limited. At the beginning of a sequence a robot will get this amount of CPU time to spend.
 
 <tag>Extra CPU time:</tag> When the start CPU time is spent, the
 robot will get this amount of extra CPU time.
