@@ -46,7 +46,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <floatingpoint.h>
 #endif
 
+#ifndef NO_GRAPHICS
 #include "ControlWindow.h"
+#endif NO_GRAPHICS
 
 //#include "Gui.h"
 //#include "MovingObject.h"
@@ -93,16 +95,35 @@ print_help_message()
   cout << endl;
 }
 
+#ifndef NO_GRAPHICS
 gint
 update_function(gpointer data)
 {  
   gint res = 0;
 
   if( the_arena_controller.is_started() )
-    res = the_arena.timeout_function();
+    res = (gint)the_arena.timeout_function();
 
   return res;
 }
+#else NO_GRAPHICS
+void
+update_function(const long int interval_usec)
+{
+  struct timeval timeout;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = interval_usec;
+
+  do
+    {
+      timeout.tv_sec = 0;
+      timeout.tv_usec = interval_usec;
+      select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
+    } 
+  while( the_arena.timeout_function() );
+
+}
+#endif NO_GRAPHICS
 
 RETSIGTYPE
 sig_handler (int signum)
@@ -279,7 +300,9 @@ main ( int argc, char* argv[] )
   //fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
 #endif
 
+#ifndef NO_GRAPHICS
   gtk_init (&argc, &argv);
+#endif NO_GRAPHICS
 
   the_arena_controller.start_realtime_arena();
 
@@ -300,12 +323,17 @@ main ( int argc, char* argv[] )
                            the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
                            the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
     }
-#endif
+
 
   gint timeout_tag;      
   timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
 
   gtk_main();
+#else !NO_GRAPHICS
+  
+  update_function( 50 * 1000 );
+  
+#endif !NO_GRAPHICS
 
   return EXIT_SUCCESS;
 }
