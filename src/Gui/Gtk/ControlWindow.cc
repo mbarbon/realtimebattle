@@ -92,7 +92,7 @@ ControlWindow::ControlWindow( const int default_width,
   //                    "<Branch>"         -> create an item to hold sub items
   //                    "<LastBranch>"     -> create a right justified branch
 
-  static GtkItemFactoryEntry menu_items[] =
+  GtkItemFactoryEntry menu_items[] =
   {
     { "/_" N_("File"), NULL, NULL, 0, "<Branch>" },
     { "/"  N_("File") "/" N_("Quit"), "<control>q",
@@ -113,15 +113,15 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Windows") "/" N_("Statistics"), "<shift>s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STATISTICS, "" },
     { "/" N_("Windows") "/sep", NULL, NULL, 0, "<Separator>" },
-    { "/"  N_("Windows") "/" N_("Show arena window"), "<control>a",
-        (GtkItemFactoryCallback) ControlWindow::menu_callback,
+    { "/" N_("Windows") "/" N_("Show arena window"), "<control>a",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_ARENA, "<CheckItem>" },
     { "/"  N_("Windows") "/" N_("Show message window"), "<control>m",
-        (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_MESSAGES, "<CheckItem>" },
     { "/"  N_("Windows") "/" N_("Show score window"), "<control>s",
-        (GtkItemFactoryCallback) ControlWindow::menu_callback,
-      MENU_SHOW_SCORE, "<CheckItem>" } 
+      (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_SHOW_SCORE, "<CheckItem>" }
   };
 
   const int nmenu_items = sizeof( menu_items ) / sizeof( menu_items[0] );
@@ -142,15 +142,12 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_menu_bar_set_shadow_type( GTK_MENU_BAR( menubar ), GTK_SHADOW_OUT );
   gtk_widget_show( menubar );
 
-  if(!(show_arena_menu_item = gtk_item_factory_get_widget
-       ( item_factory, translate_menu_path("<main>/Windows/Show arena window") ) ))
-    cerr << "show_arena_menu_item == NULL" << endl;
-  if(!(show_message_menu_item = gtk_item_factory_get_widget
-       ( item_factory, translate_menu_path("<main>/Windows/Show message window") ) ))
-    cerr << "show_message_menu_item == NULL" << endl;
-  if(!(show_score_menu_item = gtk_item_factory_get_widget
-       ( item_factory, translate_menu_path("<main>/Windows/Show score window") ) ))
-    cerr << "show_score_menu_item == NULL" << endl;
+  show_arena_menu_item = gtk_item_factory_get_widget
+    ( item_factory, translate_menu_path("<main>/Windows/Show arena window") );
+  show_message_menu_item = gtk_item_factory_get_widget
+    ( item_factory, translate_menu_path("<main>/Windows/Show message window") );
+  show_score_menu_item = gtk_item_factory_get_widget
+    ( item_factory, translate_menu_path("<main>/Windows/Show score window") );
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
@@ -460,7 +457,7 @@ ControlWindow::translate_menu_path( char* pathstr_p )
   return pathstr_p;
 #else
   vector<string> pathlist;
-  pathlist = split_string( pathstr_p, pathlist, "/" );
+  pathlist = split_string( string(pathstr_p), pathlist, "/" );
   vector<string>::iterator vi;
   for( vi = pathlist.begin(); vi != pathlist.end(); vi++ )
     {
@@ -468,17 +465,19 @@ ControlWindow::translate_menu_path( char* pathstr_p )
         if( (*vi)[0] == '_' )
           {
             (*vi).erase( 0, 1 );
-            *vi = (string)"_" + gettext( (*vi).c_str() );
+            *vi = (string)"_" + _( (*vi).c_str() );
           }
         else
-          *vi = gettext( (*vi).c_str() );
+          *vi = _( (*vi).c_str() );
     }
   string new_path;
   for( vi = pathlist.begin(); vi != pathlist.end(); vi++ )
-    if( ((*vi)[0] == '<' && (*vi)[(*vi).length() - 1] == '>' ) )
-      new_path += *vi;
-    else
-      new_path += "/" + *vi;
+    {
+      if( ((*vi)[0] == '<' && (*vi)[(*vi).length() - 1] == '>' ) )
+        new_path += *vi;
+      else
+        new_path += "/" + *vi;
+    }
   return copy_to_c_string( new_path ); // Memory-leak: never deleted
 #endif
 }
