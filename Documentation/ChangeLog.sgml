@@ -7,9 +7,18 @@ Change log
 
 <item> <bf>0.9.11:</bf>
 <p>
+The default prefix for the installation has been changed from <tt>/usr</tt>
+to <tt>/usr/local</tt>.
+
+Polish translation added (thanks to Zbigniew Chyla).
+
+Portuguese translation added (thanks to Rui Sousa).
 
 Added info in the documentation on what the different things on the robot
 are.
+
+Fixed so it is possible to configure and compile RTB from another directory
+than the RTB top sourcedir.
 
 Fixed bug that caused rtb to segfault when it is impossible to open the
 logfiled supplied on the command-line to be replayed.
@@ -22,18 +31,17 @@ of leaking memory but this is gtk+'s fault).
 
 Corrected code that caused a compile-time failure with gcc-2.95.
 
-Changed so <verb>string.h</verb> is included instead of <verb>strings.h</verb>
+Changed so <tt>string.h</tt> is included instead of <tt>strings.h</tt>
 
 <item> <bf>0.9.10:</bf>
 <p>
-
 The missing file IntlDefs.h has been added to the distribution.
 
 <item> <bf>0.9.9:</bf>
 <p>
 Added support for internationalization. If you do not want native language support
 configure with the command:
-<verb>%./configure --disable-nls</verb>
+<verb>% ./configure --disable-nls</verb>
 
 Messages are now displayed much faster in the message-window.
 
