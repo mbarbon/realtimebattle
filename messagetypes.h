@@ -9,6 +9,7 @@ enum message_to_robot_type
   GAME_STARTS,
   EXIT_ROBOT,
   RADAR,
+  COLLISION,
   WARNING
 };
 
@@ -32,7 +33,7 @@ enum argument_type
   HEX
 };
 
-enum warnings
+enum warning_type
 {
   UNKNOWN_MESSAGE,
   PROCESS_TIME_LOW,
@@ -40,6 +41,16 @@ enum warnings
   VARIABLE_OUT_OF_RANGE
 };
 
+enum object_type 
+{ 
+  NOOBJECT, 
+  ROBOT, 
+  SHOT, 
+  WALL, 
+  COOKIE, 
+  MINE, 
+  EXPLOSION 
+};
 
 struct Message
 {
@@ -53,19 +64,20 @@ static const Message message_to_robot[20] =
   {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
-  {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}},
-  {"Warning",    2, {INT,    STRING, NONE,   NONE}},
-  {"",             0, {}}
+  {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}},   // first arg: distance, second arg: object_type 
+  {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: change in energy 
+  {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
+  {"",           0, {}}
 };
 
 static const Message message_from_robot[20] = 
 {
   {"Rotate",       2, {INT,    DOUBLE}},     // first arg: what to rotate, second arg: angular velocity (rad/s)
-  {"Acceleration", 1, {DOUBLE}},
-  {"Shoot",        0, {DOUBLE}},             // arg: amount of energy
-  {"Name",         1, {STRING}},
-  {"Colour",       2, {HEX, HEX}},
-  {"Print",        1, {STRING}},
+  {"Acceleration", 1, {DOUBLE}},             // arg: acceleration (m/s^2)  
+  {"Shoot",        1, {DOUBLE}},             // arg: amount of energy
+  {"Name",         1, {STRING}},             // arg: name
+  {"Colour",       2, {HEX, HEX}},           // first arg: home colour, second arg: away colour
+  {"Print",        1, {STRING}},             // arg: message to print   
   {"",             0, {}}
 };
 
