@@ -20,14 +20,29 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __GUIEVENT__
 #define __GUIEVENT__
 
-// TODO: Fill with something useful
+#include <string>
+
 class GuiEvent
 {
 public:
-  GuiEvent::GuiEvent() {}
-  GuiEvent::~GuiEvent() {}
+  GuiEvent::GuiEvent                () {}
+  GuiEvent::~GuiEvent               () {}
 
 private:
+};
+
+class GuiMessageEvent : public GuiEvent
+{
+public:
+  GuiMessageEvent::GuiMessageEvent  ( const string& s, const string& m )
+    : sender(s), message(m) {}
+  GuiMessageEvent::~GuiMessageEvent () {}
+  const string& get_sender          () const { return sender; }
+  const string& get_message         () const { return message; }
+
+private:
+  string sender;
+  string message;
 };
 
 #endif __GUIEVENT__
