@@ -41,6 +41,8 @@ public:
     return 0;
   };
   
+  virtual vector<GadgetDefinition*>* Gadget_def() {return NULL;};
+  virtual Gadget* Copy(Gadget*) {return NULL;};
   virtual void Print();
   virtual Gadget* NewInstance( const char* Name, Gadget* const p ) 
     { return new Gadget(Name, p); }
