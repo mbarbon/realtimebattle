@@ -27,7 +27,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Structs.h"
 #include "Vector2D.h"
-#include "MessageWindow.h"
+
+class MessageWindow;
+class StartTournamentWindow;
+
 //#include "MovingObject.h"
 //#include "Arena.h"
 //#include "Robot.h"
@@ -84,18 +87,6 @@ void destroy_stats_filesel                            ( );
 void stat_clist_column_callback                       ( GtkCList* clist, gint column, gpointer data);
 void buttons_in_statistics_callback                   ( GtkWidget* widget, gpointer type_p);
 
-void start_tournament_min_callback                    ( GtkWidget* widget, gpointer data );
-void start_tournament_max_callback                    ( GtkWidget* widget, gpointer data );
-void start_tournament_full_round_callback             ( GtkWidget* widget, gpointer data );
-void start_tournament_all_arenas_callback             ( GtkWidget* widget, gpointer data );
-void start_tournament_button_callback                 ( GtkWidget* widget, gpointer data );
-void kill_and_start_new_tournament                    ( bool really );
-void start_tournament_start_callback                  ( GtkWidget* widget, gpointer data);
-void start_tournament_select_robots_buttons_callback  ( GtkWidget* widget, gpointer button_number_p);
-void start_tournament_select_arenas_buttons_callback  ( GtkWidget* widget, gpointer button_number_p);
-void start_tournament_selection_made                  ( GtkWidget* clist, gint row, gint column,
-                                                        GdkEventButton* event, gpointer data );
-
 void delete_event                                     ( GtkWidget* widget, gpointer data );
 
 void no_zoom_callback                                 ( GtkWidget* widget, gpointer data );
@@ -112,12 +103,10 @@ public:
 
   void setup_score_window();
   void setup_arena_window();
-  void setup_start_tournament_window();
   void setup_statistics_window();
 
   void close_score_window();
   void close_arena_window();
-  void close_start_tournament_window();
   void close_statistics_window();
   void close_question_window();
 
@@ -151,32 +140,29 @@ public:
 
   void change_selected_robot( const int row );
 
-  void start_new_tournament();
-  void start_tournament_change_all_selection(bool robots, bool dir, bool all);
-  void start_tournament_change_one_selection(const int row, const GtkWidget * clist);
-  start_tournament_glist_info_t* start_tournament_find_row_in_clist(const int row, GList * lista);
-  void start_tournament_add_all_selected( bool robots );
-  void start_tournament_remove_all_selected( bool robots );
-  void set_entry(const int entry, const enum min_max_full_t mmf);
-
   void ask_user(String question, QuestionFunction function_name);
 
   bool get_statistics_up() { return statistics_up; }
-  bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget* get_score_clist() { return score_clist; }
   Robot* get_selected_robot() { return selected_robot; }
   double get_zoom() { return zoom; }
   GtkWidget* get_filesel_widget() { return filesel_widget; }
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
-  MessageWindow* get_messagewindow_p  () { return messagewindow_p; }
-  void open_messagewindow             ();
-  void close_messagewindow            ();
+  StartTournamentWindow* get_starttournament_p ()
+    { return starttournamentwindow_p; }
+  static void kill_and_start_new_tournament    ( bool really );
+  void open_starttournamentwindow              ();
+  void close_starttournamentwindow             ();
+
+  MessageWindow* get_messagewindow_p           ()
+    { return messagewindow_p; }
+  void open_messagewindow                      ();
+  void close_messagewindow                     ();
 
 private:
 
   bool statistics_up;
-  bool start_tournament_up;
 
   GtkWidget* drawing_area;
   GtkWidget* da_scrolled_window;
@@ -190,29 +176,14 @@ private:
 
   Robot* selected_robot;
 
-  GtkWidget* robots_in_tournament_clist;
-  GtkWidget* robots_in_directory_clist;
-  GtkWidget* arenas_in_tournament_clist;
-  GtkWidget* arenas_in_directory_clist;
-
-  GtkWidget* start_tournament_entries[3];
-
   GtkWidget* score_window;
   GtkWidget* arena_window;
-  GtkWidget* start_tournament_window;
   GtkWidget* statistics_window;
   GtkWidget* question_window;
-
-  Vector2D start_tournament_window_size;
 
   Vector2D da_scrolled_window_size;
 
   GdkColormap* colormap;
-
-  GList* selected_items_in_robot_tournament;
-  GList* selected_items_in_robot_directory;
-  GList* selected_items_in_arena_tournament;
-  GList* selected_items_in_arena_directory;
 
   int zoomfactor;
   double zoom;
@@ -221,6 +192,7 @@ private:
   stat_table_t stat_table_type;
   int stat_looking_at_nr;
 
+  StartTournamentWindow* starttournamentwindow_p;
   MessageWindow* messagewindow_p;
 };
 

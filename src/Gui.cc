@@ -29,6 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include <string.h>
 #include <stdlib.h>
 #include "Gui.h"
+#include "MessageWindow.h"
+#include "StartTournamentWindow.h"
 #include "Arena.h"
 #include "Shot.h"
 #include "Robot.h"
@@ -597,6 +599,41 @@ Gui::ask_user(String question, QuestionFunction function_name)
   gtk_widget_show(button);
 
   gtk_widget_show(question_window);
+}
+
+void
+Gui::open_starttournamentwindow()
+{
+  if( NULL == starttournamentwindow_p )
+    if( the_arena.get_state() == NOT_STARTED || 
+        the_arena.get_state() == FINISHED )
+      starttournamentwindow_p = 
+        new StartTournamentWindow( -1, -1, -1, -1 );
+    else
+      the_gui.ask_user( "This action will kill the current tournament.\nDo you want do that?",
+                       &(Gui::kill_and_start_new_tournament) );
+  else
+    close_starttournamentwindow();
+}
+
+void
+Gui::kill_and_start_new_tournament( bool really )
+{
+  if( really )
+    {
+      the_arena.interrupt_tournament();
+      the_gui.open_starttournamentwindow();
+    }
+}
+
+void
+Gui::close_starttournamentwindow()
+{
+  if( NULL != starttournamentwindow_p )
+    {
+      delete starttournamentwindow_p;
+      starttournamentwindow_p = NULL;
+    }
 }
 
 void

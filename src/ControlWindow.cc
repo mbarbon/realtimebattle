@@ -65,7 +65,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   struct button_t buttons[] = {
     { " New Tournament ", 
-      (GtkSignalFunc) start_tournament_button_callback , TRUE  },
+      (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
     { " Pause ",
       (GtkSignalFunc) ControlWindow::pause             , TRUE  },
     { " End ",
@@ -293,6 +293,13 @@ ControlWindow::increase_debug_level( GtkWidget* widget,
   the_arena.set_debug_level( the_arena.get_debug_level() + 1);
   gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
                  String( the_arena.get_debug_level() ).chars() );  
+}
+
+void
+ControlWindow::new_tournament( GtkWidget* widget,
+                               class ControlWindow* controlwindow_p )
+{
+  the_gui.open_starttournamentwindow();
 }
 
 void
