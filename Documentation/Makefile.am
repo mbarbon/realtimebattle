@@ -12,7 +12,7 @@ EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
 NOTE_FILES = ../BUGS ../FAQ ../ChangeLog ../TODO ../CVS-Help
 
-MAINTAINERCLEANFILES = *.{html,dvi,info,txt} $(NOTE_FILES)
+MAINTAINERCLEANFILES = *.{html,dvi,info} $(NOTE_FILES) RealTimeBattle.txt
 
 install-data-local:
 	gzip -f $(rtbinfodir)/RealTimeBattle.info; \
