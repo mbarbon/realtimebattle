@@ -242,12 +242,9 @@ String::insert(const String& str, const int pos)
   return *this;
 }
 
-//
-//
-//
-//
+// Returns -1 if char woas not found in string
 int
-String::find(const char c, const int start, const bool reverse)
+String::find( const char c, const int start, const bool reverse ) const
 {
   char * ans;
 

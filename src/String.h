@@ -46,7 +46,7 @@ public:
 
   char operator[](int) const;
 
-  friend ostream& operator<<(ostream&, const String&);  
+  friend ostream& operator<<(ostream&, const String&);
   friend istream& operator>>(istream&, String&);  
 
   friend int str2int(const String&);
@@ -57,11 +57,11 @@ public:
 
   String& erase(const int pos, const int size = 1);
   String& insert(const String&, const int pos = 0);
-  int find(const char c, const int start = 0, const bool reverse = false);
+  int find( const char c, const int start = 0, const bool reverse = false ) const;
   friend String get_segment(const String& str, const int start, const int end);
   friend String make_lower_case(const String& str);
 
-  int get_length() { return length; }
+  int get_length() const { return length; }
   const char* chars() const { return array; }
 
    //  Warning! This allows for changing the private member array.
