@@ -4,7 +4,7 @@ if ENABLE_PROF
 PROFFLAGS = -pg
 endif
 
-INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src \
+INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src -I$(top_srcdir)/src/Network/ \
    $(PROFFLAGS) $(THREAD_FLAGS)
 
 
