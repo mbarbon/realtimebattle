@@ -61,7 +61,7 @@ class QuitEvent : public Event
 {
 public:
   QuitEvent( const double time, EventHandler* ev) 
-    : my_event_handler(ev), Event(time) {}
+    : Event(time), my_event_handler(ev) {}
 
   void eval() const { my_event_handler->finish(); }
 
