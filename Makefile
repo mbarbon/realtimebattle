@@ -34,7 +34,7 @@ html_docs:
 docs:
 	cd $(DOCSDIR) && $(MAKE) all
 
-clean: root_clean rtb_clean robot_clean doc_clean html_clean
+clean: root_clean rtb_clean robot_clean docs_clean html_clean
 
 root_clean:
 	rm -f *~ RealTimeBattle*.rpm $(ARENADIR)/*~ RealTimeBattle.tar* BUGS FAQ INSTALL ChangeLog README TODO
@@ -45,7 +45,7 @@ rtb_clean:
 robot_clean:
 	cd $(ROBOTDIR) && $(MAKE) -k clean
 
-doc_clean:
+docs_clean:
 	cd $(DOCSDIR) && $(MAKE) clean
 
 html_clean:
@@ -79,10 +79,12 @@ tar: docs
 	RealTimeBattle/$(ROBOTDIR)/*/*.c* \
 	RealTimeBattle/$(ROBOTDIR)/*/Makefile 
 
-tar.gz: tar
+tar.gz: 
+	$(MAKE) tar; \
 	gzip -f RealTimeBattle.tar
 
-tar.bz2: tar
+tar.bz2: 
+	$(MAKE) tar; \
 	bzip2 -f RealTimeBattle.tar
 
 install:
@@ -119,4 +121,7 @@ website: html_docs
 tar-website: 
 	cd $(HTMLDIR) && $(MAKE) tar-website
 
+website_download: tar.bz2 tar.gz docs
+	cd $(HTMLDIR) && $(MAKE) website_download
 
+website_all: html_clean website website_download
