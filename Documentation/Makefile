@@ -12,7 +12,7 @@ RealTimeBattle.latex: $(documents)
 	udo --tex --verbose  -o RealTimeBattle.latex RealTimeBattle.udo
 
 RealTimeBattle.dvi: RealTimeBattle.latex
-	latex RealTimeBattle.latex 
+	latex2dvi RealTimeBattle.latex 
 
 RealTimeBattle.info: $(documents)
 	udo --info  --verbose -o RealTimeBattle.texinfo RealTimeBattle.udo; \
