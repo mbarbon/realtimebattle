@@ -7,6 +7,7 @@ HTMLDIR=HTML
 ARENADIR=Arenas
 
 target: RealTimeBattle robots documentation
+all: RealTimeBattle robots all_documentation ETAGS
 
 RealTimeBattle:
 	cd $(SRCDIR) && $(MAKE)
@@ -16,6 +17,9 @@ robots:
 
 documentation:
 	cd $(DOCSDIR) && $(MAKE)
+
+all_documentation:
+	cd $(DOCSDIR) && $(MAKE) all
 
 clean: root_clean rtb_clean robot_clean doc_clean
 
