@@ -12,6 +12,8 @@ extern class Gui the_gui;
 
 Options::Options()
 {
+  all_double_options[OPTION_GRAV_CONST] = new option_info_t<double>(ENTRY_DOUBLE,9.82,0.2,20.0,12,"Gravitioninal Constant", NULL);
+
   grav_const = 9.82;
   air_resistance = 0.005;
   roll_friction = 0.002;
@@ -65,6 +67,20 @@ Options::Options()
   options_window_up = false;
 }
 
+Options::~Options()
+{
+  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
+    delete all_double_options[i];
+  for(int i=0;i<LAST_LONG_OPTION;i++)
+    delete all_long_options[i];
+
+  // No char or bool options yet
+  //  for(int i=0;i<LAST_STRING_OPTION;i++)
+  //    delete all_string_options[i];
+  //  for(int i=0;i<LAST_BOOL_OPTION;i++)
+  //    delete all_bool_options[i];
+}
+
 void
 Options::broadcast_opts()
 {
@@ -91,9 +107,11 @@ Options::get_options_from_rtbrc()
 void
 Options::setup_options_window()
 {
+  options_window_up = true;
 }
 
 void
 Options::close_options_window()
 {
+  options_window_up = false;
 }
