@@ -443,6 +443,8 @@ Gui::setup_control_window()
   control_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (control_window), "RealTimeBattle Control");
   gtk_widget_set_name (control_window, "RTB Control");
+  gtk_widget_set_uposition(control_window,
+                           (int)the_opts.get_l(OPTION_CONTROL_WINDOW_POS_X),(int)the_opts.get_l(OPTION_CONTROL_WINDOW_POS_Y));
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
@@ -676,6 +678,8 @@ Gui::setup_score_window()
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
   gtk_widget_set_usize(score_window,
                        (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y));
+  gtk_widget_set_uposition(score_window,
+                           (int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_X),(int)the_opts.get_l(OPTION_SCORE_WINDOW_POS_Y));
 
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
@@ -782,6 +786,8 @@ Gui::setup_message_window()
   gtk_container_border_width (GTK_CONTAINER (message_window), 12);
   gtk_widget_set_usize(message_window,
                        (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_Y));
+  gtk_widget_set_uposition(message_window,
+                           (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_POS_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_POS_Y));
 
   GtkWidget* vbox = gtk_vbox_new (FALSE, 5);
   gtk_container_add (GTK_CONTAINER (message_window), vbox);
@@ -860,6 +866,10 @@ Gui::setup_arena_window()
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_arena_window_title();
   gtk_widget_set_name (arena_window, "RTB Arena");
+  gtk_widget_set_usize(arena_window,
+                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_Y));
+  gtk_widget_set_uposition(arena_window,
+                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_X),(int)the_opts.get_l(OPTION_ARENA_WINDOW_POS_Y));
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
@@ -904,8 +914,6 @@ Gui::setup_arena_window()
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_ALWAYS, GTK_POLICY_ALWAYS);
   gtk_container_add (GTK_CONTAINER (vbox), da_scrolled_window);
-  gtk_widget_set_usize(da_scrolled_window,
-                       (int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_X) - 24,(int)the_opts.get_l(OPTION_ARENA_WINDOW_SIZE_Y) - 56);
   gtk_widget_show (da_scrolled_window);
 
   // Drawing Area 

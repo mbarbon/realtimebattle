@@ -189,17 +189,41 @@ Options::Options()
   all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena window height", NULL);
 
+  all_long_options[OPTION_ARENA_WINDOW_POS_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Arena window x position", NULL);
+
+  all_long_options[OPTION_ARENA_WINDOW_POS_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Arena window y position", NULL);
+
+  all_long_options[OPTION_CONTROL_WINDOW_POS_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Control window x position", NULL);
+
+  all_long_options[OPTION_CONTROL_WINDOW_POS_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Control window y position", NULL);
+
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Message window width", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 25, 10000, 6, "Initial Message window height", NULL);
 
+  all_long_options[OPTION_MESSAGE_WINDOW_POS_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Message window x position", NULL);
+
+  all_long_options[OPTION_MESSAGE_WINDOW_POS_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Message window y position", NULL);
+
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Score window width", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 50, 10000, 6, "Initial Score window height", NULL);
+
+  all_long_options[OPTION_SCORE_WINDOW_POS_X] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Score window x position", NULL);
+
+  all_long_options[OPTION_SCORE_WINDOW_POS_Y] = 
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6, "Initial Score window y position", NULL);
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 50, 10000, 6, "Initial Statistics window width", NULL);
