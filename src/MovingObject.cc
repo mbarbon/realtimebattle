@@ -23,6 +23,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/resource.h>
 #include <sys/stat.h>
 
+#ifdef USE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
 #ifdef USE_STDARG_H
 #include <stdarg.h>
 #endif
@@ -428,16 +432,16 @@ Robot::update_rotation(rotation_t& angle, const double timestep)
   angle.pos += timestep * angle.vel;
   
   if( angle.pos >= angle.right && angle.mode == ROTATE_TO_RIGHT )
-    angle.set( angle.pos, 0.0, -infinity, infinity, NORMAL_ROT);
+    angle.set( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
 
   if( angle.pos >= angle.right && angle.mode == SWEEP_RIGHT )
-    angle.set( angle.pos, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
+    angle.set( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
   
   if( angle.pos <= angle.left && angle.mode == ROTATE_TO_LEFT )
-    angle.set( angle.pos, 0.0, -infinity, infinity, NORMAL_ROT);
+    angle.set( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
 
   if( angle.pos <= angle.left && angle.mode == SWEEP_LEFT )
-    angle.set( angle.pos, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
+    angle.set( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
 }
 
 void
