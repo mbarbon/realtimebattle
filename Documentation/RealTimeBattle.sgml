@@ -3,12 +3,12 @@
 <article>
 <titlepag>   
 <title>RealTimeBattle User Manual
-<author>Erik Ouchterlony and Ragnar Ouchterlony, ragou603@student.liu.se
-<date>November 27, 1998
+<author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="TODO: get email address" url=""> 
+<date>November 30, 1998
 
 <abstract>
 
-*Short descrition of RealTimeBattle*
+*Short description of RealTimeBattle*
 
 </titlepag>
 
@@ -44,18 +44,22 @@ makes easy to start constructing robots.
 
 </itemize>
 
+<sect1>More information<label id="More information">
+<p>
+Installation, bugs, todo, FAQ, news, homepage
+
 <sect1>Requirements<label id="Requirements">
 <p>
 The hardware requirements is very much dependent on what you do.
 Running a few robots should be possible to do on any computer on which
-linux or any other Unixes can be run. The demand on hardware will,
+Linux or any other Unixes can be run. The demand on hardware will,
 however, grow the robots you want on the battlefield simultaneously;
 running 120 advanced robots is certainly demanding for any personal
 computer.
 
-RealTimeBattle is only available on Unix. It is developed on a linux-machine, but it should compile
+RealTimeBattle is only available on Unix. It is developed on a Linux-machine, but it should compile
 on other Unixes too. Running in <ref id="Command line options" name="competition-mode"> is currently
-only possible in linux, because of the need to read the <tt>/proc</tt> directory for information on
+only possible in Linux, because of the need to read the <tt>/proc</tt> directory for information on
 CPU usage.
 
 The only software requirement is <htmlurl url="http://www.gtk.org" name="gtk+">, which is used for
@@ -81,9 +85,32 @@ features of a modern OS.
 
 <sect1>License<label id="License">
 <p>
-RealTimeBattle is copyrighted under the <htmlurl url="http://???" name="General Public License">, in
+RealTimeBattle is distributed under the <htmlurl url="http:// TODO: find GPL address" name="General Public License">, in
 the spirit of the <htmlurl url="http://www.linux.org" name="Linux"> community. Official versions of
-RealTimeBattle will,only be released by the authors.
+RealTimeBattle will be released by the authors.
+
+Copyright (C) 1998  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+<sect1>Bug reports<label id="BugReports">
+<p>
+If you find anything in this package which doesn't work, appear strange, is missing, is spellt wrong
+or is just confusing, don't hesitate to send in a bug report to the 
+<htmlurl name="authors" url="mailto: TODO: mail address">. But please check first the include bug
+list and the <htmlurl name="bug list in the homepage" url="TODO: homepage address/BUGS.html">. 
 
 
 <!--   ################         Usage          ##################   -->
@@ -121,29 +148,29 @@ table
 
 <#if output="info|txt" >
 <code>
-+---------------------------------+-------+--------+-------------+
-| Mode                            | Debug | Normal | Competition |
-+---------------------------------+-------+--------+-------------+
-| Debug command available         |  Yes  |   No   |      No     |
-| Pause in game                   |  Yes  |  Yes   |      No     |
-| Step through game               |  Yes  |   No   |      No     |
-| Robots may start childprocesses |  Yes  |   No   |      No     |
-| Robots may open files           |  Yes  |   No   |      No     |
-| Robot CPU time unlimited        |  Yes  |  Yes   |      No     |
-+---------------------------------+-------+--------+-------------+
++----------------------------------+-------+--------+-------------+
+| Mode                             | Debug | Normal | Competition |
++----------------------------------+-------+--------+-------------+
+| Debug command available          |  Yes  |   No   |      No     |
+| Pause in game                    |  Yes  |  Yes   |      No     |
+| Step through game                |  Yes  |   No   |      No     |
+| Robots may start child processes |  Yes  |   No   |      No     |
+| Robots may open files            |  Yes  |   No   |      No     |
+| Robot CPU time unlimited         |  Yes  |  Yes   |      No     |
++----------------------------------+-------+--------+-------------+
 </code>
 
 </#if>
 <#unless output="info|txt" >
 <table loc="htb">
 <tabular ca="|l|ccc|"> <hline>
-Mode                            | Debug | Normal | Competition @ <hline>
-Debug command available         |  Yes  |  No    |     No      @
-Pause in game                   |  Yes  |  Yes   |     No      @
-Step through game               |  Yes  |  No    |     No      @
-Robots may start childprocesses |  Yes  |  No    |     No      @
-Robots may open files           |  Yes  |  No    |     No      @
-Robot CPU time unlimited        |  Yes  |  Yes   |     No      @ <hline>
+Mode                             | Debug | Normal | Competition @ <hline>
+Debug command available          |  Yes  |  No    |     No      @
+Pause in game                    |  Yes  |  Yes   |     No      @
+Step through game                |  Yes  |  No    |     No      @
+Robots may start child processes |  Yes  |  No    |     No      @
+Robots may open files            |  Yes  |  No    |     No      @
+Robot CPU time unlimited         |  Yes  |  Yes   |     No      @ <hline>
 </tabular>
 </table>
 </#if>
@@ -228,7 +255,7 @@ different ways. You can either display
 
 </itemize>
 Pressing the arrowed buttons will move you to the first, back one,
-forward one or to the last elemant respectively. The middle bar will
+forward one or to the last element respectively. The middle bar will
 show what is display and pressing this will update the statistics if
 the game is in progress.
 
@@ -236,6 +263,70 @@ the game is in progress.
 <!--   ################       Structure        ##################   -->
 
 <sect>Structure<label id="Structure">
+<p>
+In this section we will describe the structure of the program, how the robots are moving, shooting
+and controlling the radar, when points are given and how a tournament is built up. 
+
+<sect1>Robot motion<label id="Robot_motion">
+<p>
+The robot behaves like a vehicle with wheels, it rolls in the forward direction with a small
+<ref name="roll friction" id="RollFriction"> and slides sideways with a much higher 
+<ref name="sliding friction" id="SlideFriction">. The third slowing down effect is
+<ref name="air resistance" id="AirResistance">, which is applied in the direction opposite to the
+robot velocity and is increasing with speed.
+
+There are three ways to affect the robot motion, 
+<ref name="acceleration" id="Accelerate">, 
+<ref name="rotation" id="Rotate"> and <ref name="breaking" id="Break">.
+
+The acceleration is used to increases the robots speed in the direction the robot faces; you cannot
+control the speed directly, acceleration is the only way to get the robot moving. 
+
+By rotating the robot you can make it turn. Note that rotation does not directly affect the
+direction of motion, only the direction the robot is facing. The sliding friction, together with
+acceleration, will eventually carry out the actual turning of the robot.
+
+Breaking will increase the roll friction up to a maximal value. This is when the wheel and locked
+and the robot is sliding instead of rolling.
+
+<sect1>Energy<label id="Energy">
+<p>
+The robot health is measured by its energy. There are several way for the robot to lose energy, it
+can
+<itemize>
+<item> be hit by a shot,
+<item> collide with another robot or a wall,
+<item> spring a mine or
+<item> fire a shot.
+</itemize>
+
+However, there is only one possibility to gain energy: to eat a cookie.
+
+<sect1>The radar<label id="The_radar">
+<p>
+The principal method to get information on the surroundings is via the radar. Every time the robot
+is updated it will get a <ref name="radar message" id="Radar">, giving information on the closest
+object in the current radar direction, i.e. distance and type of object. If it is a robot, that
+robots energy level will be revealed as well.
+
+Since the radar information is about all the robot will know about the environment, it is crucial to
+make use of it as well as possible. It is also important to 
+<ref name="maneuver the radar" id="Rotate"> well, to make it collect useful data.
+
+<sect1>Shooting<label id="Shooting">
+<p>
+
+<sect1>Collisions<label id="Collisions">
+<p>
+
+<sect1>Cookies and Mines<label id="Cookies_and_mines">
+<p>
+Cookies and mines are essentially equal objects, with the only difference that robots will gain
+energy by taking cookies and lose energy on mines. These object are randomly placed on the arena
+during the game. There energy and frequency can be controlled with the 
+<ref name="options" id="Cookie_and_mine_options">.
+
+<sect1>Time<label id="Time">
 <p>
 
 
@@ -259,7 +350,7 @@ two or the <ref id="Timeout" name="time is up">.
 A sequence is a series of games, where the same robots are fighting.
 At the beginning of a sequence the robot processes are started. The
 number of robots in a sequence is limited to 120, due to the limit on
-256 open filedescriptors in linux. For every robot two pipes are
+256 open file descriptors in Linux. For every robot two pipes are
 opened as communication channels to the robot.
 
 Thereafter a <ref id="NumberOfGames" name="number of games"> are played and finally the robot
@@ -318,6 +409,18 @@ messaging language. It is a c/c++ include file, but you can easily
 rewrite it to use with other languages. There you can find listing of
 messages, warning types, objects, game options and robot options.
 
+<sect1>Cheating<label id="Cheating">
+<p>
+Since the battle is progressing in real-time with real processes, there may be possible to make
+programs which are 'cheating' in one way or another. For example by examine other robots or even
+RealTimeBattle itself to get more information, by using up a lot of resources to drain the other
+robot and so on. The processes are therefore given a very restricted environment to run in; in 
+<ref id="Command line options" name="competition-mode"> they are neither allowed to spawn child
+processes or open files, and their CPU usage is limited.
+
+It may still be possible to find ways round these restrictions; if you detect such a way, please
+send a <ref name="bug report" id="BugReports">. By the way, it is up to the organizer of a
+tournament to make sure that the rules are followed.
 
 <sect1>Messages to robots<label id="Messages to robots">
 <p>
@@ -356,7 +459,7 @@ option.
 <tag>GameStarts</tag> This message is sent when the game starts
 (surprise!)
 
-
+<label id="Radar">
 <tag>Radar [distance (double)] [observed object type (int)] [radar angle (double)]</tag>
  This message given information each turn from the radar. Remember
 that the radar-angle is relative to the robot front; it is given in
@@ -454,7 +557,7 @@ velocity is given is radians per second and is limited by
 and cannon angles are relative to the robot angle. You cannot use this
 command to rotate the robot itself, use <bf>RotateAmount</bf> instead!
 
-
+<label id="RotateAmount">
 <tag>RotateAmount [what to rotate (int)] [angular velocity (double)] [angle (double)]</tag>
  As <bf>Rotate</bf>, but will rotate relative the current angle.
 
@@ -464,9 +567,11 @@ command to rotate the robot itself, use <bf>RotateAmount</bf> instead!
  As <bf>rotate</bf>, but sets the radar and/or the cannon (not
 available for the robot itself) in a sweep mode.
 
+<label id="Accelerate">
 <tag>Accelerate [value (double)]</tag> Set the robot acceleration.
 Value is bounded by <ref id="RobotMaxAcceleration" name="Robot max/min acceleration">.
 
+<label id="Break">
 <tag>Break [portion (double)]</tag> Set the break. Full break (portion
 = 1.0) means that the friction in the robot direction is equal to
 <ref id="SlideFriction" name="Slide friction">.
@@ -513,6 +618,7 @@ troubles for the program.
 gravitation. It is about 9.8 on the earth. An increase will increase
 the friction, thereby slowing robots down.
 
+<label id="AirResistance">
 <tag>Air resistance:</tag> As it sounds. Increases with speed.
 
 <label id="RollFriction">
@@ -610,7 +716,7 @@ shot energy noted above, will increase. Unit: energy/s .
 
 </descrip>
 
-<sect1>Extras options<label id="Extras options">
+<sect1>Extras options<label id="Cookie_and_mine_options">
 <p>
 <descrip>
 <tag>Cookie max energy:</tag> The cookie energy is a random number
@@ -663,7 +769,7 @@ or if you have a fast computer you may want to speed the game up.
 <tag>Start CPU time:</tag> In <ref id="Command line options" name="competition-mode"> a robots CPU
 usage is limited. At the beginning of a sequence a robot will get this amount of CPU time to spent.
 
-<tag>Extra CPU time:</tag> When the start CPU time is spended, the
+<tag>Extra CPU time:</tag> When the start CPU time is spent, the
 robot will get this amount of extra CPU time.
 
 <tag>Extra CPU period:</tag> The extra CPU time must last the an
