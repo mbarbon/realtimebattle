@@ -172,7 +172,7 @@ EventHandler::pause_game()
     }
   else
     {
-      game_speed_before_pause = get_game_speed();
+      game_speed_before_pause = timer.get_game_speed();
       set_game_speed( 0.0 );
     }
 }
