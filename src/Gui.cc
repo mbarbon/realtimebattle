@@ -538,7 +538,7 @@ Gui::setup_score_window()
   gtk_widget_show (score_window);
 }
 
-// This function resets score windwo and adds all robbots in sequence to the score window
+// This function resets score window and adds all robbots in sequence to the score window
 void
 Gui::add_robots_to_score_list()
 {                             
@@ -578,6 +578,7 @@ Gui::add_robots_to_score_list()
       colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
                                                     the_arena.get_background_colour_p(),
                                                     get_colour_square_xpm( col_sq, robotp->get_colour() ) );
+      delete [] colour_square[1];
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
@@ -586,6 +587,8 @@ Gui::add_robots_to_score_list()
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
       robotp->reset_last_displayed();
       robotp->display_score();
+
+      for(int i=0; i<6; i++) delete [] list[i];
     }
 }
 
