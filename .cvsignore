@@ -8,6 +8,13 @@ config.cache
 config.status
 libtool
 stamp-h
+config.guess
+config.sub
+install-sh
+ltconfig
+ltmain.sh
+missing
+mkinstalldirs 
 .deps
 TAGS
 BUGS
