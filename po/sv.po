@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-29 18:07+0200\n"
+"POT-Creation-Date: 1999-07-30 14:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,8 +58,9 @@ msgstr " Zooma ut "
 msgid "Arena"
 msgstr "Arena"
 
-#: src/ArenaRealTime.cc:743 src/ArenaReplay.cc:120 src/ScoreWindow.cc:145
-#: src/StatisticsWindow.cc:91 src/StatisticsWindow.cc:497
+#: src/ArenaRealTime.cc:743 src/ArenaReplay.cc:120 src/ScoreWindow.cc:150
+#: src/StatisticsWindow.cc:91 src/StatisticsWindow.cc:408
+#: src/StatisticsWindow.cc:519
 msgid "Game"
 msgstr "Spel"
 
@@ -503,7 +504,7 @@ msgstr "Skott"
 msgid "Extras"
 msgstr "Extra"
 
-#: src/OptionsWindow.cc:77 src/ScoreWindow.cc:148
+#: src/OptionsWindow.cc:77 src/ScoreWindow.cc:153
 msgid "Time"
 msgstr "Tid"
 
@@ -516,7 +517,7 @@ msgid "Misc"
 msgstr "Övrigt"
 
 #: src/OptionsWindow.cc:135 src/OptionsWindow.cc:172
-#: src/StartTournamentWindow.cc:286
+#: src/StartTournamentWindow.cc:295
 msgid " Min "
 msgstr " Min "
 
@@ -525,7 +526,7 @@ msgid " Def "
 msgstr " Def "
 
 #: src/OptionsWindow.cc:139 src/OptionsWindow.cc:176
-#: src/StartTournamentWindow.cc:320
+#: src/StartTournamentWindow.cc:329
 msgid " Max "
 msgstr " Max "
 
@@ -553,12 +554,12 @@ msgstr " Spara som default "
 msgid " Apply "
 msgstr " Verkställ "
 
-#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:552
-#: src/StartTournamentWindow.cc:699 src/StartTournamentWindow.cc:834
+#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
+#: src/StartTournamentWindow.cc:712 src/StartTournamentWindow.cc:847
 msgid " Ok "
 msgstr " Ok "
 
-#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:366
+#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:379
 msgid " Cancel "
 msgstr " Ångra "
 
@@ -672,31 +673,28 @@ msgstr "    --help,                      -h   skriv ut denna hjälptext"
 msgid "    --version,                   -v   prints the version number"
 msgstr "    --version,                   -v   visa versionsnummer"
 
-#: src/ScoreWindow.cc:75 src/StatisticsWindow.cc:375
+#: src/ScoreWindow.cc:75 src/StatisticsWindow.cc:228
+#: src/StatisticsWindow.cc:390
 msgid "Name"
 msgstr "Namn"
 
 #: src/ScoreWindow.cc:75
-msgid "Energy "
-msgstr "Energi "
+msgid "Energy"
+msgstr "Energi"
 
 #: src/ScoreWindow.cc:75
-msgid "Place "
-msgstr "Plats "
+msgid "Place"
+msgstr "Plats"
 
 #: src/ScoreWindow.cc:76
-msgid "Last "
-msgstr "Senast "
+msgid "Last"
+msgstr "Senast"
 
-#: src/ScoreWindow.cc:76
-msgid "Score  "
-msgstr "Poäng  "
-
-#: src/ScoreWindow.cc:141
+#: src/ScoreWindow.cc:76 src/ScoreWindow.cc:146
 msgid "Score"
 msgstr "Poäng"
 
-#: src/ScoreWindow.cc:142
+#: src/ScoreWindow.cc:147
 msgid " Seq: "
 msgstr " Sekv: "
 
@@ -721,10 +719,6 @@ msgid " Sequence Total "
 msgstr " Totalt i sekvens "
 
 #: src/StatisticsWindow.cc:228
-msgid "  Name"
-msgstr "  Namn"
-
-#: src/StatisticsWindow.cc:228
 msgid "Position"
 msgstr "Placering"
 
@@ -732,9 +726,9 @@ msgstr "Placering"
 msgid "Points"
 msgstr "Poäng"
 
-#: src/StatisticsWindow.cc:229 src/StatisticsWindow.cc:359
-msgid "Games "
-msgstr "Spel "
+#: src/StatisticsWindow.cc:229 src/StatisticsWindow.cc:367
+msgid "Games"
+msgstr "Spel"
 
 #: src/StatisticsWindow.cc:229
 msgid "Survival Time"
@@ -744,27 +738,23 @@ msgstr "Tid i livet"
 msgid "Total Points"
 msgstr "Summa poäng"
 
-#: src/StatisticsWindow.cc:308
+#: src/StatisticsWindow.cc:316
 msgid "Choose a statistics file to save"
 msgstr "Välj fil att spara statistik till"
 
-#: src/StatisticsWindow.cc:385
-msgid "Seq  "
-msgstr "Sekv "
+#: src/StatisticsWindow.cc:407
+msgid "Seq"
+msgstr "Sekv"
 
-#: src/StatisticsWindow.cc:386
-msgid "Game  "
-msgstr "Spel  "
-
-#: src/StatisticsWindow.cc:481
+#: src/StatisticsWindow.cc:503
 msgid " Grand Total "
 msgstr " Sammanlagd ställning "
 
-#: src/StatisticsWindow.cc:484
+#: src/StatisticsWindow.cc:506
 msgid " Sequence "
 msgstr " Sekvens "
 
-#: src/StatisticsWindow.cc:496
+#: src/StatisticsWindow.cc:518
 msgid " Sequence: "
 msgstr " Sekvens: "
 
@@ -788,65 +778,65 @@ msgstr "Arenor i bibliotek"
 msgid "Arenas in Directory"
 msgstr "Arenor i bibliotek"
 
-#: src/StartTournamentWindow.cc:140
+#: src/StartTournamentWindow.cc:145
 msgid " Remove "
 msgstr " Ta bort "
 
-#: src/StartTournamentWindow.cc:140 src/StartTournamentWindow.cc:142
+#: src/StartTournamentWindow.cc:145 src/StartTournamentWindow.cc:147
 msgid " Select All "
 msgstr " Välj alla "
 
-#: src/StartTournamentWindow.cc:141 src/StartTournamentWindow.cc:142
+#: src/StartTournamentWindow.cc:146 src/StartTournamentWindow.cc:147
 msgid " Unselect All "
 msgstr " Välj ingen "
 
-#: src/StartTournamentWindow.cc:141
+#: src/StartTournamentWindow.cc:146
 msgid " Add "
 msgstr " Lägg till "
 
 #. Choose Number of games per sequence, Number of robots per sequence
 #. and Number of sequences
-#: src/StartTournamentWindow.cc:228
+#: src/StartTournamentWindow.cc:237
 msgid "Games per sequence"
 msgstr "Spel per sekvens"
 
-#: src/StartTournamentWindow.cc:228
+#: src/StartTournamentWindow.cc:237
 msgid "Robots per sequence"
 msgstr "Robotar per sekvens"
 
-#: src/StartTournamentWindow.cc:229
+#: src/StartTournamentWindow.cc:238
 msgid "Number of sequences"
 msgstr "Antal sekvenser"
 
-#: src/StartTournamentWindow.cc:298
+#: src/StartTournamentWindow.cc:307
 msgid " All Arenas "
 msgstr " alla arenor "
 
-#: src/StartTournamentWindow.cc:310
+#: src/StartTournamentWindow.cc:319
 msgid " Full Round "
 msgstr " Full omgång "
 
-#: src/StartTournamentWindow.cc:344
+#: src/StartTournamentWindow.cc:357
 msgid " Load tournament "
 msgstr " Hämta turnering "
 
-#: src/StartTournamentWindow.cc:344
+#: src/StartTournamentWindow.cc:357
 msgid " Save tournament "
 msgstr " Spara turnering "
 
-#: src/StartTournamentWindow.cc:366
+#: src/StartTournamentWindow.cc:379
 msgid " Start "
 msgstr " Börja "
 
-#: src/StartTournamentWindow.cc:472
+#: src/StartTournamentWindow.cc:485
 msgid "Choose a tournament file to load"
 msgstr "Välj turneringsfil att hämta"
 
-#: src/StartTournamentWindow.cc:506
+#: src/StartTournamentWindow.cc:519
 msgid "Choose file to save tournament into"
 msgstr "Välj turneringsfil att spara till"
 
-#: src/StartTournamentWindow.cc:550
+#: src/StartTournamentWindow.cc:563
 msgid ""
 "\n"
 "Couldn't parse specified tournament file."
@@ -854,11 +844,11 @@ msgstr ""
 "\n"
 "Kunde inte tolka innehållet i turneringsfilen."
 
-#: src/StartTournamentWindow.cc:553
+#: src/StartTournamentWindow.cc:566
 msgid "Tournament could not be loaded."
 msgstr "Turneringen kunde inte hämtas."
 
-#: src/StartTournamentWindow.cc:689
+#: src/StartTournamentWindow.cc:702
 msgid ""
 "\n"
 "There are too few robots in the tournament."
@@ -866,7 +856,7 @@ msgstr ""
 "\n"
 "För få robotar i turneringen."
 
-#: src/StartTournamentWindow.cc:691 src/StartTournamentWindow.cc:829
+#: src/StartTournamentWindow.cc:704 src/StartTournamentWindow.cc:842
 msgid ""
 "\n"
 "There are no arenas in the tournament."
@@ -874,7 +864,7 @@ msgstr ""
 "\n"
 "Ingen arena har valts."
 
-#: src/StartTournamentWindow.cc:694
+#: src/StartTournamentWindow.cc:707
 msgid ""
 "\n"
 "Could not open file."
@@ -882,11 +872,11 @@ msgstr ""
 "\n"
 "Kunde inte öppna fil."
 
-#: src/StartTournamentWindow.cc:700
+#: src/StartTournamentWindow.cc:713
 msgid "Tournament could not be saved."
 msgstr "Turneringen kunde inte sparas."
 
-#: src/StartTournamentWindow.cc:827
+#: src/StartTournamentWindow.cc:840
 msgid ""
 "\n"
 "There must be at least two robots in the tournament."
@@ -894,7 +884,7 @@ msgstr ""
 "\n"
 "Det måste vara minst två robtar i en turnering."
 
-#: src/StartTournamentWindow.cc:835
+#: src/StartTournamentWindow.cc:848
 msgid "Tournament could not be started."
 msgstr "Turneringen kunde inte startas."
 
@@ -973,3 +963,12 @@ msgstr "Okänt objekt siktat!"
 #: Robots/rotate_and_fire/rotate_and_fire.cc:703
 msgid "Collided with Unknown Object!"
 msgstr "Kolliderade med okänt object!"
+
+#~ msgid "Score  "
+#~ msgstr "Poäng  "
+
+#~ msgid "  Name"
+#~ msgstr "  Namn"
+
+#~ msgid "Game  "
+#~ msgstr "Spel  "
