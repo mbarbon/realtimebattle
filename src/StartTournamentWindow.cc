@@ -524,7 +524,8 @@ StartTournamentWindow::save_file_selected( GtkWidget* widget,
 {
   stw_p->save_tournament_file
     ( String( gtk_file_selection_get_filename
-             ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ) );
+             ( GTK_FILE_SELECTION( stw_p->get_filesel() ) ) ),
+      true, true );
   destroy_filesel( stw_p->get_filesel(), stw_p );
 }
 
@@ -545,10 +546,10 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
                              StartTournamentWindow::new_tournament_from_tournament_file,
                              this, false ) && display_fail_message )
     {
-      String error_msg = "\nCouldn't parse specified tournament file";
+      String error_msg( "\nCouldn't parse specified tournament file." );
       List<String> button_list;
       button_list.insert_last( new String( " Ok " ) );
-      Dialog( "Tournament could not be saved." + error_msg, button_list, 
+      Dialog( "Tournament could not be loadeded." + error_msg, button_list, 
               (DialogFunction) StartTournamentWindow::dummy_result );
     }
 }
@@ -632,7 +633,9 @@ new_tournament( const List<start_tournament_info_t>& robotfilename_list,
 }
 
 void
-StartTournamentWindow::save_tournament_file( const String& full_filename )
+StartTournamentWindow::save_tournament_file( const String& full_filename,
+                                             bool display_file_fail_message,
+                                             bool display_tour_fail_message )
 {
   int value[3];
   int robot_number = get_selected_robot_tournament()->number_of_elements();
@@ -676,19 +679,26 @@ StartTournamentWindow::save_tournament_file( const String& full_filename )
       file << "Games/Sequence: " << value[0] << endl;
       file << "Sequences: " << value[2] << endl;
     }
-  else
+  else if( display_file_fail_message || display_tour_fail_message )
     {
-      String error_msg;
-      if( robot_number <= 1 )
-        error_msg += "\nThere are too few robots in the tournament.";
-      if( selected_arena_tournament.is_empty() )
-        error_msg += "\nThere are no arenas in the tournament.";
-      if( !file )
+      String error_msg( "" );
+      if( display_tour_fail_message )
+        {
+          if( robot_number <= 1 )
+            error_msg += "\nThere are too few robots in the tournament.";
+          if( selected_arena_tournament.is_empty() )
+            error_msg += "\nThere are no arenas in the tournament.";
+        }
+      if( display_file_fail_message && !file )
         error_msg += "\nCould not open file.";
-      List<String> button_list;
-      button_list.insert_last( new String( " Ok " ) );
-      Dialog( "Tournament could not be saved." + error_msg, button_list, 
-              (DialogFunction) StartTournamentWindow::dummy_result );
+
+      if( error_msg != "" )
+        {
+          List<String> button_list;
+          button_list.insert_last( new String( " Ok " ) );
+          Dialog( "Tournament could not be saved." + error_msg, button_list, 
+                  (DialogFunction) StartTournamentWindow::dummy_result );
+        }
     }
 }
 
@@ -803,10 +813,26 @@ StartTournamentWindow::start( GtkWidget* widget,
       // create the tmp rtb dir if it exists and save the current tournament there
       create_tmp_rtb_dir();
       stw_p->save_tournament_file( the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-                                   tmp_tournament_file );
+                                   tmp_tournament_file, false, false );
 
       // close down StartTournamentWindow
       the_gui.close_starttournamentwindow();
+    }
+  else
+    {
+      String error_msg( "" );
+      if( robot_number <= 1 )
+        error_msg += "\nThere must be at least two robots in the tournament.";
+      if( stw_p->selected_arena_tournament.is_empty() )
+        error_msg += "\nThere are no arenas in the tournament.";
+
+      if( error_msg != "" )
+        {
+          List<String> button_list;
+          button_list.insert_last( new String( " Ok " ) );
+          Dialog( "Tournament could not be started." + error_msg, button_list, 
+                  (DialogFunction) StartTournamentWindow::dummy_result );
+        }
     }
 }
 

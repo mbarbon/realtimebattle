@@ -134,7 +134,9 @@ private:
                                          List<start_tournament_info_t>* info_list );
   void load_tournament_file            ( const String& full_filename,
                                          bool display_fail_message );
-  void save_tournament_file            ( const String& full_filename );
+  void save_tournament_file            ( const String& full_filename,
+                                         bool display_file_fail_message,
+                                         bool display_tour_fail_message );
 
   GtkWidget* get_filesel          () { return filesel; }
   void set_filesel                ( GtkWidget* fs ) { filesel = fs; } 
