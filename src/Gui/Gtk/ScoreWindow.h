@@ -17,61 +17,61 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __SCORE_WINDOW__
-#define __SCORE_WINDOW__
+#ifndef RTB_GTKGUI__SCORE_WINDOW__
+#define RTB_GTKGUI__SCORE_WINDOW__
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-struct _GtkWidget;
-typedef struct _GtkWidget GtkWidget;
-union _GdkEvent;
-typedef union _GdkEvent GdkEvent;
-struct _GdkEventButton;
-typedef struct _GdkEventButton GdkEventButton;
-typedef int gint;
-typedef void* gpointer;
+#include <gtk/gtk.h>
 
-class DrawingRobot;
+#include <list>
+#include <string>
 
-class ScoreWindow
+#include "Window.h"
+
+class ScoreWindow : public Window
 {
 public:
-  ScoreWindow                      ( const int default_width  = -1,
-                                     const int default_height = -1,
-                                     const int default_x_pos  = -1,
-                                     const int default_y_pos  = -1 );
-  ~ScoreWindow                     ();
+  ScoreWindow                         ();
+  ~ScoreWindow                        ();
 
-  void set_window_title            ();
-  void add_robots                  ();
-  void update_robots                  ();
-  
-  static void hide_window          ( GtkWidget* widget, GdkEvent* event,
-                                     class ScoreWindow* scorewindow_p );
-  static void show_window          ( GtkWidget* widget,
-                                     class ScoreWindow* scorewindow_p );
-  static void new_robot_selected   ( GtkWidget* clist,
-                                     gint row, gint column,
-                                     GdkEventButton *event,
-                                     class ScoreWindow* scorewindow_p );
+  void create                         ( const int&           default_width  = -1,
+                                        const int&           default_height = -1,
+                                        const int&           default_x_pos  = -1,
+                                        const int&           default_y_pos  = -1 );
 
-  GtkWidget* get_window_p          () { return window_p; }
-  GtkWidget* get_clist             () { return clist; }
-  DrawingRobot* get_selected_robot () { return selected_robot; }
-  bool is_window_shown             () { return window_shown; }
-  void set_selected_robot          ( DrawingRobot* rp ) { selected_robot = rp; }
-  void set_window_shown            ( bool r ) { window_shown = r; }
+  void destroy                        ();
+
+  void set_window_title               ();
 
 private:
 
-  bool window_shown;
+  // Data
 
-  GtkWidget* window_p;
-  GtkWidget* clist;
+  list<string>                        list_of_team_stats;
+  list<string>                        list_of_robot_stats;
 
-  DrawingRobot* selected_robot;
+private:
+
+  // Graphics helper functions
+  // Note: the parents in these must be a GTK_CONTAINER!
+  void create_team_view               ( GtkWidget*           parent );
+  void create_robot_view              ( GtkWidget*           parent );
+
+  // Graphics callbacks
+  static gint close_window            ( GtkWidget*           widget,
+                                        GdkEvent*            event,
+                                        ScoreWindow*         object_p );
+
+  // Graphics data
+
+  GtkWidget*                          team_scrolled_window;
+  GtkWidget*                          robot_scrolled_window;
+
+  GtkWidget*                          team_view;
+  GtkWidget*                          robot_view;
 };
 
-#endif __SCORE_WINDOW__
+#endif RTB_GTKGUI__SCORE_WINDOW__
