@@ -216,6 +216,17 @@ String::insert(const String& str, const int pos)
   return *this;
 }
 
+String&
+String::find(String& res, const char c, const bool reverse)
+{
+  if(!reverse)
+    res = (String)strchr(this->chars(),c);
+  else
+    res = (String)strrchr(this->chars(),c);
+
+  return res;
+}
+
 //   if start or end negativ, count from the end. -1 == the last.
 String
 get_segment(const String& str, const int start, const int end)
