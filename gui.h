@@ -32,6 +32,7 @@ enum stat_table_t
 };
 
 void statistics_button_callback(GtkWidget *widget, gpointer guip);
+void start_tournament_button_callback(GtkWidget *widget, gpointer guip);
 void delete_event( GtkWidget * widget, gpointer guip );
 void no_zoom_callback(GtkWidget *widget, gpointer guip);
 void zoom_in_callback(GtkWidget *widget, gpointer guip);
@@ -50,12 +51,14 @@ public:
   void setup_score_window();
   void setup_message_window();
   void setup_arena_window( const Vector2D bound[] );
+  void setup_start_tournament_window();
   void setup_statistics_window();
 
   void close_control_window();
   void close_score_window();
   void close_message_window();
   void close_arena_window();
+  void close_start_tournament_window();
   void close_statistics_window();
 
   void quit_event();
@@ -85,6 +88,7 @@ public:
 
   int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
+  bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget * get_score_clist() { return score_clist; }
   Arena* get_the_arena() { return the_arena; }
 
@@ -92,6 +96,7 @@ private:
   void clear_area();
 
   bool statistics_up;
+  bool start_tournament_up;
 
   GtkWidget * message_output;
   GtkWidget * drawing_area;
@@ -102,10 +107,16 @@ private:
   GtkWidget * stat_title_button;
   GtkWidget * stat_title_hbox;
 
+  GtkWidget * robots_in_tournament_clist;
+  GtkWidget * robots_in_directory_clist;
+  GtkWidget * arenas_in_tournament_clist;
+  GtkWidget * arenas_in_directory_clist;
+
   GtkWidget * control_window;
   GtkWidget * score_window;
   GtkWidget * message_window;
   GtkWidget * arena_window;
+  GtkWidget * start_tournament_window;
   GtkWidget * statistics_window;
 
   GdkColormap * colormap;
