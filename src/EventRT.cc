@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "EventRT.h"
 #include "EventHandler.h"
-#include "GuiInterface.h"
 #include "Tournament.h"
 #include "ServerSocket.h"
 
@@ -38,37 +37,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  //                                               //
 ///////////////////////////////////////////////////
 
-extern list<unsigned int> GI_exit_list;
-extern pthread_mutex_t the_mutex;
 extern ArenaController the_arena_controller;
-
-void
-CheckGUIEvent::eval() const 
-{
-  // Note: might have to supply process_all_options() with eventhandler in the future.
-  //cout<<"CheckGUIEvent::eval()\n";
-
-
-  pthread_mutex_lock( &the_mutex );
-
-  gui_p->process_all_requests();
-  //  list<unsigned int>::iterator li;
-  //if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
-  //    != GI_exit_list.end() )
-  //  {
-  //     the_arena_controller.exit_gui( *li );
-  //    GI_exit_list.erase( li );
-  //    pthread_mutex_unlock( &the_mutex );
-  //    return;
-  //  }
-
-  Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
-
-  pthread_mutex_unlock( &the_mutex );
-
-  the_eventhandler.insert_RT_event(next_event);
-}
-
 
 void
 CheckSocketEvent::eval() const

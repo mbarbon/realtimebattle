@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,8 +57,6 @@ SocketServer::init( int argc, char* argv[]  )
 {
   //TODO : Find a way to do the init of the server here...
   
-  cout<<"SocketServer::init( )\n";
-
   int port_nb = server_port;
     
   extern char* optarg;
@@ -68,7 +66,7 @@ SocketServer::init( int argc, char* argv[]  )
   {
     //option, argument?, flag, value
     {"server_port", 1, 0, 0},
-    //{"server_file", 1, 0, 0},
+    {"server_file", 1, 0, 0},
     
     {0, 0, 0, 0}
   };
@@ -92,18 +90,18 @@ SocketServer::init( int argc, char* argv[]  )
 	    case 0 :  
 	      sscanf(optarg, "%d", &port_nb);
 	      break;
-	      //    case 1 :
-	      //    set_friends_opt_file( (string)optarg ); //TODO : find this from the option file
-	      //    cout<<"server file "<<optarg<<endl;
-	      //    break;
+	    case 1 :
+	      set_friends_opt_file( (string)optarg ); //TODO : find this from the option file
+	      cout<<"server file "<<optarg<<endl;
+	      break;
 	    }
 	  }
 	  break;
 	}
     }
-
+  
   open_socket( port_nb );
-
+  cout<<"Server Connected to Port : "<<port_nb<<endl;
   find_first_point();      
 
   optind = 1;   //For the next function which will parse the options
@@ -145,16 +143,15 @@ SocketServer::open_socket( int port_nb = 0 )
 
   if( bind( server_socket, (struct sockaddr*) &src, sizeof( src ) ) < 0 )
     {
-      cout<< "Failed to bind socket." <<endl;
+      cout<<( "Failed to bind socket." );
       quit();
     }
 
   if( listen( server_socket, max_number_connections ) < 0 )
     {
-      cout<< "Listen to socket failed." <<endl;
+      cout<<( "Listen to socket failed." );
       quit();
     }
-
 }
 
 void
@@ -180,8 +177,7 @@ SocketServer::find_first_point( )
   //TODO : Put the friends addresses in the option file ?
 {
   //Find the first point in the network
-  /*
-    for(unsigned int i = 0; i < friends.size(); i ++)
+  for(unsigned int i = 0; i < friends.size(); i ++)
     {
       friend_on_ring* F;
       NetConnection* nc;
@@ -201,8 +197,7 @@ SocketServer::find_first_point( )
 	{
 	  if(F->mark > 0) {F->mark --;}
 	}
-	}
-  */
+    }
   //If I come to this point, I'm not connected to anybody : I'm the leader
   my_id = next_id = 1;
 }
@@ -265,8 +260,6 @@ SocketServer::check_socket()
     }
 
   
-  //NOTE : this is just an exemple on how to read from the input stream
-  //TODO : remove this exemple
   if( FD_ISSET( 0, &readfs ) )
     {
       char buffer[256];
@@ -274,15 +267,13 @@ SocketServer::check_socket()
       fgets(buffer, 255, stdin);
       
       string buf = string (buffer);
-
+      
       if( buf == "quit\n")   //The quit event (maybe a click for a chat)
 	{ 
 	  cout<<"Ciao\n";
 	  exit( 0 );
 	}
     }
-  //read(0, buffer, MAX_BUFFER_SIZE-1);
- 
 
   if( FD_ISSET( server_socket, &readfs ) )
     {
@@ -330,6 +321,7 @@ SocketServer::check_socket()
 	    }
 	}
     }
+  //go_through_read_buffers();
 
   remove_unconnected_sockets();
 }
@@ -346,8 +338,6 @@ SocketServer::channel_is_used(int c)
 
 int
 SocketServer::open_channel(PacketFactory* PF) {
-  //TODO : find if there is a hole in map
-
   int channel = 2;
   while( 1 )
     {
@@ -361,6 +351,26 @@ SocketServer::open_channel(PacketFactory* PF) {
     }
   return 0;
 }
+
+/*
+int
+SocketServer::open_channel(string protocol)
+{
+  int channel = 2; //0 is not a channel; 1 is used for the socketserver
+  while( 1 ) 
+    {
+      if( services[channel] == "" )
+	{
+	  services[channel] = protocol;
+	  return channel;
+	}
+      channel ++;
+    }
+}
+*/
+
+
+
 
 NetConnection*
 SocketServer::connect_to_an_other_server( string hostname, int port_nb = 0 )
@@ -454,6 +464,8 @@ SocketServer::accept_connection()
   nc->connected = true;
 
   all_connections.push_back( nc );
+  //cout<<"Now we are "<<all_connections.size() + 1<<endl;
+  //  by_type_connections[0].push_back( nc );
   connection_factory[ nc ] = packet_factory( 0 );
 
   return nc;
@@ -534,10 +546,12 @@ SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_ad
   return v;
 }
 
-//TODO : remove this
 void
 SocketServer::go_through_read_buffers()
 {
+  list_It_NetConn li;
+  for( li = all_connections.begin(); li != all_connections.end(); li++ )
+    ;//cout << (**li).read_buffer << endl; // Very temporary
 }
 
 

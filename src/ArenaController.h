@@ -36,8 +36,6 @@ extern ArenaController the_arena_controller;
 static const int max_debug_level = 5;
 
 
-class GuiServerInterface;
-
 class ArenaController
 {
 public:
@@ -47,38 +45,23 @@ public:
   int init( int, char** );
   void parse_command_line( int, char** );
 
-  void exit_all_guis();
-  const bool exit_gui( unsigned int );
-
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
 
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
-  GuiServerInterface* the_gui() 
-    { return gui_p; }
 
 private:
   
   void initialize_options();
   void print_help_message();
 
-  void create_gui( const char*, int, char** );
-
   bool started;
   bool realtime;
 
-  // REMOVE : list<GuiServerInterface*> gui_list; 
-  GuiServerInterface* gui_p;
-
-  // TODO : Mutex for locking processes.
-
-
   OptionHandler* main_opts;
   InformationDistributor distributor;
-
-  int next_gui_id;
 
 public: // global names etc.
   string option_filename;

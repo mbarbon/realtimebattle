@@ -43,6 +43,10 @@ public:
     : id(0), the_socket(-1), size_buf( 0 ),
     connected(false), state(NOT_INITIALIZED), type(UNINITIALIZED_CONN)
     {}
+  NetConnection         (int the_socket, bool connected = true)
+    : id(0), the_socket(the_socket), size_buf( 0 ),
+    connected(connected), state(NOT_INITIALIZED), type(UNINITIALIZED_CONN)
+    {}
   virtual ~NetConnection() { close_socket(); }
 
   virtual void close_socket     ();
@@ -62,6 +66,11 @@ public:
   bool is_initialized   () { return state == INITIALIZED; } //Don't think we need it here
   bool is_in_game       () { return state == IN_GAME; }
 
+  string get_data       ();
+  bool still_some_data  () { return !read_buffers.empty(); }
+
+  int get_socket_nb     () { return the_socket; }
+  bool is_connected     () { return connected; }
 
   //NOTE : Do we really need all this... 
   friend class SocketServer;
@@ -83,7 +92,6 @@ protected:
 
   unsigned short int size_buf;
 
-  //TODO ? map<int, deque<string>> read_buffers;   //All the read but not parsed packets
   deque<string>  read_buffers;   //All the read but not parsed packets
   deque<string>  write_buffers;  //All the buffers to send next time
   bool connected;

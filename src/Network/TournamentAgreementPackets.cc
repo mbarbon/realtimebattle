@@ -6,7 +6,6 @@
 #include <strstream>
 
 #include "ArenaController.h"
-#include "GuiInterface.h"
 
 #include "NetConnection.h"
 #include "ServerSocket.h"
@@ -68,8 +67,10 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
     {
       return 1;
     }
-  the_arena_controller.the_gui()->handle_agreement_packet( this );
-  //gui_p -> net_command ("Agreement " + data); 
+
+
+  //  the_arena_controller.the_gui()->handle_agreement_packet( this );
+  //  gui_p -> net_command ("Agreement " + data); 
 
   return 0;
 }

@@ -1,4 +1,4 @@
-SUBDIRS = Gui Gadgets Network .
+SUBDIRS = Gadgets Network .
 
 #noinst_LIBRARIES = libRTB.a
 #include_HEADERS = Messagetypes.h
@@ -49,9 +49,6 @@ RealTimeBattle_SOURCES = \
 	EventHandler.h EventHandler.cc \
 	Explosion.h Explosion.cc \
 	GeometricalObjects.cc GeometricalObjects.h \
-	GuiFunctions.h \
-	GuiInterface.cc GuiInterface.h \
-	GuiRequest.cc GuiRequest.h \
 	InfoClasses.h \
 	InformationDistributor.cc InformationDistributor.h \
 	IntlDefs.h \

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-
-#include <pthread.h>
 
 #include <sys/types.h>
 #ifdef TIME_WITH_SYS_TIME 
@@ -70,8 +68,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "EventHandler.h"
 
-#include "GuiInterface.h"
-
 #include "Gadgets/Gadget.h"
 
 #include "EventRT.h"
@@ -85,17 +81,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define WAIT_ANY (pid_t)-1
 #endif
 
-//class ArenaRealTime the_arena;
+  class Arena *the_arenap;
 
 class ArenaController the_arena_controller;
 class EventHandler the_eventhandler;
-class Arena* the_arenap;
-//class Tournament the_tournament;
-
 class SocketServer my_socketserver;
-
-list<unsigned int> GI_exit_list;
-pthread_mutex_t the_mutex;
 
 int Gadget::last_id_used = 0;
 
@@ -166,9 +156,6 @@ main ( int argc, char* argv[] )
 int
 main( int argc, char* argv[] )
 {
-  my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
-
-  cout<<"Server succesfully initialized\n";
 
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
@@ -178,22 +165,15 @@ main( int argc, char* argv[] )
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
 
-  //NOTE : This should be in my_socketserver.init function
+  my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
   Event* new_event = new CheckSocketEvent(0.1, &my_socketserver );
   the_eventhandler.insert_RT_event(new_event);
-
-  //cout<<"Welcome on RealTimeBattle 2.0.0 server(in development)\n";
-  //cout<<"Enjoy the game\n";
-
-
-  pthread_mutex_init( &the_mutex, NULL );
+  cout<<"Server succesfully initialized\n";
 
   the_arena_controller.init(argc, argv);
   cout<<"Arena Controller succesfully initialized\n";
 
   the_eventhandler.main_loop();
-
-  pthread_mutex_destroy( &the_mutex );
 
   my_socketserver.close_socket();
   quit();

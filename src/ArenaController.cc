@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "OptionHandler.h"
 #include "IntlDefs.h"
-#include "GuiInterface.h"
 #include "EventRT.h"
 #include "EventHandler.h"
 #include "Structs.h"
@@ -72,31 +71,7 @@ ArenaController::ArenaController()
 
 ArenaController::~ArenaController()
 {
-  //if( started ) close_arena();
-
-  exit_all_guis();
-
   delete main_opts;
-}
-
-void
-ArenaController::exit_all_guis()
-{
-  distributor.make_reader_quit( (gui_p)->get_reader_id() );
-  (gui_p)->shutdown();
-  delete ((GuiInterface*)gui_p);
-}
-
-const bool
-ArenaController::exit_gui( unsigned int gui_id )
-{
-  if( (gui_p)->operator==( gui_id ) )
-    {
-      (gui_p)->shutdown();
-      delete gui_p;
-      return true;
-    }
-  return false;
 }
 
 int
@@ -106,10 +81,6 @@ ArenaController::init( int argc, char** argv )
 
   cout<<"Command line parsing\n";
   parse_command_line( argc, argv );
-
-  // Startup all guis 
-  cout<<"Starting gui\n";
-  (gui_p)->startup();
 
   cout<<"done\n";
   // TODO: Find a good place to add initialize information to the gui.
@@ -385,22 +356,6 @@ ArenaController::initialize_options()
 }
 
 void
-ArenaController::create_gui( const char* gui_name, int argc, char* argv[] )
-{
-
-  cout << "Creating GUI "<<gui_name<<endl;
-
-  gui_p = ((GuiServerInterface*)
-	   new GuiInterface( gui_name, next_gui_id,
-			     argc, argv ));
-  next_gui_id++;
-
-  cout<<"Add it to the handler\n";
-  the_eventhandler.insert_RT_event( new CheckGUIEvent( 0.0, 0.1, gui_p ) );
-  //  gui_list.push_back( gui_p );
-}
-
-void
 ArenaController::parse_command_line( int argc, char** argv )
 {
   int version_flag=false, help_flag=false;
@@ -425,7 +380,6 @@ ArenaController::parse_command_line( int argc, char** argv )
     {"tournament_file", 1, 0, 0},
     {"message_file", 1, 0, 0},
     {"replay", 1, 0, 0},
-    {"use_gui", 1, 0, 0},
 
     {0, 0, 0, 0}
   };
@@ -473,9 +427,6 @@ ArenaController::parse_command_line( int argc, char** argv )
               break;
             case 11:
               replay_filename = (string)optarg;
-              break;
-            case 12:
-              create_gui( optarg, argc, argv );
               break;
 
             default:
@@ -536,10 +487,6 @@ ArenaController::parse_command_line( int argc, char** argv )
           replay_filename = (string)optarg;
           break;
 
-        case 'g':
-          create_gui( optarg, argc, argv );
-          break;
-
 	  //default:
           //print_help_message();
           //exit( EXIT_FAILURE );
@@ -550,18 +497,6 @@ ArenaController::parse_command_line( int argc, char** argv )
     debug_level = 5;
   if( debug_level < 0 )
     debug_level = 0;
-
-  // TODO: A better way to determine whether a tournament can be started
-  //       (i.e. some guis may not start up a tournament)
-  /*
-  if( optind != argc ||
-      ( tournament_filename == "" && gui_list.empty() ) )
-    {
-      cout << "Please use a gui or start a tournament with '-t file'." << endl << endl;
-      print_help_message();
-      exit( EXIT_FAILURE );
-    }
-  */
 
   if( version_flag )
       cout << "RealTimeBattle " << VERSION << endl;
@@ -596,7 +531,6 @@ ArenaController::print_help_message()
   cout << _("    --normal_mode,               -n   normal mode (default)") << endl;
   cout << _("    --competition_mode,          -c   competition mode") << endl ;
   cout << endl;
-  cout << _("    --use_gui [gui],             -g   sets the gui to be used") << endl ;
   cout << _("    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)")  << endl;
   cout << endl;
   cout << _("    --log_file [file],           -l   make log file, if 'file' is '-'\n"
@@ -621,9 +555,4 @@ ArenaController::print_help_message()
   cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
 
-  //NOTE : When this function is called, no gui is loaded !!!
-  cout << endl;
-  cout << " " << _("Commandline options for gui") << " '" << (gui_p)->Name() << "':" << endl;
-  cout << (gui_p)->UsageMessage() << endl;
-  
 }

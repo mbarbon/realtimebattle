@@ -105,6 +105,14 @@ NetConnection::read_data()
     }
 }
 
+string
+NetConnection::get_data()
+{
+  string to_return = read_buffers.front();
+  read_buffers.pop_front();
+  return to_return;
+}
+
 int
 NetConnection::write_data()
 {
