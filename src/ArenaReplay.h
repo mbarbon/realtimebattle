@@ -40,6 +40,7 @@ public:
                                   const String& statistics_fname,
                                   const String& option_fname );
   void   change_speed           ( const bool forward, const bool fast );
+  void   change_game            ( const int inc_game, const int inc_seq );
   char   search_forward         ( const String& search_letters );
   String search_forward         ( const List<String>& search_strings );
   String search_backwards       ( const String& search_letters );

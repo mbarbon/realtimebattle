@@ -715,24 +715,28 @@ void
 ControlWindow::next_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
+  replay_arena.change_game( 1, 0 );
 }
 
 void
 ControlWindow::prev_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
+  replay_arena.change_game( -1, 0 );
 }
 
 void
 ControlWindow::next_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
+  replay_arena.change_game( 0, 1 );
 }
 
 void
 ControlWindow::prev_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
+  replay_arena.change_game( 0, -1 );
 }
 
 void
