@@ -2,49 +2,22 @@
 #include <stdio.h>
 #include "Error.h"
   
-Error::Error(char* strp, char* funcp) 
-{ 
-  error_stringp = g_string_new(strp); 
-  error_string2p = g_string_new(""); 
-  c = '\0'; 
-  function_stringp = g_string_new(funcp); 
-}
+Error::Error(const String& str, const String& func) 
+  : error_string(str), error_string2(""), function_string(func), c(' ') {}
 
-Error::Error(char* strp, char* str2p, char* funcp) 
-{ 
-  error_stringp = g_string_new(strp); 
-  error_string2p = g_string_new(str2p); 
-  c = '\0'; 
-  function_stringp = g_string_new(funcp); 
-}
 
-Error::Error(char* strp, char ch, char* funcp) 
-{ 
-  error_stringp = g_string_new(strp); 
-  error_string2p = g_string_new(""); 
-  c = ch; 
-  function_stringp = g_string_new(funcp);
-}
+Error::Error(const String& str1, const String& str2, const String& func) 
+  : error_string(str1), error_string2(str2), function_string(func), c(' ') {}
 
-Error::~Error()
-{
-  delete error_stringp;
-  delete error_string2p;
-  delete function_stringp;
-}
-           
+Error::Error(const String& str, char ch, const String& func) 
+  : error_string(str), error_string2(""), function_string(func), c(ch) {}
+
 void 
 Error::print_message() 
 { 
-  if ( c != '\0' )
-    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str 
-         << " " << c << endl; 
-  else if (error_string2p != NULL) 
-    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str 
-         << " " << error_string2p->str << endl;
-  else
-    cerr << "Error in " << function_stringp->str << ": " << error_stringp->str
-         << endl;         
+  cerr << "Error in " << function_string << ": " << error_string << " " 
+       << error_string2 << " " << c << endl;
+
   perror("Errno message");
 }
 
