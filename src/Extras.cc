@@ -25,13 +25,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream.h>
 
 #include "Extras.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 #include "Options.h"
 
-Extras::Extras(const Vector2D& c, const double r, const double e, const long col)
-  : Circle(c, r), Shape(col)
+Extras::Extras(const double e)
+  : energy(e)
 {
-  energy = e;
   alive = true;
 #ifndef NO_GRAPHICS
   if( !no_graphics )
@@ -40,14 +40,14 @@ Extras::Extras(const Vector2D& c, const double r, const double e, const long col
 }
 
 Cookie::Cookie(const Vector2D& c, const double r, const double e) 
-  : Extras(c, r, e, the_opts.get_l(OPTION_COOKIE_COLOUR))
+  : Shape(the_opts.get_l(OPTION_COOKIE_COLOUR)), Circle(c,r), Extras(e)
 {
    id = the_arena.increase_cookie_count();
    log_file_char = 'C';
 }
 
 Mine::Mine(const Vector2D& c, const double r, const double e)
-  : Extras(c, r, e, the_opts.get_l(OPTION_MINE_COLOUR))
+  : Shape(the_opts.get_l(OPTION_MINE_COLOUR)), Circle(c,r), Extras(e)
 {
    id = the_arena.increase_mine_count();
    log_file_char = 'M';
@@ -63,5 +63,6 @@ Extras::die()
      the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
 #endif
 
-   the_arena.print_to_logfile('D', log_file_char, id);
+   if( the_arena_controller.is_realtime() )
+     realtime_arena.print_to_logfile('D', log_file_char, id);
 }
