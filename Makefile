@@ -106,7 +106,7 @@ install:
 	cp -R $(DOCSDIR) $(INSTALLDIR); \
 	cp Makefile   $(INSTALLDIR)/; \
    install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
-                --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
+                --info-dir $(INFODIR) /usr/info/RealTimeBattle.info.gz
 
 uninstall:
 	rm -r $(INSTALLDIR); \
