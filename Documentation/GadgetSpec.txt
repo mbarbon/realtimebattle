@@ -14,9 +14,12 @@ STRING   ""-enclosed characters
 
 
 FUNCSPEC true, false or default
-Is this necessary? FUNCSPEC(false) will never be used, since a Function
-not mentioned should not be activate. Or did I misunderstand something?
-
+;Is this necessary? FUNCSPEC(false) will never be used, since a Function
+;not mentioned should not be activate. Or did I misunderstand something?
+;Answer: I thought that some (most?) functions should be enabled by default.
+;Especially some functions as Die that probably all gadgets need to have set
+;to true. Other gadgets seems to be meaningless without their function
+;(e.g. Engine is pretty useless without the Accelerate function for example) 
 
 VARTYPE  bool, int or double
 *LIST    a list of specified type, whitespace-separated (e.g no commas)
@@ -25,8 +28,7 @@ VARTYPE  bool, int or double
 GadgetDefinitions
 *****************
 
-A gadgetname can not hold whitespaces, but all other characters.
-                                           ^^^^^^^^^ is ';jk"')( ok as a name?
+A gadgetname can not hold whitespaces, ; or " , but all other characters.
 
 A Gadget is defined like this:
 
@@ -37,6 +39,7 @@ Define Gadget name
 EndDefine
 
 A ; is the beginning of a comment
+A string is enclosed with ""
 
 In all definitions, if a value is shown inside a paranthesis,
 it is the defualt value of the gadget.
@@ -93,6 +96,8 @@ Define Script name
    Line  INT    SCRIPTCOMMAND    ARGUMENT
 
    ; The INT is the line number, ARGUMENT are dependent on the SCRIPTCOMMAND.
+   ; Question: Is the Linenumber really necessary? Isn't it better with
+   ;           labels? load_arena_file() could take care of line numbering.
 
   ;SCRIPTCOMMAND  ARGUMENT
   ;------------------------
