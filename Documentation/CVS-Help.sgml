@@ -1,0 +1,47 @@
+<!doctype linuxdoc system>
+
+<notes>
+<title></title>
+CVS help
+
+<p>
+If you want to get the very latest snapshot of RealTimeBattle, you are
+advised to 
+<url name="checkout the CVS tree from SourceForge"
+url="https://www.sourceforge.net/cvs/?group_id=561">. There you will get more
+information on how to use CVS.
+
+<descrip>
+<tag>Requirements:</tag> 
+<p>
+
+To compile RTB from the cvs you will need <tt>automake</tt>,
+<tt>autoconf</tt> and <tt>sgml-tools (version 1.0.x) </tt>. The latter
+isn't necessary if you don't need to compile the documentation.
+
+<tag>Compiling:</tag> 
+<p>
+
+Before the actual compiliation can be started you need to create the
+configure script:
+<verb>
+% aclocal
+% automake
+% autoconf</verb>
+
+If everything goes well, you should be able to compile as usual now.
+
+Note that <tt>automake</tt> needs the file 
+<url name="gtk.m4" url="http://www.lysator.liu.se/realtimebattle/Download/gtk.m4">
+, which isn't installed by default on some systems (e.g. FreeBSD).
+
+<tag>Languages</tag>
+<p>
+
+* Useful information on how to get gettext etc. work *
+
+</descrip>
+</notes>
+
+
+
