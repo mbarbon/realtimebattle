@@ -329,7 +329,7 @@ ArenaReplay::parse_log_line()
       break;
     case 'G': // Game begins
       {
-        delete_lists(false, false, false, false, false);
+        delete_lists(false, false, false, false);
         reset_timer();
         current_replay_time = 0;
         robots_killed_this_round = 0;
@@ -658,29 +658,36 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         {
         case 'R':
           {
+            double pnts;
+            int pos;
+            log_file >> pnts >> pos;
             // Robot will be revived at the next 'R' line.
           }
           break;
         case 'C': // Cookie
           {
             object_pos_info_t* info = find_object_in_log( COOKIE, object_id );
-            object_lists[COOKIE].insert_last
-              ( new Cookie( info->pos, 0.0, info->id ) );
+            if( info->end_time > info->start_time )              
+              object_lists[COOKIE].insert_last
+                ( new Cookie( info->pos, 0.0, info->id ) );
           }
           break;
         case 'M': // Mine
           {
             object_pos_info_t* info = find_object_in_log( MINE, object_id );
-            object_lists[MINE].insert_last
-              ( new Mine( info->pos, 0.0, info->id ) );
+            if( info->end_time > info->start_time )              
+              object_lists[MINE].insert_last
+                ( new Mine( info->pos, 0.0, info->id ) );
           }
           break;
         case 'S': // Shot
           {
             object_pos_info_t* info = find_object_in_log( SHOT, object_id );
-            object_lists[SHOT].insert_last
-              ( new Shot( info->pos + (current_replay_time - info->start_time)
-                          * info->vel, info->vel, 0, info->id ) );
+
+            if( info->end_time > info->start_time )              
+              object_lists[SHOT].insert_last
+                ( new Shot( info->pos + (current_replay_time - info->start_time)
+                            * info->vel, info->vel, 0, info->id ) );
           }
           break;
   
@@ -1280,9 +1287,14 @@ ArenaReplay::get_time_positions_in_game()
             log_file >> robot_id >> x >> y >> temp >> temp >> temp >> temp;
 
             if( NULL == ( find_object_in_log( ROBOT, robot_id ) ) )
-              object_positions_in_log.insert_last
-                ( new object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
-                                         0, the_opts.get_d( OPTION_TIMEOUT ) ) );
+              {
+                object_positions_in_log.insert_last
+                  ( new object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
+                                           0, the_opts.get_d( OPTION_TIMEOUT ) ) );
+                ListIterator<Robot> li;
+                find_object_by_id( all_robots_in_tournament, li, robot_id );
+                object_lists[ROBOT].insert_last( li() );
+              }
           }
           break;
 
