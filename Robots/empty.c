@@ -10,8 +10,8 @@ int main(int argc, char * argv[])
   write(STDOUT_FILENO, "Name Empty\n", 11);
   write(STDOUT_FILENO, "Colour aaffaa ee2299\n", 21);
 
-  printf("Print printf worked!");
-  fprintf(stdout, "Print fprintf worked!");
+  printf("Print printf worked!\n");
+  fprintf(stdout, "Print fprintf worked!\n");
 
   sleep(500);
 
