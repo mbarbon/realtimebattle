@@ -7,10 +7,9 @@ FAQ
 <tag>The program doesn't compile on my computer</tag> 
 <p>
 Please read the <tt>INSTALL</tt> file
-carefully, and study the 
-<url name="BUGS"
-url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html">
-file. Make sure you have got the latest version. If it still doesn't work,
+carefully, and look at the
+<url name="bug list" url="http://sourceforge.net/bugs/?group_id=561">.
+Make sure you have got the latest version. If it still doesn't work,
 send a bug report to 
 <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
 or 
@@ -33,12 +32,6 @@ Another common mistake is to forget whitespace between the arguments of a
 message. This problem can be hard to find since the warning message is usually sent
 too late or not at all. 
 
-<tag>I can't replay a logfile made with RealTimeBattle-0.9.7</tag>
-<p>
-This is due to the fact that there were errors in the logfile-generator in
-RealTimeBattle-0.9.7, thus alla logfiles from versions before 0.9.8 are incompatible
-with the replay function.
-
 <tag>How do I change the language in RealTimeBattle?</tag>
 <p>
 This is very simple. Just set the environmental variable LANG to your
@@ -48,8 +41,18 @@ Note that en_US is to be replaced with the language code that you want to use.
 
 <tag>Which languages are available for RealTimeBattle?</tag>
 <p>
-There are, at this moment, five translations apart from english:
-Polish, Portuguese, German, Swedish and Japanese.
+There are, at this moment, seven translations apart from english:
+Polish, Portuguese, German, Swedish, Japanese, Galecian and Spanish.
+
+<tag>I want to help with development, what should I do?</tag>
+<p>
+Work is currently in progress for the upcoming v2.0 of RTB, which is a
+complete rewrite and does involve lots of new concepts, see <url name="the
+documentation page" url="https://www.sourceforge.net/docman/?group_id=561">
+for more info. If you are interested in joining the team, send an email to 
+<htmlurl name="rtb@users.sourceforge.net"
+url="mailto:rtb@users.sourceforge.net">.
+
 
 </descrip>
 </notes>
