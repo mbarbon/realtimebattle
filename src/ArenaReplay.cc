@@ -414,6 +414,9 @@ ArenaReplay::parse_log_line()
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
         get_time_positions_in_game();
+#ifndef NO_GRAPHICS
+        controlwindow_p->change_time_limitations();
+#endif
       }
       break;
     case 'H': // Header
@@ -544,6 +547,7 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
   option_file_name = option_fname;
 }
 
+// Changes game when replaying to fast forward, rewind or normal speed
 void
 ArenaReplay::change_speed( const bool forward, const bool fast )
 {
@@ -555,7 +559,7 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
   else if( forward )
     {
       //      speed = FAST_FORWARD;
-      fast_forward_factor = 5.0;   // should be an option?
+      fast_forward_factor = 5.0;   // should be an option? // RO: Why Not? Could also be accelerating. How fast the forwarding should be depends on how long the button has been pressed.
     }
   else
     {
@@ -630,7 +634,7 @@ ArenaReplay::step_forward( const int n_o_steps )
 void
 ArenaReplay::change_replay_time( const double time )
 {
-  if( !log_from_stdin )
+  if( !log_from_stdin && abs(time - current_replay_time) > 0.001 )
     {
       int index = find_streampos_for_time( time );
       
@@ -856,7 +860,7 @@ ArenaReplay::make_statistics_from_file()
           game_position_in_log = new streampos*[sequences_in_tournament];
 
           for( int i=0; i<sequences_in_tournament; i++ )
-            game_position_in_log[i] = new streampos[games_per_sequence];
+              game_position_in_log[i] = new streampos[games_per_sequence];
               
           break;
           
@@ -945,4 +949,18 @@ ArenaReplay::find_streampos_for_time(const float cur_time)
   Error(false, "Time not found",  "ArenaReplay::find_streampos_for_time");
 
   return -1;
+}
+
+double
+ArenaReplay::get_length_of_current_game()
+{
+  if( time_position_in_log != NULL )
+    if( last_time_info != 0 )
+      {
+        cout << "Game length: " << time_position_in_log[last_time_info].time << endl;
+        return time_position_in_log[last_time_info].time;
+      }
+
+  cout << the_opts.get_d( OPTION_TIMEOUT ) + 1.0 << endl;
+  return the_opts.get_d( OPTION_TIMEOUT ) + 1.0;
 }

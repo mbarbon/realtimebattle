@@ -49,6 +49,7 @@ public:
   String search_backwards       ( const String& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
+  double get_length_of_current_game();
 
 private: 
   void update                   ();
