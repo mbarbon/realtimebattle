@@ -180,17 +180,17 @@ Gui::read_dirs_from_system()
   String dirs;
   if(NULL != getenv("RTB_ROBOTDIR"))
       dirs = getenv("RTB_ROBOTDIR");
-  else
-      dirs = "Robots/";
-
   split_semicolonseparated_dirs(dirs,robotdirs);
+  String * str = new String("/usr/games/RealTimeBattle/Robots/");
+  g_list_append(robotdirs,str);
 
   if(NULL != getenv("RTB_ARENADIR"))
       dirs = getenv("RTB_ARENADIR");
   else
       dirs = "Arenas/";
-
   split_semicolonseparated_dirs(dirs,arenadirs);
+  str = new String("/usr/games/RealTimeBattle/Arenas/");
+  g_list_append(arenadirs,str);
 }
 
 void

@@ -1,6 +1,6 @@
 
 ifndef PAPER_SIZE
-PAPER_SIZE=A4
+PAPER_SIZE=a4
 endif
 
 
