@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class MessageWindow;
 class ScoreWindow;
+class StatisticsWindow;
 class StartTournamentWindow;
 
 //#include "MovingObject.h"
@@ -78,15 +79,6 @@ enum start_tournament_button_t
 void question_yes_callback                            ( GtkWidget* widget, QuestionFunction function_name );
 void question_no_callback                             ( GtkWidget* widget, QuestionFunction function_name );
 
-
-
-void statistics_button_callback                       ( GtkWidget* widget, gpointer data );
-void save_statistics_callback                         ( GtkWidget* widget, gpointer data);
-void save_stats_filesel_ok_selected                   ( GtkWidget* widget, GtkFileSelection* fs);
-void destroy_stats_filesel                            ( );
-void stat_clist_column_callback                       ( GtkCList* clist, gint column, gpointer data);
-void buttons_in_statistics_callback                   ( GtkWidget* widget, gpointer type_p);
-
 void delete_event                                     ( GtkWidget* widget, gpointer data );
 
 void no_zoom_callback                                 ( GtkWidget* widget, gpointer data );
@@ -125,32 +117,35 @@ public:
                   const double thickness, GdkColor& colour );
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
-  void change_stat_type( stat_table_t type );
-  void change_sorting_in_clist( const int column );
-  void change_statistics( int change, bool absoulte_change );
-  void add_new_row( void* rp, void* sp, int games_played );
-  void add_the_statistics_to_clist();
-  void stat_make_title_button();
-
   void set_arena_window_title();
 
   void ask_user(String question, QuestionFunction function_name);
 
-  bool get_statistics_up() { return statistics_up; }
   double get_zoom() { return zoom; }
-  GtkWidget* get_filesel_widget() { return filesel_widget; }
-  void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
+  bool is_messagewindow_up                     ()
+    { return ( messagewindow_p != NULL ); }
   MessageWindow* get_messagewindow_p           ()
     { return messagewindow_p; }
   void open_messagewindow                      ();
   void close_messagewindow                     ();
 
+  bool is_scorewindow_up                       ()
+    { return ( scorewindow_p != NULL ); }
   ScoreWindow* get_scorewindow_p               ()
     { return scorewindow_p; }
   void open_scorewindow                        ();
   void close_scorewindow                       ();
 
+  bool is_statisticswindow_up                  ()
+    { return ( statisticswindow_p != NULL ); }
+  StatisticsWindow* get_statisticswindow_p     ()
+    { return statisticswindow_p; }
+  void open_statisticswindow                   ();
+  void close_statisticswindow                  ();
+
+  bool is_starttournamentwindow_up             ()
+    { return ( starttournamentwindow_p != NULL ); }
   StartTournamentWindow* get_starttournament_p ()
     { return starttournamentwindow_p; }
   static void kill_and_start_new_tournament    ( bool really );
@@ -159,19 +154,12 @@ public:
 
 private:
 
-  bool statistics_up;
+  //  bool statistics_up;
 
   GtkWidget* drawing_area;
   GtkWidget* da_scrolled_window;
 
-  GtkWidget* stat_clist;
-  GtkWidget* stat_title_button;
-  GtkWidget* stat_title_hbox;
-
-  GtkWidget* filesel_widget;
-
   GtkWidget* arena_window;
-  GtkWidget* statistics_window;
   GtkWidget* question_window;
 
   Vector2D da_scrolled_window_size;
@@ -182,11 +170,9 @@ private:
   double zoom;
   Vector2D boundary[2];
 
-  stat_table_t stat_table_type;
-  int stat_looking_at_nr;
-
   MessageWindow* messagewindow_p;
   ScoreWindow* scorewindow_p;
+  StatisticsWindow* statisticswindow_p;
   StartTournamentWindow* starttournamentwindow_p;
 };
 

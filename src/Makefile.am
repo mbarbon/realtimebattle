@@ -19,7 +19,7 @@ else
 GRAPHICS_O = \
 	Gui.o ControlWindow.o MessageWindow.o \
 	OptionsWindow.o \
-	ScoreWindow.o Statistics.o \
+	ScoreWindow.o StatisticsWindow.o \
 	StartTournamentWindow.o Structs.o
 endif
 
@@ -57,6 +57,6 @@ EXTRA_RealTimeBattle_SOURCES = \
 	OptionsWindow.cc OptionsWindow.h \
 	ScoreWindow.cc ScoreWindow.h \
 	StartTournamentWindow.cc StartTournamentWindow.h \
-	Statistics.cc \
+	StatisticsWindow.cc StatisticsWindow.h \
 	Structs.cc
 

@@ -31,7 +31,7 @@ class String;
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
-//#define abs(a) ((a) > 0 ? (a) : -(a))
+#define abs(a) ((a) > 0 ? (a) : -(a))
 //#define sgn(a) ((a) > 0 ? 1 : -1)
 
 enum entry_datatype_t

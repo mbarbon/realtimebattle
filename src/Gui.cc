@@ -35,6 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "MessageWindow.h"
 #include "ScoreWindow.h"
+#include "StatisticsWindow.h"
 #include "StartTournamentWindow.h"
 
 #include "Shot.h"
@@ -97,9 +98,10 @@ delete_event(GtkWidget *widget, gpointer data)
 
 Gui::Gui()
 {
-  statistics_up = false;
-
   messagewindow_p = NULL;
+  scorewindow_p = NULL;
+  statisticswindow_p = NULL;
+  starttournamentwindow_p = NULL;
 
   da_scrolled_window_size = Vector2D(0.0,0.0);
 }
@@ -472,6 +474,27 @@ Gui::ask_user(String question, QuestionFunction function_name)
 }
 
 void
+Gui::open_messagewindow()
+{
+  if( NULL == messagewindow_p )
+    messagewindow_p = 
+      new MessageWindow( the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_X ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_Y ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_X ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_Y ) );
+}
+
+void
+Gui::close_messagewindow()
+{
+  if( NULL != messagewindow_p )
+    {
+      delete messagewindow_p;
+      messagewindow_p = NULL;
+    }
+}
+
+void
 Gui::open_scorewindow()
 {
   if( NULL == scorewindow_p )
@@ -489,6 +512,26 @@ Gui::close_scorewindow()
     {
       delete scorewindow_p;
       scorewindow_p = NULL;
+    }
+}
+
+void
+Gui::open_statisticswindow()
+{
+  if( NULL == statisticswindow_p && the_arena.get_state() != NOT_STARTED )
+    statisticswindow_p = 
+      new StatisticsWindow( the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
+                            the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ),
+                            -1, -1 );
+}
+
+void
+Gui::close_statisticswindow()
+{
+  if( NULL != statisticswindow_p )
+    {
+      delete statisticswindow_p;
+      statisticswindow_p = NULL;
     }
 }
 
@@ -524,27 +567,6 @@ Gui::close_starttournamentwindow()
     {
       delete starttournamentwindow_p;
       starttournamentwindow_p = NULL;
-    }
-}
-
-void
-Gui::open_messagewindow()
-{
-  if( NULL == messagewindow_p )
-    messagewindow_p = 
-      new MessageWindow( the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_X ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_Y ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_X ),
-                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_Y ) );
-}
-
-void
-Gui::close_messagewindow()
-{
-  if( NULL != messagewindow_p )
-    {
-      delete messagewindow_p;
-      messagewindow_p = NULL;
     }
 }
 
