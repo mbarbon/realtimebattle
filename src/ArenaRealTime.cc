@@ -427,13 +427,14 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
       LOG_FILE << va_arg(args, int   ) << " ";     // robot id;
       LOG_FILE << va_arg(args, double) << " ";  // x
       LOG_FILE << va_arg(args, double) << " ";  // y
+      LOG_FILE << va_arg(args, double) << " ";  // robot angle
       LOG_FILE << va_arg(args, double) << " ";  // cannon angle
       LOG_FILE << va_arg(args, double) << " ";  // radar angle
       LOG_FILE << va_arg(args, double);         // energy
       break;
 
     case 'T': // Time
-      LOG_FILE << va_arg(args, double);  // time elsaped
+      LOG_FILE << setprecision(3) << va_arg(args, double);  // time elapsed
       break;
 
     case 'P': // Print a robot message
@@ -457,8 +458,8 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
       LOG_FILE << va_arg(args, int   ) << " ";  // shot id
       LOG_FILE << va_arg(args, double) << " ";  // x
       LOG_FILE << va_arg(args, double) << " ";  // y
-      LOG_FILE << va_arg(args, double) << " ";  // dx/dt
-      LOG_FILE << va_arg(args, double);         // dy/dt
+      LOG_FILE << setprecision(3) << va_arg(args, double) << " ";  // dx/dt
+      LOG_FILE << setprecision(3) << va_arg(args, double);         // dy/dt
       break;
       
     case 'D': // Die
