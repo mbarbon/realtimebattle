@@ -223,6 +223,7 @@ MessageWindow::show_window( GtkWidget* widget,
     }
 }
 
+// warning Do not use the widget variable. It may be NULL.
 void
 MessageWindow::clear_clist( GtkWidget* widget,
                             class MessageWindow* messagewindow_p )

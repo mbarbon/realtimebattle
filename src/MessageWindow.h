@@ -47,6 +47,8 @@ public:
                                    class MessageWindow* messagewindow_p );
   static void show_window        ( GtkWidget* widget,
                                    class MessageWindow* messagewindow_p );
+
+  // warning Do not use the widget variable. It may be NULL.
   static void clear_clist        ( GtkWidget* widget,
                                    class MessageWindow* messagewindow_p );
   static void show_one_robot     ( GtkWidget* widget,
