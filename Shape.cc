@@ -2,14 +2,14 @@
 #include "math.h"
 
 void
-Shape::set_colour( int red, int green, int blue )
+Shape::set_colour(const long col)
 {
   GdkColormap *cmap;
 
   cmap = gdk_colormap_get_system();
-  colour.red = red;
-  colour.green = green;
-  colour.blue = blue;
+  colour.red =   ((col & 0xff0000) >> 16 ) * 0x101;
+  colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
+  colour.blue =  (col & 0x0000ff) * 0x101;
   gdk_color_alloc (cmap, &colour);
 }
 
