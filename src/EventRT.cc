@@ -28,8 +28,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "EventRT.h"
 #include "EventHandler.h"
-
+#include "GuiInterface.h"
 #include "Tournament.h"
+
 
     ///////////////////////////////////////////////////
    //                                               //
@@ -77,4 +78,23 @@ StartTournamentEvent::eval() const
     }
 
   the_eventhandler.set_tournament( t );
+}
+
+void
+PrepareForNewMatchEvent::eval() const
+{
+  my_tournament->prepare_for_new_match();
+}
+
+void
+StartNewMatchEvent::eval() const
+{
+  my_match->start_new_match();
+}
+
+
+void
+EndMatchEvent::eval() const
+{
+  my_match->end_match();
 }

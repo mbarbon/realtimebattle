@@ -21,8 +21,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __EventRT__
 
 #include "Event.h"
-#include "EventHandler.h"
-#include "GuiInterface.h"
+
+class GuiInterface;
+class Match;
+class Tournament;
 
 class CheckGUIEvent : public Event
 {
@@ -59,11 +61,16 @@ protected:
 
 
 
-/*class PrepareForNewMatchEvent : public Event
+class PrepareForNewMatchEvent : public Event
 {
  public:
   PrepareForNewMatchEvent( const double time, Tournament* t) 
     : Event(time), my_tournament(t) {}
+
+  void eval() const;
+
+protected:
+  Tournament* my_tournament;
 };
 
 class StartNewMatchEvent : public Event
@@ -71,6 +78,11 @@ class StartNewMatchEvent : public Event
 public:
   StartNewMatchEvent( const double time, Match* m) 
     : Event(time), my_match(m) {}
+
+  void eval() const;
+
+protected:
+  Match* my_match;
 };
 
 class EndMatchEvent : public Event
@@ -78,7 +90,11 @@ class EndMatchEvent : public Event
 public:
   EndMatchEvent( const double time, Match* m) 
     : Event(time), my_match(m) {}
-};*/
+  void eval() const;
+
+protected:
+  Match* my_match;
+};
 
 
 
