@@ -20,10 +20,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __OPTIONS__
 #define __OPTIONS__
 
-
 #include "Various.h"
+#include "String.h"
 
-class String;
+//class String;
 class OptionsWindow;
 
 #ifndef NO_GRAPHICS

@@ -22,7 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GeometricalObjects.h"
 
-class WallCircle : public virtual Circle
+class WallCircle : public Circle
 {
 public:
   WallCircle(const Vector2D& c, const double r, 
@@ -32,7 +32,7 @@ public:
   ~WallCircle() {}
 };
 
-class WallInnerCircle : public virtual InnerCircle
+class WallInnerCircle : public InnerCircle
 {
 public:
   WallInnerCircle(const Vector2D& c, const double r, 
@@ -41,7 +41,7 @@ public:
   ~WallInnerCircle() {}
 };
 
-class WallLine : public virtual Line
+class WallLine : public Line
 {
 public:
   WallLine(const Vector2D& sp, const Vector2D& d, const double len, const double th, 

@@ -29,8 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena_RealTime.h"
 #include "Options.h"
 
-Extras::Extras(const double e)
-  : energy(e)
+Extras::Extras(const Vector2D& c, const double r, const double e, const long int col)
+  : energy(e), Circle(c, r, col)
 {
   alive = true;
 #ifndef NO_GRAPHICS
@@ -40,14 +40,14 @@ Extras::Extras(const double e)
 }
 
 Cookie::Cookie(const Vector2D& c, const double r, const double e) 
-  : Shape(the_opts.get_l(OPTION_COOKIE_COLOUR)), Circle(c,r), Extras(e)
-{
+  : Extras(c, r, e, the_opts.get_l(OPTION_COOKIE_COLOUR))
+{ 
    id = the_arena.increase_cookie_count();
    log_file_char = 'C';
 }
 
 Mine::Mine(const Vector2D& c, const double r, const double e)
-  : Shape(the_opts.get_l(OPTION_MINE_COLOUR)), Circle(c,r), Extras(e)
+  : Extras(c, r, e, the_opts.get_l(OPTION_MINE_COLOUR))
 {
    id = the_arena.increase_mine_count();
    log_file_char = 'M';

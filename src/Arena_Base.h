@@ -31,7 +31,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "Structs.h"
 #include "Timer.h"
-
+#include "List.h"
+#include "Shape.h"
 
 class Arena_Controller;
 extern Arena_Controller the_arena_controller;
@@ -87,7 +88,7 @@ public:
                                const Vector2D& vel, 
                                const double size, 
                                enum arenaobject_t& closest_shape, 
-                               void*& colliding_object, 
+                               Shape*& colliding_object, 
                                const class Robot* the_robot = NULL );
 
   bool space_available(const Vector2D& pos, const double margin);
@@ -117,15 +118,17 @@ public:
 
 
 
-  GList** get_object_lists() { return object_lists; }
-  GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
-  GList* get_all_robots_in_tournament() { return all_robots_in_tournament; }
+  List<Shape>* get_object_lists() { return object_lists; }
+  List<Robot>* get_all_robots_in_sequence() { return &all_robots_in_sequence; }
+  List<Robot>* get_all_robots_in_tournament() { return &all_robots_in_tournament; }
   String get_current_arena_filename() { return current_arena_filename; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
   int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
   int get_sequences_remaining() { return sequences_remaining; }
   int get_robots_per_game() { return robots_per_game; }
+  int get_number_of_robots() { return number_of_robots; }
+  
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
@@ -147,7 +150,7 @@ public:
   int get_debug_level() { return debug_level; }
   virtual int set_debug_level( const int new_level);
 
-  void paus_game_toggle();
+  void pause_game_toggle();
   void step_paused_game();
   bool is_game_halted();
 
@@ -160,14 +163,14 @@ protected:
 
   void parse_arena_line(ifstream& file, double& scale, int& succession);
 
-  GList* object_lists[LAST_ARENAOBJECT_T];
+  List<Shape> object_lists[LAST_ARENAOBJECT_T];
   
-  GList* all_robots_in_tournament;
-  GList* all_robots_in_sequence;
-  GList* exclusion_points;
+  List<Robot> all_robots_in_tournament;
+  List<Robot> all_robots_in_sequence;
+  List<Vector2D> exclusion_points;
 
   String current_arena_filename;
-  GList* arena_filenames;               // list of Strings
+  List<String> arena_filenames;               // list of Strings
 
   int** robots_in_sequence;
 
@@ -212,7 +215,7 @@ protected:
 
   bool halted;
   bool halt_next;
-  bool paus_after_next_game;
+  bool pause_after_next_game;
 
 
 };

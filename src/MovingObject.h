@@ -25,11 +25,12 @@ class Vector2D;
 #include "GeometricalObjects.h"
 
 
-class MovingObject : public virtual Circle
+class MovingObject : public Circle
 {
 public:
   MovingObject() {}
-  MovingObject(const Vector2D& vel) : velocity(vel) {}
+  MovingObject(const Vector2D& c, const double r, const Vector2D& vel) 
+    : Circle(c, r), velocity(vel) {}
   ~MovingObject() {}
 
   virtual void move(const double timestep) = 0;

@@ -249,7 +249,7 @@ ControlWindow::quit_rtb( GtkWidget* widget, gpointer data )
 void
 ControlWindow::pause( GtkWidget* widget, class ControlWindow* controlwindow_p )
 {
-  the_arena.paus_game_toggle();
+  the_arena.pause_game_toggle();
   controlwindow_p->set_window_title( the_arena.is_game_halted() );
 }
 

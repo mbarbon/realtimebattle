@@ -115,7 +115,7 @@ sig_handler (int signum)
       if (pid < 0)
         {
           if( errno != ECHILD ) 
-            Error(true, "waidpid failed", "RealTimeBattle.cc:sigchld_handler");
+            Error(true, "waitpid failed", "RealTimeBattle.cc:sigchld_handler");
           break;
         }
       if (pid == 0)

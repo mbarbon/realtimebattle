@@ -181,10 +181,11 @@ Robot::start_process()
       // Close all pipes not belonging to the robot
       
       Robot* robotp;
-      GList* gl=g_list_next(the_arena.get_all_robots_in_sequence());
-      for(; gl != NULL; gl=g_list_next(gl))
+
+      ListIterator<Robot> li;
+      for( the_arena.get_all_robots_in_sequence()->first(li); li.ok(); li++ )
         {
-          robotp = (Robot*)gl->data;
+          robotp = li();
           if( robotp != this ) robotp->delete_pipes();
         }
 
@@ -253,7 +254,7 @@ Robot::start_process()
       instreamp = new ifstream(pipe_in[0]);
     }
 
-  // wait some time to let process has started up
+  // wait some time to let process start up
 
   struct timeval timeout;
   timeout.tv_sec = 0;
@@ -267,9 +268,7 @@ Robot::start_process()
 bool
 Robot::is_process_running()
 {
-  // TODO: Check if the process is running
-
-  return process_running;   // temporary!
+  return process_running;
 }
 
 void
@@ -435,10 +434,10 @@ Robot::check_name_uniqueness()
 
   robot_name = plain_robot_name;
   
-  GList* gl = g_list_next(the_arena.get_all_robots_in_tournament());
-  for(; gl != NULL; gl = g_list_next(gl))
+  ListIterator<Robot> li;
+  for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
+      robotp = li();
       if( robotp != this && plain_robot_name == robotp->plain_robot_name )
         {
           if( robotp->robot_name_uniqueness_number == 0 )
@@ -522,7 +521,7 @@ Robot::update_radar_and_cannon(const double timestep)
                      shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
 
   arenaobject_t closest_arenaobject;
-  void* col_obj;
+  Shape* col_obj;
   double dist = the_arena.
     get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
                           0.0, closest_arenaobject, col_obj, this);
@@ -696,8 +695,10 @@ void
 Robot::move(const double timestep, int iterstep, const double eps)
 {
   arenaobject_t closest_shape;
-  void* colliding_object;
-  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, closest_shape, colliding_object, this);
+  Shape* colliding_object;
+  double time_to_collision = 
+    the_arena.get_shortest_distance(center, velocity, radius, 
+                                    closest_shape, colliding_object, this);
   if( time_to_collision > timestep )
     {
       center += timestep*velocity;
@@ -708,29 +709,17 @@ Robot::move(const double timestep, int iterstep, const double eps)
       double time_remaining = timestep - time_to_collision; 
       center += time_to_collision*velocity;
       //      Vector2D new_center = center - min(eps, time_to_collision)*velocity;
+      
+
       switch( closest_shape )
         {
         case WALL_LINE_T:
-          {
-            WallLine* wallp = (WallLine*)colliding_object;
-            Vector2D normal = wallp->get_normal(center);
-            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
-            center += normal*eps;
-          }
-          break;
         case WALL_CIRCLE_T:
-          {
-            WallCircle* wallp = (WallCircle*)colliding_object;
-            Vector2D normal = wallp->get_normal(center);
-            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
-            center += normal*eps;
-          }
-          break;
         case WALL_INNERCIRCLE_T:
           {
-            WallInnerCircle* wallp = (WallInnerCircle*)colliding_object;
-            Vector2D normal = wallp->get_normal(center);
-            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
+            Vector2D normal = colliding_object->get_normal(center);
+            bounce_on_wall(colliding_object->get_bounce_coeff(), 
+                           colliding_object->get_hardness_coeff(), normal);
             center += normal*eps;
           }
           break;
@@ -748,8 +737,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
             change_energy( en );
             send_message(COLLISION, SHOT, vec2angle(shotp->get_center()-center)-robot_angle.pos);
             shotp->die();
-            g_list_remove((the_arena.get_object_lists())[SHOT_T], shotp);
-            delete shotp;
+            the_arena.get_object_lists()[SHOT_T].remove( shotp );
           }
           break;
         case COOKIE_T:
@@ -759,8 +747,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
             change_energy( en );
             send_message(COLLISION, COOKIE, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
             cookiep->die();
-            g_list_remove((the_arena.get_object_lists())[COOKIE_T], cookiep);
-            delete cookiep;
+            the_arena.get_object_lists()[COOKIE_T].remove( cookiep );
           }
           break;
         case MINE_T:
@@ -770,8 +757,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
             change_energy( en );
             send_message(COLLISION, MINE, vec2angle(minep->get_center()-center)-robot_angle.pos);
             minep->die();
-            g_list_remove((the_arena.get_object_lists())[MINE_T], minep);
-            delete minep;
+            the_arena.get_object_lists()[MINE_T].remove( minep );
           }
           break;
         default:
@@ -1093,17 +1079,19 @@ Robot::get_messages()
               if( realtime_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
-                  g_list_append((realtime_arena.get_object_lists())[SHOT_T], shotp);
+                  realtime_arena.get_object_lists()[SHOT_T].insert_last( shotp );
 
                   realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
                                    shot_vel[0], shot_vel[1]);
                 }
               else  // No space for shot, direct hit!!
                 { 
-                  void* col_obj;
+                  Shape* col_obj;
                   arenaobject_t cl_shape;
                   double dist;
-                  if( (dist = realtime_arena.get_shortest_distance( center, dir, shot_radius*1.00001, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
+                  if( (dist = realtime_arena.get_shortest_distance
+                       ( center, dir, shot_radius*1.00001, 
+                         cl_shape, col_obj, this))    >   radius+1.5*shot_radius )
                     {
                       //cerr << "Shot has space available after all?" <<  endl;
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
@@ -1131,16 +1119,14 @@ Robot::get_messages()
                       {
                         Cookie* cookiep =(Cookie*)col_obj;
                         cookiep->die();
-                        g_list_remove((realtime_arena.get_object_lists())[COOKIE_T], cookiep);
-                        delete cookiep;
+                        the_arena.get_object_lists()[COOKIE_T].remove( cookiep );
                       }
                       break;
                     case MINE_T:
                       {
                         Mine* minep =(Mine*)col_obj;
                         minep->die();
-                        g_list_remove((realtime_arena.get_object_lists())[MINE_T], minep);
-                        delete minep;
+                        the_arena.get_object_lists()[MINE_T].remove( minep );
                       }
                       break;
                     default:

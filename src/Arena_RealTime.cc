@@ -520,8 +520,9 @@ Arena_RealTime::broadcast(const message_to_robot_type msg_type ...)
     }
   str += '\n';
 
-  for(GList* gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
-    *(((Robot*)gl->data)->get_outstreamp()) << str;
+ ListIterator<Shape> li;
+ for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+    *(((Robot*)li())->get_outstreamp()) << str;
 }
 
 void
@@ -566,10 +567,9 @@ Arena_RealTime::timeout_function()
       
     case SHUTTING_DOWN_ROBOTS:
       {     
-        GList* gl;
-        
-        for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
-          ((Robot*)gl->data)->get_messages();
+        ListIterator<Robot> li;
+        for( all_robots_in_tournament.first(li); li.ok(); li++ )
+          li()->get_messages();
         
         if( total_time > next_check_time ) end_sequence_follow_up();
       }
@@ -600,7 +600,7 @@ Arena_RealTime::timeout_function()
       }
       break;
     case PAUSING_BETWEEN_GAMES:
-      if( !paus_after_next_game ) start_game();
+      if( !pause_after_next_game ) start_game();
       break;
 
     case EXITING:
@@ -643,7 +643,7 @@ Arena_RealTime::add_cookie()
   double r = the_opts.get_d(OPTION_COOKIE_RADIUS);
   Vector2D pos;
 
-  for( int i=0; i<100 && !found_space; i++)
+  for( int i=0; i<100 && !found_space; i++ )
     {
       pos = get_random_position();
       found_space = space_available(pos, r*2.0);
@@ -651,7 +651,7 @@ Arena_RealTime::add_cookie()
   
   if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena_RealTime::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
-  g_list_append(object_lists[COOKIE_T], cookiep);
+  object_lists[COOKIE_T].insert_last( cookiep );
 
   print_to_logfile('C', cookiep->get_id(), pos[0], pos[1]);
 }
@@ -674,7 +674,7 @@ Arena_RealTime::add_mine()
   
   if( !found_space ) Error(false, "Couldn't find space for mine", "Arena_RealTime::timeout_function");
   Mine* minep = new Mine(pos, r, en);
-  g_list_append(object_lists[MINE_T], minep);
+  object_lists[MINE_T].insert_last( minep );
 
   print_to_logfile('M', minep->get_id(), pos[0], pos[1]);
 }
@@ -682,15 +682,12 @@ Arena_RealTime::add_mine()
 void
 Arena_RealTime::check_robots()
 {
-  Robot* robotp;
-
-  GList* gl = g_list_next(all_robots_in_sequence); 
-  for( ; gl != NULL; gl=g_list_next(gl))
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
-      if( robotp->is_process_running() )
+      if( li()->is_process_running() )
         {
-          robotp->check_process();
+          li()->check_process();
         }      
     } 
 
@@ -700,27 +697,25 @@ Arena_RealTime::check_robots()
 void
 Arena_RealTime::read_robot_messages()
 {
-  GList* gl;
-  Robot* robotp;
-
-  for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
-      if( robotp->is_alive() || state != GAME_IN_PROGRESS )  
-        robotp->get_messages();
+      if( li()->is_alive() || state != GAME_IN_PROGRESS )  
+        li()->get_messages();
     }
 }
 
 void
 Arena_RealTime::update_robots()
 {
-  GList* gl;
   Robot* robotp;
 
   int killed_robots = 0;
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl) )
+
+  ListIterator<Shape> li;
+  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
+      robotp = (Robot*)li();
       if( robotp->is_alive() )
         {
           robotp->update_radar_and_cannon(timestep);  
@@ -733,13 +728,12 @@ Arena_RealTime::update_robots()
 
   // Check if robots have died and send energy level
 
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; )
+  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
-      gl = g_list_next(gl);
+      robotp = (Robot*)li();
       if( !robotp->is_alive() ) 
         {
-          g_list_remove(object_lists[ROBOT_T], robotp);          
+          object_lists[ROBOT_T].remove(li, false);
           killed_robots++;
         }
       else
@@ -751,24 +745,28 @@ Arena_RealTime::update_robots()
 
   if( killed_robots > 0 )
     {
-      for( gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
+      for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
         {
-          ((Robot*)gl->data)->add_points(killed_robots);
+          robotp = (Robot*)li();
+          robotp->add_points(killed_robots);
 #ifndef NO_GRAPHICS
-          if( robots_left < 15 && !no_graphics ) ((Robot*)gl->data)->display_score();
+          if( robots_left < 15 && !no_graphics ) 
+            robotp->display_score();
 #endif
         }
 
-      for( gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-        if( ((Robot*)gl->data)->get_position_this_game() == -1 )
-          ((Robot*)gl->data)->set_stats(killed_robots);
+      ListIterator<Robot> li2;
+      for( all_robots_in_sequence.first(li2); li2.ok(); li2++ )
+        if( li2()->get_position_this_game() == -1 )
+          li2()->set_stats(killed_robots);
       
       robots_left -= killed_robots;
       broadcast(ROBOTS_LEFT, robots_left);
     }
 
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
-    ((Robot*)gl->data)->send_signal();
+  
+  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+    ((Robot*)li())->send_signal();
 }
 
 
@@ -802,11 +800,14 @@ bool
 Arena_RealTime::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
 {
   double d;
-  for(GList* gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl))
+  ListIterator<Robot> li;
+
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      if((Robot *)gl->data != robotp)
+      if(li() != robotp)
         {
-          d = colour_dist( colour, ((Robot*)gl->data)->get_rgb_colour() );
+          d = colour_dist( colour, 
+                           (li())->get_rgb_colour() );
           if( d < min_dist ) return false;          
         }
     }
@@ -855,7 +856,7 @@ Arena_RealTime::start_game()
 {
   // put the arena together
 
-  if( paus_after_next_game )
+  if( pause_after_next_game )
     {
       state = PAUSING_BETWEEN_GAMES;
       return;
@@ -863,7 +864,7 @@ Arena_RealTime::start_game()
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
-  String* filename = (String*)g_list_nth(arena_filenames, current_arena_nr)->data;
+  String* filename = arena_filenames.get_nth(current_arena_nr);
 
   parse_arena_file(*filename);
 
@@ -882,16 +883,17 @@ Arena_RealTime::start_game()
 
   // Place robots on the arena
 
-  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
   bool found_space;
   double angle;
   Vector2D pos;
 
   robots_left = 0;
-  for( ; gl != NULL; gl=g_list_next(gl))
+
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
+      robotp = li();
       found_space = false;
       for( int i=0; i<100 && !found_space; i++)
         {
@@ -902,9 +904,9 @@ Arena_RealTime::start_game()
       if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena_RealTime::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
-      g_list_append(object_lists[ROBOT_T], gl->data);
+      object_lists[ROBOT_T].insert_last(robotp);
       robots_left++;
-      ((Robot*)gl->data)->live();
+      robotp->live();
     }
 
   print_to_logfile('G', sequence_nr, games_per_sequence - games_remaining_in_sequence + 1);
@@ -913,8 +915,11 @@ Arena_RealTime::start_game()
   broadcast(ROBOTS_LEFT, robots_left);
   the_opts.broadcast_opts();
 
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
-    ((Robot*)gl->data)->send_signal();
+
+
+  ListIterator<Shape> li2;
+  for( object_lists[ROBOT_T].first(li2); li2.ok(); li2++ )
+    ((Robot*)li2())->send_signal();
 
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
@@ -939,12 +944,18 @@ Arena_RealTime::start_game()
 void
 Arena_RealTime::end_game()
 {
-  for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-    if( ((Robot*)gl->data)->get_position_this_game() == 0 )
-      {
-        ((Robot*)gl->data)->die();
-        ((Robot*)gl->data)->set_stats(1);
-      }
+  Robot* robotp;
+  ListIterator<Robot> li;
+
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
+    {
+      robotp = li();
+      if( robotp->get_position_this_game() == 0 )
+        {
+          robotp->die();
+          robotp->set_stats(1);
+        }
+    }
 
   broadcast(GAME_FINISHES);
 
@@ -967,17 +978,18 @@ Arena_RealTime::start_sequence()
 
   for(int i=0; i<robots_per_game; i++)
     {
-      g_list_append( all_robots_in_sequence, 
-                     g_list_nth(all_robots_in_tournament, 
-                                robots_in_sequence[sequence_nr][i])->data );
+      all_robots_in_sequence.
+        insert_last( all_robots_in_tournament.
+                     get_nth(robots_in_sequence[sequence_nr][i]));
     }
 
   // execute robot processes
-  GList* gl = g_list_next(all_robots_in_sequence);
 
-  for(; gl != NULL; gl = g_list_next(gl))
+
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      ((Robot*)gl->data)->start_process();
+      li()->start_process();
     }
   
   // wait a second before checking
@@ -993,16 +1005,15 @@ void
 Arena_RealTime::start_sequence_follow_up()
 {
   // check if the process have started correctly
-  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
 
-  for(; gl != NULL; )
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
-      gl = g_list_next(gl);
+      robotp = li();
       if( !(robotp->is_process_running()) ) 
         {
-          g_list_remove(all_robots_in_sequence, robotp);
+          all_robots_in_sequence.remove(li, false);
           robots_left--;
         }
       if( !robotp->set_and_get_have_competed() )
@@ -1015,12 +1026,11 @@ void
 Arena_RealTime::end_sequence()
 {
   // kill all robot processes
-  
-  GList* gl = g_list_next(all_robots_in_sequence);
 
-  for(; gl != NULL; gl = g_list_next(gl))
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      ((Robot*)gl->data)->end_process();
+      li()->end_process();
     }
 
   // wait a second before checking
@@ -1034,16 +1044,15 @@ Arena_RealTime::end_sequence_follow_up()
 {
   // check if the process have stopped, otherwise kill
   
-  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
 
-  for(; gl != NULL; )
+  ListIterator<Robot> li;
+  for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = (Robot*)gl->data;
-      gl = g_list_next(gl);
+      robotp = li();
       if( robotp->is_process_running() ) robotp->kill_process_forcefully();
       robotp->delete_pipes();
-      g_list_remove(all_robots_in_sequence, robotp);
+      all_robots_in_sequence.remove(li, false);
     }
 
   if(sequences_remaining == 0) 
@@ -1080,7 +1089,7 @@ Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* a
     {
       infop = (start_tournament_glist_info_t*)gl->data;
       robotp = new Robot(infop->filename);
-      g_list_append(all_robots_in_tournament, robotp);
+      all_robots_in_tournament.insert_last( robotp );
       number_of_robots++;
     }
 
@@ -1090,7 +1099,7 @@ Arena_RealTime::start_tournament(const GList* robotfilename_list, const GList* a
   for(gl = g_list_next(arenafilename_list); gl != NULL; gl = g_list_next(gl))
     {
       stringp = new String(((start_tournament_glist_info_t*)gl->data)->filename);
-      g_list_append(arena_filenames, stringp);
+      arena_filenames.insert_last( stringp );
       number_of_arenas++;
     }
 

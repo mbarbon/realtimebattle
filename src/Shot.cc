@@ -31,7 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 Shot::Shot(const Vector2D& c, const double r, 
            const Vector2D& vel, const double en ) 
-  : MovingObject(vel), Circle(c, r)
+  : MovingObject(c, r, vel)
 {
   alive = true;
   energy = en;
@@ -43,9 +43,10 @@ void
 Shot::move(const double timestep)
 {
   arenaobject_t closest_shape;
-  void* colliding_object;
-  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, 
-                                                             closest_shape, colliding_object);
+  Shape* colliding_object;
+  double time_to_collision = the_arena.
+    get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
+
   if( time_to_collision > timestep )
     {
       center += timestep*velocity;
@@ -78,8 +79,7 @@ Shot::move(const double timestep)
           {
             Cookie* cookiep =(Cookie*)colliding_object;
             cookiep->die();
-            g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
-            delete cookiep;
+            the_arena.get_object_lists()[COOKIE].remove( cookiep );
             die();
           }
           break;
@@ -87,8 +87,7 @@ Shot::move(const double timestep)
           {
             Mine* minep =(Mine*)colliding_object;
             minep->die();
-            g_list_remove((the_arena.get_object_lists())[MINE], minep);
-            delete minep;
+            the_arena.get_object_lists()[MINE].remove( minep );
             die();
           }
           break;

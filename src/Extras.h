@@ -22,12 +22,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GeometricalObjects.h"
 
-// ---------------------  Extras : ArenaObject  ---------------------
+// ---------------------  Extras : Circle  ---------------------
 
-class Extras : public virtual Circle
+class Extras : public Circle
 {
 public:
-  Extras(const double e);
+  Extras(const Vector2D& c, const double r, const double e, const long int col);
   ~Extras() {}
 
   bool is_alive() { return alive; }
@@ -42,7 +42,7 @@ protected:
 
 // ---------------------  Cookie : Extras  ---------------------
 
-class Cookie : public virtual Extras
+class Cookie : public Extras
 {
 public:
   Cookie(const Vector2D& c, const double r, const double e);
@@ -53,7 +53,7 @@ public:
 
 // ---------------------  Mine : Extras  ---------------------
 
-class Mine : public virtual Extras, public virtual Circle
+class Mine : public Extras
 {
 public:
   Mine(const Vector2D& c, const double r, const double e); 

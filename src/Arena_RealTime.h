@@ -52,7 +52,7 @@ public:
   void print_to_logfile(const char first_letter ... );
   
   Vector2D get_random_position();
-  GList* get_arena_filenames() { return arena_filenames; }
+  List<String> get_arena_filenames() { return arena_filenames; }
   int get_current_arena_nr() { return current_arena_nr; }
 
   int set_debug_level( const int new_level);

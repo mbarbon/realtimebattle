@@ -176,16 +176,15 @@ ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
 {
   if( event == NULL ) return;
 
-  GList* gl;
-  Robot* robot_p;
-
-  for( gl = g_list_next( the_arena.get_object_lists()[ROBOT_T] );
-       gl != NULL; gl = g_list_next(gl) )
+  Robot* robotp;
+  
+  ListIterator<Shape> li;
+  for( the_arena.get_object_lists()[ROBOT_T].first(li); li.ok(); li++ )
     {
-      robot_p = (Robot*)(gl->data);
+      robotp = (Robot*)li();
 
-      if( row == robot_p->get_row_in_score_clist() )
-        scorewindow_p->set_selected_robot( robot_p );
+      if( row == robotp->get_row_in_score_clist() )
+        scorewindow_p->set_selected_robot( robotp );
     }
 }
 
@@ -198,19 +197,18 @@ void
 ScoreWindow::add_robots()
 {
   gtk_clist_clear( GTK_CLIST( clist ) );
-  GList* gl;
   Robot* robot_p;
+  List<Shape>* object_lists = the_arena.get_object_lists();
+  ListIterator<Shape> li;
+
   bool found_robot = false;
 
-  int robot_number = 0;
-  for( gl = g_list_next( the_arena.get_object_lists()[ROBOT_T] );
-       gl != NULL; gl = g_list_next(gl) )
-    robot_number++;
+  int robot_number = the_arena.get_object_lists()[ROBOT_T].number_of_elements();
 
-  for( gl = g_list_next( the_arena.get_object_lists()[ROBOT_T] );
-       gl != NULL; gl = g_list_next(gl) )
+  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
     {
-      robot_p = (Robot*)(gl->data);
+      robot_p = (Robot*)li();
+
       char* empty_list[] = { "", "", "", "", "", "" };
       int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
 
@@ -242,10 +240,9 @@ ScoreWindow::add_robots()
     }
 
   if( !found_robot )
-    for( gl = g_list_next( the_arena.get_object_lists()[ROBOT_T] );
-         gl != NULL; gl = g_list_next(gl) )
+    for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
       {
-        robot_p = (Robot*)(gl->data);
+        robot_p = (Robot*)li();
         if( robot_p->get_row_in_score_clist() == 0 )
           {
             selected_robot = robot_p;

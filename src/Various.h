@@ -24,7 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdktypes.h>
 #include <gtk/gtkwidget.h>
 
-#include "String.h"
+//#include "String.h"
+class String;
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))

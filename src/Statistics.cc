@@ -269,9 +269,7 @@ Gui::change_statistics( int change, bool absolute_change )
       max_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence() + game_nr;
       break;
     case STAT_TABLE_ROBOT:
-      GList* gl;
-      for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-        max_nr++;
+      max_nr += the_arena.get_all_robots_in_tournament()->number_of_elements();
       break;
     }
 
@@ -357,7 +355,7 @@ Gui::add_new_row( void * rp, void * sp, int games_played )
 void
 Gui::add_the_statistics_to_clist()
 {
-  GList* gl, * stat_gl;
+  GList* stat_gl;
   Robot* robotp;
 
   stat_make_title_button();
@@ -367,18 +365,18 @@ Gui::add_the_statistics_to_clist()
     {
     case STAT_TABLE_TOTAL:
       {
-        int number_of_robots = 0;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-          number_of_robots++;
+        int number_of_robots = the_arena.get_number_of_robots();
 
         double points[number_of_robots];
         int position[number_of_robots];
 
         int robot_nr = -1;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+
+        ListIterator<Robot> li;
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             robot_nr++;
-            robotp = (Robot *)gl->data;
+            robotp = li();
 
             stat_t * statp = NULL;
             points[robot_nr] = 0;
@@ -400,10 +398,11 @@ Gui::add_the_statistics_to_clist()
           }
 
         robot_nr = -1;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             robot_nr++;
-            robotp = (Robot *)gl->data;
+            robotp = li();
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             stat_t * statp = NULL;
             int number_of_stat_found = 0;
@@ -430,18 +429,19 @@ Gui::add_the_statistics_to_clist()
       }
     case STAT_TABLE_SEQUENCE:
       {
-        int number_of_robots = 0;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-          number_of_robots++;
+        int number_of_robots = the_arena.get_number_of_robots();
 
         double points[number_of_robots];
         int position[number_of_robots];
 
         int robot_nr = -1;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+
+
+        ListIterator<Robot> li;
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             robot_nr++;
-            robotp = (Robot *)gl->data;
+            robotp = (Robot *)li();
 
             points[robot_nr] = 0;
             for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
@@ -462,10 +462,10 @@ Gui::add_the_statistics_to_clist()
           }
 
         robot_nr = -1;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             robot_nr++;
-            robotp = (Robot *)gl->data;
+            robotp = li();
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             stat_t * statp = NULL;
             int number_of_stat_found = 0;
@@ -501,9 +501,11 @@ Gui::add_the_statistics_to_clist()
             looking_at_sequence--;
           }
 
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+
+        ListIterator<Robot> li;
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
-            robotp = (Robot *)gl->data;
+            robotp = li();
             stat_t * statp = NULL;
 
             for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
@@ -519,10 +521,12 @@ Gui::add_the_statistics_to_clist()
       {
         int i=0;
         stat_t * statp = NULL;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+
+        ListIterator<Robot> li;
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             i++;
-            robotp = (Robot *)gl->data;
+            robotp = li();
             if(i==stat_looking_at_nr)
               for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
                 {
@@ -581,14 +585,14 @@ Gui::stat_make_title_button()
       }
     case STAT_TABLE_ROBOT:
       {
-        GList* gl;
         Robot* robotp;
 
         int i=0;
-        for(gl = g_list_next(the_arena.get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        ListIterator<Robot> li;
+        for( the_arena.get_all_robots_in_tournament()->first(li); li.ok(); li++ )
           {
             i++;
-            robotp = (Robot *)gl->data;
+            robotp = li();
             if( stat_looking_at_nr == i )
               {
                 GdkPixmap * colour_pixmap;

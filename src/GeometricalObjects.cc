@@ -139,6 +139,13 @@ Circle::Circle(const Vector2D& c, const double r)
   last_drawn_radius = radius = r;
 }
 
+Circle::Circle(const Vector2D& c, const double r, const long int col) : Shape(col)
+{
+  last_drawn_center = center = c;
+  last_drawn_radius = radius = r;
+}
+
+
 // Circle::Circle(const Vector2D& c, const double r, const double b_c, const double hardn)
 // {
 //   last_drawn_center = center = c;

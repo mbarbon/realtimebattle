@@ -27,10 +27,12 @@ RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
 RealTimeBattle_DEPENDENCIES = $(GETOPT_O) $(GRAPHICS_O)
 RealTimeBattle_SOURCES = \
 	Arena_Base.cc Arena_Base.h \
+	Arena_Controller.cc Arena_Controller.h \
 	Arena_RealTime.cc Arena_RealTime.h \
 	Arena_Replay.h Arena_Replay.cc \
-	Arena_Controller.cc Arena_Controller.h \
 	Extras.cc Extras.h \
+	List.cc List.h \
+	GeometricalObjects.cc GeometricalObjects.h \
 	Gui.h \
 	Messagetypes.h \
 	MovingObject.h \
@@ -40,7 +42,6 @@ RealTimeBattle_SOURCES = \
 	String.cc String.h \
 	Various.cc Various.h \
 	Vector2D.cc Vector2D.h \
-	GeometricalObjects.cc GeometricalObjects.h \
 	Robot.cc Robot.h \
 	Shot.cc Shot.h \
 	Structs.h \

@@ -27,7 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 // ---------------------  Line : Shape ---------------------
 
-class Line : public virtual Shape
+class Line : public Shape
 {
 public:
   Line();
@@ -64,11 +64,12 @@ protected:
 
 // ---------------------  Circle : Shape ---------------------
 
-class Circle : public virtual Shape 
+class Circle : public Shape 
 {
 public:
   Circle();
   Circle(const Vector2D& c, const double r); 
+  Circle(const Vector2D& c, const double r, const long int col); 
   Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
   ~Circle() {}
 
@@ -93,7 +94,7 @@ protected:
 
 // ---------------------  InnerCircle : Shape ---------------------
 
-class InnerCircle : public virtual Shape 
+class InnerCircle : public Shape 
 {
 public:
   InnerCircle();

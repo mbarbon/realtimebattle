@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "MovingObject.h"
 
 
-class Shot : public virtual MovingObject
+class Shot : public MovingObject
 {
 public:
   Shot(const Vector2D& c, const double r, 

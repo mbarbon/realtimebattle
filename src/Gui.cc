@@ -168,8 +168,7 @@ Gui::change_to_pixels_y(const double input)
 void
 Gui::draw_objects(const bool clear_objects_first)
 {
-  GList** object_lists;
-  GList* gl;
+  List<Shape>* object_lists;
   Robot* robotp;
 
   if((da_scrolled_window->allocation.width - 24 !=  da_scrolled_window_size[0]) ||
@@ -177,15 +176,18 @@ Gui::draw_objects(const bool clear_objects_first)
     change_zoom();
 
   object_lists = the_arena.get_object_lists();
-  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Shot*)gl->data)->is_alive() )
-      ((Shot*)gl->data)->draw_shape( clear_objects_first );
 
-  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
+  ListIterator<Shape> li;
+  for( object_lists[SHOT_T].first(li); li.ok(); li++ )
+    if( ((Shot*)li())->is_alive() )
+      ((Shot*)li())->draw_shape( clear_objects_first );
+
+
+  ListIterator<Shape> li2;
+  for( object_lists[ROBOT_T].first(li2); li2.ok(); li2++ )
     {
-      robotp = (Robot*)(gl->data);
+      robotp = (Robot*)li2();
 
-      //      if( robotp->get_arenaobject_t() == ROBOT ) // is this needed??
       if( robotp->is_alive() )
         {
           robotp->draw_shape( clear_objects_first );
@@ -197,28 +199,23 @@ Gui::draw_objects(const bool clear_objects_first)
 void
 Gui::draw_all_walls()
 {
-  GList** object_lists;
-  GList* gl;
+  List<Shape>* object_lists;
 
   object_lists = the_arena.get_object_lists();
+  ListIterator<Shape> li;
 
-  for(gl = g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    ((WallInnerCircle*)gl->data)->draw_shape( false );
-  for(gl = g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
-    ((WallLine*)gl->data)->draw_shape( false );
-
-  for(gl = g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
-    ((WallCircle*)gl->data)->draw_shape( false );
-
-
-
-  for(gl = g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Mine*)gl->data)->is_alive() )
-      ((Mine*)gl->data)->draw_shape( false );
-
-  for(gl = g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
-    if( ((Cookie*)gl->data)->is_alive() )
-      ((Cookie*)gl->data)->draw_shape( false );
+  // Must begin with innercircles (the are destructive)
+  for( int obj_type=WALL_INNERCIRCLE_T; obj_type > SHOT_T; obj_type--) 
+    {
+      for( object_lists[obj_type].first(li); li.ok(); li++ )
+        {
+          if( !( ( obj_type == MINE_T || obj_type == COOKIE_T ) &&
+                 ((Extras*)li())->is_alive())  )
+            {
+              li()->draw_shape( false );
+            }
+        }
+    }
 
   draw_objects(false);
 }
