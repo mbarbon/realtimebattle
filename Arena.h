@@ -80,7 +80,10 @@ private:
   void update_robots();
   void move_shots();
   void update_explosions();
-  
+
+  void add_cookie();
+  void add_mine();
+
   bool is_colour_allowed(const long colour, const double min_dist, const class Robot*);
   double colour_dist(const long col1, const GdkColor& col2);
 
@@ -161,7 +164,9 @@ private:
 class Shape
 {
 public:
-  Shape() {bounce_coeff = 0.5; colour = make_gdk_color( 0x000000 ); }
+  Shape() {colour = make_gdk_color( 0x000000 ); }
+  Shape(long col) { colour = make_gdk_color( col ); }
+
   virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
@@ -308,15 +313,12 @@ public:
 
 // ---------------------  Extras : ArenaObject  ---------------------
 
-class Robot;
-
 class Extras : public virtual ArenaObject
 {
 public:
   //Extras(const Vector2D& c, const double r); 
   //~Extras() {}
   
-  virtual int touch_action(class Robot&) = 0;
 };
 
 // ---------------------  Cookie : Extras  ---------------------
@@ -324,13 +326,17 @@ public:
 class Cookie : public virtual Extras, public virtual Circle
 {
 public:
-  Cookie(const Vector2D& c, const double r, const double e); 
+  Cookie(const Vector2D& c, const double r, const double e, Arena* ap); 
   ~Cookie() {}
   
-  int touch_action(class Robot&);
   object_type get_object_type() { return COOKIE; }
+  bool is_alive() { return alive; }
+  void die();
+  double get_energy() { return energy; }
+
 private:
   double energy;
+  bool alive;
 };
 
 // ---------------------  Mine : Extras  ---------------------
@@ -338,12 +344,17 @@ private:
 class Mine : public virtual Extras, public virtual Circle
 {
 public:
-  Mine(const Vector2D& c, const double r, const double e); 
+  Mine(const Vector2D& c, const double r, const double e, Arena* ap); 
   ~Mine() {}
 
-  int touch_action(class Robot&);
   object_type get_object_type() { return MINE; }
+  bool is_alive() { return alive; }
+  void die();
+  double get_energy() { return energy; }
+
 private:
+  double energy;
+  bool alive;
 };
 
 

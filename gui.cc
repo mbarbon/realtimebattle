@@ -133,7 +133,15 @@ Gui::draw_objects()
 
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
-      ((Shot*)gl->data)->draw_shape( *this , true ); // Strange, but it works!
+      ((Shot*)gl->data)->draw_shape( *this , true );
+
+  for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
+    if( ((Mine*)gl->data)->is_alive() )
+      ((Mine*)gl->data)->draw_shape( *this , true );
+
+  for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
+    if( ((Cookie*)gl->data)->is_alive() )
+      ((Cookie*)gl->data)->draw_shape( *this , true );
 }
 
 void

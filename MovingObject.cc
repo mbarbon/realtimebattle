@@ -304,8 +304,26 @@ Robot::move(const double timestep, int iterstep)
           }
           break;
         case COOKIE:
+          {
+            double en =  ((Cookie*)colliding_object)->get_energy();
+            change_energy( en );
+            send_message(COLLISION, COOKIE, en);
+            Cookie* cookiep =(Cookie*)colliding_object;
+            cookiep->die();
+            g_list_remove((the_arena->get_object_lists())[COOKIE], cookiep);
+            delete cookiep;
+          }
           break;
         case MINE:
+          {
+            double en =  -((Mine*)colliding_object)->get_energy();
+            change_energy( en );
+            send_message(COLLISION, MINE, en);
+            Mine* minep =(Mine*)colliding_object;
+            minep->die();
+            g_list_remove((the_arena->get_object_lists())[MINE], minep);
+            delete minep;
+          }
           break;
         default:
           throw Error("Collided with unknown object", "Robot::move");
@@ -608,8 +626,22 @@ Shot::move(const double timestep)
           die();
           break;
         case COOKIE:
+          {
+            Cookie* cookiep =(Cookie*)colliding_object;
+            cookiep->die();
+            g_list_remove((the_arena->get_object_lists())[COOKIE], cookiep);
+            delete cookiep;
+            die();
+          }
           break;
         case MINE:
+          {
+            Mine* minep =(Mine*)colliding_object;
+            minep->die();
+            g_list_remove((the_arena->get_object_lists())[MINE], minep);
+            delete minep;
+            die();
+          }
           break;
         default:
           throw Error("Collided with unknown object", "Robot::move");

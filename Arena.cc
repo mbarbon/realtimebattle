@@ -354,6 +354,13 @@ Arena::timeout_function()
             end_game();
           }
       //   TODO:    if( total_time > next_check_time ) check_robots();
+
+        // Place mines and cookies
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*opts.get_cookie_frequency() )
+          add_cookie();
+
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*opts.get_mine_frequency() )
+          add_mine();
       }
       break;
 
@@ -390,6 +397,48 @@ Arena::reset_timer()
   current_timer = 0.0;
   g_timer_reset(timer);
   update_timer();
+}
+
+void
+Arena::add_cookie()
+{
+  double en = opts.get_cookie_min_energy() + 
+    (opts.get_cookie_max_energy() - opts.get_cookie_min_energy()) * 
+    (double)rand() / (double)RAND_MAX;
+  bool found_space = false;
+  double r = opts.get_cookie_radius();
+  Vector2D pos;
+
+  for( int i=0; i<100 && !found_space; i++)
+    {
+      pos = get_random_position();
+      found_space = space_available(pos, r*2.0);
+    }
+  
+  if( !found_space ) throw Error("Couldn't find space for cookie", "Arena::timeout_function");
+  Cookie* cookiep = new Cookie(pos, r, en, this);
+  g_list_append(object_lists[COOKIE], cookiep);
+}
+
+void
+Arena::add_mine()
+{
+  double en = opts.get_mine_min_energy() + 
+    (opts.get_mine_max_energy() - opts.get_mine_min_energy()) * 
+    (double)rand() / (double)RAND_MAX;
+  bool found_space = false;
+  double r = opts.get_cookie_radius();
+  Vector2D pos;
+
+  for( int i=0; i<100 && !found_space; i++)
+    {
+      pos = get_random_position();
+      found_space = space_available(pos, r*2.0);
+    }
+  
+  if( !found_space ) throw Error("Couldn't find space for mine", "Arena::timeout_function");
+  Mine* minep = new Mine(pos, r, en, this);
+  g_list_append(object_lists[MINE], minep);
 }
 
 void

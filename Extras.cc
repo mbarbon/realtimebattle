@@ -1,14 +1,32 @@
 #include "Arena.h"
 
-Cookie::Cookie(const Vector2D& c, const double r, const double e) : Circle(c, r)
+Cookie::Cookie(const Vector2D& c, const double r, const double e, Arena* ap) 
+  : Circle(c, r), Shape(opts.get_cookie_colour()), ArenaObject(ap)
 {
   energy = e;
+  alive = true;
 }
 
-int
-Cookie::touch_action(class Robot& robot)
+void
+Cookie::die()
 {
-  robot.change_energy(energy);
-  return( 1 );
+   alive = false;
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,*(the_arena->get_background_colour_p()),true);
 }
+
+Mine::Mine(const Vector2D& c, const double r, const double e, Arena* ap) 
+  : Circle(c, r), Shape(opts.get_mine_colour()), ArenaObject(ap)
+{
+  energy = e;
+  alive = true;
+}
+
+void
+Mine::die()
+{
+   alive = false;
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,*(the_arena->get_background_colour_p()),true);
+}
+
+
 
