@@ -223,6 +223,10 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.050, 0.010, 1.0, 12,
                           false, false, "Update interval [s]" );
 
+  all_double_options[OPTION_ROBOT_STARTUP_TIME] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.050, 1000000.0, 12,
+                          false, false, "Robot startup time [s]" );
+
   all_double_options[OPTION_CPU_START_LIMIT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 5.0, 0.01, 100000000.0, 12,
                           false, false, "Start CPU time [s]" );

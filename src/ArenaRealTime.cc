@@ -1088,7 +1088,7 @@ ArenaRealTime::start_sequence()
   set_state( STARTING_ROBOTS );
   sequence_nr++;
   reset_timer();
-  next_check_time = total_time + 1.0;
+  next_check_time = total_time + the_opts.get_d(OPTION_ROBOT_STARTUP_TIME);
 }
 
 void
