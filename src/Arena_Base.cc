@@ -133,8 +133,12 @@ Arena_Base::interrupt_tournament()
 void
 Arena_Base::set_colours()
 {  
-  background_colour = make_gdk_colour(the_opts.get_l(OPTION_BACKGROUND_COLOUR));
-  foreground_colour = make_gdk_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
+  bg_rgb_colour = the_opts.get_l(OPTION_BACKGROUND_COLOUR);
+  fg_rgb_colour = the_opts.get_l(OPTION_FOREGROUND_COLOUR);
+#ifndef NO_GRAPHICS
+  bg_gdk_colour = make_gdk_colour(bg_rgb_colour);
+  fg_gdk_colour = make_gdk_colour(fg_rgb_colour);
+#endif NO_GRAPHICS
 }
 
 #endif

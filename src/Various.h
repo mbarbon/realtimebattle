@@ -20,9 +20,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __VARIOUS__
 #define __VARIOUS__
 
-#include <glib.h>
-#include <gdk/gdktypes.h>
-#include <gtk/gtkwidget.h>
+#ifndef NO_GRAPHICS
+# include <glib.h>
+# include <gdk/gdktypes.h>
+# include <gtk/gtkwidget.h>
+#endif NO_GRAPHICS
 
 #include "List.h"
 
@@ -57,13 +59,7 @@ int factorial(const int n);
 
 int binomial(const int n, const int k);
 
-GdkColor make_gdk_colour(const long col);
-
-int long gdk2hex_colour(const GdkColor& col);
-
 void reorder_pointer_array(void** array, int size);
-
-void entry_handler( GtkWidget * entry, entry_t * entry_info );
 
 void read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs);
 void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
@@ -71,11 +67,22 @@ void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );
 
+#ifndef NO_GRAPHICS
+
+void entry_handler( GtkWidget * entry, entry_t * entry_info );
+
+GdkColor make_gdk_colour(const long col);
+int long gdk2hex_colour(const GdkColor& col);
+
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
 gint int_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint float_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint string_case_sensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint string_case_insensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 #endif
+#endif NO_GRAPHICS
 
 #endif __VARIOUS__
+
+
+

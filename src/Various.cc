@@ -22,8 +22,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <math.h>
+#include <limits.h>
+
+#ifndef NO_GRAPHICS
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#endif NO_GRAPHICS
 
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -45,7 +49,9 @@ Error(const bool fatal, const String& error_msg, const String& function_name)
 
   if( fatal == true )
     {
+#ifndef NO_GRAPHICS
       gtk_main_quit();
+#endif NO_GRAPHICS
       exit(EXIT_FAILURE);
     }
 }
@@ -99,6 +105,7 @@ reorder_pointer_array(void** array, int size)
     }
 }
 
+#ifndef NO_GRAPHICS
 GdkColor
 make_gdk_colour(const long col)
 {
@@ -122,7 +129,7 @@ gdk2hex_colour(const GdkColor& col)
             ((col.green & 0xff) << 8) |
             ((col.red & 0xff) << 16) );
 }
-
+#endif NO_GRAPHICS
 
 void
 read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs)

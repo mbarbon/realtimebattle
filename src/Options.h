@@ -162,8 +162,11 @@ struct option_info_t
     default_value=n.default_value; min_value=n.min_value;
     max_value=n.max_value; max_letters_in_entry=n.max_letters_in_entry;
     broadcast_option=n.broadcast_option; log_option=n.log_option;
-    
-    label=n.label;entry=n.entry; return *this; }
+    label=n.label;
+#ifndef NO_GRAPHICS
+    entry=n.entry; 
+#endif NO_GRAPHICS
+    return *this; }
 
 
   entry_datatype_t datatype;

@@ -33,7 +33,6 @@ RealTimeBattle_SOURCES = \
 	Extras.cc Extras.h \
 	List.cc List.h \
 	GeometricalObjects.cc GeometricalObjects.h \
-	Gui.h \
 	Messagetypes.h \
 	MovingObject.h \
 	Options.cc Options.h \
@@ -52,7 +51,7 @@ RealTimeBattle_SOURCES = \
 EXTRA_RealTimeBattle_SOURCES = \
 	ControlWindow.cc ControlWindow.h \
 	getopt.c getopt.h \
-	Gui.cc \
+	Gui.cc Gui.h \
 	MessageWindow.cc MessageWindow.h \
 	OptionsWindow.cc OptionsWindow.h \
 	ScoreWindow.cc ScoreWindow.h \

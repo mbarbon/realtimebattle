@@ -20,15 +20,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_BASE__
 #define __ARENA_BASE__
 
-
+#ifndef NO_GRAPHICS
 #include <glib.h>
 #include <gdk/gdk.h>
+#endif NO_GRAPHICS
+
 #include <iostream.h>
 #include <fstream.h>
 
+#ifndef NO_GRAPHICS
+#include "Gui.h"
+#endif NO_GRAPHICS
+
 #include "Vector2D.h"
 #include "Messagetypes.h"
-#include "Gui.h"
 #include "Structs.h"
 #include "Timer.h"
 #include "List.h"
@@ -60,20 +65,14 @@ extern bool no_graphics;
 
 
 
-
-
-
-
-
 class Arena_Base
 {
 public:
 
   Arena_Base();
-  ~Arena_Base();
+  virtual ~Arena_Base();
 
   enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
-
 
 
   double get_shortest_distance(const Vector2D& pos, 
@@ -89,7 +88,7 @@ public:
   void clear();
   virtual void interrupt_tournament();
   
-  virtual gint timeout_function() = 0;
+  virtual bool timeout_function() = 0;
 
   virtual void end_game() = 0;
 
@@ -131,8 +130,12 @@ public:
   int increase_cookie_count() { return cookie_count++; }
   int increase_mine_count()   { return mine_count++; }
 
-  GdkColor* get_background_colour_p() { return &background_colour; }
-  GdkColor* get_foreground_colour_p() { return &foreground_colour; }
+#ifndef NO_GRAPHICS
+  GdkColor* get_bg_gdk_colour_p() { return &bg_gdk_colour; }
+  GdkColor* get_fg_gdk_colour_p() { return &fg_gdk_colour; }
+#endif NO_GRAPHICS
+  long int get_bg_rgb_colour() { return bg_rgb_colour; }
+  long int get_fg_rgb_colour() { return fg_rgb_colour; }
 
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
@@ -193,9 +196,13 @@ protected:
   int robots_left;
   int robots_per_game;
 
-  GdkColor background_colour;
-  GdkColor foreground_colour;
 
+#ifndef NO_GRAPHICS
+  GdkColor bg_gdk_colour;
+  GdkColor fg_gdk_colour;
+#endif NO_GRAPHICS
+  long int bg_rgb_colour;
+  long int fg_rgb_colour;
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   
@@ -208,8 +215,6 @@ protected:
   bool halted;
   bool halt_next;
   bool pause_after_next_game;
-
-
 };
 
 
