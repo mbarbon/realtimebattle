@@ -8,6 +8,9 @@
 #include "../src/Messagetypes.h"
 
 #define abs(x) ((x>0) ? (x) : -(x))
+#define sgn(x) ((x>0) ? 1 : -1)
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;
@@ -16,8 +19,8 @@ double tid=0.0, radar_angle=0.0, prev_radar_angle, cannon_angle, tid0, slumprota
 double maxspeed =3.0, robotmaxrotate, cannonmaxrotate, radarmaxrotate, dist=0.0, prev_dist;
 double robotstartenergy, robotmaxenergy, robotenergylevels, shotspeed, shotmaxenergy;
 double  shotminenergy, shotenergyincreasespeed,timeout, rotend=0.0, broms=0.0;
-double prev_speed, speed=0.0, prev_tid;
-int robots_left = 20, rotating, enemy = 0, cookie = 0;
+double prev_speed, speed=0.0, prev_tid, energy, sweepleft, sweepright;
+int robots_left = 20, rotating, enemy = 0, cookie = 0, flee = 0, wallcoll=0;
 bool sweep = false, align_cro= true, align_cra = true;
 
 volatile sig_atomic_t exit_robot = false;
@@ -122,7 +125,11 @@ check_messages(int sig)
           prev_tid = tid;
           cin >> tid >> speed  >> cannon_angle;
           break;
-          
+
+        case ENERGY:
+          cin >> energy;
+          break;
+
         case ROBOTS_LEFT:
           cin >> robots_left;
           break;
@@ -138,19 +145,35 @@ check_messages(int sig)
             switch(object)
               {
               case ROBOT:
-                enemy = 10;
-                broms=0.0;
+                enemy = max(20-robots_left,1);
+                broms=1.0;
                 if (speed<maxspeed)
                   acceleration = 2.0;
                 else
                   acceleration = 0.0;
+
+                sweepleft=radar_angle-M_PI/20.0;
+                sweepright=radar_angle+M_PI/20.0;
                 cout << "RotateAmount 1 " << robotmaxrotate << " " << radar_angle << endl;
                 cout << "Accelerate " << acceleration << endl;
-                cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
+                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl; 
                 cout << "Shoot 2" << endl;
                 cout << "Break " << broms << endl;
                 break;
               case WALL:
+                if (flee>1)
+                  flee--;
+                else
+                  {
+                    if (flee==1)
+                      {
+                        sweepleft=-M_PI/3.0;
+                        sweepright=M_PI/3.0;
+                        flee--;
+                      }
+                    maxspeed=3.0;
+                  }
+
                 if (speed < maxspeed)
                   {
                     acceleration = 2.0;
@@ -161,49 +184,84 @@ check_messages(int sig)
                     acceleration = 0.0;
                     broms = 0.3;
                   }
-
+                
                 if (enemy>0)
                   {
-                    cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
+                    if (abs(radar_angle)>M_PI/6.0)
+                      {
+                        broms=1.0;
+                        acceleration=0.0;
+                      }
+
                     enemy--;
+                    sweepleft=sweepleft-M_PI/20.0;
+                    sweepright=sweepright+M_PI/20.0;
                   }
                 else
                   {
                     if (cookie>0)
                       {
-                        cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
+                        if (abs(radar_angle)>M_PI/6.0)
+                          {
+                            broms=1.0;
+                            acceleration=0.0;
+                          }
+                        
                         cookie--;
+                        sweepleft=sweepleft-M_PI/20.0;
+                        sweepright=sweepright+M_PI/20.0;
                       }
                     else
                       {
-                        if (speed < maxspeed)
-                          acceleration = 2.0;
-                        else
-                          {
-                            acceleration = 0.0;
-                            cout << "Break 0.1" << endl;
-                          }
-                        
                         x1=abs(prev_dist * sin(prev_radar_angle));
                         x2=abs(dist * sin(radar_angle));
-                        
-                        if (x1<=x2) 
-                          rot = 0;
+
+                        if (wallcoll > 0)
+                          if (speed < 2.0)
+                            {
+                              if (dist > 2.0)
+                                rot = sgn(radar_angle)*robotmaxrotate;
+                            }
+                          else
+                            wallcoll = 0;
                         else
                           {
-                            s = (prev_dist*cos(prev_radar_angle) - dist*cos(radar_angle)- (prev_speed+speed)/2.0*(tid-prev_tid))*
-                              (abs(radar_angle)-abs(prev_radar_angle));
-                            if (s>0)
-                              rot = robotmaxrotate;
+                            if (x1<=x2) 
+                              rot = 0;
                             else
-                              rot = -robotmaxrotate;
+                              {
+                                s = (prev_dist*cos(prev_radar_angle) - dist*cos(radar_angle)- (prev_speed+speed)/2.0*(tid-prev_tid))*
+                                  (abs(radar_angle)-abs(prev_radar_angle));
+                                if (s>0)
+                                  rot = robotmaxrotate;
+                                else
+                                  rot = -robotmaxrotate;
+                              }
                           }
-                        //cout << "Print " << s << endl;
-                        cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/2.0 << " " << M_PI/2.0 << endl;
-                        cout << "Rotate 1 " << rot << endl;
-                        
+                            //cout << "Print " << s << endl;
+                        if (((prev_dist/(dist+1e-7)>1.2) && (dist<2.0)) || ((dist<0.5) && (dist<prev_dist)))
+                          {
+                            if (radar_angle<prev_radar_angle)
+                              {
+                                sweepleft = prev_radar_angle;
+                                sweepright = prev_radar_angle+M_PI;
+                              }
+                            else
+                              {
+                                sweepleft = prev_radar_angle-M_PI;
+                                sweepright = prev_radar_angle;
+                                  }
+                          }
+                        else
+                          {
+                            sweepleft=sweepleft-M_PI/200.0;
+                            sweepright=sweepright+M_PI/200.0;
+                          }
                       }
+                    cout << "Rotate 1 " << rot << endl;
+                    
                   }
+                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
                 cout << "Accelerate " << acceleration << endl;
                 cout << "Break " << broms << endl;
                 break;
@@ -211,15 +269,17 @@ check_messages(int sig)
                 break;
               case COOKIE:
                 cookie = 10;
-                broms = 0.0;
+                broms = 1.0;
                 robot_rotate = 0.0;
+                sweepleft=radar_angle-M_PI/20.0;
+                sweepright=radar_angle+M_PI/20.0;
                 if (speed<maxspeed)
                   acceleration = 2.0;
                 else
                   acceleration = 0.0;
                 cout << "RotateAmount 1 " << robotmaxrotate << " " << radar_angle << endl;
                 cout << "Accelerate " << acceleration << endl;
-                cout << "Sweep 6 " << cannonmaxrotate << " " << -M_PI/6.0 << " " << M_PI/6.0 << endl; 
+                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl; 
                 cout << "Break " << broms << endl;
                 break;
 
@@ -245,6 +305,13 @@ check_messages(int sig)
               case ROBOT: 
                 break;
               case SHOT:
+                flee = 10;
+                maxspeed = 10.0;
+                acceleration = 2.0;
+                cout << "Accelerate " << acceleration << endl;
+                sweepleft = coll_angle - M_PI/4.0;
+                sweepright = coll_angle + M_PI/4.0;
+                cout << "Sweep 6 " << cannonmaxrotate << " " << sweepleft << " " << sweepright << endl;
                 break;
               case MINE: 
                 cout << "Print Oh no! A mine!" << endl; 
@@ -254,6 +321,7 @@ check_messages(int sig)
                 cookie = 0;
                 break;
               case WALL:
+                wallcoll=10;
                 break;
               }
             //if( enegry_diff != 0 ) cout << "Print energy changed by " << enegry_diff << endl;
