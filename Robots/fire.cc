@@ -12,7 +12,7 @@ volatile sig_atomic_t exit_robot = false;
 message_to_robot_type
 name2msg_to_robot_type(char* msg_name)
 {
-  for(int i=0; message_from_robot[i].msg[0] != '\0'; i++)
+  for(int i=0; message_to_robot[i].msg[0] != '\0'; i++)
     {
       if( strcmp(message_to_robot[i].msg, msg_name) == 0 )
         return (message_to_robot_type)i;
@@ -84,10 +84,10 @@ check_messages(int sig)
                 //cout << "Print A shot is approaching!" << endl;
                 break;
               case COOKIE:
-                cout << "Print Yummy! A cookie" << endl;
+                //                cout << "Print Yummy! A cookie" << endl;
                 break;
               case MINE:
-                cout << "Print Avoid this mine" << endl;
+                //cout << "Print Avoid this mine" << endl;
                 break;
               case EXPLOSION:
                 cout << "Print Avoid! Explosion" << endl;
@@ -102,6 +102,7 @@ check_messages(int sig)
           {
             int tmp;
             double enegry_diff;
+
             cin >> tmp >> enegry_diff;
             switch(tmp)
               {
