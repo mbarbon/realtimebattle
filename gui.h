@@ -69,7 +69,7 @@ public:
                   const double thickness, GdkColor& colour );
   void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
 
-  void change_statistics( int change );
+  void change_statistics( int change, bool absoult_change );
   void add_the_statistics_to_clist();
 
   int get_robot_nr( void * robotp, GList * robot_list );
@@ -101,8 +101,7 @@ private:
   Vector2D boundary[2];
 
   stat_table_t stat_table_type;
-  int stat_looking_at_sequence;
-  int stat_looking_at_game;
+  int stat_looking_at_nr;
 
   class Arena * the_arena;
 };

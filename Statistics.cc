@@ -29,47 +29,62 @@ buttons_in_statistics_callback(GtkWidget *widget, gpointer bi_p)
     case STAT_BUTTON_ROBOT:
       break;
     case STAT_BUTTON_FIRST:
+      button_info_p->guip->change_statistics( -1, true );
       break;
     case STAT_BUTTON_PREV:
-      button_info_p->guip->change_statistics( -1 );
+      button_info_p->guip->change_statistics( -1, false );
       break;
     case STAT_BUTTON_NEXT:
-      button_info_p->guip->change_statistics( 1 );
+      button_info_p->guip->change_statistics( 1, false );
       break;
     case STAT_BUTTON_LAST:
+      button_info_p->guip->change_statistics( 1, true );
       break;
     }
 }
 
 void
-Gui::change_statistics( int change )
+Gui::change_statistics( int change, bool absolut_change )
 {
-  int old_look = stat_looking_at_game;
-  stat_looking_at_game += change;
+  int old_look = stat_looking_at_nr;
   int game_nr = the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
-  if(stat_looking_at_game <= 0 )
+
+  int max_nr = 0;
+  switch(stat_table_type)
     {
-      if(stat_looking_at_sequence >= 2)
-        {
-          stat_looking_at_sequence--;
-          stat_looking_at_game = the_arena->get_games_per_sequence();
-        }
-      else
-        stat_looking_at_game = old_look;
-    }
-  else if((stat_looking_at_game > game_nr && stat_looking_at_sequence == the_arena->get_sequence_nr()) ||
-          (stat_looking_at_game > the_arena->get_games_per_sequence() && stat_looking_at_sequence < the_arena->get_sequence_nr()))
-    {
-      if(stat_looking_at_sequence < the_arena->get_sequence_nr())
-        {
-          stat_looking_at_sequence++;
-          stat_looking_at_game = 1;
-        }
-      else
-        stat_looking_at_game = old_look;
+    case STAT_TABLE_TOTAL:
+      max_nr = -1;
+      break;
+    case STAT_TABLE_SEQUENCE:
+      max_nr = the_arena->get_sequence_nr();
+      break;
+    case STAT_TABLE_GAME:
+      max_nr = ( the_arena->get_sequence_nr() - 1 ) * the_arena->get_games_per_sequence() + game_nr;
+      break;
+    case STAT_TABLE_ROBOT:
+      GList* gl;
+      for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+        max_nr++;
+      break;
     }
 
-  if( stat_looking_at_game != old_look)
+  if( absolut_change )
+    if( change == -1 )
+      stat_looking_at_nr = 1;
+    else if (change == 1)
+      if( max_nr > 0 )
+        stat_looking_at_nr = max_nr;
+
+  if( !absolut_change )
+    {
+      stat_looking_at_nr += change;
+      if(stat_looking_at_nr <= 0)
+        stat_looking_at_nr = 1;
+      if(stat_looking_at_nr > max_nr)
+        stat_looking_at_nr = max_nr;
+    }
+
+  if( stat_looking_at_nr != old_look)
     add_the_statistics_to_clist();
 }
 
@@ -78,6 +93,14 @@ Gui::add_the_statistics_to_clist()
 {
   GList* gl, * stat_gl;
   Robot* robotp;
+
+  int looking_at_game = stat_looking_at_nr % the_arena->get_games_per_sequence();
+  int looking_at_sequence = (stat_looking_at_nr / the_arena->get_games_per_sequence()) + 1;
+  if( looking_at_game == 0 )
+    {
+      looking_at_game = the_arena->get_games_per_sequence();
+      looking_at_sequence--;
+    }
 
   gtk_clist_clear(GTK_CLIST(stat_clist));
   for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
@@ -88,7 +111,7 @@ Gui::add_the_statistics_to_clist()
       for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
         {
           statp = (stat_t*)(stat_gl->data);
-          if(statp->sequence_nr == stat_looking_at_sequence && statp->game_nr == stat_looking_at_game)
+          if(statp->sequence_nr == looking_at_sequence && statp->game_nr == looking_at_game)
             {
               strstream ss0,ss1,ss2,ss3,ss4;
 
@@ -125,8 +148,7 @@ Gui::add_the_statistics_to_clist()
 void
 Gui::setup_statistics_window()
 {
-  GtkWidget * vbox;
-  GtkWidget * button_table;
+  GtkWidget * vbox, * hbox;
   GtkWidget * button;
 
   statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
@@ -139,15 +161,16 @@ Gui::setup_statistics_window()
   gtk_container_add (GTK_CONTAINER (statistics_window), vbox);
   gtk_widget_show (vbox);
 
-  button_table = gtk_table_new (2, 5, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), button_table, FALSE, FALSE, 0);
+  hbox = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+  gtk_widget_show (hbox);
 
   // Buttons for displaying different statistics
 
   button = gtk_button_new_with_label ("Close");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
                       GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 0, 1, 0, 1);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
   gtk_widget_show (button);
 
   // Upper line of buttons
@@ -160,27 +183,89 @@ Gui::setup_statistics_window()
       data = new button_info_t( this, (stat_button_t)(i - 1) );
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) data);
-      gtk_table_attach_defaults (GTK_TABLE(button_table), button, i, i + 1, 0, 1);
+      gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
       gtk_widget_show (button);
     }
 
-  // Upper line of buttons
+  // Lower line of buttons
 
-  char * lower_button_labels[] = { "First", "Prev", "Next", "Last" };
+  const char * lower_button_xpms[4][13] = {
+    {"13 10 2 1",
+     "       c None",
+     "x      c #000000000000",
+     "xx         xx",
+     "xx       xxxx",  
+     "xx     xxxxxx",
+     "xx   xxxxxxxx",
+     "xx  xxxxxxxxx",
+     "xx  xxxxxxxxx",
+     "xx   xxxxxxxx",
+     "xx     xxxxxx",
+     "xx       xxxx",
+     "xx         xx"},
+    {"9 10 2 1",
+     "       c None",
+     "x      c #000000000000",
+     "       xx",
+     "     xxxx",  
+     "   xxxxxx",
+     " xxxxxxxx",
+     "xxxxxxxxx",
+     "xxxxxxxxx",
+     " xxxxxxxx",
+     "   xxxxxx",
+     "     xxxx",
+     "       xx"},
+    {"9 10 2 1",
+     "       c None",
+     "x      c #000000000000",
+     "xx       ",
+     "xxxx     ",  
+     "xxxxxx   ",
+     "xxxxxxxx ",
+     "xxxxxxxxx",
+     "xxxxxxxxx",
+     "xxxxxxxx ",
+     "xxxxxx   ",
+     "xxxx     ",
+     "xx       "},
+    {"13 10 2 1",
+     "       c None",
+     "x      c #000000000000",
+     "xx         xx",
+     "xxxx       xx",  
+     "xxxxxx     xx",
+     "xxxxxxxx   xx",
+     "xxxxxxxxx  xx",
+     "xxxxxxxxx  xx",
+     "xxxxxxxx   xx",
+     "xxxxxx     xx",
+     "xxxx       xx",
+     "xx         xx"}};
+
+  hbox = gtk_hbox_new (FALSE, 5);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+  gtk_widget_show (hbox);
+
   for(int i=1;i<5;i++)
     {
-      button = gtk_button_new_with_label (lower_button_labels[i-1]);
+      GdkPixmap * pixmap;
+      GdkBitmap * bitmap_mask;
+      pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
+                                             the_arena->get_background_colour_p(),
+                                             (gchar **)lower_button_xpms[i-1] );
+      GtkWidget * pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
+      gtk_widget_show( pixmap_widget );
+      button = gtk_button_new();
+      gtk_container_add( GTK_CONTAINER(button), pixmap_widget );
+
       button_info_t * data;
       data = new button_info_t( this, (stat_button_t)(i + 3) );
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (buttons_in_statistics_callback), (gpointer) data);
-      gtk_table_attach_defaults (GTK_TABLE(button_table), button, i, i + 1, 1, 2);
+      gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
       gtk_widget_show (button);
     }
-
-  gtk_table_set_row_spacings (GTK_TABLE(button_table), 5);
-  gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
-  gtk_widget_show (button_table);
 
   char * titles[5] = { "Name", "Position", "Points", "Survival Time", "Total Points" };
 
@@ -204,8 +289,8 @@ Gui::setup_statistics_window()
   gtk_widget_show(stat_clist);
 
   stat_table_type = STAT_TABLE_GAME;
-  stat_looking_at_sequence = the_arena->get_sequence_nr();
-  stat_looking_at_game = the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
+  stat_looking_at_nr = ( the_arena->get_sequence_nr() - 1 ) * the_arena->get_games_per_sequence()
+    + the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence();
 
   gtk_widget_show(statistics_window);
 
