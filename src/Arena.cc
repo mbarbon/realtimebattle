@@ -377,8 +377,6 @@ Arena::create_gadget( gadget_t type, const string& name, Gadget* parent ) const
       break;
     case GAD_WALL: 
       break;
-    case GAD_DEVICE: 
-      break;
     case GAD_BALL: 
       break;
     case GAD_EQUIPMENT:
@@ -389,8 +387,6 @@ Arena::create_gadget( gadget_t type, const string& name, Gadget* parent ) const
       gadget = (Gadget*) new RobotBodyGadget( name.c_str(), parent );
       break;
     case GAD_SCORING: 
-      break;
-    case GAD_ACTION:
       break;
     case GAD_VARIABLE: 
       gadget = (Gadget*) new Variable( name.c_str(), parent );
