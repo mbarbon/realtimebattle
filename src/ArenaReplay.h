@@ -28,7 +28,7 @@ class String;
 class ArenaReplay : public ArenaBase
 {
 public:
-  enum speed_t { REWIND, PLAY, FAST_FORWARD };
+  //  enum speed_t { REWIND, PLAY, FAST_FORWARD };
 
   ArenaReplay                   ();
   ~ArenaReplay                  ();
@@ -41,6 +41,9 @@ public:
                                   const String& option_fname );
   void   change_speed           ( const bool forward, const bool fast );
   void   change_game            ( const int inc_game, const int inc_seq );
+  void   step_forward           ( const int n_o_steps );
+  void   change_replay_time     ( const double time );
+
   char   search_forward         ( const String& search_letters );
   String search_forward         ( const List<String>& search_strings );
   String search_backwards       ( const String& search_letters );
@@ -61,6 +64,7 @@ private:
 
   void make_statistics_from_file();
   void get_time_positions_in_game();
+  int  find_streampos_for_time  ( const float cur_time );
 
   ifstream log_file;
 
@@ -69,7 +73,8 @@ private:
 
   bool log_from_stdin;
 
-  speed_t speed;
+  //  speed_t speed;
+  double fast_forward_factor;
 
   streampos** game_position_in_log;
 

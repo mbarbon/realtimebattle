@@ -34,12 +34,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ControlWindow.h"
 #include "Robot.h"
 
+const int max_time_infos = 16384;
+
 extern class ControlWindow* controlwindow_p;
 
 ArenaReplay::ArenaReplay()
 {
   reset_timer();
-  speed = PLAY;
+  //  speed = PLAY;
+  fast_forward_factor = 1.0;
   state = NOT_STARTED;
   current_replay_time = 0.0;
   game_position_in_log = NULL;
@@ -69,8 +72,11 @@ ArenaReplay::~ArenaReplay()
 bool
 ArenaReplay::timeout_function()
 {
-  if( state == GAME_IN_PROGRESS || state == BEFORE_GAME_START )
-    update_timer();
+  if( ( state == GAME_IN_PROGRESS || state == BEFORE_GAME_START ) && 
+      fast_forward_factor > 0.0)
+    update_timer( fast_forward_factor );
+  else if( state == PAUSED || fast_forward_factor <= 0.0 )
+    update_timer( 0.0 );
 
   switch( state )
     {
@@ -134,7 +140,7 @@ ArenaReplay::timeout_function()
 void
 ArenaReplay::parse_this_interval()
 {
-  if( speed != REWIND )
+  if( fast_forward_factor > 0.0 )
     while( !log_file.eof() && total_time >= current_replay_time )
       {
         parse_log_line();
@@ -336,8 +342,8 @@ ArenaReplay::parse_log_line()
               Robot* robotp = (Robot*) li();
               robotp->die();
               robots_killed_this_round++;
-              robotp->set_stats( points_received, pos_this_game,
-                                 current_replay_time);
+              //              robotp->set_stats( points_received, pos_this_game,
+              //                                 current_replay_time);
               robotp->change_energy( -robotp->get_energy() );
             }
             break;
@@ -346,9 +352,12 @@ ArenaReplay::parse_log_line()
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[COOKIE], li, object_id );
               if( !li.ok() ) 
-                Error(true, "Cookie not in list", "ArenaReplay::parse_log_line");
-              ((Cookie*)li())->die();
-              object_lists[COOKIE].remove(li);
+                Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line");
+              else
+                {
+                  ((Cookie*)li())->die();
+                  object_lists[COOKIE].remove(li);
+                }
             }
             break;
           case 'M':
@@ -356,9 +365,12 @@ ArenaReplay::parse_log_line()
               ListIterator<Shape> li;
               find_object_by_id( object_lists[MINE], li, object_id );
               if( !li.ok() ) 
-                Error(true, "Mine not in list", "ArenaReplay::parse_log_line");
-              ((Mine*)li())->die();
-              object_lists[MINE].remove(li);
+                Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line");
+              else
+                {
+                  ((Mine*)li())->die();
+                  object_lists[MINE].remove(li);
+                }
             }
             break;
           case 'S':
@@ -366,9 +378,12 @@ ArenaReplay::parse_log_line()
               ListIterator<Shape> li;
               find_object_by_id( object_lists[SHOT], li, object_id );
               if( !li.ok() )
-                Error(true, "Shot not in list", "ArenaReplay::parse_log_line");
-              ((Shot*)li())->die();
-              object_lists[SHOT].remove(li);
+                Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line");
+              else
+                {
+                  ((Shot*)li())->die();
+                  object_lists[SHOT].remove(li);
+                }
             }
             break;
           case '?':
@@ -398,6 +413,7 @@ ArenaReplay::parse_log_line()
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
+        get_time_positions_in_game();
       }
       break;
     case 'H': // Header
@@ -532,11 +548,20 @@ void
 ArenaReplay::change_speed( const bool forward, const bool fast )
 {
   if( !fast || log_from_stdin )
-    speed = PLAY;
+    {
+      //      speed = PLAY;
+      fast_forward_factor = 1.0;
+    }
   else if( forward )
-    speed = FAST_FORWARD;
+    {
+      //      speed = FAST_FORWARD;
+      fast_forward_factor = 5.0;   // should be an option?
+    }
   else
-    speed = REWIND;
+    {
+      //      speed = REWIND;
+      fast_forward_factor = -5.0;   // should be an option?
+    }
 }
 
 // Changes the game or sequence number. Mainly after pressing one of
@@ -578,6 +603,51 @@ ArenaReplay::change_game( const int inc_game, const int inc_seq )
 
   cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
 }
+
+void   
+ArenaReplay::step_forward( const int n_o_steps )
+{
+  if( !log_from_stdin )
+    {
+      int index = find_streampos_for_time( current_replay_time );
+      
+      index += n_o_steps - 1;
+
+      cout << "Stepping to index: " << index << endl;
+      
+      if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
+        {
+          current_replay_time = time_position_in_log[index].time;
+          total_time = time_position_in_log[index].time + 0.00001;
+          update_timer(0.0);
+          log_file.seekg( time_position_in_log[index].pos );
+     
+          parse_this_interval();
+        }
+    }  
+}
+
+void
+ArenaReplay::change_replay_time( const double time )
+{
+  if( !log_from_stdin )
+    {
+      int index = find_streampos_for_time( time );
+      
+      index -= 1; // ??
+
+      cout << "Changed to index: " << index << endl;
+      
+      if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
+        {
+          current_replay_time = time_position_in_log[index].time;
+          total_time = time_position_in_log[index].time + 0.00001;
+          update_timer(0.0);
+          log_file.seekg( time_position_in_log[index].pos );
+        }
+    }  
+}
+
 
 // Searches the log_file for a line beginning with any of the 
 // letters in 'search_letters'.
@@ -742,7 +812,7 @@ ArenaReplay::make_statistics_from_file()
           if( !li.ok() ) Error(true, "Dying robot not in list", 
                                "ArenaReplay::make_statistics_from_file");
           ((Robot*)li())->set_stats( points_received, pos_this_game, 
-                                     current_replay_time);
+                                     current_replay_time, false);
           break;
             
         case 'L':
@@ -811,11 +881,16 @@ ArenaReplay::get_time_positions_in_game()
   char letter;
   char buffer[400];
   int time_pos_index = 0;
-  int max_time_infos = 16384;
   float cur_time;
   if( time_position_in_log != NULL ) delete [] time_position_in_log;
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
+
+  for(int i=0; i<max_time_infos; i++) 
+    {
+      time_position_in_log[i].pos = -1;
+      time_position_in_log[i].time = 0.0;
+    }
 
   streampos old_pos = log_file.tellg();
 
@@ -855,4 +930,19 @@ ArenaReplay::get_time_positions_in_game()
 
   log_file.seekg( old_pos );
   log_file.clear();
+}
+
+// Finds the index of time_position_in_log which has the largest time
+// smaller than cur_time
+int
+ArenaReplay::find_streampos_for_time(const float cur_time)
+{
+  // Can be optimized if necessary
+  for(int i=1; i<max_time_infos && time_position_in_log[i].pos > -1; i++)
+    if( cur_time < time_position_in_log[i].time )
+      return i-1;
+
+  Error(false, "Time not found",  "ArenaReplay::find_streampos_for_time");
+
+  return -1;
 }
