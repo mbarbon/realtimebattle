@@ -49,6 +49,10 @@ public:
   double get_shot_radius() { return shot_radius; }
   double get_shot_speed() { return shot_speed; }
   double get_robot_radius() { return robot_radius; }
+  double get_air_resistance() { return air_resistance; }
+  double get_roll_friction() { return roll_friction; }
+  double get_slide_friction() { return slide_friction; }
+  double get_grav_const() { return grav_const; }
 
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
@@ -97,6 +101,7 @@ private:
   double start_energy;
   state_t state;
   
+  double grav_const;
   double air_resistance;
   double roll_friction;
   double slide_friction;

@@ -16,6 +16,10 @@ Arena::Arena()
   max_acceleration = 2.0;
   min_acceleration = -0.5;
   start_energy = 100.0;
+  air_resistance = 0.035;
+  roll_friction = 0.010;
+  slide_friction = 0.098;
+  grav_const = 9.82;
   for(int i=ROBOT; i<EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
   the_gui = new Gui;
@@ -313,7 +317,7 @@ Arena::start_game()
       for( int i=0; i<100 && !found_space; i++)
         {
           pos = get_random_position();
-          found_space = space_available(pos, robot_radius);
+          found_space = space_available(pos, robot_radius*1.2);
         }
 
       if( !found_space )
@@ -423,6 +427,7 @@ Arena::start_sequence()
   // wait a second before checking
 
   state = STARTING_ROBOTS;
+  g_timer_reset(timer);
   next_check_time = total_time + 1.0;
 }
 
