@@ -676,7 +676,7 @@ ArenaRealTime::update()
   print_to_logfile('T', total_time);
 
   read_robot_messages();
-  move_shots();
+  move_shots(timestep);
   update_robots();
 
 #ifndef NO_GRAPHICS
@@ -702,7 +702,7 @@ ArenaRealTime::add_cookie()
     }
   
   if( !found_space ) Error(false, "Couldn't find space for cookie", "ArenaRealTime::timeout_function");
-  Cookie* cookiep = new Cookie(pos, r, en);
+  Cookie* cookiep = new Cookie(pos, en);
   object_lists[COOKIE].insert_last( cookiep );
 
   print_to_logfile('C', cookiep->get_id(), pos[0], pos[1]);
@@ -725,7 +725,7 @@ ArenaRealTime::add_mine()
     }
   
   if( !found_space ) Error(false, "Couldn't find space for mine", "ArenaRealTime::timeout_function");
-  Mine* minep = new Mine(pos, r, en);
+  Mine* minep = new Mine(pos, en);
   object_lists[MINE].insert_last( minep );
 
   print_to_logfile('M', minep->get_id(), pos[0], pos[1]);
