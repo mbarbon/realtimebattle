@@ -631,11 +631,17 @@ void
 ControlWindow::replay( GtkWidget* widget,
                        class ControlWindow* cw_p )
 {
-  the_arena_controller.replay_filename =
+  String filename =
     gtk_file_selection_get_filename
     ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
-  the_arena_controller.start_replay_arena();
+
   destroy_filesel( cw_p->get_filesel(), cw_p );
+
+  if( filename[filename.get_length() - 1] == '/' )  
+    return;  // no file is selected
+
+  the_arena_controller.replay_filename = filename;
+  the_arena_controller.start_replay_arena();
 }
 
 void
