@@ -1,6 +1,13 @@
 export DEBUG_MODE = no
 export PAPER_SIZE = a4
 
+VERSION := $(shell cat VERSION | grep VERSION | cut -d '"' -f 2)
+RELEASE := $(shell cat VERSION | grep RELEASE | cut -d '"' -f 2)
+
+SOURCEDIR := $(shell rpm --showrc | grep sourcedir | cut -d ':' -f 2)
+SPECDIR   := $(shell rpm --showrc | grep specdir | cut -d ':' -f 2)
+
+
 SRCDIR=src
 ROBOTDIR=Robots
 DOCSDIR=Documentation
@@ -44,7 +51,26 @@ ETAGS:
 	cd $(SRCDIR) && $(MAKE) ETAGS
 
 tar.gz:
-	cd .. && tar -czf RealTimeBattle/RealTimeBattle.tar.gz RealTimeBattle/Makefile RealTimeBattle/BUGS RealTimeBattle/COPYING RealTimeBattle/FAQ RealTimeBattle/INSTALL RealTimeBattle/NEWS RealTimeBattle/README RealTimeBattle/TODO RealTimeBattle/src/*.cc RealTimeBattle/src/*.h RealTimeBattle/src/Makefile RealTimeBattle/Documentation/RealTimeBattle*.html RealTimeBattle/Documentation/*.gif RealTimeBattle/Documentation/RealTimeBattle.dvi RealTimeBattle/Documentation/RealTimeBattle.info RealTimeBattle/Arenas/*.arena RealTimeBattle/Robots/*.c* RealTimeBattle/Robots/Makefile 
+	cd .. && tar -czf RealTimeBattle/RealTimeBattle.tar.gz \
+	RealTimeBattle/Makefile \
+	RealTimeBattle/BUGS \
+	RealTimeBattle/COPYING \
+	RealTimeBattle/FAQ \
+	RealTimeBattle/INSTALL \
+	RealTimeBattle/NEWS \
+	RealTimeBattle/README \
+	RealTimeBattle/TODO \
+	RealTimeBattle/VERSION \
+	RealTimeBattle/src/*.cc \
+	RealTimeBattle/src/*.h \
+	RealTimeBattle/src/Makefile \
+	RealTimeBattle/Documentation/RealTimeBattle*.html \
+	RealTimeBattle/Documentation/*.gif \
+	RealTimeBattle/Documentation/RealTimeBattle.dvi \
+	RealTimeBattle/Documentation/RealTimeBattle.info \
+	RealTimeBattle/Arenas/*.arena \
+	RealTimeBattle/Robots/*.c* \
+	RealTimeBattle/Robots/Makefile 
 
 
 install:
@@ -66,3 +92,9 @@ rpm-install:
 	cp Documentation/RealTimeBattle.info.gz    /usr/info/; \
 	grep -e "RealTimeBattle" /usr/info/dir; \
 	if [ $? -eq 1 ]; then echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir; fi
+
+rpm: tar.gz
+	pm --showrc > /dev/null && \
+	cp RealTimeBattle.tar.gz $(SOURCEDIR) && \
+	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
+	rpm -ba $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec;\
