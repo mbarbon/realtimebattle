@@ -51,7 +51,7 @@ ArenaReplay::ArenaReplay()
   game_position_in_log = NULL;
   time_position_in_log = NULL;
 
-  set_game_mode( (ArenaBase::game_mode_t)the_arena_controller.game_mode );
+  set_game_mode( (game_mode_t)the_arena_controller.game_mode );
   set_filenames( the_arena_controller.replay_filename,
                  the_arena_controller.message_filename,
                  the_arena_controller.statistics_filename,
@@ -476,7 +476,9 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
               Error(true, "Robot not in list", "ArenaReplay::parse_log_line_forward");
           }
 
-        robotp->change_position( x, y, robot_angle, cannon_angle, radar_angle, energy );
+        robotp->set_position( x, y );
+        robotp->set_angles( robot_angle, cannon_angle, radar_angle);
+        robotp->set_energy( energy );
         robotp->live();
       }
       break;
@@ -603,7 +605,10 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         
         Robot* robotp = (Robot*)li();
         
-        robotp->change_position( x, y, robot_angle, cannon_angle, radar_angle, energy );
+        robotp->set_position( x, y );
+        robotp->set_angles( robot_angle, cannon_angle, radar_angle );
+        robotp->set_energy( energy );
+
         if( !robotp->is_alive() )
           {
             robotp->live();

@@ -49,7 +49,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ArenaRealTime::ArenaRealTime()
 {
-  set_game_mode( (ArenaBase::game_mode_t)the_arena_controller.game_mode );
+  set_game_mode( (game_mode_t)the_arena_controller.game_mode );
   set_filenames( the_arena_controller.log_filename,
                  the_arena_controller.statistics_filename,
                  the_arena_controller.tournament_filename,
@@ -341,7 +341,7 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
       switch(message_to_robot[msg_type].arg_type[i])
         {
         case NONE: 
-          Error(true, "Couldn't send message, no arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, no arg_type", "ArenaRealTime::broadcast");
           break;
         case INT:
           str += (String)va_arg(args, int) + ' ';
@@ -356,14 +356,14 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
           str += hex2str(va_arg(args, int)) + ' ';
           break;
         default:
-          Error(true, "Couldn't send message, unknown arg_type", "Robot::send_message");
+          Error(true, "Couldn't send message, unknown arg_type", "ArenaRealTime::broadcast");
         }
     }
   str += '\n';
 
  ListIterator<Shape> li;
  for( object_lists[ROBOT].first(li); li.ok(); li++ )
-    *(((Robot*)li())->get_outstreamp()) << str;
+    *(((Robot*)li())->get_process()->get_outstreamp()) << str;
 }
 
 void
@@ -543,11 +543,13 @@ void
 ArenaRealTime::check_robots()
 {
   ListIterator<Robot> li;
+  Process* process_p;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      if( li()->is_process_running() )
+      process_p = li()->get_process();
+      if( process_p->is_process_running() )
         {
-          li()->check_process();
+          process_p->check();
         }      
     } 
 
@@ -579,7 +581,7 @@ ArenaRealTime::update_robots()
       if( robotp->is_alive() )
         {
           robotp->update_radar_and_cannon(timestep);  
-          robotp->change_velocity(timestep);
+          robotp->update_velocity(timestep);
           robotp->move(timestep);        
         }
       if( robotp->is_alive() ) 
@@ -627,7 +629,7 @@ ArenaRealTime::update_robots()
 
   
   for( object_lists[ROBOT].first(li); li.ok(); li++ )
-    ((Robot*)li())->send_signal();
+    ((Robot*)li())->get_process()->send_signal();
 }
 
 
@@ -799,7 +801,7 @@ ArenaRealTime::start_game()
   for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
     {
       robotp = (Robot*)li2();
-      robotp->send_signal();
+      robotp->get_process()->send_signal();
       robotp->move(0.0);  // To log current position
     }
 
@@ -874,7 +876,7 @@ ArenaRealTime::start_sequence()
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      li()->start_process();
+      li()->get_process()->start(game_mode);
     }
   
   // wait a second before checking
@@ -895,7 +897,7 @@ ArenaRealTime::start_sequence_follow_up()
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
       robotp = li();
-      if( !(robotp->is_process_running()) ) 
+      if( !(robotp->get_process()->is_process_running()) ) 
         {
           all_robots_in_sequence.remove(li);
           robots_left--;
@@ -911,7 +913,7 @@ ArenaRealTime::start_sequence_follow_up()
               robotp->send_message(WARNING, NAME_NOT_GIVEN, "");
               char msg[128];
               snprintf( msg, 127, _("Robot with filename %s has not given any name"),
-                        robotp->get_robot_filename().chars() );
+                        robotp->get_process()->get_robot_filename().chars() );
               print_message( "RealTimeBattle", String(msg) );
             }
 
@@ -935,7 +937,7 @@ ArenaRealTime::end_sequence()
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      li()->end_process();
+      li()->get_process()->end();
     }
 
   // wait a second before checking
@@ -949,14 +951,14 @@ ArenaRealTime::end_sequence_follow_up()
 {
   // check if the process have stopped, otherwise kill
   
-  Robot* robotp;
+  Process* processp;
 
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
     {
-      robotp = li();
-      if( robotp->is_process_running() ) robotp->kill_process_forcefully();
-      robotp->delete_pipes();
+      processp = li()->get_process();
+      if( processp->is_process_running() ) processp->kill_forcefully();
+      processp->delete_pipes();
       all_robots_in_sequence.remove(li);
     }
 

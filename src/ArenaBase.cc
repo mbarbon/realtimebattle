@@ -572,7 +572,7 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
         {
           ListIterator<Robot> li;
           for( all_robots_in_sequence.first(li); li.ok(); li++)
-            li()->kill_process_forcefully();
+            li()->get_process()->kill_forcefully();
         }
       all_robots_in_sequence.delete_list();
     }
