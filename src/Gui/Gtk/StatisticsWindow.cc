@@ -624,7 +624,6 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
                                                class StatisticsWindow* sw_p )
 {
   Robot* robot_p = NULL;
-  DrawingRobot* drobot_p = NULL;
   stat_t* stat_p = NULL;
   list<DrawingRobot>::iterator li;
   ListIterator<stat_t> stat_li;

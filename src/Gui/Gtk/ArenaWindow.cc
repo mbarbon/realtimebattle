@@ -265,7 +265,6 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
   if( window_shown )
     {
       list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
-      Robot* robotp;
 
       if( ( scrolled_window->allocation.width - 24 != scrolled_window_size[0]) ||
           ( scrolled_window->allocation.height - 24 !=  scrolled_window_size[1]) )
