@@ -135,6 +135,8 @@ private:
 
   void set_state                               ( state_t state );
 
+  void initialize_gtk_options                  ();
+
   GuiInterface* guiinterface_p;
 
   OptionHandler* main_opts;

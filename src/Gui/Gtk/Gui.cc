@@ -86,6 +86,8 @@ Gui::Gui()
   scorewindow_p = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
+
+  initialize_gtk_options();
 }
 
 Gui::~Gui()
@@ -100,6 +102,86 @@ Gui::~Gui()
 
   for( int i = ROBOT; i < LAST_OBJECT_TYPE; i++ )
     clear_and_delete_pointer_list( drawing_objects_lists[i] );
+}
+
+void
+Gui::initialize_gtk_options()
+{
+  map<string,Option*> all_options;
+  vector<string> group_names;
+
+  group_names.push_back( _("Window sizes") );
+
+  const int GROUP_SIZE_OF_WINDOWS = 0;
+
+  // ---------- Size of Windows ----------
+
+  all_options["Arena window xsize"] = (Option*) new
+    LongOption( GROUP_SIZE_OF_WINDOWS, 350, 185, 10000, false, false,
+                _("Initial Arena window width") );
+
+  all_options["Arena window ysize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 350, 120, 10000, false, false,
+                _("Initial Arena window height") );
+
+  all_options["Arena window xpos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Arena window x position") );
+
+  all_options["Arena window ypos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Arena window y position") );
+
+  all_options["Control window xpos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Control window x position") );
+
+  all_options["Control window ypos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Control window y position") );
+
+  all_options["Message window xsize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 394, 300, 10000, false, false,
+                _("Initial Message window width") );
+
+  all_options["Message window ysize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 210, 110, 10000, false, false,
+                _("Initial Message window height") );
+
+  all_options["Message window xpos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Message window x position") );
+
+  all_options["Message window ypos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Message window y position") );
+
+  all_options["Score window xsize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 394, 175, 10000, false, false,
+                _("Initial Score window width") );
+
+  all_options["Score window ysize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 374, 80, 10000, false, false,
+                _("Initial Score window height") );
+
+  all_options["Score window xpos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Score window x position") );
+
+  all_options["Score window ypos"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
+                _("Initial Score window y position") );
+
+  all_options["Statistics window xsize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 499, 320, 10000, false, false,
+                _("Initial Statistics window width") );
+
+  all_options["Statistics window ysize"] = (Option*) new 
+    LongOption( GROUP_SIZE_OF_WINDOWS, 428, 130, 10000, false, false,
+                _("Initial Statistics window height") );
+
+  gtk_opts = new OptionHandler( "Gui Gtk", all_options, group_names );
+
 }
 
 int
