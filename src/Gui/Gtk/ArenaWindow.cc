@@ -246,13 +246,13 @@ ArenaWindow::draw_everything()
         {
           list<DrawingShape*>::iterator li = object_lists[obj_type].begin();
           for( ; li != object_lists[obj_type].end(); li++ )
-            {
-              if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
-                     !( (Extras*)((*li)->get_shape()))->is_alive() ) )
-                {
+//              {
+//                if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
+//                       !( (Extras*)((*li)->get_shape()))->is_alive() ) )
+//                  {
                   (*li)->draw_shape( false );
-                }
-            }
+//                  }
+//              }
         }
 
       draw_moving_objects( false );
@@ -275,11 +275,11 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
 
       list<DrawingShape*>::iterator li;
       for( li = object_lists[SHOT].begin(); li != object_lists[SHOT].end(); li++ )
-        if( ((Shot*)((*li)->get_shape()))->is_alive() )
+//          if( ((Shot*)((*li)->get_shape()))->is_alive() )
           (*li)->draw_shape( clear_objects_first );
 
       for( li = object_lists[ROBOT].begin(); li != object_lists[SHOT].end(); li++ )
-        if( ((Robot*)((*li)->get_shape()))->is_alive() )
+//          if( ((Robot*)((*li)->get_shape()))->is_alive() )
           (*li)->draw_shape( clear_objects_first );
     }
 }

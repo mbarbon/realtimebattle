@@ -643,8 +643,8 @@ ControlWindow::replay( GtkWidget* widget,
   if( filename[filename.length() - 1] == '/' )  
     return;  // no file is selected
 
-  the_arena_controller.replay_filename = filename;
-  the_arena_controller.start_replay_arena();
+//    the_arena_controller.replay_filename = filename;
+//    the_arena_controller.start_replay_arena();
 }
 
 void
