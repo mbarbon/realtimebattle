@@ -220,20 +220,8 @@ List<T>::insert_last(T* x)
 }
 
 
-#include "String.h"
-template class List<String>;
-
-#include "Vector2D.h"
-template class List<Vector2D>;
-
 #include "Shape.h"
 template class List<Shape>;
 
 #include "Robot.h"
 template class List<Robot>;
-
-#include "Structs.h"
-template class List<stat_t>;
-
-#include "ArenaReplay.h"
-template class List<ArenaReplay::object_pos_info_t>;

@@ -93,8 +93,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
   // Lists for clists
 
-  List<String> robotdirs;
-  List<String> arenadirs;
+  list<String> robotdirs;
+  list<String> arenadirs;
 
   read_dirs_from_system( robotdirs, arenadirs );
 
@@ -181,23 +181,29 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
       add_clist( dir_clist, hbox );
 
-      ListIterator<String> li;
+      list<String>::const_iterator li;
+      list<String>::const_iterator li_end;
 
       if( robot )
-        robotdirs.first(li);
-      else
-        arenadirs.first(li);
-
-      for( ; li.ok() ; li++ )
         {
-          String* current_dir = li();
+          li = robotdirs.begin();
+          li_end = robotdirs.end();
+        }
+      else
+        {
+          li = arenadirs.begin();
+          li_end = arenadirs.end();
+        }
+
+      for( ; li != li_end ; li++ )
+        {
           DIR* dir;
-          if( NULL != (dir = opendir(current_dir->chars())))
+          if( NULL != (dir = opendir((*li).chars())))
             {
               struct dirent * entry;
               while (NULL != ( entry = readdir( dir ) ) )
                 {
-                  String full_file_name = *current_dir + entry->d_name;
+                  String full_file_name = (*li) + entry->d_name;
                   if( ( robot && check_if_filename_is_robot( full_file_name ) ) ||
                       ( !robot && check_if_filename_is_arena( full_file_name ) ) )
                     {
@@ -212,7 +218,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 #endif
                       dir_list->push_back( start_tournament_info_t
                                            ( row, false, entry->d_name,
-                                             current_dir->chars() ) );
+                                             (*li).chars() ) );
                     }
                 }
               closedir( dir );
@@ -570,8 +576,8 @@ StartTournamentWindow::load_tournament_file( const String& full_filename,
                              this, false ) && display_fail_message )
     {
       String error_msg( _("Error in specified tournament file.") );
-      List<String> button_list;
-      button_list.insert_last( new String( _(" Ok ") ) );
+      list<String> button_list;
+      button_list.push_back( String( _(" Ok ") ) );
       String info_text = (String)_("Tournament could not be loaded.") + String('\n')
         + error_msg;
       Dialog( info_text, button_list, 
@@ -732,8 +738,8 @@ StartTournamentWindow::save_tournament_file( const String& full_filename,
 
       if( error_msg != "" )
         {
-          List<String> button_list;
-          button_list.insert_last( new String( _(" Ok ") ) );
+          list<String> button_list;
+          button_list.push_back( String( _(" Ok ") ) );
           String info_text = (String)_("Tournament could not be saved.") + error_msg;
           Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );
@@ -872,8 +878,8 @@ StartTournamentWindow::start( GtkWidget* widget,
 
       if( error_msg != "" )
         {
-          List<String> button_list;
-          button_list.insert_last( new String( _(" Ok ") ) );
+          list<String> button_list;
+          button_list.push_back( String( _(" Ok ") ) );
           String info_text = _("Tournament could not be started.") + error_msg;
           Dialog( info_text, button_list, 
                   (DialogFunction) StartTournamentWindow::dummy_result );

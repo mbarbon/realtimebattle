@@ -18,7 +18,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+# include <config.h>
 #endif
 
 //  #include <fcntl.h>
@@ -178,18 +178,13 @@ Robot::set_stats(const int robots_killed_same_time, const bool timeout)
 
   realtime_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
 
-
-  stat_t* statp = new stat_t
-    (
-     the_arena.get_sequence_nr(),
-     the_arena.get_game_nr(),
-     position_this_game,
-     points,   
-     the_arena.get_total_time(),
-     get_total_points() + points
-     );
-
-  statistics.insert_last( statp );
+  statistics.push_back( stat_t
+                        ( the_arena.get_sequence_nr(),
+                          the_arena.get_game_nr(),
+                          position_this_game,
+                          points,   
+                          the_arena.get_total_time(),
+                          get_total_points() + points ) );
 
 //  #ifndef NO_GRAPHICS
 //    if( !no_graphics ) display_score();
@@ -207,21 +202,17 @@ Robot::set_stats(const double pnts, const int pos, const double time_survived,
 
   if( make_stats )
     {
-      ListIterator<stat_t> li;
-      statistics.last(li);
-      double total_points = ( li.ok() ? li()->total_points : 0.0 );
+      list<stat_t>::reverse_iterator li;
+      li = statistics.rbegin();
+      double total_points = ( statistics.empty() ?  0.0 : (*li).total_points );
 
-      stat_t* statp = new stat_t
-        (
-         the_arena.get_sequence_nr(),
-         the_arena.get_game_nr(),
-         pos,
-         pnts,
-         time_survived,
-         total_points + pnts
-         );
-  
-      statistics.insert_last( statp );
+      statistics.push_back( stat_t
+                            ( the_arena.get_sequence_nr(),
+                              the_arena.get_game_nr(),
+                              pos,
+                              pnts,
+                              time_survived,
+                              total_points + pnts ) );
     }
 //  #ifndef NO_GRAPHICS
 //    if( !no_graphics && !make_stats ) display_score();
@@ -271,14 +262,14 @@ Robot::check_name_uniqueness()
 double
 Robot::get_total_points()
 {
-  ListIterator<stat_t> li;
+  list<stat_t>::reverse_iterator li;
   double total_pnts;
 
   if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
     {
-      statistics.last(li);
+      li = statistics.rbegin();
 
-      total_pnts = ( li.ok() ? li()->total_points : 0.0 );
+      total_pnts = ( statistics.empty() ?  0.0 : (*li).total_points );
 
       if( is_alive() )
         total_pnts += the_arena.get_robots_per_game() - the_arena.get_robots_left();
@@ -287,15 +278,15 @@ Robot::get_total_points()
     }
   else     // Replaying
     {
-      ListIterator<stat_t> li=get_current_game_stats();
+      list<stat_t>::const_iterator li = get_current_game_stats();
 
       if( is_alive() )
         {          
-          total_pnts = li()->total_points - li()->points + 
+          total_pnts = (*li).total_points - (*li).points + 
             the_arena.get_robots_per_game() - the_arena.get_robots_left();
         }
       else // if robot dead
-        total_pnts = li()->total_points;
+        total_pnts = (*li).total_points;
     }
 
   return total_pnts;
@@ -306,45 +297,45 @@ Robot::get_total_points()
 int
 Robot::get_last_position()
 {
-  ListIterator<stat_t> li;
+  list<stat_t>::const_iterator li;
 
   if( the_arena_controller.is_realtime() || replay_arena.is_log_from_stdin() ) 
     {
       
-      statistics.last(li);
+      li = statistics.end(); //points to one after the last element
 
-      if( !li.ok() ) return 0;
-      
-      if( li()->game_nr < the_arena.get_game_nr() )
-        return li()->position;
+      if( li == statistics.begin() ) return 0;
+      li--;
+
+      if( (*li).game_nr < the_arena.get_game_nr() )
+        return (*li).position;
     }      
   else
     {
       li = get_current_game_stats();
     }
      
-  if( !li.ok() ) return 0;
+  if( li == statistics.begin() ) return 0;
   li--;
-  if( !li.ok() ) return 0;
   
-  if( li()->sequence_nr == the_arena.get_sequence_nr() )
-    return li()->position;
-  else
-    return 0;
+  if( (*li).sequence_nr == the_arena.get_sequence_nr() )
+    return (*li).position;
+
+  return 0;
 }
 
-ListIterator<stat_t>
+list<stat_t>::const_iterator
 Robot::get_current_game_stats()
 {
-  if( !current_game_stats.ok() ||
-      current_game_stats()->sequence_nr != the_arena.get_sequence_nr() ||
-      current_game_stats()->game_nr != the_arena.get_game_nr() )
+  if( !(current_game_stats == statistics.end()) ||
+      (*current_game_stats).sequence_nr != the_arena.get_sequence_nr() ||
+      (*current_game_stats).game_nr != the_arena.get_game_nr() )
     {
-      ListIterator<stat_t> li;
-      for( statistics.first(li); li.ok(); li++ )
+      list<stat_t>::const_iterator li;
+      for( li = statistics.begin(); li != statistics.end(); li++ )
         {
-          if( li()->sequence_nr == the_arena.get_sequence_nr() &&
-              li()->game_nr == the_arena.get_game_nr() )
+          if( (*li).sequence_nr == the_arena.get_sequence_nr() &&
+              (*li).game_nr == the_arena.get_game_nr() )
             {
               current_game_stats = li;
               return current_game_stats;
@@ -477,7 +468,7 @@ Robot::set_values_at_process_start_up()
 {
   time_survived_in_sequence = 0.0;
 
-  if( statistics.is_empty() )       // first sequence !
+  if( statistics.empty() )       // first sequence !
     {
       send_message(INITIALIZE, 1);  
       colour_given = false;

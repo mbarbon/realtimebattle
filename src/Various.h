@@ -20,7 +20,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __VARIOUS__
 #define __VARIOUS__
 
-#include "List.h"
 #include <list>
 
 //#include "String.h"
@@ -62,14 +61,14 @@ int binomial(const int n, const int k);
 
 void reorder_pointer_array(void** array, int size);
 
-void read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs);
-void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
+void read_dirs_from_system(list<String>& robotdirs, list<String>& arenadirs);
+void split_colonseparated_dirs(String& dirs, list<String>& arenadirs);
 
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );
 void check_for_robots_and_arenas( String& word, 
                                   list<start_tournament_info_t>& tour_list,
-                                  List<String>& dir_list, 
+                                  list<String>& dir_list, 
                                   const bool check_robots );
 void search_directories( String directory, list<start_tournament_info_t>& tour_list,
                          const bool check_robots );

@@ -24,10 +24,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
+#include <list>
 
 #include "String.h"
-#include "List.h"
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
@@ -50,7 +49,7 @@ public:
   };
 
   Dialog                            ( const String& info,
-                                      const List<String>& button_labels,
+                                      const list<String>& button_labels,
                                       const DialogFunction func );
   ~Dialog                           () {}
 
@@ -60,7 +59,5 @@ private:
 
   GtkWidget* window_p;
 };
-
-#endif NO_GRAPHICS
 
 #endif __DIALOG__

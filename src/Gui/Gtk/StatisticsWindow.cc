@@ -624,9 +624,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
                                                class StatisticsWindow* sw_p )
 {
   Robot* robot_p = NULL;
-  stat_t* stat_p = NULL;
   list<DrawingRobot>::iterator li;
-  ListIterator<stat_t> stat_li;
+  list<stat_t>::const_iterator stat_li;
 
   GtkWidget* clist = sw_p->get_clist();
   stat_types sw_type = sw_p->get_type();
@@ -655,14 +654,13 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
             robot_nr++;
             robot_p = (*li).get_robot_p();
             points[robot_nr] = 0;
-            for(robot_p->get_statistics()->first(stat_li);
-                stat_li.ok(); stat_li++)
+            for( stat_li  = robot_p->get_statistics()->begin();
+                 stat_li != robot_p->get_statistics()->end(); stat_li++)
               {
-                stat_p = stat_li();
                 if( ( sw_type == STAT_TYPE_SEQUENCE &&
-                      stat_p->sequence_nr == number ) ||
+                      (*stat_li).sequence_nr == number ) ||
                     sw_type == STAT_TYPE_TOTAL )
-                  points[robot_nr] += stat_li()->points;
+                  points[robot_nr] += (*stat_li).points;
               }
           }
 
@@ -683,18 +681,17 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
             robot_p = (*li).get_robot_p();
             stat_t average_stat(0,0,0,0.0,0.0,0.0);
             int number_of_stat_found = 0;
-            for(robot_p->get_statistics()->first(stat_li);
-                stat_li.ok(); stat_li++)
+            for( stat_li  = robot_p->get_statistics()->begin();
+                 stat_li != robot_p->get_statistics()->end(); stat_li++)
               {
-                stat_p = stat_li();
                 if( ( sw_type == STAT_TYPE_SEQUENCE &&
-                      stat_p->sequence_nr == number ) ||
+                      (*stat_li).sequence_nr == number ) ||
                     sw_type == STAT_TYPE_TOTAL )
                   {
                     number_of_stat_found++;
-                    average_stat.points += stat_p->points;
-                    average_stat.time_survived += stat_p->time_survived;
-                    average_stat.total_points += stat_p->points;
+                    average_stat.points += (*stat_li).points;
+                    average_stat.time_survived += (*stat_li).time_survived;
+                    average_stat.total_points += (*stat_li).points;
                   }
               }
 
@@ -725,12 +722,12 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
           {
             robot_p = (*li).get_robot_p();
             
-            for(robot_p->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
+            for( stat_li  = robot_p->get_statistics()->begin();
+                 stat_li != robot_p->get_statistics()->end(); stat_li++)
               {
-                stat_p = stat_li();
-                if(stat_p->sequence_nr == sequence &&
-                   stat_p->game_nr == game)
-                  sw_p->add_new_row( robot_p, &(*li), *stat_p, -1 );
+                if((*stat_li).sequence_nr == sequence &&
+                   (*stat_li).game_nr == game)
+                  sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
               }
           }
       }
@@ -745,10 +742,10 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
             i++;
             robot_p = (*li).get_robot_p();
             if( i == number )
-              for(robot_p->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
+              for( stat_li  = robot_p->get_statistics()->begin();
+                   stat_li != robot_p->get_statistics()->end(); stat_li++)
                 {
-                  stat_p = stat_li();
-                  sw_p->add_new_row( robot_p, &(*li), *stat_p, -1 );
+                  sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
                 }
           }
       }

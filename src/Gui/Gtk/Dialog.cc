@@ -29,7 +29,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // If the delete_event is received, no value will be returned
 //
 
-Dialog::Dialog( const String& info, const List<String>& button_labels,
+Dialog::Dialog( const String& info, const list<String>& button_labels,
                 const DialogFunction func )
 {
   // The window
@@ -62,15 +62,13 @@ Dialog::Dialog( const String& info, const List<String>& button_labels,
   gtk_box_pack_start( GTK_BOX( vbox ), hbox, TRUE, TRUE, 0 );
   gtk_widget_show( hbox );
 
-  ListIterator<String> li;
-  String* str;
+  list<String>::const_iterator li;
   GtkWidget* button_w;
   int list_nr = 0;
-  for( button_labels.first(li); li.ok(); li++ )
+  for( li = button_labels.begin(); li != button_labels.end(); li++ )
     {
       list_nr++;
-      str = li();
-      button_w = gtk_button_new_with_label( str->chars() );
+      button_w = gtk_button_new_with_label( (*li).chars() );
       gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
                           (GtkSignalFunc) Dialog::generate_result,
                           (gpointer) new result_t( list_nr, func, window_p ) );

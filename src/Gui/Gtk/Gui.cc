@@ -300,9 +300,9 @@ Gui::open_starttournamentwindow()
           {
             String info_text = _("This action will kill the current tournament.\n"
                                  "Do you want to do that?");
-            List<String> string_list;
-            string_list.insert_last( new String( "Yes" ) );
-            string_list.insert_last( new String( "No"  ) );
+            list<String> string_list;
+            string_list.push_back( String( _("Yes") ) );
+            string_list.push_back( String( _("No")  ) );
             Dialog( info_text, string_list,
                     (DialogFunction) Gui::kill_and_start_new_tournament );
           }

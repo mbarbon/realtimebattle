@@ -141,33 +141,31 @@ reorder_pointer_array(void** array, int size)
 }
 
 void
-read_dirs_from_system(List<String>& robotdirs, List<String>& arenadirs)
+read_dirs_from_system(list<String>& robotdirs, list<String>& arenadirs)
 {
   String dirs;
 
-  robotdirs.delete_list();
-  arenadirs.delete_list();
+  robotdirs.clear();
+  arenadirs.clear();
 
   dirs = the_opts.get_s(OPTION_ROBOT_SEARCH_PATH);
   split_colonseparated_dirs(dirs, robotdirs);
 
 #ifdef ROBOTDIR
-  String * str = new String(ROBOTDIR "/");
-  robotdirs.insert_last( str );
+  robotdirs.push_back( String(ROBOTDIR "/") );
 #endif
 
   dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
   split_colonseparated_dirs(dirs, arenadirs);
 
 #ifdef ARENADIR
-  str = new String(ARENADIR "/");
-  arenadirs.insert_last( str );
+  arenadirs.push_back( String(ARENADIR "/") );
 #endif
 }
 
 // This function splits a string of colonseparated directories into a glist
 void
-split_colonseparated_dirs(String& dirs, List<String>& str_list)
+split_colonseparated_dirs(String& dirs, list<String>& str_list)
 {
   String current_dir = dirs;
   int pos, lastpos = 0;
@@ -177,8 +175,7 @@ split_colonseparated_dirs(String& dirs, List<String>& str_list)
       if(current_dir[current_dir.get_length() - 1] != '/')
         current_dir += '/';
 
-      String* str = new String(current_dir);
-      str_list.insert_last( str );
+      str_list.push_back( String(current_dir) );
 
       lastpos = pos+1;
     }
@@ -189,8 +186,7 @@ split_colonseparated_dirs(String& dirs, List<String>& str_list)
       if(current_dir[current_dir.get_length() - 1] != '/')
         current_dir += '/';
 
-      String* str = new String(current_dir);
-      str_list.insert_last( str );
+      str_list.push_back( String(current_dir) );
     }
 }
 
@@ -222,7 +218,7 @@ check_if_filename_is_arena( String& fname )
 void
 check_for_robots_and_arenas( String& word, 
                              list<start_tournament_info_t>& tour_list,
-                             List<String>& dir_list, 
+                             list<String>& dir_list, 
                              const bool check_robots )
 {
   bool found = false;
@@ -237,9 +233,9 @@ check_for_robots_and_arenas( String& word,
   if( word.get_length() == 1 && word[0] == '*' )
     {
       
-      ListIterator<String> li;
-      for( dir_list.first(li); li.ok(); li++ )
-        search_directories( *li(), tour_list, check_robots );
+      list<String>::iterator li;
+      for( li = dir_list.begin(); li != dir_list.end(); li++ )
+        search_directories( (*li), tour_list, check_robots );
       return;
     }
   if( word.find('/') != -1 )
@@ -253,10 +249,10 @@ check_for_robots_and_arenas( String& word,
     }
   if( !found )
     {
-      ListIterator<String> li;
-      for( dir_list.first(li); li.ok(); li++ )
+      list<String>::iterator li;
+      for( li = dir_list.begin(); li != dir_list.end(); li++ )
         {
-          String temp_name = *li() + word;
+          String temp_name = (*li) + word;
 
           if((check_robots && check_if_filename_is_robot( temp_name )) ||
              (!check_robots && check_if_filename_is_arena( temp_name )))
@@ -309,8 +305,8 @@ bool
 parse_tournament_file( const String& fname, const StartTournamentFunction function,
                        void* data, bool fatal_error_on_file_failure )
 {
-  List<String> robotdirs;
-  List<String> arenadirs;
+  list<String> robotdirs;
+  list<String> arenadirs;
 
   read_dirs_from_system(robotdirs, arenadirs);
 
