@@ -62,6 +62,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef NO_GRAPHICS
 # include "ScoreWindow.h"
 # include "ControlWindow.h"
+# include "MessageWindow.h"
 #endif
 
 #ifndef NO_GRAPHICS
@@ -513,11 +514,11 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
 }
 
 void
-ArenaRealTime::print_to_messagefile( class Robot* robot_p,
+ArenaRealTime::print_to_messagefile( const String& messager,
                                      const String& text )
 {
   if( use_message_file )
-    message_file << robot_p->get_robot_name() << ": " << text << endl;
+    message_file << messager << ": " << text << endl;
 }
 
 Vector2D
@@ -926,6 +927,20 @@ ArenaRealTime::start_game()
     current_arena_filename = get_segment(*filename, charpos+1, -1);
   else
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
+
+#ifndef NO_GRAPHICS
+  if( !no_graphics && !realtime_arena.get_use_message_file() )
+    the_gui.get_messagewindow_p()->add_message
+      ( "RealTimeBattle", (String)"Game " +
+        String( games_per_sequence - games_remaining_in_sequence + 1 )
+        + " of sequence " + String( sequence_nr ) + " begins on arena " +
+        current_arena_filename );
+#endif
+  print_to_messagefile
+    ( "RealTimeBattle", (String)"Game " +
+      String( games_per_sequence - games_remaining_in_sequence + 1 )
+      + " of sequence " + String( sequence_nr ) + " begins on arena " +
+      current_arena_filename );
 
   // reset some variables
 

@@ -56,7 +56,7 @@ public:
                       const String& option_fname );  
 
   void print_to_logfile( const char first_letter ... );
-  void print_to_messagefile( class Robot* robot_p, const String& text );
+  void print_to_messagefile( const String& messager, const String& text );
   
   bool get_use_message_file() { return use_message_file; }
   Vector2D get_random_position();
