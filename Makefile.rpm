@@ -24,6 +24,8 @@ rpm-install:
 	mkdir /usr/games/RealTimeBattle /usr/games/RealTimeBattle/Arenas /usr/games/RealTimeBattle/Robots; \
 	cp Arenas/*.arena   	/usr/games/RealTimeBattle/Arenas/; \
 	cp Robots/*.robot   	/usr/games/RealTimeBattle/Robots/; \
+	cp src/Messagetypes.h   /usr/games/RealTimeBattle/; \
+	cp RealTimeBattle.xpm   /usr/games/RealTimeBattle/; \
 	gzip Documentation/RealTimeBattle.info; \
 	cp Documentation/RealTimeBattle.info.gz    /usr/info/; \
 	grep -e "RealTimeBattle" /usr/info/dir; \
