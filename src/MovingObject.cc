@@ -50,6 +50,8 @@ Robot::~Robot()
       g_list_remove(statistics, statp);
     }
   g_list_free(statistics);
+
+  
 } 
 
 void
@@ -294,8 +296,7 @@ Robot::delete_pipes()
 void
 Robot::live()
 {
-  alive = true; 
-  last_drawn_robot_center = Vector2D(infinity,infinity);
+  alive = true;
 }
 
 void
@@ -306,6 +307,7 @@ Robot::die()
       alive = false;
       position_this_game = -1;
       the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+      last_drawn_robot_center = Vector2D(infinity,infinity);
     }
 }
 
@@ -1334,7 +1336,9 @@ pixmap_t::~pixmap_t()
 {
   if( pixmap != NULL )
     {
-      gdk_pixmap_unref(pixmap);
+      //      gdk_pixmap_unref(pixmap);
+      //      gdk_bitmap_unref(bitmap);
+      //TODO: check if window is open before unrefing
     }
 }
 
