@@ -43,7 +43,7 @@ private:
   void end_tournament          ();
 
   char parse_log_line          ();
-  bool parse_this_interval     ();
+  void parse_this_interval     ();
 
   ifstream log_file;
 

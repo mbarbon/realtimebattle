@@ -80,7 +80,7 @@ ArenaReplay::timeout_function()
   return true;
 }
 
-bool
+void
 ArenaReplay::parse_this_interval()
 {
   while( !log_file.eof() && total_time >= next_check_time )
@@ -95,7 +95,7 @@ ArenaReplay::parse_this_interval()
       parse_log_line();
     }
   
-  return true;
+  if( log_file.eof() ) set_state( FINISHED );
 }
   
 void 
@@ -155,8 +155,8 @@ ArenaReplay::parse_log_line()
   log_file >> ws;
   log_file.get( first_letter );
 
-  cerr << "first letter: " << first_letter << endl;
-  //  bool get_the_rest_of_the_line = true;
+  if( log_file.eof() ) return '?';
+  //  cerr << "first letter: " << first_letter << endl;
   switch( first_letter )
     {
     case 'R': // Robot pos
@@ -178,7 +178,7 @@ ArenaReplay::parse_log_line()
     case 'T': // Time
       {
         log_file >> next_check_time;
-        cerr << next_check_time << "  " << total_time << endl;
+        //        cerr << next_check_time << "  " << total_time << endl;
       }
       break;
     case 'P': // Print a robot message
@@ -187,8 +187,15 @@ ArenaReplay::parse_log_line()
         char message[200];
         log_file >> robot_id;
         log_file.get( message, 200, '\n' );
-        // add_message( robot_id, message );
-        //        get_the_rest_of_the_line = false;
+        ListIterator<Shape> li;
+        find_object_by_id( object_lists[ROBOT], li, robot_id );
+        if( !li.ok() ) Error(false, "Robot not in list", "ArenaReplay::parse_log_line");
+        else
+          {
+        Robot* robotp = (Robot*)li();
+        the_gui.get_messagewindow_p()->        
+          add_message( robotp->get_robot_name(), (String)message );
+          }
       }
       break;
     case 'C': // Cookie
@@ -282,7 +289,6 @@ ArenaReplay::parse_log_line()
         next_check_time = 0.0;
         int sequence, game;
         log_file >> sequence >> game;
-        // game_starts( sequence, game );
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
@@ -306,7 +312,6 @@ ArenaReplay::parse_log_line()
         log_file.get( name, 200, '\n' );
         Robot* robotp = new Robot( robot_id, col, (String)name );
         object_lists[ROBOT].insert_last(robotp); // array bättre?
-        //        get_the_rest_of_the_line = false;
       }
       break;
     case 'A': // Arena file line
@@ -328,7 +333,7 @@ ArenaReplay::parse_log_line()
             {
               long val;
               log_file >> val;
-              cerr << label << ": " << val << endl;
+              //              cerr << label << ": " << val << endl;
               the_opts.get_all_long_options()[opt.option_number].value = val;
             }
             break;
@@ -336,7 +341,7 @@ ArenaReplay::parse_log_line()
             {
               double val;
               log_file >> val;
-              cerr << label << ": " << val << endl;
+              //              cerr << label << ": " << val << endl;
               the_opts.get_all_double_options()[opt.option_number].value = val;
             }
             break;
@@ -344,7 +349,7 @@ ArenaReplay::parse_log_line()
             {
               char val[400];
               log_file.get( val, 400, '\n' );
-              cerr << label << ": " << val << endl;
+              //              cerr << label << ": " << val << endl;
               the_opts.get_all_string_options()[opt.option_number].value = val;
             }
             break;
@@ -363,12 +368,6 @@ ArenaReplay::parse_log_line()
              String(first_letter), "ArenaReplay::parse_log_line" );
       break;
     }
-
-  //  if( get_the_rest_of_the_line )
-  //    {
-  //      char buffer[200];
-  //      log_file.get( buffer, 200, '\n' ); // Ignore the rest of the line
-  //    }
 
   return first_letter;
 }
