@@ -20,13 +20,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __GUIREQUEST__
 #define __GUIREQUEST__
 
+#include <string>
+
 class GuiRequest
 {
 public:
   GuiRequest                   () {}
   virtual ~GuiRequest          () {}
 
-  virtual void execute         () const = 0;
+  virtual void accept          () const = 0;
 private:
 };
 
@@ -36,9 +38,24 @@ public:
   QuitGuiRequest               ( const bool _success) : success(_success) {}
   ~QuitGuiRequest              () {}
 
-  void execute                 () const;
+  void accept                  () const;
 private:
   bool success;
+};
+
+class OptionChangeRequest : public GuiRequest
+{
+public:
+  OptionChangeRequest          ( const string& opt, const string& str_val,
+                                 const bool def ) 
+    : option(opt), string_value(str_val), as_default(def) {}
+  ~OptionChangeRequest         () {}
+
+  void accept                  () const;
+private:
+  string option;
+  string string_value;
+  bool as_default;
 };
 
 class TogglePauseGameGuiRequest : public GuiRequest
@@ -47,7 +64,7 @@ public:
   TogglePauseGameGuiRequest    () {}
   ~TogglePauseGameGuiRequest   () {}
 
-  void execute                 () const;
+  void accept                  () const;
 };
 
 #endif __GUIREQUEST__

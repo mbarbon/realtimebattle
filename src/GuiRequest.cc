@@ -23,15 +23,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GuiRequest.h"
 #include "Various.h"
+#include "ArenaController.h"
+#include "OptionHandler.h"
 
 void
-QuitGuiRequest::execute() const
+QuitGuiRequest::accept() const
 {
-  Quit( success ); // TODO: Do with Events instead.
+  Quit( success ); // TODO: How should we quit really?
 }
 
 void
-TogglePauseGameGuiRequest::execute() const
+OptionChangeRequest::accept() const
+{
+  the_opts.set_option( option, string_value, as_default );
+}
+
+void
+TogglePauseGameGuiRequest::accept() const
 {
   //TODO: toggle pause game
 }
