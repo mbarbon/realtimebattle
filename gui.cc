@@ -13,43 +13,24 @@ delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
 
 Gui::Gui()
 {
-  width=0;
-  height=0;
+  boundary[0] = Vector2D(0.0, 0.0);
+  boundary[1] = Vector2D(0.0, 0.0);
 }
 
-void
-Gui::display_gui( char * robot_name_list[], int arena_width, int arena_height )
+int
+Gui::change_to_pixels_x(double input)
 {
-  width = arena_width;
-  height = arena_height;
-  setup_control_window( robot_name_list );
-  setup_arena_window();
+  double res;
+  res = (input-boundary[0][0])*ZOOMFACTOR;
+  return (int)res;
 }
 
-void
-Gui::draw_objects( gpointer the_arenap )
+int
+Gui::change_to_pixels_y(double input)
 {
-  GList** object_lists,* gl;
-  Robot* robotp;
-  double radius=50.0;
-  Vector2D center(70.0,120.0);
-
-  object_lists = ((Arena *)the_arenap)->get_object_lists();
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot*)(gl->data);
-      cout << "draw_objects(): skall kolla om robot lever" << endl;
-      if( robotp->get_object_type() == ROBOT )
-        cout << "This is a robot" << endl;
-      else
-        cout << "This is not a robot." << endl;
-      //      if( robotp->is_alive() )
-      //        {
-          cout << "draw_objects(): skall rita cirkel" << endl;
-          draw_circle(center,radius,blue_colour,true);
-          cout << "draw_objects(): har ritat cirkel" << endl;
-          //        }
-    }
+  double res;
+  res = (input-boundary[0][1])*ZOOMFACTOR;
+  return (int)res;
 }
 
 void
@@ -66,12 +47,31 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor co
 }
 
 void
+Gui::draw_objects( gpointer the_arenap )
+{
+  GList** object_lists;
+  GList* gl;
+  Robot* robotp;
+
+  clear_area();
+  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot*)(gl->data);
+      if( robotp->get_object_type() == ROBOT )
+        if( robotp->is_alive() )
+            robotp->draw_shape( *this );
+    }
+  for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
+    {
+      ((Shape*)(WallCircle*)gl->data)->draw_shape( *this ); // Strange, but it works!
+    }      
+}
+
+void
 Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
 {
-  GdkGC * bkg_gc, * colour_gc;
-
-  bkg_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( bkg_gc, &background_colour );
+  GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
@@ -79,54 +79,89 @@ Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
   gdk_draw_arc (drawing_area->window,
                 colour_gc,
                 filled,
-                (int)(center[0] - radius),(int)(center[1] - radius),
-                (int)(2 * radius), (int)(2 * radius),
+                change_to_pixels_x(center[0]-radius),change_to_pixels_y(center[1]-radius),
+                (int)(2.0*radius*ZOOMFACTOR), (int)(2.0*radius*ZOOMFACTOR),
                 0, GDK_VARV);
 
   gdk_gc_destroy( colour_gc );
-  gdk_gc_destroy( bkg_gc );
 }
 
 void
-Gui::draw_line( int x1, int y1, int x2, int y2, GdkColor colour )
+Gui::draw_line( Vector2D start, Vector2D end, GdkColor colour )
 {
-  GdkGC * bkg_gc, * colour_gc;
-
-  bkg_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( bkg_gc, &background_colour );
+  GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
   gdk_draw_line (drawing_area->window,
                  colour_gc,
-                 50, 150,
-                 100, 200);
+                 change_to_pixels_x(start[0]), change_to_pixels_y(start[1]),
+                 change_to_pixels_x(end[0]), change_to_pixels_y(start[1]));
 
   gdk_gc_destroy( colour_gc );
-  gdk_gc_destroy( bkg_gc );
 }
 
 void
-Gui::draw_rectangle( int x1, int y1, int x2, int y2, GdkColor colour, bool filled )
+Gui::draw_line( Vector2D start, Vector2D direction, double length, double thickness , GdkColor colour )
 {
-  GdkGC * bkg_gc, * colour_gc;
+  GdkGC * colour_gc;
+  GdkPoint g_points[4];
+  Vector2D vector_points[4];
 
-  bkg_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( bkg_gc, &background_colour );
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &colour );
 
+  Vector2D line_thick = unit(direction);
+  line_thick = rotate90(line_thick);
+  line_thick *= thickness;
+  vector_points[0] = start + line_thick;
+  vector_points[1] = start - line_thick;
+  vector_points[2] = start - line_thick + direction * length;
+  vector_points[3] = start + line_thick + direction * length;
+
+  for(int i=0;i<4;i++)
+    {
+      g_points[i].x = change_to_pixels_x(vector_points[i][0]);
+      g_points[i].y = change_to_pixels_y(vector_points[i][1]);
+    }
+  gdk_draw_polygon (drawing_area->window, colour_gc, true, g_points, 4);
+
+  gdk_gc_destroy( colour_gc );
+}
+
+void
+Gui::clear_area()
+{
+  GdkGC * colour_gc;
+
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &background_colour );
+
+  gdk_draw_rectangle (drawing_area->window,
+                      colour_gc,
+                      true,
+                      0, 0, drawing_area->allocation.width,drawing_area->allocation.height);
+
+  gdk_gc_destroy( colour_gc );
+}
+
+void
+Gui::draw_rectangle( Vector2D start, Vector2D end, GdkColor colour, bool filled )
+{
+  GdkGC * colour_gc;
+
+  gdk_color_alloc (colormap, &background_colour);
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
   gdk_draw_rectangle (drawing_area->window,
                       colour_gc,
-                      TRUE,
-                      0, 0,
-                      drawing_area->allocation.width,
-                      drawing_area->allocation.height);
+                      filled,
+                      change_to_pixels_x(start[0]), change_to_pixels_y(start[1]),
+                      change_to_pixels_x(end[0]), change_to_pixels_y(start[1]));
 
   gdk_gc_destroy( colour_gc );
-  gdk_gc_destroy( bkg_gc );
 }
 
 void
@@ -325,9 +360,6 @@ Gui::setup_control_window( char * robot_name_list[] )
   blue_colour.red = 0;
   blue_colour.green = 0;
   blue_colour.blue = 0xaaaa;
-  if (!gdk_color_alloc(cmap, &blue_colour)) {
-    g_error("couldn't allocate blue_colour");
-  }
 
   gtk_widget_realize (message_output);
   gtk_text_freeze (GTK_TEXT (message_output));
@@ -350,12 +382,12 @@ Gui::setup_control_window( char * robot_name_list[] )
 }
 
 void
-Gui::setup_arena_window( void )
+Gui::setup_arena_window( Vector2D bound[] )
 {
   GtkWidget *window;
-  GtkWidget *scrolled_window;
 
-  GdkColormap *colormap;
+  boundary[0] = bound[0];
+  boundary[1] = bound[1];
 
   /* Window */
 
@@ -367,18 +399,20 @@ Gui::setup_arena_window( void )
 
   /* Scrolled Window */
 
-  scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+  da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (window), scrolled_window);
-  gtk_widget_set_usize(scrolled_window,100,100);
-  gtk_widget_show (scrolled_window);
+  gtk_container_add (GTK_CONTAINER (window), da_scrolled_window);
+  gtk_widget_set_usize(da_scrolled_window,200,200);
+  gtk_widget_show (da_scrolled_window);
 
   /* Drawing Area */
 
   drawing_area = gtk_drawing_area_new ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area), width, height);
-  gtk_container_add (GTK_CONTAINER (scrolled_window),drawing_area);
+  gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),
+                         change_to_pixels_x(boundary[1][0]),
+                         change_to_pixels_y(boundary[1][1]));
+  gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
   gtk_widget_show (drawing_area);
 
   gtk_widget_show (window);  
