@@ -57,6 +57,8 @@ enum message_to_robot_type
   WARNING,
   DEAD,
   GAME_FINISHES,
+  TEAMMODE,
+  MESSAGE,		// message from your team
   //  SAVE_DATA,
   EXIT_ROBOT
 };
@@ -79,7 +81,9 @@ enum message_from_robot_type
   PRINT,
   DEBUG,
   DEBUG_LINE,
-  DEBUG_CIRCLE
+  DEBUG_CIRCLE,
+  TEAMWORK,
+  SEND			// send message to team
 
   //  BIN_DATA_FROM,
   //  ASCII_DATA_FROM,
@@ -184,6 +188,8 @@ static const struct Message message_to_robot[25] =
   {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
   {"Dead",       0, {NONE,   NONE,   NONE,   NONE}},   // Robot died  
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
+  {"TeamMode",   1, {STRING, NONE,   NONE,   NONE}},   // is teammode activeted? (true, false)
+  {"Message",    1, {STRING, NONE,   NONE,   NONE}},
   //  {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
 
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
@@ -212,6 +218,8 @@ static const struct Message message_from_robot[25] =
                                                          // arg3,4: endpoint angle, radius (relative robot)
   {"DebugCircle",  3, {DOUBLE, DOUBLE, DOUBLE}},         // arg1,2: centerpoint angle, radius (relative robot)
                                                          // arg3: circle radius
+  {"TeamWork",     1, {STRING}},	     // arg: "OK" => Robor supports teamwork
+  {"Send",	   1, {STRING}},
   //  {"BinData",      2, {INT, BINDATA}},    // first arg: number of bytes,  second arg: data
   //  {"AsciiData",    1, {STRING}},          // arg: data
   //  {"SaveDataFinished",0, {}},
