@@ -318,7 +318,7 @@ Arena::special_split_string( const string& str, vector<string>& strlist ) const
           beg_pos = end_pos + 1;
         }
       string::size_type backslash_pos = 0;
-      while( (backslash_pos = temp_string.find( '\\', temp_pos) != string::npos ) )
+      while( (backslash_pos = temp_string.find( '\\', temp_pos)) != string::npos )
         {
           if( temp_string.substr( backslash_pos, 2 ) == "\\\n" )
             temp_string.erase( backslash_pos, 2 );
