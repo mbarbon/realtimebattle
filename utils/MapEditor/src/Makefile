@@ -1,6 +1,6 @@
 all: main
 
-main: AllGadgets.o Arena.o Gadget.o GadgetSet.o ShotGadget.o WeaponGadget.o WallGadget.o f_read.o Value.o Variable.o main.o
+main: AllGadgets.o Arena.o Gadget.o GadgetSet.o GadgetDef.o ShotGadget.o WeaponGadget.o WallGadget.o f_read.o Value.o Variable.o main.o
 	g++ -o main *.o
 
 main.o: main.cc
@@ -17,6 +17,9 @@ Gadget.o: Gadget.cc
 
 GadgetSet.o: GadgetSet.cc
 	g++ -c -o GadgetSet.o GadgetSet.cc
+
+GadgetDef.o: GadgetDefinition.cc
+	g++ -c -o GadgetDef.o GadgetDefinition.cc
 
 ShotGadget.o: ShotGadget.cc
 	g++ -c -o ShotGadget.o ShotGadget.cc
