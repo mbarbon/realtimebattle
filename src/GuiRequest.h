@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __GUIREQUEST__
 
 #include <string>
+#include <vector>
 
 class GuiRequest
 {
@@ -66,5 +67,45 @@ public:
 
   void accept                  () const;
 };
+
+class StartTournamentRequest : public GuiRequest
+{
+public:
+  StartTournamentRequest       ( const int rounds_pm, const int robots_pm,
+                                 const int nom, const vector<string>& _robots,
+                                 const vector<string>& _arenas )
+    : rounds_per_match(rounds_pm), robots_per_match(robots_pm),
+      number_of_matches(nom), robot_files(_robots), arena_files(_arenas) {}
+  ~StartTournamentRequest      () {}
+private:
+  void accept                  () const;
+
+  int rounds_per_match;
+  int robots_per_match;
+  int number_of_matches;
+  vector<string> robot_files;
+  vector<string> arena_files;
+}
+
+class EndTournamentRequest : public GuiRequest
+{
+public:
+  EndTournamentRequest         () {}
+  ~EndTournamentRequest        () {}
+private:
+  void accept                  () const;
+}
+
+class ChangeDebugLevelRequest : public GuiRequest
+{
+public:
+  ChangeDebugLevelRequest    ( const int _new_level ) : new_debug_level(_new_level) {}
+  ~ChangeDebugLevelRequest   () {}
+  
+private:
+  void accept                  () const;
+
+  int new_debug_level;
+}
 
 #endif __GUIREQUEST__

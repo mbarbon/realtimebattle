@@ -25,6 +25,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "ArenaController.h"
 #include "OptionHandler.h"
+#include "EventHandler.h"
+#include "Tournament.h"
+
+extern EventHandler the_eventhandler;
 
 void
 QuitProgramRequest::accept() const
@@ -42,4 +46,28 @@ void
 TogglePauseGameRequest::accept() const
 {
   //TODO: toggle pause game
+}
+
+void
+StartTournamentRequest::accept() const
+{
+  // TODO: have to supply tournament with Robot* and ArenaGadget which is
+  //       stupid in my opinion.
+//    the_eventhandler.set_tournament( new Tournament( rounds_per_match,
+//                                                     robots_per_match,
+//                                                     number_of_matches,
+//                                                     all_robots,
+//                                                     all_arenas ) );
+}
+
+void
+EndTournamentRequest::accept() const
+{
+  //TODO: end tournament
+}
+
+void
+ChangeDebugLevelRequest::accept() const
+{
+  //TODO: change debug level
 }
