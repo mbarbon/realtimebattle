@@ -130,7 +130,8 @@ enum object_type
   SHOT = 1, 
   WALL = 2, 
   COOKIE = 3, 
-  MINE = 4
+  MINE = 4,
+  LAST_OBJECT_TYPE = 5
 };
 
 static const int number_of_object_types = 5;
@@ -186,8 +187,10 @@ static const struct Message message_from_robot[25] =
   {"Shoot",        1, {DOUBLE}},             // arg: amount of energy
   {"Print",        1, {STRING}},             // arg: message to print   
   {"Debug",        1, {STRING}},             // arg: debug message
-  {"DebugLine",    4, {DOUBLE, DOUBLE, DOUBLE, DOUBLE}}, // start/end, polar
-  {"DebugCircle",  3, {DOUBLE, DOUBLE, DOUBLE}},         // center, radius
+  {"DebugLine",    4, {DOUBLE, DOUBLE, DOUBLE, DOUBLE}}, // arg1,2: startpoint angle, radius (relative robot)
+                                                         // arg3,4: endpoint angle, radius (relative robot)
+  {"DebugCircle",  3, {DOUBLE, DOUBLE, DOUBLE}},         // arg1,2: centerpoint angle, radius (relative robot)
+                                                         // arg3: circle radius
   //  {"BinData",      2, {INT, BINDATA}},    // first arg: number of bytes,  second arg: data
   //  {"AsciiData",    1, {STRING}},          // arg: data
   //  {"SaveDataFinished",0, {}},
