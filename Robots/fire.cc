@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "../messagetypes.h"
 
-enum object_type { NOOBJECT, ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
 static const number_of_object_types = 6;
 
 message_to_robot_type
@@ -28,6 +27,7 @@ main(int argc, char * argv[])
 
   for(;;sleep(1))
     {
+      cout << "Shoot 3" << endl;
       cin.clear();
       while( !cin.eof() )
         {
@@ -42,7 +42,7 @@ main(int argc, char * argv[])
             case GAME_STARTS:
               cout << "Print I am ready" << endl;
               cout << "Rotate 7 0.7" << endl;
-              acceleration = 1.05;
+              acceleration = 0.5;
               cout << "Acceleration " << acceleration << endl;
               break;
             case RADAR:
@@ -55,16 +55,16 @@ main(int argc, char * argv[])
                   {
                   case ROBOT:
                     cout << "Shoot 2" << endl;
-                    cout << "Print kill" << endl;
+                    //cout << "Print kill" << endl;
                     break;
                   case WALL:
-                    if( dist < 0.5 )
-                      acceleration = -0.45;
-                    cout << "Acceleration " << acceleration << endl;
+                    //if( dist < 0.5 )
+                    //  acceleration = -0.45;
+                    //cout << "Acceleration " << acceleration << endl;
                     break;
                   case SHOT:
-                    cout << "Print Help me!" << endl;
-                    cout << "Print A shot is killing me!" << endl;
+                    //cout << "Print Help me!" << endl;
+                    //cout << "Print A shot is approaching!" << endl;
                     break;
                   case COOKIE:
                     cout << "Print Yummy! A cookie" << endl;
@@ -79,6 +79,22 @@ main(int argc, char * argv[])
                     break;
                   }
                 //                cout << "Print " << dist << " " << object << endl;
+              }
+              break;
+            case COLLISION:
+              {
+                int tmp;
+                double enegry_diff;
+                cin >> tmp >> enegry_diff;
+                switch(tmp)
+                  {
+                    //case ROBOT: cout << "Print Collided with robot" << endl; break;
+                    //case SHOT: cout << "Print Hit by a shot" << endl; break;
+                  case MINE: cout << "Print Oh no! A mine!" << endl; break;
+                  case COOKIE: cout << "Print Cookie eaten!" << endl; break;
+                    //case WALL: cout << "Print Bounced on a wall" << endl; break;
+                  }
+                if( enegry_diff != 0 ) cout << "Print energy changed by " << enegry_diff << endl;
               }
               break;
             case WARNING:
