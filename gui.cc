@@ -112,6 +112,43 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor& c
   gtk_text_thaw(GTK_TEXT(message_output));
 }
 
+char **
+Gui::get_colour_square_xpm( char ** col_sq, const GdkColor& colour )
+{
+  char * colour_square[] =
+  {
+    "14 14 1 1",
+    ".      c #000000000000 ",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    "..............",
+    ".............."
+  };
+
+  strstream ss;
+  char str[25];
+
+  ss << ".      c #" << setfill('0') << hex << setw(4) << colour.red
+     << setw(4) << colour.green << setw(4) << colour.blue << ends << endl;
+  ss.getline(str,25,'\n');
+  char* newstr = new char[30];
+  strcpy(newstr, str);
+  colour_square[1] = newstr;
+
+  col_sq = (char **) colour_square;
+  return col_sq;
+}
+
 void
 Gui::draw_objects()
 {
@@ -241,7 +278,6 @@ Gui::draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colou
 {
   GdkGC * colour_gc;
 
-  gdk_color_alloc (colormap, the_arena->get_background_colour_p());
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
@@ -424,41 +460,13 @@ Gui::setup_score_window()
       gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena->get_foreground_colour_p());
       gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena->get_background_colour_p());
 
-      char * colour_square[] =
-      {
-        "14 14 1 1",
-        ".      c #000000000000   ",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        "..............",
-        ".............."
-      };
-
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
-      strstream ss;
-      char str[25];
-
-      ss << ".      c #" << setfill('0') << hex << setw(4) << robotp->get_colour().red
-         << setw(4) << robotp->get_colour().green << setw(4) << robotp->get_colour().blue << ends << endl;
-      ss.getline(str,25,'\n');
-      char* newstr = new char[30];
-      strcpy(newstr, str);
-      colour_square[1] = newstr;
+      char ** colour_square;
 
       colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
                                                     the_arena->get_background_colour_p(),
-                                                    (gchar **)colour_square );
+                                                    get_colour_square_xpm( colour_square, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
