@@ -24,8 +24,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <vector>
 
+#include <fstream.h>
+
 #include "Tournament.h"
 #include "Gadgets/ArenaGadget.h"
+#include "Structs.h"
+#include "String.h"
 
 Tournament::Tournament(const int rounds_p_match,
                        const int robots_p_match,
@@ -44,7 +48,7 @@ Tournament::Tournament(const int rounds_p_match,
 
 Tournament::Tournament(const string& tournament_file)
 {
-  load_succeeded = load_tournament_file( tournament_file );
+  load_succeeded = parse_tournament_file( tournament_file );
 
   if( load_succeeded )
     {
@@ -53,12 +57,6 @@ Tournament::Tournament(const string& tournament_file)
     }
 }
 
-
-bool
-Tournament::load_tournament_file(const string& tournament_file)
-{
-  return false; // couldn't load file, since we didn't try :)
-}
 
 
 
@@ -152,4 +150,149 @@ Tournament::create_matches()
 void 
 Tournament::prepare_for_new_match()
 {
+}
+
+
+bool
+Tournament::parse_tournament_file( const string& filename )
+{
+  list<string> robotdirs;
+  list<string> arenadirs;
+
+  read_dirs_from_system(robotdirs, arenadirs);
+
+  bool fatal_error_on_file_failure = false;
+
+  ifstream file(filename.c_str());
+  if( !file )
+    {
+      if( fatal_error_on_file_failure )
+        Error( true, "Can't open specified tournament file.",
+               "parse_tournament_file" );
+      else
+        return false;
+    }
+
+  int games_p_s = 1;
+  int robots_p_s = 2;
+  int n_o_sequences = 1;
+  int looking_for = 0; // 0 = keyword, 1 = robot, 2 = arena
+
+  list<start_tournament_info_t> robot_list;
+  list<start_tournament_info_t> arena_list;
+
+  for(;;)
+    {
+      char buffer[200];
+      file >> buffer;
+      string word(buffer);
+
+      if( word == "" )
+        {
+          int robots_counted = robot_list.size();
+          int arenas_counted = arena_list.size();
+          
+          if (games_p_s == -1)
+            games_p_s = arenas_counted;
+
+          if (robots_p_s == -1)
+            robots_p_s = robots_counted;
+
+          if (n_o_sequences == -1)
+            n_o_sequences=binomial(robots_counted, games_p_s);
+
+          robots_p_s = min(robots_counted,robots_p_s);
+          
+          if(robots_p_s < 2)
+            {
+              if( fatal_error_on_file_failure )
+                Error(true, "Can't start tournament with only " +
+                      int2string(robots_p_s) + " robots per sequence", 
+                      "parse_tournament_file");
+              else
+                return false;
+            }
+
+          if(games_p_s < 1)
+            {
+              if(fatal_error_on_file_failure)
+                Error(true, "Must have at least one game per sequence. " 
+                      "Current value is: " + int2string(games_p_s),
+                      "parse_tournament_file");
+              else
+                return false;
+            }
+
+          if(n_o_sequences < 1)
+            {
+              if(fatal_error_on_file_failure)
+                Error(true, "Must have at least one sequence. Current value is: " + 
+                      int2string(n_o_sequences), "parse_tournament_file");
+              else
+                return false;
+            }
+
+          // Startup the tournament
+
+          //          (*function)( robot_list, arena_list, robots_p_s, 
+          //                       games_p_s, n_o_sequences, data );
+
+          return true;
+        }
+
+
+      if( (equal_strings_nocase(word,"games/sequence:")) || 
+          (equal_strings_nocase(word,"g/s:") ) )
+        {
+          looking_for = 0;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            games_p_s = -1;
+          else
+            games_p_s = string2int( buffer );
+        }
+      else if( (equal_strings_nocase(word,"robots/sequence:")) || 
+               (equal_strings_nocase(word,"r/s:")) )
+        {
+          looking_for = 0;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            robots_p_s = -1;
+          else
+            robots_p_s = string2int( buffer );
+        }
+      else if( (equal_strings_nocase(word,"sequences:")) || 
+               (equal_strings_nocase(word,"seq:")) )
+        {
+          looking_for = 0;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            n_o_sequences = -1;
+          else
+            n_o_sequences = string2int( buffer );
+        }
+      else if( (equal_strings_nocase(word,"robots:")) ||
+               (equal_strings_nocase(word,"r:")) )
+        looking_for = 1;
+      else if( (equal_strings_nocase(word,"arenas:")) ||
+               (equal_strings_nocase(word,"a:")) )
+        looking_for = 2;
+      else
+        {
+          switch(looking_for)
+            {
+            case 0:
+              looking_for = 0;
+              cerr << "Unrecognized keyword in tournament file: " << word << endl;
+              break;
+            case 1:
+              check_for_robots_and_arenas( word, robot_list, robotdirs, true);
+              break;
+            case 2:
+              check_for_robots_and_arenas( word, arena_list, arenadirs, false);
+              break;
+            }
+        }
+    }
+  return false;
 }

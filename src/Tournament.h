@@ -78,7 +78,7 @@ private:
 
   void create_matches();
 
-  bool load_tournament_file(const string& tournament_file);
+  bool parse_tournament_file( const string& tournament_file );
 
   int round_nr;
   int rounds_per_match;

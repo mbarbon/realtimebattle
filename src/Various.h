@@ -54,10 +54,6 @@ void check_for_robots_and_arenas( string& word,
                                   const bool check_robots );
 void search_directories( string directory, list<start_tournament_info_t>& tour_list,
                          const bool check_robots );
-bool parse_tournament_file( const string& fname,
-                            const StartTournamentFunction function,
-                            void* data, bool fatal_error_on_file_failure = true );
-
 
 void create_tmp_rtb_dir();
 
