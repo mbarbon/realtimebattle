@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,6 +36,14 @@ InformationDistributor::InformationDistributor()
 void
 InformationDistributor::insert_information( const InfoBase* _info )
 {
+  const InfoBase* old_info = *writing_point;
+  *writing_point = _info;
+  delete old_info;
+
+  writing_point++;
+  if( writing_point == informationlist.end() )
+    writing_point = informationlist.begin();
+
   list<reader_t>::iterator li;
   for( li = readerlist.begin(); li != readerlist.end(); li++ )
     if( (*li).reading_point == writing_point )
@@ -46,12 +54,6 @@ InformationDistributor::insert_information( const InfoBase* _info )
         Error( false, "Warning: Unread message for gui is being overwritten",
                "InformationDistributor::insert_information" );
       }
-  const InfoBase* old_info = *writing_point;
-  *writing_point = _info;
-  delete old_info;
-  writing_point++;
-  if( writing_point == informationlist.end() )
-    writing_point = informationlist.begin();
 }
 
 // Returns NULL if there are no messages to be read.
