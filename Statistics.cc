@@ -155,13 +155,13 @@ Gui::add_new_row( void * rp, void * sp )
 
   if(stat_table_type == STAT_TABLE_GAME)
     {
-      char ** colour_square;
+      char ** col_sq;
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
 
       colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
                                                     the_arena->get_background_colour_p(),
-                                                    get_colour_square_xpm( colour_square, robotp->get_colour() ) );
+                                                    get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(stat_clist), row, 0, colour_pixmap, bitmap_mask);
       gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, robotp->get_robotname());
@@ -305,11 +305,11 @@ Gui::stat_make_title_button()
               {
                 GdkPixmap * colour_pixmap;
                 GdkBitmap * bitmap_mask;
-                char ** colour_square;
+                char ** col_sq;
 
                 colour_pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
                                                               the_arena->get_background_colour_p(),
-                                                              get_colour_square_xpm( colour_square, robotp->get_colour() ) );
+                                                              get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
                 GtkWidget * pixmap_widget = gtk_pixmap_new( colour_pixmap, bitmap_mask );
                 //                gtk_container_add(GTK_CONTAINER(stat_title_hbox), pixmap_widget);

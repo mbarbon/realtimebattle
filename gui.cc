@@ -8,6 +8,26 @@
 
 #define GDK_VARV 23040     // 64 * 360 degrees
 
+static char * colour_square[] =
+{
+  "14 14 1 1",
+  ".      c #000000000000 ",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  "..............",
+  ".............."
+};
+
 void
 no_zoom_callback(GtkWidget *widget, gpointer guip)
 {
@@ -115,26 +135,6 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor& c
 char **
 Gui::get_colour_square_xpm( char ** col_sq, const GdkColor& colour )
 {
-  char * colour_square[] =
-  {
-    "14 14 1 1",
-    ".      c #000000000000 ",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    "..............",
-    ".............."
-  };
-
   strstream ss;
   char str[25];
 
@@ -462,11 +462,11 @@ Gui::setup_score_window()
 
       GdkPixmap * colour_pixmap;
       GdkBitmap * bitmap_mask;
-      char ** colour_square;
+      char ** col_sq;
 
       colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
                                                     the_arena->get_background_colour_p(),
-                                                    get_colour_square_xpm( colour_square, robotp->get_colour() ) );
+                                                    get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
