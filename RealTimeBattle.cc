@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include "Arena.h"
 #include "Vector2D.h"
 #include "gui.h"
@@ -28,6 +30,25 @@ update_function(gpointer the_arenap)
   return res;
 }
 
+void
+sigchld_handler (int signum)
+{
+  int pid;
+  int status;
+  while (1)
+    {
+      pid = waitpid (WAIT_ANY, &status, WNOHANG);
+      if (pid < 0)
+        {
+          perror ("waitpid");
+          break;
+        }
+      if (pid == 0)
+        break;
+      //notice_termination (pid, status);
+    }
+  signal(signum, sigchld_handler);
+}
 
 int 
 main ( int argc, char* argv[] )
@@ -93,12 +114,14 @@ main ( int argc, char* argv[] )
       print_help_message();
       return EXIT_FAILURE;
     }
+
+  signal(SIGCHLD, sigchld_handler);
     
   Arena* the_arena = new Arena;
   try
     {
       the_arena->get_the_gui()->setup_control_window();
-      the_arena->start_tournament( robotnames, arenanames, nr_robots, 4, 4);
+      the_arena->start_tournament( robotnames, arenanames, nr_robots, 4, 8);
     }
   catch ( Error the_error )
 	 {
