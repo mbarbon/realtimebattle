@@ -41,12 +41,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 int Robot::nb_robots = 0;
 
-Robot::Robot(const string& uniqueness_name, int id) : 
-  robot_name( uniqueness_name ), robot_name_uniqueness_number( id )
-{
+Robot::Robot(const string& uniqueness_name, int id) {
   //  velocity = Vector2D(0.0, 0.0);
   //  acceleration = 0.0;
-
+  
+  
+  robot_name = uniqueness_name;
+  robot_name_uniqueness_number = id;
   plain_robot_name = "";
 
   nb_robots ++;
@@ -89,14 +90,16 @@ Robot::~Robot()
   */
 } 
 
-void
+bool
 Robot::set_connection( NetConnection* nc )
 {
   if( !connected_to_robot_client )
     {
       owner = nc;
       connected_to_robot_client = true;
+      return true;
     }
+  return false;
 }
 
 void

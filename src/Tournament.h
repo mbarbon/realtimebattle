@@ -96,6 +96,8 @@ class Tournament
   bool set_number_o_matches(int);
   bool set_robots_p_match(int);
 
+  Robot* connect_to_robot(NetConnection* nc, string& uniqueness_name);
+
   vector<Robot*>* get_the_robots(){return &the_robots;};
 
   void start();

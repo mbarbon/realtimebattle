@@ -171,6 +171,17 @@ Tournament::start()
 
 }
 
+Robot*
+Tournament::connect_to_robot(NetConnection* nc, string& uniqueness_name)
+{
+  for( vector<Robot*>::iterator ri = the_robots.begin(); ri != the_robots.end(); ri ++ )
+    {
+      if((*ri)->get_robot_name() == uniqueness_name && (*ri)->set_connection( nc )) {
+	return *ri;
+      }
+    }
+  return NULL;
+}
 
 void 
 Tournament::prepare_for_new_match()

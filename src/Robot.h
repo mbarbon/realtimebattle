@@ -46,7 +46,7 @@ public:
   Robot(const int r_id, const long int col, const string& name);
   ~Robot();
 
-  void set_connection(NetConnection* nc); 
+  bool set_connection(NetConnection* nc); 
 
   //  void move(const double timestep);  
   void update();
