@@ -38,7 +38,7 @@ AC_SUBST(VERSION)
 
 # Languages
 
-ALL_LINGUAS="sv pl"
+ALL_LINGUAS="sv pl pt"
 
 # Directories
 
@@ -67,7 +67,7 @@ AC_PROG_CC
 AC_ISC_POSIX
 AC_PROG_INSTALL
 
-AC_PREFIX_DEFAULT(/usr)
+AC_PREFIX_DEFAULT(/usr/local)
 
 
 # Checks for header files.
