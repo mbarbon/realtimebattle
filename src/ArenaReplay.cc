@@ -142,6 +142,10 @@ ArenaReplay::timeout_function()
 void
 ArenaReplay::parse_this_interval()
 {
+#ifndef NO_GRAPHICS
+  if( state == GAME_IN_PROGRESS && !no_graphics)
+    the_gui.get_messagewindow_p()->freeze_clist();
+#endif
   if( fast_forward_factor > 0.0 )
     while( !log_file.eof() && total_time >= current_replay_time )
       {
@@ -155,6 +159,10 @@ ArenaReplay::parse_this_interval()
         parse_this_time_index();
       }
     }
+#ifndef NO_GRAPHICS
+  if( state == GAME_IN_PROGRESS && !no_graphics)
+    the_gui.get_messagewindow_p()->thaw_clist();
+#endif
   
   if( log_file.eof() )
     {

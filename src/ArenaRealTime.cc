@@ -475,13 +475,21 @@ ArenaRealTime::update()
 {
   print_to_logfile('T', total_time);
 
+#ifndef NO_GRAPHICS
+  if( state == GAME_IN_PROGRESS && !no_graphics)
+    the_gui.get_messagewindow_p()->freeze_clist();
+#endif
+
   read_robot_messages();
   move_shots(timestep);
   update_robots();
 
 #ifndef NO_GRAPHICS
   if( state == GAME_IN_PROGRESS && !no_graphics)
-    the_gui.get_arenawindow_p()->draw_moving_objects( true );
+    {
+      the_gui.get_arenawindow_p()->draw_moving_objects( true );
+      the_gui.get_messagewindow_p()->thaw_clist();
+    }
 #endif
 }
 

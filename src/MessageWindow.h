@@ -57,6 +57,9 @@ public:
   static void show_all           ( GtkWidget* widget,
                                    class MessageWindow* messagewindow_p );
 
+  void freeze_clist              ();
+  void thaw_clist                ();
+
   void set_viewed_robot          ( class Robot* robot_p );
   void set_window_shown          ( bool win_shown );
 

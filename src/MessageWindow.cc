@@ -166,6 +166,7 @@ MessageWindow::add_message( const String& name_of_messager,
 {
   if( window_shown )
     {
+      gtk_clist_freeze( GTK_CLIST( clist ) );
       if( viewed_robot != NULL &&
           viewed_robot->get_robot_name() != name_of_messager &&
           name_of_messager != "RealTimeBattle" )
@@ -197,7 +198,20 @@ MessageWindow::add_message( const String& name_of_messager,
       gtk_clist_set_background( GTK_CLIST( clist ), row,
                                 the_gui.get_bg_gdk_colour_p() );
 #endif
+      gtk_clist_thaw( GTK_CLIST( clist ) );
     }
+}
+
+void
+MessageWindow::freeze_clist()
+{
+  gtk_clist_freeze( GTK_CLIST( clist ) );
+}
+
+void
+MessageWindow::thaw_clist()
+{
+  gtk_clist_thaw( GTK_CLIST( clist ) );
 }
 
 void
