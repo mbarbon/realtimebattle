@@ -36,7 +36,7 @@ ArenaReplay::ArenaReplay()
 {
   reset_timer();
   state = NOT_STARTED;
-  next_check_time = 0.0;
+  current_replay_time = 0.0;
 
   set_game_mode( (ArenaBase::game_mode_t)the_arena_controller.game_mode );
   set_filenames( the_arena_controller.replay_filename,
@@ -63,13 +63,13 @@ ArenaReplay::timeout_function()
     case GAME_IN_PROGRESS:
       {
 #ifndef NO_GRAPHICS
-        int old_total = (int)next_check_time;
+        int old_total = (int)current_replay_time;
 #endif NO_GRAPHICS
 
         parse_this_interval();
 
 #ifndef NO_GRAPHICS
-        if((int)next_check_time > old_total && !no_graphics)
+        if((int)current_replay_time > old_total && !no_graphics)
           the_gui.get_scorewindow_p()->set_window_title();
 #endif
       }
@@ -78,9 +78,12 @@ ArenaReplay::timeout_function()
     case BEFORE_GAME_START:
       parse_this_interval();
 #ifndef NO_GRAPHICS
-      the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
-      the_gui.get_arenawindow_p()->draw_everything();      
-      the_gui.get_scorewindow_p()->add_robots();
+      if( !no_graphics )
+        {
+          the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
+          the_gui.get_arenawindow_p()->draw_everything();      
+          the_gui.get_scorewindow_p()->add_robots();
+        }
 #endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );
       break;
@@ -104,18 +107,8 @@ ArenaReplay::timeout_function()
 void
 ArenaReplay::parse_this_interval()
 {
-  while( !log_file.eof() && total_time >= next_check_time )
+  while( !log_file.eof() && total_time >= current_replay_time )
     {
-      if( next_check_time > last_replay_time )
-        {
-          move_shots_no_check( next_check_time - last_replay_time );
-          // check if robots have died and set thier points
-#ifndef NO_GRAPHICS
-          the_gui.get_arenawindow_p()->draw_moving_objects( true );
-#endif NO_GRAPHICS
-        }
-
-      last_replay_time = next_check_time;
       parse_log_line();
     }
   
@@ -180,7 +173,7 @@ ArenaReplay::parse_log_line()
   log_file.get( first_letter );
 
   if( log_file.eof() ) return '?';
-  //  cerr << "first letter: " << first_letter << endl;
+  //  cerr << first_letter;
   switch( first_letter )
     {
     case 'R': // Robot pos
@@ -201,8 +194,40 @@ ArenaReplay::parse_log_line()
       break;
     case 'T': // Time
       {
-        log_file >> next_check_time;
-        //        cerr << next_check_time << "  " << total_time << endl;
+        last_replay_time = current_replay_time;
+        log_file >> current_replay_time;
+        //        cerr << current_replay_time << "  " << total_time << endl;
+
+        move_shots_no_check( current_replay_time - last_replay_time );
+
+#ifndef NO_GRAPHICS
+        if( !no_graphics )
+          the_gui.get_arenawindow_p()->draw_moving_objects( true );
+#endif NO_GRAPHICS
+
+        // check if robots have died and set their points
+        if( robots_killed_this_round > 0 )
+          {
+            ListIterator<Shape> li;
+            Robot* robotp;
+            for( object_lists[ROBOT].first(li); li.ok(); li++ )
+              {                
+                robotp = (Robot*)li();
+                if( robotp->is_alive() || robotp->get_died_this_round() )
+                  {
+                    if( robotp->is_alive() )
+                      robotp->add_points(robots_killed_this_round);
+                    else
+                      robotp->set_stats(robots_killed_this_round);
+#ifndef NO_GRAPHICS
+                    if( robots_left < 15 && !no_graphics ) 
+                      robotp->display_score();
+#endif
+                  }
+              }
+            robots_left -= robots_killed_this_round; 
+            robots_killed_this_round = 0;
+          }
       }
       break;
     case 'P': // Print a robot message
@@ -264,7 +289,10 @@ ArenaReplay::parse_log_line()
               find_object_by_id( object_lists[ROBOT], li, object_id );
               if( !li.ok() ) 
                 Error(true, "Dying robot not in list", "ArenaReplay::parse_log_line");
-              ((Robot*)li())->die();
+              Robot* robotp = (Robot*) li();
+              robotp->die();
+              robotp->change_energy( -robotp->get_energy() );
+              robots_killed_this_round++;
             }
             break;
           case 'C':
@@ -308,9 +336,16 @@ ArenaReplay::parse_log_line()
       {
         delete_lists(false, false, false, false, false);
         reset_timer();
-        next_check_time = 0.0;
+        current_replay_time = 0;
+        robots_killed_this_round = 0;
+        robots_left = robots_per_game;
 
         log_file >> sequence_nr >> game_nr;
+
+        ListIterator<Shape> li;
+        for( object_lists[ROBOT].first(li); li.ok(); li++ )
+          ((Robot*)li())->
+            set_values_before_game(Vector2D(infinity,infinity), 0.0);
 
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;

@@ -51,7 +51,7 @@ private:
   ifstream log_file;
 
   double last_replay_time;
-  double next_check_time;
+  double current_replay_time;
 
   // These two vars are used when creating the arena
   double arena_scale;
