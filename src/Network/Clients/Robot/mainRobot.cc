@@ -18,10 +18,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 
-#include "ClientSocket.h"
+#include "RobotSocket.h"
 #include <signal.h>
+#include <stdio.h>
+
 
 #define WEBSITE_URL      "http://"
+
+SocketRobot* my_socketclient;
 
 int
 main( int argc, char* argv[] )
@@ -31,13 +35,10 @@ main( int argc, char* argv[] )
     argv[1] : robot path
     argv[2] : server address
     argv[3] : server port
+    // argv[4] : authentification key
   */
 
-  /* 
-     string host_name;
-     int PortNum;
-  */
-
+ 
   if( argc != 4 )
     {
       cerr<<"rtbrobot : This program is used by RealTimeBattle to establish a comunication\n"
@@ -47,21 +48,20 @@ main( int argc, char* argv[] )
       exit( 0 );
     }
 
+  string host_name = argv[2];
+
+  int PortNum;
+  sscanf(argv[3], "%d", &PortNum);
+
+  my_socketclient = new SocketRobot(argv[1]);
   
-  cout<<"[rtbrobot "<<argv[1]<<" "<<argv[2]<<" "<<argv[3]<<"]"<<endl;
-  /*
-    cin>>host_name;
-    cout<<"Port Number : ";
-    cin>>PortNum;
-    my_socketclient->connect_to_server( host_name, PortNum );
-    string name;
-    cout<<"Name : ";
-    cin>>name;
-    my_socketclient->initialize( name, ROBOT_CLIENT_CONNECTION );
-    while( my_socketclient->is_connected() )
+  my_socketclient->connect_to_server( host_name, PortNum );
+  my_socketclient->initialize( "Robot" /*TODO : Put the authentification key instead */ );
+ 
+  while( my_socketclient->is_connected() )
     my_socketclient->check_connection();
-    
-    my_socketclient->close_connection();
-  */
+  
+  my_socketclient->close_connection();
+
   exit( 0 );
 }

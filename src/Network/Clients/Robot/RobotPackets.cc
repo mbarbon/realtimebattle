@@ -21,10 +21,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <netinet/in.h>
 #include <string>
 #include <iostream.h>
+#include <fstream.h>
 #include <stdarg.h>
 
 #include "NetConnection.h"
 #include "RobotPackets.h"
+#include "RobotSocket.h"
 #include "String.h"
 
 Packet*
@@ -36,6 +38,10 @@ make_packet( string& netstr )
     {
       //This wouldn't be very usefull (CommandPacket would be a virtual class)
       return new CommandPacket( );
+    }
+  else if( type == "@R" )
+    {
+      return new RobotMessagePacket( );
     }
   //else I don't know this kind of packet;
 
@@ -112,5 +118,18 @@ CommandPacket::handle_packet(void* p_void)
   return 0;
 }
 
+string
+RobotMessagePacket::make_netstring() const
+{
+  return ( string("@R") + robot_message );
+}
+
+int 
+RobotMessagePacket::handle_packet(void* p_void)
+{
+  ofstream* out_str = 
+    my_socketclient->P.get_outstreamp( );
+  (*out_str)<< data <<endl;
+}
 
 

@@ -28,6 +28,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  define RECV_COMMAND_PACKET
 #  define SEND_COMMAND_PACKET
 
+#define USE_ROBOTMESSAGE_PACKET
+#  define RECV_ROBOTMESSAGE_PACKET
+#  define SEND_ROBOTMESSAGE_PACKET
+
 #include "Packets.h"
 
 #endif
