@@ -21,7 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.5 rev 1
+<title>RealTimeBattle User Manual, version 0.9.6 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
 <date> 17 January 1999
 
@@ -176,17 +176,26 @@ Usage:
 
 Options:
 <itemize>
-<item> <tt> --debug_mode,         -d </tt> debug mode
+<item> <tt> --debug_mode,             -d </tt> debug mode
 
-<item> <tt> --normal_mode,        -n </tt> normal mode (default)
+<item> <tt> --normal_mode,            -n </tt> normal mode (default)
 
-<item> <tt> --competition_mode,   -c </tt> competition mode
+<item> <tt> --competition_mode,       -c </tt> competition mode
 
-<item> <tt> --option_file [file], -o </tt> selects option-file (default: $HOME/.rtbrc)
+<item> <tt> --no_graphics,            -g </tt> no graphics will be displayed
 
-<item> <tt> --help,               -h </tt> prints a usage message
+<item> <tt> --option_file [file],     -o </tt> selects option-file (default: $HOME/.rtbrc)
 
-<item> <tt> --version,            -v </tt> prints the version number
+<item> <tt> --log_file [file],        -l </tt> make log file, if 'file' is '-'
+                                                the log is send to STDOUT
+<item> <tt> --tournament_file [file], -t </tt> specify a tournament file to
+                                                autostart a tournament
+<item> <tt> --statistics_file [file], -s </tt> file to print the statistics to
+                                                when autostarting
+
+<item> <tt> --help,                   -h </tt> prints this information
+
+<item> <tt> --version,                -v </tt> prints the version number
 
 </itemize>
 The differences between the three modes are shown in the following
@@ -302,7 +311,8 @@ In this window the robots playing in the current sequence are listed.
 <sect1>Message window<label id="Message window">
 <p>
 Here are messages sent by the robots using <ref id="Print" name="Print and Debug"> displayed. The
-most recent messages are displayed at the top.
+most recent messages are displayed at the top. You can clean the window and choose to only see new
+messages from a particular robot.
 
 <sect1>Options window<label id="Options_window">
 <p>
@@ -333,7 +343,17 @@ different ways. You can either display
 Pressing the arrowed buttons will move you to the first, back one,
 forward one or to the last element respectively. The middle bar will
 show what is display and pressing this will update the statistics if
-the game is in progress.
+the game is in progress. If you are using gtk+1.1.x, it is also possible to sort with respect to
+different columns by clicking on the corresponding title box.
+
+<sect1>Running without graphics<label id="no_graphics">
+<p>
+<sect1>Tournament files<label id ="tournament_files">
+<p>
+<sect1>Log files<label id ="log_files">
+<p>
+<sect1>Statistics files<label id ="statistics_files">
+<p>
 
 
 <!--   ################       Structure        ##################   -->
@@ -943,7 +963,8 @@ Here you can set the initial sizes for some different window, namely
 the <ref name="arena window" id="Arena_window">,
 the <ref name="message window" id="Message window">,
 the <ref name="score window" id="Score window"> and
-the <ref name="statistics window" id="Statistics window">
+the <ref name="statistics window" id="Statistics window">. You can also set the position for the
+first three and the <ref name="control window" id="Control window">.
 
 <sect1>Miscellaneous options<label id="Miscellaneous options">
 <p>

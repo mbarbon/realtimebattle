@@ -3,7 +3,7 @@
 <notes>
 <title>Change log
 <itemize>
-<!--
+
 <item> <bf>0.9.6:</bf>
 <p>
 The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
@@ -32,7 +32,7 @@ An updating problem with gtk 1.1.x in statistics window was solved.
 <tt>Messagetypes.h</tt> is now LGPL'd instead of GPL'd.
 
 Error handling is improved (by removing exception handling).
--->
+
 <item> <bf>0.9.5:</bf>
 <p>
 The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.

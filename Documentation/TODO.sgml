@@ -4,27 +4,15 @@
 <title>To do
 <descrip>
 
-<tag>Log-file</tag>
-<p> 
-The server should be able to make a log-file of the current game.
+<tag>A survey of the messaging language</tag>
+<p>
+Before version 1.0 is release, the messaging language must be definitive. There should be no changes
+until 2.0 (in the stable series). The will be an inquiry about proposed changes on the webboard when
+v0.9.6 is released.
 
 <tag>Log-file displayer</tag>
 <p>
 An individual program or an integrated part of RTB that displays log-file.
-
-<tag>Gui-free RTB</tag>
-<p>
-It should be possible to run RTB without using the Gui. The server writes to a log-file instead (see
-above).
-
-<tag>Automatic startup</tag>
-<p> 
-To simplify running competitions, it should be possible to start tournaments directly from the
-command line. An input file will tell which robots and arenas to be used.
- 
-<tag>Sorting in statistics</tag>
-<p> 
-To get a better overview, it should be possible to sort the different columns.
 
 <tag>Statistics analyzer</tag>
 <p> 
