@@ -808,7 +808,7 @@ ArenaRealTime::start_game()
     {
       the_gui.get_arenawindow_p()->clear_area();
       the_gui.get_arenawindow_p()->drawing_area_scale_changed();
-      the_gui.get_scorewindow_p()->add_robots();
+      the_gui.get_scorewindow_p()->update_robots();
 
       reset_timer();  // Time should be zero in score window
       the_gui.get_scorewindow_p()->set_window_title();

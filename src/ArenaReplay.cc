@@ -115,7 +115,7 @@ ArenaReplay::timeout_function()
             controlwindow_p->display_replay_widgets();
           the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
           the_gui.get_arenawindow_p()->draw_everything();      
-          the_gui.get_scorewindow_p()->add_robots();
+          the_gui.get_scorewindow_p()->update_robots();
           print_message
             ( "RealTimeBattle", (String)_("Game") + " " + String( game_nr )
               + (String)_(" of sequence ") + String( sequence_nr ) );
