@@ -29,9 +29,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "MessageWindow.h"
 #include "ArenaWindow.h"
+#include "ScoreWindow.h"
 #include "Robot.h"
 
 extern class String global_replay_fname;
+extern class String global_message_fname;
 extern int global_game_mode;
 
 ArenaReplay::ArenaReplay()
@@ -41,7 +43,7 @@ ArenaReplay::ArenaReplay()
   next_check_time = 0.0;
 
   game_mode = (ArenaBase::game_mode_t)global_game_mode;
-  set_filenames( global_replay_fname );
+  set_filenames( global_replay_fname, global_message_fname );
 }
 
 ArenaReplay::~ArenaReplay()
@@ -60,7 +62,18 @@ ArenaReplay::timeout_function()
       start_tournament();
       break;
     case GAME_IN_PROGRESS:
-      parse_this_interval();
+      {
+#ifndef NO_GRAPHICS
+        int old_total = (int)next_check_time;
+#endif NO_GRAPHICS
+
+        parse_this_interval();
+
+#ifndef NO_GRAPHICS
+        if((int)next_check_time > old_total && !no_graphics)
+          the_gui.get_scorewindow_p()->set_window_title();
+#endif
+      }
       break;
 
     case BEFORE_GAME_START:
@@ -193,9 +206,8 @@ ArenaReplay::parse_log_line()
         if( !li.ok() ) Error(false, "Robot not in list", "ArenaReplay::parse_log_line");
         else
           {
-        Robot* robotp = (Robot*)li();
-        the_gui.get_messagewindow_p()->        
-          add_message( robotp->get_robot_name(), (String)message );
+            Robot* robotp = (Robot*)li();
+            print_message( robotp->get_robot_name(), (String)message );
           }
       }
       break;
@@ -238,7 +250,6 @@ ArenaReplay::parse_log_line()
             {
               double points_received;
               log_file >> points_received;
-              // robot_die( object_id, points_received );
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[ROBOT], li, object_id );
               if( !li.ok() ) 
@@ -290,6 +301,7 @@ ArenaReplay::parse_log_line()
         next_check_time = 0.0;
         int sequence, game;
         log_file >> sequence >> game;
+        games_remaining_in_sequence = games_per_sequence - game;
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
@@ -299,7 +311,10 @@ ArenaReplay::parse_log_line()
       {
         int gps, rps, seq, robots;
         log_file >> gps >> rps >> seq >> robots;
-        // init( gps, rps, seq, robots );
+        games_per_sequence = gps;
+        robots_per_game = rps;
+        games_remaining_in_sequence = seq; // TODO: Correct this
+        number_of_robots = robots;
       }
       break;
     case 'L': // List of robot properties
@@ -374,10 +389,30 @@ ArenaReplay::parse_log_line()
 }
 
 void
-ArenaReplay::set_filenames( String& replay_file )
+ArenaReplay::set_filenames( String& replay_fname, String& message_fname )
 {
-  if( replay_file != "-" )
-    log_file.open( replay_file.chars() );
+  if( replay_fname != "-" )
+    log_file.open( replay_fname.chars() );
   else
     log_file.attach( STDIN_FILENO );
+
+  if( message_fname == "" )
+    use_message_file = false;
+  else if( message_fname == "-" || message_fname == "STDOUT" )
+    {
+      use_message_file = true;
+      message_file.attach( STDOUT_FILENO );
+    }
+  else
+    {
+      use_message_file = true;
+      message_file.open( message_fname.chars(), ios::out, 0600 );
+      if( !message_file )
+        {
+          Error( false, "Couldn't open message file. Message file disabled",
+                 "ArenaRealTime::set_filenames" );
+          use_message_file = false;
+        }
+      
+    }
 }
