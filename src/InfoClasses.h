@@ -61,25 +61,45 @@ private:
 
 class TournamentStartedInfo : public InfoBase
 {
-  //  TournamentStartedInfo   
-  //  ~TournamentStartedInfo  () {}
+  TournamentStartedInfo              ( const int nom, const int gpm )
+    : number_of_matches(nom), games_per_match(gpm) {}
+  ~TournamentStartedInfo             () {}
+
+  const int get_number_of_matches    () const { return number_of_matches; }
+  const int get_games_per_match      () const { return games_per_match; }
+
+private:
+  int number_of_matches;
+  int games_per_match;
+};
+
+// Doesn't contain anything.
+class TournamentEndedInfo : public InfoBase
+{
+  TournamentEndedInfo  () {}
+  ~TournamentEndedInfo () {}
 };
 
 class StartGameInfo : public InfoBase
 {
 public:
-  StartGameInfo                       ( const list<int> r//, const Arena g
+  StartGameInfo                       ( const list<int> r, const int g, const int m
+                                        //, const Arena g
                                         )
-    : list_of_participating_robots(r)//, arena_geometry(g)
+    : list_of_participating_robots(r), game(g), match(m) //, arena_geometry(g)
     {}
   ~StartGameInfo                      () {}
 
   const list<int>& get_list_of_participating_robots () const
     { return list_of_participating_robots; }
+  const int get_match                 () const { return match; }
+  const int get_game                  () const { return game; }
   //  const Arena get_arena_geometry  () const { return arena_geometry; }
 
 private:
   list<int> list_of_participating_robots;
+  int game;
+  int match;
   // Arena arena_geometry;
 };
 
