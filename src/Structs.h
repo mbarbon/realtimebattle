@@ -57,14 +57,6 @@ enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS,
                PAUSING_BETWEEN_GAMES, PAUSED, BEFORE_GAME_START,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
-struct message_t
-{
-  message_t( const class String m, const class String f ) : message(m), from(f) {}
-  class String message;
-  class String from;
-  int id; //Is this necessary?
-};
-
 struct start_tournament_info_t
 {
   start_tournament_info_t(const int r, const bool s,
