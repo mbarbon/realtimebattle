@@ -87,24 +87,30 @@ Gui::change_stat_type( stat_table_t type )
 {
   gtk_clist_freeze(GTK_CLIST(stat_clist));
   if(type == STAT_TABLE_TOTAL || type == STAT_TABLE_SEQUENCE)
-    gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 80);
+    {
+      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 4, "Games ");
+      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 45);
+    }
   else
-    gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 0);
+    {
+      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 4, "");
+      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 4, 0);
+    }
   if(stat_table_type == STAT_TABLE_ROBOT && type != STAT_TABLE_ROBOT)
     {
       gtk_clist_set_column_title(GTK_CLIST(stat_clist), 0, "");
       gtk_clist_set_column_title(GTK_CLIST(stat_clist), 1, "Name");
       gtk_clist_set_column_width(GTK_CLIST(stat_clist), 0, 20);
-      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 1, 80);
+      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 1, 120);
       gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 0, GTK_JUSTIFY_CENTER);
       gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 1, GTK_JUSTIFY_LEFT);
     }
   if(stat_table_type != STAT_TABLE_ROBOT && type == STAT_TABLE_ROBOT)
     {
-      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 0, "Seq");
-      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 1, "Game");
-      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 0, 25);
-      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 1, 30);
+      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 0, "Seq  ");
+      gtk_clist_set_column_title(GTK_CLIST(stat_clist), 1, "Game  ");
+      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 0, 40);
+      gtk_clist_set_column_width(GTK_CLIST(stat_clist), 1, 45);
       gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 0, GTK_JUSTIFY_RIGHT);
       gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 1, GTK_JUSTIFY_RIGHT);
     }
@@ -659,17 +665,17 @@ Gui::setup_statistics_window()
         }
     }
 
-  char * titles[7] = { "","Name", "Position", "Points", "Games Played", "Survival Time", "Total Points" };
+  char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
   stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
   gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 20);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 80);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 3, 35);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 4, 0);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 4, 45);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 5, 75);
-  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 6, 65);
+  gtk_clist_set_column_width (GTK_CLIST(stat_clist), 6, 60);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 0, GTK_JUSTIFY_CENTER);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 1, GTK_JUSTIFY_LEFT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 2, GTK_JUSTIFY_RIGHT);
@@ -677,8 +683,8 @@ Gui::setup_statistics_window()
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 4, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 5, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 6, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_policy(GTK_CLIST(stat_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
+  //  gtk_clist_set_policy(GTK_CLIST(stat_clist), GTK_POLICY_AUTOMATIC,
+  //                       GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(stat_clist, 475,350);
   gtk_box_pack_start (GTK_BOX (vbox), stat_clist, TRUE, TRUE, 0);
   gtk_widget_show(stat_clist);
