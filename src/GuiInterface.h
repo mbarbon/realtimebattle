@@ -51,7 +51,7 @@ public:
   void startup                                ();
   void shutdown                               ();
 
-// Functions that supplies information to the Gui.
+  // Functions that supplies information to the Gui.
 
   string get_current_arena_filename           ();
   int get_game_nr                             ();
@@ -110,7 +110,16 @@ public:
 
 private:
 
+  // internal functions
+
+  void* load_symbol                    ( const string& symname );
+
+  // internal variables
+
   long int unique_id;
+
+  string plain_name;
+  string library_name;
 
   //  list<message_t> messages;
 

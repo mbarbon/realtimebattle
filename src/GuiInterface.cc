@@ -36,63 +36,39 @@ GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
                             int argc, char** argv )
 {
   mutex_p = _mutex_p;
-  
-  string libfile = "libRTBGui_" + name + ".so";
-  dl_handle = dlopen( libfile.c_str(), DLOPEN_POLICY );
+  plain_name = name;
+  library_name = "libRTBGui_" + name + ".so";
+
+  dl_handle = dlopen( library_name.c_str(), DLOPEN_POLICY );
   if( dl_handle == NULL )
     Error( true, "Couldn't open gui " + name + ": " + string( dlerror() ),
            "GuiInterface::GuiInterface" );
 
-  const char* error;
-  // GIName
-  func_Name = (const string (*)())dlsym(dl_handle, "GIName");
-  if ((error = dlerror()) != NULL)
-  {
-    func_Name = (const string (*)())dlsym(dl_handle, "_GIName");
-    if ((error = dlerror()) != NULL)
-    {
-      Error( true, "Failed to find GIName() for gui " + name + ": " + string(error),
-             "GuiInterface::GuiInterface" );
-    }
-  }
-  // GIUsageMessage
-  func_UsageMessage = (const string (*)())dlsym(dl_handle, "GIUsageMessage");
-  if ((error = dlerror()) != NULL)
-  {
-    func_UsageMessage = (const string (*)())dlsym(dl_handle, "_GIUsageMessage");
-    if ((error = dlerror()) != NULL)
-    {
-      Error( true,
-             "Failed to find GIUsageMessage() for gui " + name + ": " + string(error),
-             "GuiInterface::GuiInterface" );
-    }
-  }
-  // GIInit
-  func_Init = (bool (*)( int, char** ))dlsym(dl_handle, "GIInit");
-  if ((error = dlerror()) != NULL)
-  {
-    func_Init = (bool (*)( int, char** ))dlsym(dl_handle, "_GIInit");
-    if ((error = dlerror()) != NULL)
-    {
-      Error( true, "Failed to find GIInit() for gui " + name + ": " + string(error),
-             "GuiInterface::GuiInterface" );
-    }
-  }
-  // GIMain
-  func_Main = (int (*)( GuiInterface* ))dlsym(dl_handle, "GIMain");
-  if ((error = dlerror()) != NULL)
-  {
-    func_Main = (int (*)( GuiInterface* ))dlsym(dl_handle, "_GIMain");
-    if ((error = dlerror()) != NULL)
-    {
-      Error( true, "Failed to find GIMain() for gui " + name + ": " + string(error),
-             "GuiInterface::GuiInterface" );
-    }
-  }
+  func_Name = (const string (*)())load_symbol( "GIName" );
+  func_UsageMessage = (const string (*)())load_symbol( "GIUsageMessage" );
+  func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
+  func_Main = (int (*)( GuiInterface* ))load_symbol( "GIMain" );
 
   if(!(*func_Init)( argc, argv ))
     Error( true, "Couldn't initialize gui " + name,
              "GuiInterface::GuiInterface" );
+}
+
+// Loads a symbol into memory.
+void*
+GuiInterface::load_symbol( const string& symname )
+{
+  const char* error;
+  void* symbol;
+  symbol = dlsym( dl_handle, symname.c_str() );
+  if( (error = dlerror()) != NULL )
+    {
+      symbol = dlsym( dl_handle, ("_" + symname).c_str() );
+      if( (error = dlerror()) != NULL )
+          Error( true, "Failed to find " + symname + " for gui " + plain_name +
+                 ": " + string(error), "GuiInterface::load_symbol" );
+    }
+  return symbol;
 }
 
 GuiInterface::~GuiInterface()
