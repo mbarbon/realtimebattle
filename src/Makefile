@@ -8,7 +8,7 @@ endif
 # Substitute '-O' with '-fhandle-exceptions' in CXXFLAGS if your compiler requires it.
 # Add '-DUSE_STDARG_H' if the compiler complains about va_args or similar.
 # Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
-CXXFLAGS = -O
+CXXFLAGS = -O -DINSTALL_DIR='"$(INSTALLDIR)"'
 
 
 ifndef RPM_OPT_FLAGS

@@ -182,16 +182,22 @@ Gui::read_dirs_from_system()
   if(NULL != getenv("RTB_ROBOTDIR"))
       dirs = getenv("RTB_ROBOTDIR");
   split_semicolonseparated_dirs(dirs,robotdirs);
-  String * str = new String("/usr/games/RealTimeBattle/Robots/");
+
+#ifdef INSTALL_DIR
+  String * str = new String(INSTALL_DIR "/Robots/");
   g_list_append(robotdirs,str);
+#endif
 
   if(NULL != getenv("RTB_ARENADIR"))
       dirs = getenv("RTB_ARENADIR");
   else
       dirs = "Arenas/";
   split_semicolonseparated_dirs(dirs,arenadirs);
-  str = new String("/usr/games/RealTimeBattle/Arenas/");
+
+#ifdef INSTALL_DIR
+  str = new String(INSTALL_DIR "/Arenas/");
   g_list_append(arenadirs,str);
+#endif
 }
 
 void
