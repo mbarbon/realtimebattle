@@ -23,6 +23,7 @@ libRTBGui_Gtk_la_SOURCES = \
 	ControlWindow.cc ControlWindow.h \
 	Dialog.cc Dialog.h \
 	DrawingObjects.cc DrawingObjects.h \
+	FileSelector.h \
 	Gui.cc Gui.h \
 	GuiStructs.cc GuiStructs.h \
 	GuiVarious.cc GuiVarious.h \
