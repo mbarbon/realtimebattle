@@ -4,7 +4,7 @@ Version: #VERSION#
 Release: #RELEASE#
 Copyright: GPL
 Group: X11/Games
-Source: RealTimeBattle.tar.gz
+Source: RealTimeBattle-#VERSION#.tar.gz
 URL: http://realtimebattle.netpedia.net
 
 %description
@@ -13,7 +13,7 @@ programs are fighting each other. The goal is to destroy the enemies,
 using the radar to examine the environment and the cannon to shoot.
 
 %prep
-%setup -n RealTimeBattle
+%setup
 
 %build
 ./configure --enable-rpm="$RPM_OPT_FLAGS"
