@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>
 <title>RealTimeBattle User Manual, version 0.9.9 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 9 August 1999
+<date> 10 August 1999
 
 <!-- <abstract> -->
 
@@ -165,7 +165,7 @@ RealTimeBattle. Here you can choose the option file, which determines the defaul
 the <ref name="options" id="Options">. You can also select in which game-mode the program
 will run: <tt>debug</tt>, <tt>normal</tt> or <tt>competition</tt> mode.
 
-<verb>
+<code>
  Usage: RealTimeBattle [options] 
 
  Options:
@@ -197,7 +197,7 @@ will run: <tt>debug</tt>, <tt>normal</tt> or <tt>competition</tt> mode.
 
     --help,                      -h   prints this message
     --version,                   -v   prints the version number
-</verb>
+</code>
 
 The differences between the three competition modes are shown in the following
 table
