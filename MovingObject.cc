@@ -136,7 +136,7 @@ Robot::start_process()
       if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
         throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
 
-      res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
+      //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
       if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
         throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
 
@@ -486,11 +486,11 @@ Robot::change_velocity(const double timestep)
 void
 Robot::move(const double timestep)
 {
-  move(timestep, 1);
+  move(timestep, 1, timestep / 50.0);
 }
 
 void
-Robot::move(const double timestep, int iterstep)
+Robot::move(const double timestep, int iterstep, const double eps)
 {
   object_type closest_shape;
   void* colliding_object;
@@ -501,15 +501,17 @@ Robot::move(const double timestep, int iterstep)
     }
   else
     {
+      if( iterstep > 10 ) time_to_collision = max( time_to_collision , eps );
       double time_remaining = timestep - time_to_collision; 
       center += time_to_collision*velocity;
-      Vector2D new_center = center - min(eps, time_to_collision)*velocity;
+      //      Vector2D new_center = center - min(eps, time_to_collision)*velocity;
       switch( closest_shape )
         {
         case WALL:
           {
             Vector2D normal = ((Shape*)(WallCircle*)colliding_object)->get_normal(center);
             bounce_on_wall(*this, *(Wall*)(WallCircle*)colliding_object, normal);
+            center += normal*eps;
           }
           break;
         case ROBOT:
@@ -557,11 +559,12 @@ Robot::move(const double timestep, int iterstep)
           break;
         }
       
-      center = new_center;
-      if( iterstep > 5 ) 
-        cout << "Iterstep: " << iterstep << "   time_remaining: " << time_remaining << endl;
-      if( iterstep > 20 ) throw Error("Too many bounces, must be a bug!", "Robot::move");
-      if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1 );
+      //      center = new_center;
+      //if( iterstep % 10 == 0 ) 
+      //  cout << "Iterstep: " << iterstep << "   time_remaining: " << time_remaining
+      //       << "  Collided on: " << closest_shape << "   time_to_col: " << time_to_collision << endl;
+      if( iterstep > 65 ) throw Error("Too many bounces, must be a bug!", "Robot::move");
+      if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1, eps );
     }
 }
 
@@ -818,7 +821,7 @@ Robot::get_messages()
               Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
               double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
               Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
-              if( the_arena.space_available( shot_center, shot_radius + eps ) )
+              if( the_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius,
                                           velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED), en );
@@ -829,12 +832,12 @@ Robot::get_messages()
                   void* col_obj;
                   object_type cl_shape;
                   double dist;
-                  if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius+eps, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
+                  if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius*1.00001, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
                     {
-                      cerr << "Shot has space available after all?" <<  endl;
+                      //cerr << "Shot has space available after all?" <<  endl;
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
                       cerr << "col_shape: " << cl_shape << endl; 
-                      //                  throw Error("Shot has space available after all?", "Robot::get_messages");                  
+                      throw Error("Shot has space available after all?", "Robot::get_messages");                  
                     }
                   switch(cl_shape)
                     {
