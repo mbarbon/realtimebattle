@@ -136,14 +136,14 @@ Options::Options()
   all_double_options[OPTION_ARENA_SCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12, "Arena scale", NULL);
 
+  all_double_options[OPTION_TIMEOUT] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
+
   all_double_options[OPTION_MAX_TIMESTEP] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.1, 0.001, 1.0, 12, "Max timestep", NULL);
 
   all_double_options[OPTION_TIMESCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 100.0, 12, "Timescale", NULL);
-
-  all_double_options[OPTION_TIMEOUT] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12, "Timeout [s]", NULL);
 
   all_double_options[OPTION_CPU_START_LIMIT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 5.0, 0.01, 100000000.0, 12, "Start CPU time [s]", NULL);
