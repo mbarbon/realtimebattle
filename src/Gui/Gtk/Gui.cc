@@ -38,6 +38,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StartTournamentWindow.h"
 #include "Dialog.h"
 #include "DrawingObjects.h"
+#include "Option.h"
 #include "OptionHandler.h"
 #include "GuiVarious.h"
 #include "Various.h"
@@ -188,15 +189,17 @@ int
 Gui::main_loop( GuiClientInterface* _gi_p )
 {
   guiinterface_p = _gi_p;
-
   set_colours();
+
   controlwindow_p = 
     new ControlWindow( -1, -1,
-                       the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
-                       the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
+                       gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_X ),
+                       gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
+
 
   gint timeout_tag;      
-  double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
+//    double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
+  double interval = 1000.0*0.05 - 10.0; 
   timeout_tag = gtk_timeout_add( (unsigned int) interval,
                                  GtkFunction(Gui::update_function), (gpointer) NULL );
 
@@ -222,6 +225,12 @@ Gui::get_information()
       switch( info_p->get_type() )
         {
         case INFO_UNKNOWN:
+          break;
+        case INFO_QUIT:
+          {
+            gtk_main_quit();
+            GIExit(EXIT_SUCCESS);
+          }
           break;
         case INFO_STATE:
           {
@@ -285,9 +294,13 @@ Gui::get_information()
 void
 Gui::set_colours()
 {  
-  bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
-  fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
-  rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
+//    bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
+//    fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
+//    rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
+
+  bg_rgb_colour = 16445670;
+  fg_rgb_colour = 0;
+  rtb_message_rgb_colour = 1118702;
 
   bg_gdk_colour = make_gdk_colour( bg_rgb_colour );
   fg_gdk_colour = make_gdk_colour( fg_rgb_colour );
