@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -117,6 +117,13 @@ ArenaController::init( int argc, char** argv )
   list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     (*li)->startup();
+
+  // TODO: Find a good place to add initialize information to the gui.
+  OptionDefinitionInfo* od_info_p =
+    new OptionDefinitionInfo( main_opts->get_section_name(),
+                              main_opts->get_group_names(),
+                              main_opts->get_options() );
+  distributor.insert_information( od_info_p );
 
   if( tournament_filename != "" )
     {
