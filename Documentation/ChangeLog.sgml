@@ -5,7 +5,7 @@
 Change log
 <itemize>
 
-<item> <bf>1.0.0:</bf>
+<item> <bf>1.0.0pre1:</bf>
 <p>
 
 German translation added (thanks to Uwe Hermann and Jan Suhr).
@@ -14,8 +14,6 @@ A new RealTimeBattle.spec has replaced the older one (thanks to CW
 Zuckschwerdt).
 
 Bug fixes for some problems under FreeBSD.
-
-Some fixes for compile-time warnings under debian.
 
 <item> <bf>0.9.11:</bf>
 <p>
