@@ -1,15 +1,27 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <time.h>
-#include <glib.h>
+
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 #include <math.h>
 #include "Messagetypes.h"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+
 
 
 #define abs(x) ((x>0) ? (x) : -(x))
@@ -23,7 +35,7 @@ int robots_left = 20;
 bool sweep = false, align_cro= true, align_cra = true, enemy = false;
 
 volatile sig_atomic_t exit_robot = false;
-static GTimer* timer;
+
 
 message_to_robot_type
 name2msg_to_robot_type(char* msg_name)
@@ -45,9 +57,9 @@ check_messages(int sig)
   char text[81];
   message_to_robot_type msg_t;
 
-  gulong microsecs;
-  g_timer_elapsed(timer, &microsecs);
-  srand(microsecs);
+  timeval current_time;
+  gettimeofday(&current_time, NULL);
+  srand(current_time.tv_usec);
 
   cin.clear();
   while( !cin.eof() )
@@ -215,10 +227,6 @@ check_messages(int sig)
                   }
                 //cout << "Print Avoid this mine" << endl;
                 break;
-
-              case EXPLOSION:
-                cout << "Print Avoid! Explosion" << endl;
-                break;
               }
           break;
           }
@@ -287,11 +295,9 @@ main(int argc, char * argv[])
 {
   sigset_t usr1set;
 
-//robot_rotate = 0.53;
+  //robot_rotate = 0.53;
 
-  timer = g_timer_new();
-  g_timer_reset(timer);
-  srand(time(0));
+
   //check_messages(SIGUSR1);
   signal(SIGUSR1, check_messages);
 

@@ -7,7 +7,17 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <time.h>
+
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
 
 #include "Messagetypes.h"
 
@@ -35,7 +45,7 @@ check_messages(int sig)
   char text[81];
   message_to_robot_type msg_t;
 
-  if(rand() < (RAND_MAX/100))
+  if(rand() < (RAND_MAX/300))
     {
       robot_rotate = - robot_rotate;
       cout << "Rotate 1 " << robot_rotate << endl;
@@ -97,9 +107,6 @@ check_messages(int sig)
               case MINE:
                 //cout << "Print Avoid this mine" << endl;
                 break;
-              case EXPLOSION:
-                cout << "Print Avoid! Explosion" << endl;
-                break;
               default:
                 break;
               }
@@ -154,7 +161,11 @@ main(int argc, char * argv[])
 
   cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
 
-  srand(time(0));
+
+  timeval current_time;
+  gettimeofday(&current_time, NULL);
+  srand(current_time.tv_usec);
+
 
   for(;;sleep(1))
     {
