@@ -36,6 +36,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "Shot.h"
 #include "Robot.h"
+#include "SubSquareIterators.h"
 
 void
 Arena::add_shot(Shot* s)
@@ -46,14 +47,14 @@ Arena::add_shot(Shot* s)
 
 
 void
-Arena::find_subsquares_for_shape( const Shape& s )
+Arena::find_subsquares_for_shape( Shape* s )
 {
   for(int i=0; i< number_of_subsquares_x; i++)
     for(int j=0; j< number_of_subsquares_y; j++)
       {        
-        if( s.is_inside_subsquare( subsquares[i][j] ) )
+        if( s->is_inside_subsquare( subsquares[i][j] ) )
           {
-            subsquares[i][j].add(&s);
+            subsquares[i][j].add( s );
           }
             
       }
@@ -83,108 +84,26 @@ double
 Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                              const double size, enum object_type& closest_shape, 
                              Shape*& colliding_object, 
-                             const class Robot* the_robot = NULL )
+                             const class Shape* from_shape = NULL )
 {
-  int x;
-  int y;
+  
+  SubSquareLineIterator ss_it;
+  double dist;
 
-  get_subsquare_at( pos, x, y );
-
-  // this is the fraction moved into the current subsquare
- double p_x = pos[0] / subsquare_size[0] - double(x);
- double p_y = pos[1] / subsquare_size[1] - double(y);
-
- // Find which is the main direction and the 'side'-direction. This is
- // used later to find the next subsquare to look in.
-
- int main_x, main_y;
- int side_x, side_y;
-
-
- // The side-direction coordinate. When s >= 1.0 move one subsquare
- // in the side-direction.
- double s;
-
- // (Fraction of) distance to the next subsquare in the main-direction.
- double l;
-
- // How much added to the side-direction when moving one
- // subsquare in the main direction
- double d;
-
-
-
- if( fabs(vel[0]) > fabs(vel[1]) )
+  for( ss_it.begin(pos, vel); ss_it.ok(); ss_it++ )
    {
-     main_y = side_x = 0;
-
-     main_x = ( vel[0] >= 0.0 ? 1 : -1 );
-     side_y = ( vel[1] >= 0.0 ? 1 : -1 );
-
-     d = fabs( vel[1] / subsquare_size[1] / ( vel[0] / subsquare_size[0] ) );
-
-     s = ( vel[1] >= 0.0 ? p_y : 1-p_y );
-     l = ( vel[0] >= 0.0 ? p_x : 1-p_x );
-   }
- else
-   {
-     main_x = side_y = 0;
      
-     main_y = ( vel[1] >= 0.0 ? 1 : -1 );
-     side_x = ( vel[0] >= 0.0 ? 1 : -1 );
-
-     d = fabs( vel[0] / subsquare_size[0] / ( vel[1] / subsquare_size[1] ) );
-
-     s = ( vel[0] >= 0.0 ? p_x : 1-p_x );
-     l = ( vel[1] >= 0.0 ? p_y : 1-p_y );
-   }
- 
- assert( d >= 0.0 && d <= 1.0 );
- assert( l >= 0.0 && l <= 1.0 );
- assert( s >= 0.0 && s <= 1.0 );
-
- s -= l;
-
- // Now we can step through the subsquares until we find something
-
- double dist = 0.0;
-
- dist = subsquares[x][y].get_shortest_distance(pos, vel, size, closest_shape, 
-                                               colliding_object, the_robot );
- 
- if( dist < DBL_MAX/2.0 ) return dist;
-
- do
-   {
-     s += d;
-     if( s >= 1.0 )
-       {
-         s -= 1.0;
-         x += side_x;
-         y += side_y;
-
-         if( x < 0 || x >= number_of_subsquares_x || 
-             y < 0 || y >= number_of_subsquares_y ) return DBL_MAX; 
-
-         dist = subsquares[x][y].get_shortest_distance(pos, vel, size, closest_shape, 
-                                                        colliding_object, the_robot );
-
-         if( dist < DBL_MAX/2.0 ) break;
-       }
+     dist = subsquares[ss_it.x()][ss_it.y()].
+       get_shortest_distance(pos, vel, size, closest_shape, colliding_object, from_shape );
      
-     x += main_x;
-     y += main_y;
-     
-     if( x < 0 || x >= number_of_subsquares_x || 
-         y < 0 || y >= number_of_subsquares_y ) return DBL_MAX; 
+     if( dist < DBL_MAX/2.0 ) return dist;
+   }     
 
-     dist = subsquares[x][y].get_shortest_distance(pos, vel, size, closest_shape, 
-                                                    colliding_object, the_robot );
-   }
- while( dist > DBL_MAX/2.0 );
-
- return dist;
+ return DBL_MAX;
 }
+
+
+
 
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
