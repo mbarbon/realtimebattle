@@ -507,12 +507,28 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
 void
 ArenaReplay::change_speed( const bool forward, const bool fast )
 {
-  if( !fast )
+  if( !fast || log_from_stdin )
     speed = PLAY;
   else if( forward )
     speed = FAST_FORWARD;
   else
     speed = REWIND;
+}
+
+void
+ArenaReplay::search_forward( const char search_letter )
+{
+  if( log_from_stdin )
+    return;
+
+  char letter='?';
+  char buffer[400];
+  while( letter != search_letter && !log_file.eof() )
+    {
+      log_file.get( buffer, 400, '\n' );
+      log_file >> ws;
+      letter = log_file.peek();
+    }
 }
 
 void

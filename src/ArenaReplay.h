@@ -30,28 +30,31 @@ class ArenaReplay : public ArenaBase
 public:
   enum speed_t { REWIND, PLAY, FAST_FORWARD };
 
-  ArenaReplay                  ();
-  ~ArenaReplay                 ();
+  ArenaReplay                   ();
+  ~ArenaReplay                  ();
 
-  bool timeout_function        ();
-  void start_tournament        ();
-  void end_game                ();
-  void set_filenames           ( String& replay_fname, String& message_fname,
-                                 const String& statistics_fname,
-                                 const String& option_fname );
-  void change_speed            ( const bool forward, const bool fast );
-  void search_backwards        ( const char searh_letter = 'T' );
+  bool timeout_function         ();
+  void start_tournament         ();
+  void end_game                 ();
+  void set_filenames            ( String& replay_fname, String& message_fname,
+                                  const String& statistics_fname,
+                                  const String& option_fname );
+  void change_speed             ( const bool forward, const bool fast );
+  void search_forward           ( const char searh_letter = 'T' );
+  void search_backwards         ( const char searh_letter = 'T' );
+
+  double get_current_replay_time() { return current_replay_time; }
 
 private: 
-  void update                  ();
-  void start_game              ();
-  void start_sequence          ();
-  void end_sequence            ();
-  void end_tournament          ();
+  void update                   ();
+  void start_game               ();
+  void start_sequence           ();
+  void end_sequence             ();
+  void end_tournament           ();
 
-  char parse_log_line          ();
-  void parse_this_interval     ();
-  void beginning_of_prev_line  ();
+  char parse_log_line           ();
+  void parse_this_interval      ();
+  void beginning_of_prev_line   ();
 
   ifstream log_file;
 

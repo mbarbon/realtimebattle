@@ -593,6 +593,7 @@ void
 ControlWindow::next_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
+  replay_arena.search_forward( 'G' );
 }
 
 void
@@ -600,6 +601,9 @@ ControlWindow::prev_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
   replay_arena.search_backwards( 'G' );
+  if( replay_arena.get_current_replay_time() < 2.0 &&
+      the_arena.get_game_nr() + the_arena.get_sequence_nr() > 2 )
+    replay_arena.search_backwards( 'G' );
 }
 
 void
@@ -625,3 +629,6 @@ ControlWindow::set_progress_time( const double time )
 {
   gtk_adjustment_set_value( current_replay_time_adjustment, time );
 }
+
+
+
