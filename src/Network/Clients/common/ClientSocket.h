@@ -36,4 +36,4 @@ void quit();
 
 
 
-#endif __SOCKETCLIENT_H__
+#endif // __SOCKETCLIENT_H__

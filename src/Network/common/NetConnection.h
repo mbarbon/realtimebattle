@@ -36,7 +36,8 @@ class NetConnection
 public:
   NetConnection         ()
     : id(0), the_socket(-1), address(""), connected(false), state(NOT_INITIALIZED) {}
-  ~NetConnection        () { close_socket(); }
+  virtual ~NetConnection() { close_socket(); }
+
   virtual void close_socket     ();
 
   int read_data         ();
@@ -74,4 +75,4 @@ protected:
   string name;
 };
 
-#endif __NETCONNECTION_H__
+#endif // __NETCONNECTION_H__

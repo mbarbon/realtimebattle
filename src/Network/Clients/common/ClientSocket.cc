@@ -144,7 +144,7 @@ SocketClient::check_connection()
       else
 	{
 	  Packet* P ;
-	  while( P = make_packet( nc.read_buffer ) )
+	  while( (P = make_packet( nc.read_buffer )) )
 	    {
 	      nc.read_buffer = 
 		P->get_string_from_netstring( nc.read_buffer );

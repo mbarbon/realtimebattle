@@ -61,9 +61,10 @@ enum packet_t
 
 class Packet
 {
- public:
+public:
   Packet( ) : data( "" ), size(0) {};
   Packet( string& d ) : data( d ) {};
+  virtual ~Packet() {};
   virtual string make_netstring() const = 0;
   string get_string_from_netstring( string& );
   void remove_from_netstring( string& );
@@ -71,41 +72,41 @@ class Packet
   virtual int handle_packet(void*) = 0;
   virtual packet_t packet_type() = 0;
 
- protected:
+protected:
   string& add_string_to_netstring( const string&, string& ) const;
   string& add_uint8_to_netstring( const unsigned int&, string& ) const;
   string& add_uint16_to_netstring( const unsigned int&, string& ) const;
   unsigned int get_uint8_from_netstring( const string& ) const;
   unsigned int get_uint16_from_netstring( const string& ) const;
   
-  int size;
   string data;
+  unsigned int size;
 };
 
 class InitializationPacket : /* virtual */ public Packet
 {
- public:
+public:
   InitializationPacket() 
     : name("") {};
   InitializationPacket( string& d )
     : Packet(d) {};
   InitializationPacket( const network_protocol_t& p, 
-			const client_t& c, 
-			const string& n )
+                        const client_t& c, 
+                        const string& n )
     : protocol(p), client(c), name(n) {}
   string make_netstring() const;
   int handle_packet( void* ) ; 
   packet_t packet_type() { return PACKET_INIT; };
 
- protected:
-  string name;
+protected:
   network_protocol_t protocol;
   client_t client;
+  string name;
 };
 
 class MetaServerInitializationPacket : public Packet
 {
- public:
+public:
   MetaServerInitializationPacket() 
     : protocol( (network_protocol_t) RTB_UNKNOWN ) {}
   MetaServerInitializationPacket( string& d )
@@ -115,50 +116,55 @@ class MetaServerInitializationPacket : public Packet
   string make_netstring() const;
   int handle_packet( void* ) ; 
   packet_t packet_type() { return PACKET_META_INIT; };
- protected:
+protected:
   network_protocol_t protocol;
 };
 
 class MetaServerDataPacket : public Packet
 {
- public:
+public:
   MetaServerDataPacket() 
     : name("") {};
   MetaServerDataPacket( string& d )
     : Packet(d) {};
   MetaServerDataPacket( const string& n, const string & ver, 
-			int Port, int NbConn, 
-			const string& lang ) 
+                        int Port, int NbConn, 
+                        const string& lang )
     : name(n), language(lang), version(ver) 
-    {
-      char buf [16];
-      sprintf(buf, "%d", Port);
-      Port_num = buf;
-      sprintf(buf, "%d", NbConn);
-      Nb_Conn = buf;
-    }
+  {
+    char buf [16];
+    sprintf(buf, "%d", Port);
+    Port_num = buf;
+    sprintf(buf, "%d", NbConn);
+    Nb_Conn = buf;
+  }
   MetaServerDataPacket( const string& n, const string & ver, 
-			const string& add, int Port, int NbConn, 
-			const string& lang ) 
+                        const string& add, int Port, int NbConn, 
+                        const string& lang ) 
     : name(n), language(lang), version(ver), address(add)
-    { 
-      char buf [16];
-      sprintf(buf, "%d", Port);
-      Port_num = buf;
-      sprintf(buf, "%d", NbConn);
-      Nb_Conn = buf;
-    }
+  { 
+    char buf [16];
+    sprintf(buf, "%d", Port);
+    Port_num = buf;
+    sprintf(buf, "%d", NbConn);
+    Nb_Conn = buf;
+  }
 
   string make_netstring() const;
   int handle_packet ( void* );
   packet_t packet_type() { return PACKET_META_DATA; };
- protected:
-  string name, address, version, Port_num, Nb_Conn, language;
+protected:
+  string name;
+  string language;
+  string version;
+  string address;
+  string Port_num;
+  string Nb_Conn;
 };
 
 class MetaServerAskInfoPacket : public Packet
 {
- public:
+public:
   string make_netstring() const;
   int handle_packet ( void* );
   packet_t packet_type() { return PACKET_META_INFO; };
@@ -166,21 +172,21 @@ class MetaServerAskInfoPacket : public Packet
 
 class CommandPacket : /* virtual */ public Packet
 {
- public:
+public:
   CommandPacket()
     : comm("") {}
   CommandPacket( const string& c /* , unsigned n, ... */);
   string make_netstring() const;
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_COMMAND; };
- protected:
+protected:
   string comm;
   vector<string> arg;
 };
 
 class ChatMessagePacket : public Packet
 {
- public:
+public:
   ChatMessagePacket()
     : exp(""), dest("all"), message("") {}
   ChatMessagePacket( const string& to, const string& mes )
@@ -191,16 +197,16 @@ class ChatMessagePacket : public Packet
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_CHAT_MESSAGE; } 
   friend class SocketServer;
- protected:
-  string message;
-  string dest;
+protected:
   string exp; //Would it be usefull (server knows who send him the packet...)
+  string dest;
+  string message;
 };
 
 
 class ServerMessagePacket : public Packet
 {
- public:
+public:
   ServerMessagePacket()
     :exp(""), message("") {}
   ServerMessagePacket( const string& from, const string& mes )
@@ -209,9 +215,9 @@ class ServerMessagePacket : public Packet
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_SERVER_MESSAGE; }
   friend class SocketServer;
- protected:
-  string message;
+protected:
   string exp;
+  string message;
 };
 
 #define Add_Robot 1
@@ -221,27 +227,33 @@ class ServerMessagePacket : public Packet
 
 class SubmitPacket : public Packet
 {
- public:
+public:
   SubmitPacket( char T = 0 )  
-    {
-      if( T == 'R' )
-	type = Add_Robot;
-      else if( T == 'r')
-	type = Del_Robot;
-      else if( T == 'A')
-	type = Add_Arena;
-      else if( T == 'a' )
-	type = Del_Arena;
-      else
-	type = 0;
-    };
-  SubmitPacket( int /* type */ , const vector<string>& );
-  SubmitPacket( int /* type */ , unsigned n, ... );
+  {
+    if( T == 'R' )
+      type = Add_Robot;
+    else if( T == 'r')
+      type = Del_Robot;
+    else if( T == 'A')
+      type = Add_Arena;
+    else if( T == 'a' )
+      type = Del_Arena;
+    else
+      type = 0;
+  };
+  SubmitPacket( int /* type */, const vector<string>& );
+  // Hopefully no more than five strings are needed, if so add a new one!
+  SubmitPacket( int /* type */, string& ); // one string
+  SubmitPacket( int /* type */, string&, string& ); // two strings
+  SubmitPacket( int /* type */, string&, string&, string& ); // three strings
+  SubmitPacket( int /* type */, string&, string&, string&, string& ); // four strings
+  SubmitPacket( int /* type */,
+                string&, string&, string&, string&, string& ); // five strings
   string make_netstring() const;
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_SUBMIT; }
   friend class SocketServer;
- protected:
+protected:
   int type;
   vector<string> file_name;
 };
@@ -262,4 +274,4 @@ Packet*
 make_packet( string& );
 
 
-#endif __PACKETS_H__
+#endif // __PACKETS_H__
