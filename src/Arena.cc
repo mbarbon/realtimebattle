@@ -147,6 +147,8 @@ Arena::parse_file(istream& file)
           file >> b1;
           file >> b2;
           boundary[1] = Vector2D(scale*b1, scale*b2);
+          if( boundary[1][0] - boundary[0][0] <= 0 || boundary[1][1] - boundary[0][1] <= 0 ) 
+            throw Error("'boundary' negative", "Arena::parsefile");
         }
       else if( strcmp(text, "exclusion_point" ) == 0 )
         {
@@ -864,7 +866,7 @@ Arena::start_game()
   
   String* filename = (String*)g_list_nth(arena_filenames, current_arena_nr)->data;
   ifstream file(filename->chars());
-  if( !file ) throw Error("Couldn't open file", *filename, "Arena::Arena");
+  if( !file ) throw Error("Couldn't open arena file", *filename, "Arena::start_game");
 
   parse_file(file);
 
