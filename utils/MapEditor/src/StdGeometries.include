@@ -1,0 +1,70 @@
+;This is all geometries defined in the old Arena-files
+;TODO: Add all other geometries
+
+Define Wall StandardWall
+
+   BounceCoefficient         0.6
+   Hardness                  0.8
+   Visibility                1.0
+   Temperature              18.0   ;Note: in degrees (not kelvin), is this right?
+   Gate                     false
+
+EndDefine
+
+; Note: Numbers taken directly from the old arenas
+Define Geometry PlainSquare
+
+   InfoString             _("This is just a plain square.")
+
+   Scale                    1.0
+   Boundary               -10.0 -10.0  10.0  10.0
+
+   Line StandardWall        1.0  -10.0  10.0  10.0  10.0
+   Line StandardWall        1.0   10.0  10.0  10.0 -10.0
+   Line StandardWall        1.0   10.0 -10.0 -10.0 -10.0
+   Line StandardWall        1.0  -10.0 -10.0 -10.0  10.0
+
+EndDefine
+
+Define Geometry PlainCircle
+
+   InfoString             _("This is just a plain circle.")
+
+   Scale                    1.0
+   Boundary               -10.0 -10.0  10.0  10.0
+
+   InnerCircle StandardWall 0.0 0.0 9.9
+
+EndDefine
+
+Define Geometry Circles
+
+   InfoString             _("A circle with another four circles in the wall.")
+
+   Scale                    0.595
+   Boundary               -25.0 -25.0 25.0 25.0
+
+   InnerCircle              0.0   0.0  24.5 
+   Circle                 -24.5   0.0   5.0
+   Circle                  24.5   0.0   5.0
+   Circle                   0.0 -24.5   5.0
+   Circle                   0.0  24.5   5.0
+
+EndDefine
+
+Define Geometry Nippon
+
+   InfoString             _("A square with a circle in the middle which \
+makes it look like the Japanese flag.")
+
+   Scale                 1.0
+   Boundary              -14.0 -14.0  14.0  14.0
+
+   Circle                0.0 0.0 3.1415927
+
+   Line StandardWall     1.0  -14.0  14.0  14.0  14.0
+   Line StandardWall     1.0   14.0  14.0  14.0 -14.0
+   Line StandardWall     1.0   14.0 -14.0 -14.0 -14.0
+   Line StandardWall     1.0  -14.0 -14.0 -14.0  14.0
+
+EndDefine
