@@ -561,7 +561,7 @@ ArenaRealTime::timeout_function()
     case SHUTTING_DOWN_ROBOTS:
       {     
         ListIterator<Robot> li;
-        for( all_robots_in_tournament.first(li); li.ok(); li++ )
+        for( all_robots_in_sequence.first(li); li.ok(); li++ )
           li()->get_messages();
         
         if( total_time > next_check_time ) end_sequence_follow_up();
