@@ -873,7 +873,7 @@ Robot::set_values_at_process_start_up()
 
   if( statistics.is_empty() )       // first sequence !
     {
-      send_message(INITIALIZE, 1);  
+      send_message(INITIALIZE, 1);
       colour_given = false;
       name_given = false;
     }
@@ -1097,7 +1097,10 @@ Robot::get_messages()
                 case USE_NON_BLOCKING:
                   *instreamp >> val;
                   if( fifo_instead_of_process )
-                    *outstreamp << '@' << ( val ? 'N' : 'B' ) << endl;
+                    {
+                      *outstreamp << '@' << ( val ? 'N' : 'B' ) << endl;
+                      send_message(INITIALIZE, 1);  
+                    }
                   else
                     set_non_blocking_state( val );
                   break;

@@ -33,6 +33,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
+#define NO_GRAPHICS
+
 #include <unistd.h>
 #include <fstream.h>
 #include <signal.h>
@@ -44,6 +46,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Socklib.h"
 #include "SimpleProcess.h"
+
+const debug_level = 0;
+
+void debug_msg(const char* by, const char* msg, const int lvl);
 
 void usage(int err_code)
 {
@@ -74,6 +80,8 @@ main ( int argc, char* argv[] )
   if( socket_fd == -1 )
     exit(EXIT_FAILURE);
 
+
+
   signal(SIGPIPE,  SIG_IGN);
 
 
@@ -92,14 +100,14 @@ main ( int argc, char* argv[] )
   int pd_flags;
   if( (pd_flags = fcntl(socket_fd, F_GETFL, 0)) == -1 ) 
     {
-      cerr << "Server: couldn't get pd_flags for socket: ";
+      cerr << "Client: couldn't get pd_flags for socket: ";
       perror( NULL );
     }
 
   pd_flags |= O_NONBLOCK;
   if( fcntl(socket_fd, F_SETFL, pd_flags) == -1 ) 
     {
-      cerr << "Server: couldn't change pd_flags for socket: ";
+      cerr << "Client: couldn't change pd_flags for socket: ";
       perror( NULL );
     }
 
@@ -114,9 +122,10 @@ main ( int argc, char* argv[] )
 
   fd_set pipe_and_socket;
 
+  struct timeval current_time;
   struct timeval time_to_wait;
 
-  struct timeval current_time;
+  int last_ping_time;
 
   while( true )
     {
@@ -135,6 +144,7 @@ main ( int argc, char* argv[] )
       select(FD_SETSIZE, &pipe_and_socket, NULL, NULL, &time_to_wait);
 
 
+
       if( FD_ISSET( socket_fd, &pipe_and_socket) )
         {      
           in_socket >> ws;
@@ -142,14 +152,12 @@ main ( int argc, char* argv[] )
           in_socket.get(buffer, 80, '\n');
 
           if( in_socket.fail() )
-                {
-                  cerr << "Reading in_socket failed!" << endl;
-                  sleep(3);
-                }
+            {
+              cerr << "Reading in_socket failed!" << endl;
+              goaway(0);
+            }
 
-//            gettimeofday(&current_time, NULL);
-//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//            cout << "client <<<s: " << buffer << endl;
+          debug_msg( "<<<s", buffer, 4);
 
           if( buffer[0] == '@' )  // special message
             {
@@ -174,31 +182,33 @@ main ( int argc, char* argv[] )
                   break;
 
                 case 'S':   // Signal
-                  int signr = (int)( buffer[2] - '0' );
-                  if( buffer[3] <= '9' && buffer[3] >= '0' )
-                    signr = 10*signr + (int)( buffer[3] - '0' );
+                  {
+                    int signr = (int)( buffer[2] - '0' );
+                    if( buffer[3] <= '9' && buffer[3] >= '0' )
+                      signr = 10*signr + (int)( buffer[3] - '0' );
+                    
+                    robot_process.send_signal(signr);
+                  }
+                  break;
 
-                  robot_process.send_signal(signr);
+                case ' ':   // Just checking if messages get through
                   break;
                 }
               
             }
           else if( robot_process.is_running() )
-            *robot_process.opipe_streamp << buffer << endl;
+            {
+              *robot_process.opipe_streamp << buffer << endl;
 
-//            gettimeofday(&current_time, NULL);
-//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//            cout << "client >>>p: " << buffer << endl;
+              debug_msg( ">>>p", buffer, 5);
 
-
-//            if( robot_process.opipe_streamp->fail() )
-//              {
-//                cerr << "Writing to opipe failed!" << endl;
-//                sleep(3);
-//              }
-
-
-          //          cout << "!" << flush;   
+              if( robot_process.opipe_streamp->fail() )
+                {
+                  cerr << "Writing to opipe failed!" << endl;
+                  //goaway(0);
+                }
+            }
+          //          cout << "!" << flush;
         }
 
       if( robot_process.is_running() && 
@@ -214,24 +224,21 @@ main ( int argc, char* argv[] )
               if( robot_process.ipipe_streamp->fail() )
                 {
                   cerr << "Reading ipipe failed!" << endl;
-                  sleep(3);
+                  goaway(0);
                 }
 
-//            gettimeofday(&current_time, NULL);
-//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//            cout << "client <<<p: " << buffer << endl;
+              debug_msg( "<<<p", buffer, 4);
 
-          out_socket << buffer << endl;
+              out_socket << buffer << endl;
 
-//            gettimeofday(&current_time, NULL);
-//            cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//            cout << "client >>>s: " << buffer << endl;
+              debug_msg( ">>>s", buffer, 5);
+
               //              cout << "%" << flush;  
 
               if( out_socket.fail() )
                 {
                   cerr << "Writing to out_socket failed!" << endl;
-                  sleep(3);
+                  goaway(0);
                 }
 
 
@@ -243,7 +250,34 @@ main ( int argc, char* argv[] )
           //          robot_process.ipipe_streamp->clear();
         }
 
+
+
+      gettimeofday(&current_time, NULL);
+
+      if( current_time.tv_sec != last_ping_time )
+        {
+          out_socket << "@" << endl;
+          if( out_socket.fail() )
+            {
+              cerr << "Writing to out_socket failed!" << endl;
+              goaway(0);
+            }
+
+          last_ping_time = current_time.tv_sec;
+        }
+
       //      cout << "." << flush;      
     }
 }
 
+void
+debug_msg(const char* by, const char* msg, const int lvl)
+{
+  if( debug_level >= lvl )
+    {
+      struct timeval current_time;
+      gettimeofday(&current_time, NULL);
+      cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+      cout << "client " << by << ": " << msg << endl;
+    }
+}

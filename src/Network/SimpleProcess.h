@@ -20,14 +20,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __SIMPLE_PROCESS__
 #define __SIMPLE_PROCESS__
 
-#include <string>
+#define NO_GRAPHICS
 
-//#include <unistd.h>
+
+
 #include <sys/types.h>
 #include <fstream>
 
+#include <string>
 
-class Robot;
+//class Robot;
 
 class SimpleProcess
 {
@@ -49,16 +51,16 @@ public:
   void delete_pipes();
   void kill_forcefully();
 
+  string get_tmp_dir_from_options_file(const string& file_string);
+  void get_tmp_dir_from_rtbrc();
 
   pid_t get_pid() { return pid; }
-
-
 
 
   string filename;
   string plain_filename;  // Filename without path
 
-  const string rtb_tmp_dir("/tmp/rtb");
+  string rtb_tmp_dir;
 
   bool process_running;
 

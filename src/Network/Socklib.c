@@ -130,6 +130,8 @@ int server_init(char* myname, int lport, int uport, void (*handler)(int), int db
         int fd,newfd,tmp;
         size_t theirsize;
         int myport=lport;
+        int connect_nr;
+
         theirsize=sizeof(struct sockaddr_in);
         if (dbug==1)
         {
@@ -178,13 +180,16 @@ int server_init(char* myname, int lport, int uport, void (*handler)(int), int db
                 {
                         signal(SIGALRM,goaway);
                         kill(0,SIGUSR1);
+                        connect_nr = client_connections;
                         if (dbug)
-                                fprintf(stderr,"Connection from host: %s on port %d is # %d\n",inet_ntoa(theiraddr.sin_addr),myport,client_connections);
+                                fprintf(stderr,"Connection from host: %s on port %d is # %d\n",
+                                        inet_ntoa(theiraddr.sin_addr),myport,connect_nr);
                         handler(newfd);
                         close(fd);
                         shutdown(fd,2);
                         if (dbug)
-                                fprintf(stderr,"Connection # %d closed, remote host %s port %d.\n", client_connections, inet_ntoa(theiraddr.sin_addr),myport);
+                                fprintf(stderr,"Connection closed, remote host %s port %d.\n", 
+                                        connect_nr, inet_ntoa(theiraddr.sin_addr),myport);
                         kill(0,SIGUSR2);
                         exit(0);
                 }

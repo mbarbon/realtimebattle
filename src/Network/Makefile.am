@@ -1,4 +1,4 @@
-bin_PROGRAMS = Server Client
+bin_PROGRAMS = RTBserver RTBclient
 
 if ENABLE_PROF
 PROFFLAGS = -pg
@@ -15,15 +15,14 @@ endif
 
 
 
-Server_DEPENDENCIES = $(INTLOBJS)
-Server_SOURCES = \
+RTBserver_DEPENDENCIES = $(INTLOBJS)
+RTBserver_SOURCES = \
 	Server.cc \
 	Socklib.c Socklib.h
 
 
-
-Client_DEPENDENCIES = $(INTLOBJS)
-Client_SOURCES = \
+RTBclient_DEPENDENCIES = $(INTLOBJS)
+RTBclient_SOURCES = \
 	Client.cc \
 	SimpleProcess.cc SimpleProcess.h \
 	Socklib.c Socklib.h

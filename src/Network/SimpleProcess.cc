@@ -29,7 +29,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 #include <string>
+
 
 #include "SimpleProcess.h"
 
@@ -44,6 +47,8 @@ SimpleProcess::SimpleProcess(const string& filenm)
     plain_filename = filename.substr(nr+1, string::npos);
 
   process_running = false;
+
+  get_tmp_dir_from_rtbrc();
 
   use_non_blocking = get_default_non_blocking_state();
 
@@ -269,8 +274,12 @@ SimpleProcess::set_non_blocking_state(const bool non_bl)
 
   string tmp_filename = rtb_tmp_dir + "/" + plain_filename;
 
-  //  create_tmp_rtb_dir();
-
+  //  create rtb_tmp_dir;
+  struct stat filestat;
+  if( 0 != stat( rtb_tmp_dir.c_str(), &filestat ) ) 
+    mkdir( rtb_tmp_dir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
+  
+  
   if( non_bl )
     remove( tmp_filename.c_str() );
   else
@@ -279,10 +288,14 @@ SimpleProcess::set_non_blocking_state(const bool non_bl)
                     O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH );
 
       if( fd != -1 )  close( fd );
+
+      cerr << "tmp_filename: " << tmp_filename << endl;
     }
   
  
   use_non_blocking = non_bl;
+
+  cerr << "use_non_blocking: " << use_non_blocking << endl;
 
   //  restart_process
 
@@ -294,7 +307,9 @@ bool
 SimpleProcess::get_default_non_blocking_state()
 {
   string tmp_filename = rtb_tmp_dir + "/" + plain_filename;
-  
+ 
+  cerr << "tmp_filename: " << tmp_filename << endl;
+ 
   int fd;
   if( ( fd = open(tmp_filename.c_str(), O_RDONLY) ) != -1 )
     {
@@ -304,3 +319,55 @@ SimpleProcess::get_default_non_blocking_state()
   
   return true;
 }
+
+
+void
+SimpleProcess::get_tmp_dir_from_rtbrc()
+{
+  char* home_dir;
+  if( NULL == ( home_dir = getenv("HOME") ) )
+    return;
+
+  string resource_file = string(home_dir) + "/.rtbrc";
+  rtb_tmp_dir = get_tmp_dir_from_options_file(resource_file);
+
+  if( rtb_tmp_dir == "" )
+    rtb_tmp_dir = "/tmp/rtb/";
+}
+
+string
+SimpleProcess::get_tmp_dir_from_options_file(const string& file_string)
+{
+  string tmp_dir = "";
+
+  ifstream file(file_string.c_str());
+  if( !file )
+    return tmp_dir;
+
+
+  for(;;)
+    {
+      char temp;
+      char buffer[1000];
+
+      file >> ws;
+      file.get(buffer,100,':');
+      file.get(temp);
+      string option_name(buffer);
+
+      if(option_name == "")
+        break;
+
+      if(option_name == "Directory for temporary files")
+          {
+            file >> ws;
+            file >> tmp_dir;
+            break;
+          }
+      else
+        file.get(buffer,1000,'\n');        
+    }
+
+  return tmp_dir;
+}
+

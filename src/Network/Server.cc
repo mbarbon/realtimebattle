@@ -52,8 +52,11 @@ string ofifo_name;
 
 volatile bool finish;
 
+const debug_level = 0;
+
 void server(int fd);
 void exit_cleanly(int fd);
+void debug_msg(const char* by, const char* msg, const int lvl);
 
 void usage(int err_code)
 {
@@ -109,13 +112,14 @@ server(int socket_fd)
 
  
 
-
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
 
   char buffer[80];
 
   in_socket.get(buffer, 80, '\n');
+
+  finish = false;
 
  // Make socket non_blocking
 
@@ -146,6 +150,7 @@ server(int socket_fd)
 
   if (  mkfifo( ififo_name.c_str(), S_IWUSR | S_IRUSR ) != 0 )
     {
+      // TODO: If fifo exists find another name!
       cerr << "Server: couldn't create " << ififo_name << ": ";
       perror( NULL );
       ififo_name = "";  // don't remove the fifos when cleaning up
@@ -153,6 +158,9 @@ server(int socket_fd)
       exit_cleanly( SIGALRM );
       return;
     }
+
+
+  // TODO: We should let RTB create the ofifo, due to the blocking problem.
 
   if(  mkfifo( ofifo_name.c_str(), S_IWUSR | S_IRUSR ) != 0 )
     {
@@ -163,8 +171,6 @@ server(int socket_fd)
       return;
     }
 
-
-
   // Open the fifos for read/write
   
   int ififo_fd = open( ififo_name.c_str(), O_RDONLY | O_NONBLOCK);
@@ -174,9 +180,16 @@ server(int socket_fd)
       cerr << "Server: couldn't open " << ififo_name << ": ";
       perror( NULL );
       exit_cleanly( SIGALRM );
+      return;
     }
 
+
+  // The ofifo is blocking, so the program will stop here 
+  // until RealTimeBattle (or another program) opens it for reading.
   int ofifo_fd = open( ofifo_name.c_str(), O_WRONLY );
+
+  if( finish ) 
+    return;
 
   if( ofifo_fd == -1 )
     {
@@ -186,7 +199,6 @@ server(int socket_fd)
       return;
     }
 
-
   ofstream ofifo_stream(ofifo_fd);
   ifstream ififo_stream(ififo_fd);
 
@@ -195,23 +207,21 @@ server(int socket_fd)
 
   fd_set fifo_and_socket;
 
+  struct timeval current_time;
   struct timeval time_to_wait;
 
-  struct timeval current_time;
-
-  finish = false;
+  int last_ping_time;
 
   while( !finish )
     {
-      time_to_wait.tv_sec = 0;
-      time_to_wait.tv_usec = 300000;
+      time_to_wait.tv_sec = 1;
+      time_to_wait.tv_usec = 0;
 
       FD_ZERO( &fifo_and_socket );
       FD_SET( socket_fd, &fifo_and_socket );
       FD_SET( ififo_fd, &fifo_and_socket );
 
       select(FD_SETSIZE, &fifo_and_socket, NULL, NULL, &time_to_wait);
-
 
       if( FD_ISSET( socket_fd, &fifo_and_socket) )
         {      
@@ -220,8 +230,9 @@ server(int socket_fd)
           in_socket.peek();
           while( !in_socket.eof() )
             {
-
+                
               in_socket.get(buffer, 80, '\n');
+
 
               if( in_socket.fail() )
                 {
@@ -229,15 +240,14 @@ server(int socket_fd)
                   exit_cleanly( SIGALRM );
                 }
               
-//                gettimeofday(&current_time, NULL);
-//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//                cout << "server <<<s: " << buffer << endl;
-              
-              ofifo_stream << buffer << endl;      
-              
-//                gettimeofday(&current_time, NULL);
-//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//                cout << "server >>>f: " << buffer << endl;
+              debug_msg( "<<<s", buffer, 4);
+
+              if( buffer[0] != '@' ) 
+                ofifo_stream << buffer << endl;      
+
+
+              debug_msg( ">>>f", buffer, 5);
+
               //          cout << "!" << flush;   
               in_socket >> ws;
               in_socket.clear();
@@ -259,16 +269,12 @@ server(int socket_fd)
                   cerr << "Reading ififo failed. Reopen!" << endl;
                   sleep(3);
                 }
-
-//                gettimeofday(&current_time, NULL);
-//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//                cout << "server <<<f: " << buffer << endl;
+              
+              debug_msg( "<<<f", buffer, 4);
 
               out_socket << buffer << endl;
 
-//                gettimeofday(&current_time, NULL);
-//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
-//                cout << "server >>>s: " << buffer << endl;
+              debug_msg( ">>>s", buffer, 5);
               
               if( out_socket.fail() )
                 {
@@ -282,11 +288,38 @@ server(int socket_fd)
               ififo_stream.peek();
             }
         }
+
+
+      gettimeofday(&current_time, NULL);
+
+      if( current_time.tv_sec != last_ping_time )
+        {
+          out_socket << "@" << endl;
+          if( out_socket.fail() )
+            {
+              cerr << "Writing to out_socket failed!" << endl;
+              exit_cleanly( SIGALRM );
+            }
+
+          last_ping_time = current_time.tv_sec;
+        }
+
+
       
       //      cout << "." << flush;      
+
+      in_socket.clear();
+      in_socket.get(buffer, 80, '\n');
+
+
+
+      if( in_socket.fail() )
+        {
+          cerr << "Reading in_socket failed!" << endl;
+          exit_cleanly( SIGALRM );
+        }
       
     }
-
 }
 
 
@@ -296,20 +329,24 @@ server(int socket_fd)
 void
 exit_cleanly(int signum)
 {
+  signal(SIGALRM, SIG_IGN);
+  signal(SIGTERM, SIG_IGN);
+  signal(SIGINT,  SIG_IGN);
+
   int sig_to_send = SIGUSR2;
 
   if( signum == SIGINT || signum == SIGTERM )
     sig_to_send = SIGTERM;
 
-//    cerr << "Recieved signal " << signum 
-//         << ", sending children " 
-//         <<  ( sig_to_send == SIGUSR2 ? "SIGUSR2" : "SIGTERM" )
-//         << " before exiting.\n" << endl;
+  cerr << "Recieved signal " << signum 
+       << ", sending children " 
+       <<  ( sig_to_send == SIGUSR2 ? "SIGUSR2" : "SIGTERM" )
+       << " before exiting.\n" << endl;
 
   kill(0, sig_to_send);
 
 
-  //  cerr << "Server " << robotname << ": Cleaning up";
+      cerr << "Server " << robotname << ": Cleaning up";
 
 
   
@@ -318,7 +355,7 @@ exit_cleanly(int signum)
   if( ! ififo_name.empty() && 
       remove( ififo_name.c_str() ) != 0 )
     {
-      cerr << "Couldn't remove " << ofifo_name.c_str() << ": ";
+      cerr << "Couldn't remove " << ififo_name.c_str() << ": ";
       perror( NULL );
     }
 
@@ -328,8 +365,22 @@ exit_cleanly(int signum)
       cerr << "Couldn't remove " << ofifo_name.c_str() << ": ";
       perror( NULL );
     }
-  
-  //  cerr << " and leaving" << endl;
 
-  finish = true;
+  //  finish = true;
+
+  cerr << " and leaving" << endl;
+
+  exit(EXIT_SUCCESS);
+}
+
+void
+debug_msg(const char* by, const char* msg, const int lvl)
+{
+  if( debug_level >= lvl )
+    {
+      struct timeval current_time;
+      gettimeofday(&current_time, NULL);
+      cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+      cout << "server " << by << ": " << msg << endl;
+    }
 }
