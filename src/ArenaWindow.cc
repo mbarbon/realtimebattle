@@ -371,8 +371,9 @@ ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
       gdk_gc_destroy( colour_gc );
     }
 }
+
 void
-ArenaWindow::drawing_area_scale_changed()
+ArenaWindow::drawing_area_scale_changed( const bool change_da_value )
 {
   if( window_shown )
     {
@@ -397,9 +398,24 @@ ArenaWindow::drawing_area_scale_changed()
           h = drawing_area_scale * bh;
         }
 
-      gtk_widget_set_usize( drawing_area, (int)w, int(h) );
-      clear_area();
-      draw_everything();
+      gtk_widget_set_usize( drawing_area, (int)w, (int)h );
+      if( change_da_value )
+        {
+          GtkAdjustment* hadj = gtk_scrolled_window_get_hadjustment
+            ( (GtkScrolledWindow*) scrolled_window );
+          gtk_adjustment_set_value( hadj,
+                                    ( ( hadj->value + hadj->page_size / 2 ) /
+                                      ( hadj->upper - hadj->lower ) ) *
+                                    (int)w - hadj->page_size / 2 );
+          GtkAdjustment* vadj = gtk_scrolled_window_get_vadjustment
+            ( (GtkScrolledWindow*) scrolled_window );
+          gtk_adjustment_set_value( vadj,
+                                    ( ( vadj->value + vadj->page_size / 2 ) /
+                                      ( vadj->upper - vadj->lower ) ) *
+                                    (int)h - vadj->page_size / 2 );
+        }
+      else
+        draw_everything();
     }
 }
 
@@ -416,7 +432,7 @@ ArenaWindow::zoom_in( GtkWidget* widget, class ArenaWindow* arenawindow_p )
   int z = arenawindow_p->get_zoom();
   z++;
   arenawindow_p->set_zoom( z );
-  arenawindow_p->drawing_area_scale_changed();
+  arenawindow_p->drawing_area_scale_changed( true );
 }
 
 void
@@ -426,14 +442,14 @@ ArenaWindow::zoom_out( GtkWidget* widget, class ArenaWindow* arenawindow_p )
   if( z > 1 )
     z--;
   arenawindow_p->set_zoom( z );
-  arenawindow_p->drawing_area_scale_changed();
+  arenawindow_p->drawing_area_scale_changed( true );
 }
 
 gint
 ArenaWindow::redraw( GtkWidget* widget, GdkEventExpose* event,
                      class ArenaWindow* arenawindow_p )
 {
-  if( the_arena.get_state() == GAME_IN_PROGRESS )
+  if( the_arena_controller.is_started() )
     arenawindow_p->draw_everything();
   return FALSE;
 }
