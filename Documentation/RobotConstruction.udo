@@ -155,7 +155,7 @@ of messages, warning types, objects, game options and robot options.
          (!link [Robot (cannon/radar) max rotate speed][RobotMaxRotateSpeed]). 
 
    !item [RotateTo [what to rotate (int)!] [angular velocity (double)!] [end angle (double)!]] 
-         As (!B)rotate(!b), but will rotate to a given angle. Not that radar and cannon angles are
+         As (!B)rotate(!b), but will rotate to a given angle. Note that radar and cannon angles are
          relative to the robot angle.
 
    !item [RotateAmount [what to rotate (int)!] [angular velocity (double)!] [angle (double)!]] 
