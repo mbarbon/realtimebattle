@@ -593,7 +593,7 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
   if( del_arena_filename_list ) arena_filenames.delete_list();
 }
 
-void
+bool
 ArenaBase::find_object_by_id( const List<Shape>& obj_list, 
                               ListIterator<Shape>& li,
                               const int obj_id )
@@ -601,13 +601,12 @@ ArenaBase::find_object_by_id( const List<Shape>& obj_list,
   for( obj_list.first(li); li.ok(); li++)
     {
       if( li()->get_id() == obj_id ) 
-        return;
+        return true;
     }
-
-  Error(false, "Object not found", " ArenaBase::find_object_by_id <Shape>");
+  return false;
 }
 
-void
+bool
 ArenaBase::find_object_by_id( const List<Robot>& obj_list, 
                               ListIterator<Robot>& li,
                               const int obj_id )
@@ -615,7 +614,7 @@ ArenaBase::find_object_by_id( const List<Robot>& obj_list,
   for( obj_list.first(li); li.ok(); li++)
     {
       if( li()->get_id() == obj_id ) 
-        return;
+        return true;
     }
-  Error(false, "Object not found", " ArenaBase::find_object_by_id <Robot>");
+  return false;
 }

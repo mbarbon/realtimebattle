@@ -44,6 +44,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shape.h"
 
 class ArenaController;
+class ArenaRealTime;
+class ArenaReplay;
 extern ArenaController the_arena_controller;
 #define the_arena (*( the_arena_controller.get_the_arena()) )
 #define realtime_arena (*( (ArenaRealTime*) (the_arena_controller.get_the_arena()) ))
@@ -55,7 +57,6 @@ class Options;
 class WallLine;
 class WallCircle;
 class WallInnerCircle;
-class ArenaRealTime;
 
 static const double infinity = 1.0e10;  //approximatly ;-)
 static const int max_debug_level = 5;
@@ -156,9 +157,9 @@ protected:
 
   void set_state( const state_t );
 
-  void find_object_by_id(const List<Shape>& obj_list, 
+  bool find_object_by_id(const List<Shape>& obj_list, 
                          ListIterator<Shape>& li, const int obj_id);
-  void find_object_by_id(const List<Robot>& obj_list, 
+  bool find_object_by_id(const List<Robot>& obj_list, 
                          ListIterator<Robot>& li, const int obj_id);
 
   List<Shape> object_lists[LAST_OBJECT_TYPE];
