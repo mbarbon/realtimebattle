@@ -470,12 +470,6 @@ Arena::timeout_function()
         if((int)total_time > old_total) the_gui.set_score_window_title();
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
-            for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-              if( ((Robot*)gl->data)->get_position_this_game() == 0 )
-                {
-                  ((Robot*)gl->data)->die();
-                  ((Robot*)gl->data)->set_stats(1);
-                }
             end_game();
           }
         else
@@ -954,6 +948,13 @@ Arena::start_game()
 void
 Arena::end_game()
 {
+  for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
+    if( ((Robot*)gl->data)->get_position_this_game() == 0 )
+      {
+        ((Robot*)gl->data)->die();
+        ((Robot*)gl->data)->set_stats(1);
+      }
+
   broadcast(GAME_FINISHES);
 
   delete_lists(false, false, false, false);

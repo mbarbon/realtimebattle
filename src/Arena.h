@@ -111,6 +111,8 @@ public:
   bool get_use_proc() { return use_proc; }
   void set_use_proc(const bool v) { use_proc = v; }
 
+  void end_game();
+
 private:
   void parse_file(istream&);
   void check_initialization();
@@ -131,7 +133,6 @@ private:
   double colour_dist(const long col1, const GdkColor& col2);
 
   void start_game();
-  void end_game();
   void start_sequence();
   void start_sequence_follow_up();
   void end_sequence();
