@@ -5,8 +5,6 @@
 #include <time.h>
 #include "../messagetypes.h"
 
-static const number_of_object_types = 6;
-
 volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;
 volatile sig_atomic_t exit_robot = false;

@@ -65,6 +65,8 @@ enum object_type
   EXPLOSION 
 };
 
+static const number_of_object_types = 6;
+
 struct Message
 {
   char* msg;
