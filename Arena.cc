@@ -793,6 +793,7 @@ Arena::end_sequence_follow_up()
       robotp = (Robot*)gl->data;
       gl = g_list_next(gl);
       if( robotp->is_process_running() ) robotp->kill_process_forcefully();
+      robotp->delete_pipes();
       g_list_remove(all_robots_in_sequence, robotp);
     }
 

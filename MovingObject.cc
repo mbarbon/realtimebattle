@@ -24,8 +24,7 @@ Robot::Robot(char* filename, Arena* ap)
 Robot::~Robot()
 {
   if( is_process_running() ) kill_process_forcefully();
-  if( instreamp != NULL ) delete instreamp;
-  if( outstreamp != NULL ) delete outstreamp;
+  delete_pipes();
 } 
 
 void
@@ -79,6 +78,9 @@ Robot::start_process()
     {
       close(pipe_out[0]);     // Close input side of pipe_out
       close(pipe_in[1]);      // Close output side of pipe_in  
+      
+      pipes[0] = pipe_out[1];
+      pipes[1] = pipe_out[0];
 
       // Make the pipes non-blocking
       int pd_flags;
@@ -123,6 +125,15 @@ void
 Robot::kill_process_forcefully()
 {
   kill(pid, SIGKILL);
+}
+
+void
+Robot::delete_pipes()
+{
+  if( instreamp != NULL ) delete instreamp;
+  if( outstreamp != NULL ) delete outstreamp;
+  close(pipes[0]);
+  close(pipes[1]);
 }
 
 void
@@ -493,7 +504,7 @@ Robot::get_messages()
                 void* col_obj;
                 object_type cl_shape;
                 double dist;
-                if( (dist = the_arena->get_shortest_distance( center, dir, shot_radius, cl_shape, col_obj)) > radius+1.5*shot_radius )
+                if( (dist = the_arena->get_shortest_distance( center, dir, shot_radius+eps, cl_shape, col_obj)) > radius+1.5*shot_radius )
                   {
                     cerr << "Shot has space available after all?" <<  endl;
                     cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;

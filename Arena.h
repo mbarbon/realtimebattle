@@ -409,6 +409,7 @@ public:
   bool is_process_running();
   void send_signal();
   void end_process();
+  void delete_pipes();
   void kill_process_forcefully();
   void live();
   void die();
@@ -462,6 +463,7 @@ private:
 
   ifstream* instreamp;
   ofstream* outstreamp;
+  int pipes[2];
   pid_t pid;    
 };
 
