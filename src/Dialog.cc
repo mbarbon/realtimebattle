@@ -29,8 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // If the delete_event is received, no value will be returned
 //
 
-Dialog::Dialog( String info, List<String>& button_labels,
-                DialogFunction func )
+Dialog::Dialog( const String& info, const List<String>& button_labels,
+                const DialogFunction func )
 {
   // The window
 

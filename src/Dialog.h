@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 
+#include "String.h"
 #include "List.h"
 
 struct _GtkWidget;
@@ -35,14 +36,12 @@ typedef union  _GdkEvent  GdkEvent;
 typedef int gint;
 typedef void (*DialogFunction)(int);
 
-class String;
-
 class Dialog
 {
 public:
   struct result_t
   { 
-    result_t                        ( const int r, DialogFunction f,
+    result_t                        ( const int r, const DialogFunction f,
                                       GtkWidget* w ) :
       result(r), function(f), widget(w) {}
     int result;
@@ -50,8 +49,9 @@ public:
     GtkWidget* widget;
   };
 
-  Dialog                            ( String info, List<String>& button_labels,
-                                      DialogFunction func );
+  Dialog                            ( const String& info,
+                                      const List<String>& button_labels,
+                                      const DialogFunction func );
   ~Dialog                           () {}
 
   static void generate_result       ( GtkWidget* widget, result_t* result_p );
