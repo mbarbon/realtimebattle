@@ -10,7 +10,7 @@ found another bug, please look at the most recent version of
 <url name="this file on the homepage" url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html"> 
 and if you cannot find it there either. Do also look at our bugtracking
 system at
-<url name="SourceForge" url="https://www.sourceforge.com/bugs/?group_id=561">.
+<url name="SourceForge" url="https://www.sourceforge.net/bugs/?group_id=561">.
 Please use this way of submitting bugs. If you can't, send a bug report to 
 <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">.
 Please don't forget to describe the system you are using, including the
@@ -18,7 +18,7 @@ version of RealTimeBattle.
 <p>
 If you want to submit a patch we would appreciate if you could send us a
 diff from the latest version or directly from the
-<url name="cvs" url="http://www.sourceforge.com/cvs/?group_id=561">.
+<url name="cvs" url="http://www.sourceforge.net/cvs/?group_id=561">.
 
 <descrip>
 
