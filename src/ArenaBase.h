@@ -20,6 +20,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_BASE__
 #define __ARENA_BASE__
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #ifndef NO_GRAPHICS
 #include <glib.h>
 #include <gdk/gdk.h>

@@ -20,6 +20,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __TIMER__
 #define __TIMER__
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
 # include <time.h>
