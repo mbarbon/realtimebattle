@@ -8,9 +8,12 @@ BUGS
 This is a list of the currently known bugs in this version of the program. If you have
 found another bug, please look at the most recent version of 
 <url name="this file on the homepage" url="http://www.lysator.liu.se/realtimebattle/Documentation/BUGS.html"> 
-and if you cannot find it there either, send a bug report to 
-<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">. Please
-don't forget to describe the system you are using, including the version of RealTimeBattle.
+and if you cannot find it there either. Do also look at our bugtracking
+system at <A HREF="https://www.sourceforge.com/bugs/?group_id=561">SourceForge</A>
+Please us this to submit a bug. If you can't, send a bug report to 
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">.
+Please don't forget to describe the system you are using, including the
+version of RealTimeBattle.
 
 <descrip>
 
