@@ -34,6 +34,8 @@ class Arena;
 extern Arena* the_arenap;
 #define the_arena (*the_arenap)
 
+enum gadget_t;
+
 class Vector2D;
 class Shape;
 class Circle;
@@ -126,6 +128,13 @@ protected:
   
   Vector2D size;  // bottom_right - top_left
   Vector2D subsquare_size; // size / number_of_subsquares 
+
+private:
+  // load_arena_file() internals
+  const bool find_full_arena_filename( string& filename,
+                                       const string& top_file_path = "",
+                                       const bool included = false ) const;
+  Gadget* create_gadget( gadget_t, const string&, Gadget* ) const;
 };
 
 
