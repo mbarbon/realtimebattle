@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>   
 <title>RealTimeBattle User Manual, version 0.9.6 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 20 January 1999
+<date> 21 January 1999
 
 <!-- <abstract> -->
 
@@ -708,12 +708,12 @@ robot.  The time is the game-time elapsed since the start of the game. This is n
 same as the real time elapsed, due to <ref id="TimeScale" name="time scale"> and 
 <ref id="MaxTimestep" name="max timestep">.
 
-<tag>RobotInfo [energy level (double)] [enemy? (int)]</tag> If you
+<tag>RobotInfo [energy level (double)] [teammate? (int)]</tag> If you
 detect a robot with your radar, this message will follow, giving some
 information on the robot. The opponents energy level will be given in
 the same manner as your own energy (see below). The second argument is
 only interesting in team-mode (which current isn't implemented), 1
-means a team-mate and 0 an enemy.
+means a teammate and 0 an enemy.
 
 <label id="RotationReached">
 <tag>RotationReached [what has reached(int)]</tag> When the robot option 
