@@ -38,21 +38,21 @@ RealTimeBattle_SOURCES = \
 	ArenaRealTime.cc ArenaRealTime.h \
 	ArenaReplay.h ArenaReplay.cc \
 	Extras.cc Extras.h \
-	IntlDefs.h \
 	GeometricalObjects.cc GeometricalObjects.h \
+	IntlDefs.h \
 	List.cc List.h \
 	Messagetypes.h \
 	MovingObject.h \
 	Options.cc Options.h \
+	Robot.cc Robot.h \
 	RealTimeBattle.cc \
 	Shape.cc Shape.h \
-	String.cc String.h \
-	Various.cc Various.h \
-	Vector2D.cc Vector2D.h \
-	Robot.cc Robot.h \
 	Shot.cc Shot.h \
+	String.cc String.h \
 	Structs.h \
 	Timer.cc Timer.h \
+	Various.cc Various.h \
+	Vector2D.cc Vector2D.h \
 	Wall.h 
 
 
