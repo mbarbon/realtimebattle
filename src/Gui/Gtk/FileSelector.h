@@ -31,37 +31,57 @@ class FileSelector
 {
 public:
   typedef void (T::*result_func_t)( const string& );
-  FileSelector                 ( T* obj, const bool ric = false )
-    : result_object(obj), result_if_canceled(ric) { filesel = NULL; }
-  ~FileSelector                () { bring_down(); }
+
+  FileSelector                 ()
+    : filesel(0), result_object(0), result_if_canceled(false) {}
+  FileSelector                 ( T*                 ro )
+    : filesel(0), result_object(ro), result_if_canceled(false) {}
+  ~FileSelector                ()
+  { bring_down(); }
 
   // Returns false if bring_up was unsuccessful
   // (Probably due to that there already was a fileselector)
-  bool bring_up                ( const string&, result_func_t );
-  void bring_down              ( const bool result_ok = false );
+  bool bring_up                ( const string&      title,
+                                 result_func_t      func,
+                                 T*                 res_obj,
+                                 const bool         ric = false );
+  void bring_down              ( const bool         result_ok = false );
 
-  static void destroy_callback ( GtkWidget* widget, class FileSelector* fs_p )
+  static void destroy_callback ( GtkWidget*         widget,
+                                 FileSelector*      fs_p )
   { fs_p->bring_down(); }
-  static void ok_callback      ( GtkWidget* widget, class FileSelector* fs_p )
+  static void ok_callback      ( GtkWidget*         widget,
+                                 FileSelector*      fs_p )
   { fs_p->bring_down( true ); }
     
 private:
 
-  GtkWidget* filesel;
+  GtkWidget*                   filesel;
 
-  T* result_object;
-  result_func_t result_func;
-  bool result_if_canceled;
+  T*                           result_object;
+  result_func_t                result_func;
+  bool                         result_if_canceled;
 };
 
 #include <gtk/gtkfilesel.h>
 
 template<class T>
 bool
-FileSelector<T>::bring_up( const string& title, result_func_t func )
+FileSelector<T>::bring_up( const string&  title,
+                           result_func_t  func,
+                           T*             res_obj,
+                           const bool     ric = false )
 {
-  if( filesel != NULL )
+  if( filesel != 0 )
     return false;
+
+  if( res_obj != 0 )
+    result_object = res_obj;
+
+  if( result_object == 0 )
+    return false;
+
+  result_if_canceled = ric;
 
   result_func = func;
 
