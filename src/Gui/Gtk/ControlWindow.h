@@ -32,6 +32,8 @@ static const int max_debug_level = 5;
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
+struct _GtkItemFactory;
+typedef struct _GtkItemFactory GtkItemFactory;
 union _GdkEvent;
 struct _GtkAdjustment;
 typedef struct _GtkAdjustment GtkAdjustment;
@@ -52,22 +54,12 @@ public:
 
   void set_status                  ( const state_t& state );
   string get_status_string         ( const state_t& state ) const;
-  string get_matchinfo_string      ( const int& time, const int& round_nr,
-                                     const int& number_of_rounds,
-                                     const int& match_nr,
+  string get_matchinfo_string      ( const int& time, const int& match_nr,
                                      const int& matches_per_round );
-  void set_matchinfo               ( const int& time, const int& round_nr,
-                                     const int& number_of_rounds,
-                                     const int& match_nr,
+  void set_matchinfo               ( const int& time, const int& match_nr,
                                      const int& matches_per_round );
   void replay                      ( const string& );
 
-  static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
-                                     class ControlWindow* cw_p );
-  static void quit_rtb             ( GtkWidget* widget,
-                                     class ControlWindow* cw_p );
-  static void menu_callback        ( class ControlWindow* cw_p,
-                                     guint callback_action, GtkWidget *widget );
 
   static void change_debug_level   ( GtkAdjustment *adj,
                                      class ControlWindow* cw_p );
@@ -101,39 +93,51 @@ public:
 private:
   enum menu_t
   { 
-    MENU_QUIT, MENU_NEW_TOURNAMENT, MENU_REPLAY_TOURNAMENT, MENU_PAUSE,
-    MENU_END, MENU_OPTIONS, MENU_STATISTICS, MENU_SHOW_ARENA,
-    MENU_SHOW_MESSAGES, MENU_SHOW_SCORE, MENU_STEP, MENU_END_MATCH,
-    MENU_KILL_MARKED_ROBOT, MENU_STEP_FORWARD, MENU_STEP_BACKWARD,
-    MENU_NEXT_MATCH, MENU_PREV_MATCH, MENU_NEXT_ROUND,
-    MENU_PREV_ROUND, MENU_ABOUT
+    MENU_LOGFILE, MENU_MESSAGEFILE, MENU_QUIT, MENU_NEW_TOURNAMENT,
+    MENU_REPLAY_TOURNAMENT, MENU_PAUSE, MENU_END, MENU_OPTIONS,
+    MENU_STATISTICS, MENU_SHOW_ARENA, MENU_SHOW_MESSAGES,
+    MENU_SHOW_SCORE, MENU_STEP, MENU_END_MATCH, MENU_KILL_MARKED_ROBOT,
+    MENU_STEP_FORWARD, MENU_STEP_BACKWARD, MENU_NEXT_MATCH,
+    MENU_PREV_MATCH, MENU_NEXT_ROUND, MENU_PREV_ROUND, MENU_ABOUT
   };
 
   GtkWidget* new_button_from_xpm_d ( char**, const int xsize = -1,
                                      const int ysize = -1 );
 
   void show_about                  ();
-  char* translate_menu_path        ( char* );
+  char* translate_menu_path        ( const char* );
+  void menu_set_sensitive          ( const char*, bool sensitive = true );
+
+  void destroy_about               ();
+
+  static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
+                                     class ControlWindow* cw_p );
+  static void quit_rtb             ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void menu_callback        ( class ControlWindow* cw_p,
+                                     guint callback_action, GtkWidget *widget );
+  static void about_callback       ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
 
   GtkWidget* window_p;
+  GtkItemFactory* item_factory;
   GtkWidget* status_label;
   GtkWidget* matchinfo_label;
   GtkWidget* debug_level;
 
-  GtkWidget* window_hbox;
-  GtkWidget* vseparator;
-  GtkWidget* extra_vbox;
-
+  GtkWidget* rewind_button;
+  GtkWidget* fast_forward_button;
+  GtkWidget* time_control;
+  GtkAdjustment* current_replay_time_adjustment;
   GtkWidget* show_arena_menu_item;
   GtkWidget* show_message_menu_item;
   GtkWidget* show_score_menu_item;
 
+  GtkWidget* about_window;
+
   // FileSelector
   FileSelector<ControlWindow>* get_filesel () { return filesel; }
   FileSelector<ControlWindow>* filesel;
-
-  GtkWidget* time_control;
-  GtkAdjustment* current_replay_time_adjustment;
 };
 
 #endif __CONTROL_WINDOW__

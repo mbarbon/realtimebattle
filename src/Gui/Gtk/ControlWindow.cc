@@ -93,24 +93,24 @@ ControlWindow::ControlWindow( const int default_width,
   {
     { "/_" N_("File"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("File") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/"  N_("File") "/" N_("Quit"), "<control>q",
-      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
-    { "/_" N_("Tournament"), NULL, NULL, 0, "<Branch>" },
-    { "/" N_("Tournament") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/"  N_("Tournament") "/" N_("New tournament"), "<control>n",
+    { "/"  N_("File") "/" N_("New tournament"), "<control>n",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
-    { "/" N_("Tournament") "/" N_("Replay tournament"), "<control>r",
+    { "/" N_("File") "/" N_("Replay tournament"), "<control>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_REPLAY_TOURNAMENT, "" },
-    { "/" N_("Tournament") "/" N_("Pause"), "<shift>p",
-      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PAUSE, "" },
-    { "/" N_("Tournament") "/" N_("End"), "<control>e",
-      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
+    { "/" N_("File") "/sep1", NULL, NULL, 0, "<Separator>" },
+    { "/"  N_("File") "/" N_("Specify logfile"), NULL,
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_LOGFILE, "" },
+    { "/"  N_("File") "/" N_("Specify messagefile"), NULL,
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_MESSAGEFILE, "" },
+    { "/" N_("File") "/sep2", NULL, NULL, 0, "<Separator>" },
+    { "/"  N_("File") "/" N_("Quit"), "<control>q",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
     { "/_" N_("Windows"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("Windows") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/" N_("Windows") "/" N_("Options"), "<shift>o",
+    { "/" N_("Windows") "/" N_("Options"), "<control>o",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_OPTIONS, "" },
-    { "/" N_("Windows") "/" N_("Statistics"), "<shift>s",
+    { "/" N_("Windows") "/" N_("Statistics"), "<control>t",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STATISTICS, "" },
     { "/" N_("Windows") "/sep", NULL, NULL, 0, "<Separator>" },
     { "/" N_("Windows") "/" N_("Show arena window"), "<control>a",
@@ -122,22 +122,26 @@ ControlWindow::ControlWindow( const int default_width,
     { "/"  N_("Windows") "/" N_("Show score window"), "<control>s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_SHOW_SCORE, "<CheckItem>" },
-    { "/_" N_("Debug"), NULL, NULL, 0, "<Branch>" },
-    { "/" N_("Debug") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/" N_("Debug") "/" N_("Step"), "t",
+    { "/_" N_("Match control"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Match control") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
+    { "/" N_("Match control") "/" N_("Pause"), "<shift>p",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PAUSE, "" },
+    { "/" N_("Match control") "/" N_("End tournament"), "<control><shift>e",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
+    { "/" N_("Match control") "/" N_("Step"), "s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP, "" },
-    { "/" N_("Debug") "/" N_("End match"), "<control><shift>m",
+    { "/" N_("Match control") "/" N_("End match"), "<control><shift>m",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END_MATCH, "" },
-    { "/" N_("Debug") "/" N_("Kill marked robot"), "<control><shift>k",
+    { "/" N_("Match control") "/" N_("Kill marked robot"), "<control><shift>k",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_KILL_MARKED_ROBOT, "" },
     { "/_" N_("Replay"), NULL, NULL, 0, "<Branch>" },
     { "/" N_("Replay") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
-    { "/" N_("Replay") "/" N_("Step forward"), "s",
+    { "/" N_("Replay") "/" N_("Step forward"), "f",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_FORWARD, "" },
-    { "/" N_("Replay") "/" N_("Step backward"), "<shift>s",
+    { "/" N_("Replay") "/" N_("Step backward"), "b",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_BACKWARD, "" },
-    { "/" N_("Replay") "/sep2", NULL, NULL, 0, "<Separator>" },
+    { "/" N_("Replay") "/sep", NULL, NULL, 0, "<Separator>" },
     { "/" N_("Replay") "/" N_("Next Match"), "m",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEXT_MATCH, "" },
     { "/" N_("Replay") "/" N_("Previous Match"), "<shift>m",
@@ -158,8 +162,7 @@ ControlWindow::ControlWindow( const int default_width,
     menu_items[i].path = translate_menu_path( menu_items[i].path );
 
   GtkAccelGroup* accel = gtk_accel_group_new();
-  GtkItemFactory* item_factory = 
-    gtk_item_factory_new( GTK_TYPE_MENU_BAR, "<main>", accel );
+  item_factory = gtk_item_factory_new( GTK_TYPE_MENU_BAR, "<main>", accel );
   gtk_item_factory_create_items( item_factory, nmenu_items,
                                  menu_items, (gpointer) this );
   gtk_accel_group_attach( accel, GTK_OBJECT( window_p ) );
@@ -177,25 +180,9 @@ ControlWindow::ControlWindow( const int default_width,
   show_score_menu_item = gtk_item_factory_get_widget
     ( item_factory, translate_menu_path("<main>/Windows/Show score window") );
 
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
   gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
-#else
-  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
-  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
-  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
-#endif
-
-  // Boxes
-  // TODO: Remove if unnecessary!
-  window_hbox = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start( GTK_BOX( main_vbox ), window_hbox, FALSE, TRUE, 0 );
-  gtk_widget_show( window_hbox );
-
-  GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_hbox ), vbox );
-  gtk_widget_show( vbox );
 
   // Blue style
 
@@ -206,7 +193,7 @@ ControlWindow::ControlWindow( const int default_width,
     status_style = gtk_style_copy(status_style);
   // TODO: Make use of old font information or use an option for large fonts
 //    GdkFont* temp_font =
-//      gdk_font_load( "-*-helvetica-bold-r-normal--16-*-*-*-*-*-*-*" );
+//      gdk_font_load( "-*-helvetica-bold-r-normal--*-140-*-*-*-*-*-*" );
 //    if( temp_font )
 //      status_style->font = temp_font;
   status_style->fg[GTK_STATE_NORMAL] = make_gdk_colour( 0x1111ee );
@@ -216,13 +203,21 @@ ControlWindow::ControlWindow( const int default_width,
   GtkWidget* frame = gtk_frame_new( NULL );
   gtk_container_border_width( GTK_CONTAINER( frame ), 2 );
   gtk_frame_set_shadow_type( GTK_FRAME( frame ), GTK_SHADOW_ETCHED_IN );
-  gtk_box_pack_start( GTK_BOX( vbox ), frame, FALSE, TRUE, 0 );
+  gtk_box_pack_start( GTK_BOX( main_vbox ), frame, FALSE, TRUE, 0 );
   gtk_widget_show( frame );
 
-  GtkWidget* vbox2 = gtk_vbox_new( FALSE, 0 );
-  gtk_container_border_width( GTK_CONTAINER( vbox2 ), 3 );
-  gtk_container_add( GTK_CONTAINER( frame ), vbox2 );
-  gtk_widget_show( vbox2 );
+  GtkWidget* frame_vbox = gtk_vbox_new( FALSE, 0 );
+  gtk_container_border_width( GTK_CONTAINER( frame_vbox ), 3 );
+  gtk_container_add( GTK_CONTAINER( frame ), frame_vbox );
+  gtk_widget_show( frame_vbox );
+
+  GtkWidget* hbox = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( frame_vbox ), hbox, FALSE, TRUE, 0 );
+  gtk_widget_show( hbox );
+
+  GtkWidget* label_vbox = gtk_vbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( hbox ), label_vbox, TRUE, TRUE, 0 );
+  gtk_widget_show( label_vbox );
 
   vector<int> widths;
   vector<int> heights;
@@ -240,28 +235,49 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_set_usize( status_label, max_label_width, max_label_height );
   gtk_widget_set_style( status_label, status_style );
   gtk_label_set_justify( GTK_LABEL( status_label ), GTK_JUSTIFY_CENTER );
-  gtk_box_pack_start( GTK_BOX( vbox2 ), status_label, TRUE, TRUE, 0 );
+  gtk_box_pack_start( GTK_BOX( label_vbox ), status_label, TRUE, TRUE, 0 );
   gtk_widget_show( status_label );
   
   set_status( NO_STATE );
 
-  string infotext = get_matchinfo_string( 100000, 1000, 1000, 1000, 1000 );
+  string infotext = get_matchinfo_string( 100000, 1000, 1000 );
   max_label_width  = gdk_string_width( status_style->font, infotext.c_str() ) + 4;
   max_label_height = gdk_string_height( status_style->font, infotext.c_str() ) + 4;
   matchinfo_label = gtk_label_new("");
   gtk_widget_set_style( matchinfo_label, status_style );
   gtk_widget_set_usize( matchinfo_label, max_label_width, max_label_height );
   gtk_label_set_justify( GTK_LABEL( matchinfo_label ), GTK_JUSTIFY_CENTER );
-  gtk_box_pack_start( GTK_BOX( vbox2 ), matchinfo_label, TRUE, TRUE, 0 );
-  gtk_widget_set_sensitive( matchinfo_label, FALSE );
+  gtk_box_pack_start( GTK_BOX( label_vbox ), matchinfo_label, TRUE, TRUE, 0 );
+//    gtk_widget_set_sensitive( matchinfo_label, FALSE );
   gtk_widget_show( matchinfo_label );
 
-  set_matchinfo( 0, 0, 0, 0, 0 );
+  set_matchinfo( 0, 0, 0 );
+
+  GtkWidget* debug_level_vbox = gtk_vbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( hbox ), debug_level_vbox, FALSE, FALSE, 0 );
+  gtk_widget_show( debug_level_vbox );
+
+  GtkWidget* debug_level_label = gtk_label_new( _("Debug level") );
+  gtk_box_pack_start( GTK_BOX( debug_level_vbox ),
+                      debug_level_label, TRUE, FALSE, 0 );
+  gtk_widget_show( debug_level_label );
+
+  GtkAdjustment* adj =
+    (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
+                                         max_debug_level, 1, 1, 0 );
+
+  debug_level = gtk_spin_button_new( adj, 0, 0 );
+  gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
+                      (GtkSignalFunc) change_debug_level,
+                      (gpointer) this );
+  gtk_box_pack_start( GTK_BOX( debug_level_vbox ), debug_level, TRUE, FALSE, 0 );
+  gtk_widget_set_sensitive( debug_level, FALSE );
+  gtk_widget_show( debug_level );
 
   gtk_widget_show( window_p );
 
-  GtkWidget* hbox = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start( GTK_BOX( vbox2 ), hbox, FALSE, TRUE, 0 );
+  hbox = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start( GTK_BOX( frame_vbox ), hbox, FALSE, TRUE, 0 );
   gtk_widget_show( hbox );
 
   char* rew_xpm[13] =
@@ -297,32 +313,33 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_box_pack_start( GTK_BOX( hbox ), vbox3, FALSE, FALSE, 2 );
   gtk_widget_show( vbox3 );
 
-  GtkWidget* button = new_button_from_xpm_d( rew_xpm, 32, 19 );
-  gtk_box_pack_start( GTK_BOX( vbox3 ), button, TRUE, FALSE, 0 );
-  gtk_signal_connect( GTK_OBJECT( button ), "pressed",
+  rewind_button = new_button_from_xpm_d( rew_xpm, 32, 19 );
+  gtk_box_pack_start( GTK_BOX( vbox3 ), rewind_button, TRUE, FALSE, 0 );
+  gtk_signal_connect( GTK_OBJECT( rewind_button ), "pressed",
                       (GtkSignalFunc) ControlWindow::rewind_pressed,
                       (gpointer) this );
-  gtk_signal_connect( GTK_OBJECT( button ), "released",
+  gtk_signal_connect( GTK_OBJECT( rewind_button ), "released",
                       (GtkSignalFunc) ControlWindow::rewind_released,
                       (gpointer) this );
-  gtk_widget_set_sensitive( button, FALSE );
-  gtk_widget_show( button );
+  gtk_widget_set_sensitive( rewind_button, FALSE );
+  gtk_widget_show( rewind_button );
 
   vbox3 = gtk_vbox_new ( FALSE, 0 );
   gtk_box_pack_end( GTK_BOX( hbox ), vbox3, FALSE, FALSE, 2 );
   gtk_widget_show( vbox3 );
 
-  button = new_button_from_xpm_d( ffw_xpm, 32, 19 );
-  gtk_box_pack_start( GTK_BOX( vbox3 ), button, TRUE, FALSE, 0 );
-  gtk_signal_connect( GTK_OBJECT( button ), "pressed",
+  fast_forward_button = new_button_from_xpm_d( ffw_xpm, 32, 19 );
+  gtk_box_pack_start( GTK_BOX( vbox3 ), fast_forward_button, TRUE, FALSE, 0 );
+  gtk_signal_connect( GTK_OBJECT( fast_forward_button ), "pressed",
                       (GtkSignalFunc) ControlWindow::fast_forward_pressed,
                       (gpointer) this );
-  gtk_signal_connect( GTK_OBJECT( button ), "released",
+  gtk_signal_connect( GTK_OBJECT( fast_forward_button ), "released",
                       (GtkSignalFunc) ControlWindow::fast_forward_released,
                       (gpointer) this );
-  gtk_widget_set_sensitive( button, FALSE );
-  gtk_widget_show( button );
+  gtk_widget_set_sensitive( fast_forward_button, FALSE );
+  gtk_widget_show( fast_forward_button );
 
+  // TODO: Get length of match (use instead of 120.0)
   current_replay_time_adjustment =
     (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0, 120.0, 0.1, 1.0, 1.0 );
 
@@ -339,27 +356,14 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_set_sensitive( time_control, FALSE );
   gtk_widget_show( time_control );
 
-  // TODO: Place this in a good place when in debug_mode
-//    GtkWidget* label = gtk_label_new( _(" Debug Level: ") );
-//    gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
-//    gtk_widget_show( label );
-
-//    GtkAdjustment* adj =
-//      (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
-//                                           max_debug_level, 1, 1, 0 );
-
-//    debug_level = gtk_spin_button_new( adj, 0, 0 );
-//    gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
-//                        (GtkSignalFunc) change_debug_level,
-//                        (gpointer) this );
-//    gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
-//    gtk_widget_show( debug_level );
-
   filesel = new FileSelector<ControlWindow>( this );
+  about_window = NULL;
 }
 
 ControlWindow::~ControlWindow()
 {
+  delete filesel;
+  destroy_about();
   gtk_widget_destroy( window_p );
 }
 
@@ -387,7 +391,7 @@ ControlWindow::new_button_from_xpm_d( char** xpm_data,
 // by '<' '>'
 // ---------------------------------------------------------------------------
 char*
-ControlWindow::translate_menu_path( char* pathstr_p )
+ControlWindow::translate_menu_path( const char* pathstr_p )
 {
 #ifndef ENABLE_NLS
   return pathstr_p;
@@ -416,6 +420,22 @@ ControlWindow::translate_menu_path( char* pathstr_p )
     }
   return copy_to_c_string( new_path ); // Memory-leak: never deleted
 #endif
+}
+
+void
+ControlWindow::menu_set_sensitive( const char* pathstr_p, bool sensitive )
+{
+  GtkWidget* menu_item =
+    gtk_item_factory_get_widget( item_factory, translate_menu_path( pathstr_p ) );
+  if( !menu_item )
+    {
+      the_gui.error( false, (string)"Menu with path " + pathstr_p + " doesn't exist.",
+                     "ControlWindow::menus_set_sensitive" );
+      return;
+    }
+  if( GTK_IS_MENU(menu_item) )
+    menu_item = gtk_menu_get_attach_widget( GTK_MENU(menu_item) );
+  gtk_widget_set_sensitive( menu_item, (gint)sensitive );
 }
 
 string
@@ -465,42 +485,38 @@ ControlWindow::set_status( const state_t& state )
 }
 
 string
-ControlWindow::get_matchinfo_string( const int& time, const int& round_nr,
-                                     const int& number_of_rounds,
-                                     const int& match_nr,
+ControlWindow::get_matchinfo_string( const int& time, const int& match_nr,
                                      const int& matches_per_round )
 {
   string matchinfo_str = (string)_("Time") + ": " + int2string( time ) + " " +
-    _("Round") + ": " + int2string(round_nr) + " (" +
-    int2string(number_of_rounds) + ") " + _("Match") + ": " +
-    int2string(match_nr) + " (" + int2string(matches_per_round) + ")";
+    _("Match") + ": " + int2string(match_nr) +
+    " (" + int2string(matches_per_round) + ")";
   return matchinfo_str;
 }
 
 void
-ControlWindow::set_matchinfo( const int& time, const int& round_nr,
-                              const int& number_of_rounds, const int& match_nr,
+ControlWindow::set_matchinfo( const int& time, const int& match_nr,
                               const int& matches_per_round )
 {
   gtk_label_set_text( GTK_LABEL( matchinfo_label ),
-                      get_matchinfo_string( time, round_nr, number_of_rounds,
-                                            match_nr, matches_per_round ).c_str() );
+                      get_matchinfo_string( time, match_nr,
+                                            matches_per_round ).c_str() );
 }
 
 void
 ControlWindow::show_about()
 {
+  destroy_about();
   // The window
 
-  GtkWidget* about_window = gtk_window_new( GTK_WINDOW_DIALOG );
+  about_window = gtk_window_new( GTK_WINDOW_DIALOG );
   gtk_window_set_title( GTK_WINDOW( about_window ), "About RealTimeBattle" );
   gtk_widget_set_name( about_window, "RTB About" );
   gtk_window_set_policy( GTK_WINDOW( about_window ), FALSE, FALSE, FALSE );
   gtk_window_position( GTK_WINDOW( about_window ), GTK_WIN_POS_CENTER );
   gtk_container_border_width( GTK_CONTAINER( about_window ), 12 );
   gtk_signal_connect( GTK_OBJECT( about_window ), "delete_event",
-                      (GtkSignalFunc) gtk_widget_destroy,
-                      (gpointer) NULL );
+                      (GtkSignalFunc) about_callback, (gpointer) NULL );
 
   // Main box
 
@@ -551,13 +567,28 @@ ControlWindow::show_about()
     }
 
   GtkWidget* button_w = gtk_button_new_with_label( _("Ok") );
-  gtk_signal_connect_object( GTK_OBJECT( button_w ), "clicked",
-                             (GtkSignalFunc) gtk_widget_destroy,
-                             GTK_OBJECT( about_window ) );
+  gtk_signal_connect( GTK_OBJECT( button_w ), "clicked",
+                      (GtkSignalFunc) about_callback, (gpointer) this );
   gtk_box_pack_start( GTK_BOX( vbox ), button_w, TRUE, TRUE, 0 );
   gtk_widget_show( button_w );
 
   gtk_widget_show( about_window );
+}
+
+void
+ControlWindow::destroy_about()
+{
+  if( about_window != NULL )
+    {
+      gtk_widget_destroy( about_window );
+      about_window = NULL;
+    }
+}
+
+void
+ControlWindow::about_callback( GtkWidget* widget, ControlWindow* cw_p )
+{
+  cw_p->destroy_about();
 }
 
 void
@@ -568,6 +599,10 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
     {
     case MENU_QUIT:
       the_gui.quit( true );
+      break;
+    case MENU_LOGFILE:
+      break;
+    case MENU_MESSAGEFILE:
       break;
     case MENU_NEW_TOURNAMENT:
       the_gui.open_starttournamentwindow();
