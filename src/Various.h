@@ -78,4 +78,13 @@ bool parse_tournament_file( const string& fname,
 
 void create_tmp_rtb_dir();
 
+template<class ListClass>
+void clear_and_delete_pointer_list( list<ListClass*> the_list )
+{
+  list<ListClass*>::iterator ti;
+  for( ti = the_list.begin(); ti != the_list.end(); ti++ )
+    delete *ti;
+  the_list.clear();
+}
+
 #endif __VARIOUS__
