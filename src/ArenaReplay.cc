@@ -651,7 +651,7 @@ ArenaReplay::parse_log_line_rewind( const char first_letter )
         int id;
         double x,y,vx,vy;
         log_file >> id >> x >> y >> vx >> vy;
-        cout << "Shot rewind_dying: " << id << endl;
+        //        cout << "Shot rewind_dying: " << id << endl;
         ListIterator<Shape> li;
         find_object_by_id( object_lists[SHOT], li, id );
         if( !li.ok() )
@@ -814,12 +814,12 @@ ArenaReplay::change_game( const int inc_game, const int inc_seq )
   if( temp_seq < 1 || temp_seq > sequences_in_tournament )
     return;
 
-  cout << "Seq: " << temp_seq << "  Game: " << temp_game
-       << "  game_pos: " << game_position_in_log[temp_seq-1][temp_game-1] << endl;
+  //  cout << "Seq: " << temp_seq << "  Game: " << temp_game
+  //       << "  game_pos: " << game_position_in_log[temp_seq-1][temp_game-1] << endl;
 
   log_file.seekg( game_position_in_log[temp_seq-1][temp_game-1] );
 
-  cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
+  //  cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
 }
 
 
@@ -833,7 +833,7 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
       
       index += n_o_steps;
 
-      cout << "Stepping to index: " << index << endl;
+      //      cout << "Stepping to index: " << index << endl;
       
       if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
         {
@@ -895,7 +895,7 @@ ArenaReplay::change_replay_time( const double time )
       
       index -= 1; // ??
 
-      cout << "Changed to index: " << index << endl;
+      //      cout << "Changed to index: " << index << endl;
       
       if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
         {
@@ -1241,7 +1241,7 @@ ArenaReplay::get_time_positions_in_game()
 
   streampos old_pos = log_file.tellg();
 
-  cout << "get_time_positions_in_game" << endl;
+  //  cout << "get_time_positions_in_game" << endl;
 
   while(  (letter = search_forward( letter_list ))  != '?' )
     {
@@ -1397,11 +1397,11 @@ ArenaReplay::get_length_of_current_game()
   if( time_position_in_log != NULL )
     if( last_time_info != 0 )
       {
-        cout << "Game length: " << time_position_in_log[last_time_info].time << endl;
+        //        cout << "Game length: " << time_position_in_log[last_time_info].time << endl;
         return time_position_in_log[last_time_info].time;
       }
 
-  cout << the_opts.get_d( OPTION_TIMEOUT ) + 1.0 << endl;
+  //  cout << the_opts.get_d( OPTION_TIMEOUT ) + 1.0 << endl;
   return the_opts.get_d( OPTION_TIMEOUT ) + 1.0;
 }
 

@@ -692,7 +692,7 @@ void
 ControlWindow::rewind_pressed( GtkWidget* widget,
                                class ControlWindow* cw_p )
 {
-  cout << "rewinding ... " << endl;
+  //  cout << "rewinding ... " << endl;
   replay_arena.change_speed( false, true );
 }
 
@@ -700,7 +700,7 @@ void
 ControlWindow::rewind_released( GtkWidget* widget,
                                 class ControlWindow* cw_p )
 {
-  cout << "until released" << endl;
+  //  cout << "until released" << endl;
   replay_arena.change_speed( false, false );
 }
 
@@ -708,7 +708,7 @@ void
 ControlWindow::fast_forward_pressed( GtkWidget* widget,
                                      class ControlWindow* cw_p )
 {
-  cout << "forwarding ... " << endl;
+  //  cout << "forwarding ... " << endl;
   replay_arena.change_speed( true, true );
 }
 
@@ -716,7 +716,7 @@ void
 ControlWindow::fast_forward_released( GtkWidget* widget,
                                       class ControlWindow* cw_p )
 {
-  cout << "until released" << endl;
+  //  cout << "until released" << endl;
   replay_arena.change_speed( true, false );
 }
 
@@ -724,7 +724,7 @@ void
 ControlWindow::step_forward( GtkWidget* widget,
                              class ControlWindow* cw_p )
 {
-  cout << "Stepping forward" << endl;
+  //  cout << "Stepping forward" << endl;
   replay_arena.step_forward_or_backward( true );  
 }
 
@@ -732,7 +732,7 @@ void
 ControlWindow::step_backward( GtkWidget* widget,
                               class ControlWindow* cw_p )
 {
-  cout << "Stepping backward" << endl;
+  //  cout << "Stepping backward" << endl;
   replay_arena.step_forward_or_backward( false );
 }
 
