@@ -43,9 +43,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Gui* gui_p;
 
-//Move this into gui sometime soon.
-class ControlWindow* controlwindow_p;
-
 const string
 GIName()
 {
@@ -115,7 +112,6 @@ int
 Gui::timeout_function()
 {
   get_information();
-  //  update_lists();
   return true;
 }
 
@@ -125,82 +121,33 @@ Gui::get_information()
   const InfoBase* info_p;
   while( NULL != ( info_p = guiinterface_p->get_information() ) )
     {
-      // Get Information
+      game_time = info_p->get_game_time();
+      switch( info_p->get_type() )
+        {
+        case INFO_UNKNOWN:
+          break;
+        case INFO_STATE:
+          {
+            state = ((StateInfo*)info_p)->get_state();
+            the_controlwindow.set_window_title( state );
+            break;
+          }
+        case INFO_TOURNAMENT_STARTED:
+          break;
+        case INFO_TOURNAMENT_ENDED:
+          break;
+        case INFO_GAME_STARTED:
+          break;
+        case INFO_MESSAGE:
+          {
+            MessageInfo* message_p = (MessageInfo*)info_p;
+            if( is_messagewindow_up() )
+              messagewindow_p->add_message( message_p->get_sender(),
+                                            message_p->get_message() );
+            break;
+          }
+        }
     }
-}
-
-void
-Gui::update_lists()
-{
-//    List<Shape>* object_lists;
-//    object_lists = the_arena.get_object_lists();
-
-//    ListIterator<Shape> li;
-
-//    for( int obj_type=ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
-//      {
-//        list<DrawingShape*>::iterator draw_li = drawing_objects_lists[obj_type].begin();
-//        for( object_lists[obj_type].first(li); li.ok(); li++ )
-//          {
-//            if( draw_li != drawing_objects_lists[obj_type].end() )
-//              {
-//                if( (*draw_li)->get_id() != li()->get_id() )
-//                  //TODO: remove the object from arena.
-//                  {
-//                    delete (*draw_li);
-//                    drawing_objects_lists[obj_type].erase(draw_li);
-//                  }
-//                draw_li++;
-//              }
-//            else
-//              {
-//                switch( obj_type )
-//                  {
-//                  case ROBOT:
-//                    {
-//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-//                      drawing_objects_lists[obj_type].push_back( p );
-//                    }
-//                    break;
-//                  case SHOT:
-//                    {
-//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-//                      drawing_objects_lists[obj_type].push_back( p );
-//                    }
-//                    break;
-//                  case WALL:
-//                    if( typeid( *li() ) == typeid( WallLine ) )
-//                      {
-//                        DrawingShape* p = (DrawingShape*) new DrawingLine( li() );
-//                        drawing_objects_lists[obj_type].push_back( p );
-//                      }
-//                    else if( typeid( *li() ) == typeid( WallCircle ) )
-//                      {
-//                        DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-//                        drawing_objects_lists[obj_type].push_back( p );
-//                      }
-//                    else if( typeid( *li() ) == typeid( WallInnerCircle ) )
-//                      {
-//                        DrawingShape* p = (DrawingShape*) new DrawingInnerCircle( li() );
-//                        drawing_objects_lists[obj_type].push_back( p );
-//                      }
-//                    break;
-//                  case COOKIE:
-//                    {
-//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-//                      drawing_objects_lists[obj_type].push_back( p );
-//                    }
-//                    break;
-//                  case MINE:
-//                    {
-//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-//                      drawing_objects_lists[obj_type].push_back( p );
-//                    }
-//                    break;
-//                  }
-//              }
-//          }
-//      }
 }
 
 void

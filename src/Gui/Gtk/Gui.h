@@ -27,16 +27,30 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Messagetypes.h"
 #include "DrawingObjects.h"
+#include "OptionHandler.h"
+#include "Structs.h"
 
 class GuiInterface;
+class ControlWindow;
 class ArenaWindow;
 class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
 class GuiInterface;
+class Vector2D;
 
+class Gui;
+extern Gui* gui_p;
 #define the_gui (*(gui_p))
+#define the_opts (*(gui_p->get_main_opts()))
+#define the_controlwindow (*(gui_p->get_controlwindow_p()))
+
+// ---------------------------------------------------------------------------
+// class Gui
+// ---------------------------------------------------------------------------
+// This is the main class responsible for the gui.
+// ---------------------------------------------------------------------------
 
 class Gui
 {
@@ -47,17 +61,26 @@ public:
   int main_loop                                ( GuiInterface* );
   int timeout_function                         ();
   void get_information                         ();
-  void update_lists                            ();
   void set_colours                             ();
 
+  const OptionHandler* get_main_opts           () const { return main_opts; }
+  const OptionHandler* get_gtk_opts            () const { return gtk_opts; }
+
   list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
+
+  const int get_debug_level                    () const { return debug_level; }
+
+  const state_t get_state                      () const { return state; }
 
   const int get_number_of_matches              () const { return number_of_matches; }
   const int get_games_per_match                () const { return games_per_match; }
   const int get_match_nr                       () const { return match_nr; }
   const int get_game_nr                        () const { return game_nr; }
 
-  const double get_match_time                  () const { return match_time; }
+  const string get_arena_filename              () const { return arena_filename; }
+  const Vector2D* get_arena_boundary           () const { return arena_boundary; }
+
+  const double get_game_time                   () const { return game_time; }
 
   GdkColor* get_bg_gdk_colour_p                () { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
@@ -67,6 +90,8 @@ public:
   long int get_fg_rgb_colour                   () const { return fg_rgb_colour; }
   long int get_rtb_message_rgb_colour          () const 
   { return rtb_message_rgb_colour; }
+
+  ControlWindow* get_controlwindow_p           () const { return controlwindow_p; }
 
   bool is_arenawindow_up                       () const
     { return ( arenawindow_p != NULL ); }
@@ -104,15 +129,26 @@ public:
   void open_starttournamentwindow              ();
   void close_starttournamentwindow             ();
 
-  static gint update_function                  (gpointer data);
+  static gint update_function                  ( gpointer data );
 
 private:
 
+  void set_state                               ( state_t state );
+
   GuiInterface* guiinterface_p;
 
-  list<DrawingShape*> drawing_objects_lists[LAST_OBJECT_TYPE];
+  OptionHandler* main_opts;
+  OptionHandler* gtk_opts;
 
-  double match_time;
+  list<DrawingShape*> drawing_objects_lists[LAST_OBJECT_TYPE];
+  string arena_filename;
+  Vector2D arena_boundary[2];
+
+  state_t state;
+
+  double game_time;
+
+  int debug_level;
 
   int number_of_matches;
   int games_per_match;
@@ -127,6 +163,7 @@ private:
   GdkColor fg_gdk_colour;
   GdkColor rtb_message_gdk_colour;
 
+  ControlWindow* controlwindow_p;
   ArenaWindow* arenawindow_p;
   MessageWindow* messagewindow_p;
   ScoreWindow* scorewindow_p;
