@@ -99,15 +99,17 @@ main ( int argc, char* argv[] )
   
   char** arenanames; 
   arenanames = new char*[5];
-  arenanames[3] = new char[strlen("Arenas/Forest.arena")+1];
-  strcpy(arenanames[3], "Arenas/Forest.arena");
-  arenanames[1] = new char[strlen("Arenas/Rooms.arena")+1];
-  strcpy(arenanames[1], "Arenas/Rooms.arena");
-  arenanames[2] = new char[strlen("Arenas/Star.arena")+1];
-  strcpy(arenanames[2], "Arenas/Star.arena");
-  arenanames[0] = new char[strlen("Arenas/Circles.arena")+1];
-  strcpy(arenanames[0], "Arenas/Circles.arena");
-  arenanames[4] = NULL;
+  arenanames[0] = new char[strlen("Arenas/Forest.arena")+1];
+  strcpy(arenanames[0], "Arenas/Forest.arena");
+  arenanames[3] = new char[strlen("Arenas/Rooms.arena")+1];
+  strcpy(arenanames[3], "Arenas/Rooms.arena");
+  arenanames[1] = new char[strlen("Arenas/Star.arena")+1];
+  strcpy(arenanames[1], "Arenas/Star.arena");
+  arenanames[2] = new char[strlen("Arenas/Labyrinth.arena")+1];
+  strcpy(arenanames[2], "Arenas/Labyrinth.arena");
+  arenanames[4] = new char[strlen("Arenas/Circles.arena")+1];
+  strcpy(arenanames[4], "Arenas/Circles.arena");
+  arenanames[5] = NULL;
 
   if(failed)
     {
@@ -122,7 +124,7 @@ main ( int argc, char* argv[] )
   try
     {
       the_arena->get_the_gui()->setup_control_window();
-      the_arena->start_tournament( robotnames, arenanames, nr_robots, 4, 8);
+      the_arena->start_tournament( robotnames, arenanames, nr_robots, 5, 8);
     }
   catch ( Error the_error )
 	 {
