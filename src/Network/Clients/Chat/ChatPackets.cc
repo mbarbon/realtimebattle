@@ -192,17 +192,46 @@ SubmitPacket::SubmitPacket( int T , const vector<string>& FN)
   file_name = FN;
 }
 
-SubmitPacket::SubmitPacket( int T , unsigned n, ... )
+SubmitPacket::SubmitPacket( int T, string& s1 )
 {
   type = T;
-  va_list arg_ptr;
-  
-  va_start(arg_ptr, n);
-  
-  for( int count = 0; count < T; count ++ )
-    file_name.push_back( va_arg(arg_ptr, string) );
+  file_name.push_back(s1);
+}
 
-  va_end(arg_ptr);
+SubmitPacket::SubmitPacket( int T, string& s1, string& s2 )
+{
+  type = T;
+  file_name.push_back(s1);
+  file_name.push_back(s2);
+}
+
+SubmitPacket::SubmitPacket( int T, string& s1, string& s2, string& s3 )
+{
+  type = T;
+  file_name.push_back(s1);
+  file_name.push_back(s2);
+  file_name.push_back(s3);
+}
+
+SubmitPacket::SubmitPacket( int T, string& s1,
+                            string& s2, string& s3, string& s4 )
+{
+  type = T;
+  file_name.push_back(s1);
+  file_name.push_back(s2);
+  file_name.push_back(s3);
+  file_name.push_back(s4);
+}
+
+SubmitPacket::SubmitPacket( int T, string& s1,
+                            string& s2, string& s3, string& s4, string& s5 )
+{
+  type = T;
+  file_name.push_back(s1);
+  file_name.push_back(s2);
+  file_name.push_back(s3);
+  file_name.push_back(s4);
+  file_name.push_back(s5);
 }
 
 string 
@@ -212,7 +241,7 @@ SubmitPacket::make_netstring() const
   string datastring;
   
 
-  for(int i = 0; i < file_name.size(); i++)
+  for(unsigned int i = 0; i < file_name.size(); i++)
     {
       datastring += "<" + file_name[i]  + ">";
     }
