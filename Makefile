@@ -16,10 +16,12 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 libdirs = -L/usr/lib -L/usr/X11R6/lib
 libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
+objects = robot.o Vector2D.o gui.o robotarena.o Arena.o Error.o Shape.o MovingObject.o Extras.o
+
 all: RobotArena $(ROBOTDIR)/empty
 
-RobotArena: robot.o Vector2D.o gui.o robotarena.o Arena.o
-	g++ $(cxxoptions) -o robotarena robot.o Vector2D.o gui.o robotarena.o Arena.o $(gtkincludedirs) $(libdirs) $(libraries)
+RobotArena: $(objects)
+	g++ $(cxxoptions) -o robotarena $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
 
 robot.o: robot.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robot.cc
@@ -33,8 +35,20 @@ gui.o: gui.c gui.h
 robotarena.o: robotarena.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robotarena.cc $(gtkincludedirs)
 
-Arena.o: Arena.cc Arena.h messagetypes.h
+Arena.o: Arena.cc Arena.h messagetypes.h Vector2D.h
 	g++ $(cxxoptions) -c Arena.cc $(gtkincludedirs)
+
+Error.o: Error.cc Arena.h messagetypes.h Vector2D.h
+	g++ $(cxxoptions) -c Error.cc $(gtkincludedirs)
+
+MovingObject.o: MovingObject.cc Arena.h messagetypes.h Vector2D.h
+	g++ $(cxxoptions) -c MovingObject.cc $(gtkincludedirs)
+
+Shape.o: Shape.cc Arena.h messagetypes.h Vector2D.h
+	g++ $(cxxoptions) -c Shape.cc $(gtkincludedirs)
+
+Extras.o: Extras.cc Arena.h messagetypes.h Vector2D.h
+	g++ $(cxxoptions) -c Extras.cc $(gtkincludedirs)
 
 
 $(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
@@ -42,8 +56,10 @@ $(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 	gcc $(coptions) -o empty empty.o; \
 	cd ..
 
-empty.o: $(ROBOTDIR)/empty.c
-	gcc $(coptions) -c -o empty.o empty.c
+$(ROBOTDIR)/empty.o: $(ROBOTDIR)/empty.c
+	cd $(ROBOTDIR); \
+	gcc $(coptions) -c -o empty.o empty.c; \
+	cd ..
 
 clean:
 	rm -f *~ *.o core* $(ROBOTDIR)/*~ $(ROBOTDIR)/*.o $(ROBOTDIR)/core*
