@@ -1,3 +1,3 @@
-SUBDIRS = Gadgets Network Common Core
+SUBDIRS = Gadgets Network Gui Common Core RobotClient
 
 

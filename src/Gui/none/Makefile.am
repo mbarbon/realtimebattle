@@ -1,17 +1,29 @@
-lib_LTLIBRARIES = libRTBGui_none.la
+bin_PROGRAMS = RawClient
 
-INCLUDES = $(GUI_FLAGS) -I$(top_srcdir)/intl \
-	-I$(top_srcdir)/src -I$(top_srcdir)/src/Network \
-	$(PROFFLAGS) $(THREAD_FLAGS)
+if ENABLE_PROF
+PROFFLAGS = -pg
+endif
+
+INCLUDES = -I$(top_srcdir)/intl  \
+	-I$(top_srcdir)/src/Network $(PROFFLAGS)
 
 if ENABLE_CCMALLOC
 CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
 else
 CCMALLOC_O =
 endif
+if NO_GETOPT_LONG
+GETOPT_O = getopt.o
+else
+GETOPT_O =
+endif
 
-libRTBGui_none_la_LIBADD =
-libRTBGui_none_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-module $(STDCXX_LIBS)  $(CCMALLOC_O)
-libRTBGui_none_la_DEPENDENCIES =
-libRTBGui_none_la_SOURCES = Gui.cc
+
+RawClient_LDADD = $(top_builddir)/src/Network/libRTB_Network.a \
+	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) 
+
+#RawClient_LDFLAGS =  -export-dynamic
+
+RawClient_DEPENDENCIES = $(INTLOBJS) $(top_builddir)/src/Network/libRTB_Network.a	$(GETOPT_O) $(INTLDEPS) $(GUI_OBJS)
+RawClient_SOURCES = \
+	Gui.cc

@@ -5,4 +5,4 @@ if GUI_NONE
 NONE_SUBDIR = none
 endif
 
-SUBDIRS = $(GTK_SUBDIR) $(NONE_SUBDIR)
+SUBDIRS = none

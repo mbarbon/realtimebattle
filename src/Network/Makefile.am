@@ -15,6 +15,7 @@ libRTB_Network_a_SOURCES = \
 	Packets.cc          ServerPackets.cc        SimpleProcess.cc\
 	Packets.h           ServerPackets.h         SimpleProcess.h\
 	TournamentAgreementPackets.cc TournamentAgreementPackets.h \
-	TournamentPackets.cc	TournamentPackets.h
+	TournamentPackets.cc	TournamentPackets.h \
+	ClientSocket.cc		ClientSocket.h
 
 

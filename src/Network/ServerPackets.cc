@@ -244,7 +244,7 @@ string
 FactoryInfoPacket::make_netstring() const
 {
   ostrstream data_stream;
-  data_stream << protocol <<" "<<channel;
+  data_stream << protocol <<" "<<channel<<ends;
 
   string n_str;
   n_str = "FI";

@@ -128,7 +128,7 @@ Tournament::start()
       int rand_id = rand()%256;
       //Use a packet to do it !!!
       ostrstream unique_name, os; 
-      unique_name<<ri->filename<<"_"<<ri->id<<"/"<<rand_id; 
+      unique_name<<ri->filename<<"_"<<ri->id<<"/"<<rand_id<<ends; 
 
       //TODO : change this !!!
       os<<"RunRobot "<<ri->filename<<" "<<ri->directory<<" "<<ri->id<<" "<<rand_id<<ends;

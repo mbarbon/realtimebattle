@@ -57,7 +57,7 @@ TournamentAgreementPacketFactory::TournamentAgreementPacketFactory()
     }
   */
 
-  my_tournament.arenas.push_back(arena_info_t("Original.arena", "/home/roussebe/RealTimeBattle/Arenas/"));
+  my_tournament.arenas.push_back(arena_info_t("Original.arena", "/tmp/roussebe/RealTimeBattle/Arenas/"));
   my_tournament.arenas.push_back(arena_info_t("Arena1", "/arenas/"));
   my_tournament.arenas.push_back(arena_info_t("Arena3", "/arenas/"));
 }
@@ -96,7 +96,7 @@ TournamentAgreementPacketFactory::add_connection( NetConnection* nc, string more
        ri != my_tournament.robots.end(); ri ++ )
     {
       ostrstream os;
-      os<<"AddRob " << ri->directory <<" "<< ri->filename << " " << ri->team << " " <<ri->id;
+      os<<"AddRob " << ri->directory <<" "<< ri->filename << " " << ri->team << " " <<ri->id<<ends;
       TournamentCommitChangePacket P( os.str() );
       nc->send_data( P.make_netstring() );
     }
