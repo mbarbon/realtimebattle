@@ -62,9 +62,13 @@ public:
   friend String make_lower_case(const String& str);
 
   int get_length() { return length; }
-  const char* chars() { return array; }
-  char* non_const_chars() { return array; }   //  Warning! This allows for changing the private member array.
-  char* copy_chars();   // allocates an array of chars, remember to delete afterwards!
+  const char* chars() const { return array; }
+
+   //  Warning! This allows for changing the private member array.
+  char* non_const_chars() const { return array; }
+
+  // allocates an array of chars, remember to delete afterwards!
+  char* copy_chars(); 
 
 private:
   char* array;
