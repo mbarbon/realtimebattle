@@ -23,17 +23,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <typeinfo>
 #include <math.h>
+#include <list>
 
 #include "DrawingObjects.h"
-#include "Shape.h"
 #include "Vector2D.h"
 #include "GuiVarious.h"
 #include "OptionHandler.h"
 #include "Gui.h"
-#include "ArenaController.h"
 #include "GuiStructs.h"
-#include "Robot.h"
-#include "GeometricalObjects.h"
 #include "ArenaWindow.h"
 #include "ScoreWindow.h"
 #include "String.h"
@@ -70,11 +67,21 @@ DrawingLine::DrawingLine( const int _id, const long int rgb_col )
 }
 
 void
-DrawingLine::draw_shape( bool erase )
+DrawingLine::draw_shape( const bool erase )
 {
   the_gui.get_arenawindow_p()->draw_line( start_point, direction,
                                           length, thickness,
                                           gdk_colour );
+}
+
+void
+DrawingLine::set_position( const Vector2D& sp, const Vector2D& dir,
+                           const double len, const double th )
+{
+  start_point = sp;
+  direction = dir;
+  length = len;
+  thickness = th;
 }
 
 // --------- DrawingCircle -----------
@@ -87,7 +94,7 @@ DrawingCircle::DrawingCircle( const int _id, const long int rgb_col )
 }
 
 void
-DrawingCircle::draw_shape( bool erase )
+DrawingCircle::draw_shape( const bool erase )
 {
   if( erase )
     the_gui.get_arenawindow_p()->draw_circle( last_drawn_center,
@@ -100,6 +107,13 @@ DrawingCircle::draw_shape( bool erase )
                                             gdk_colour, true );
 }
 
+void
+DrawingCircle::set_position( const Vector2D& c, const double r )
+{
+  center = c;
+  radius = r;
+}
+
 // --------- DrawingInnerCircle -----------
 
 DrawingInnerCircle::DrawingInnerCircle( const int _id, const long int rgb_col )
@@ -110,7 +124,7 @@ DrawingInnerCircle::DrawingInnerCircle( const int _id, const long int rgb_col )
 }
 
 void
-DrawingInnerCircle::draw_shape( bool erase )
+DrawingInnerCircle::draw_shape( const bool erase )
 {
   if( erase )
     the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
@@ -126,6 +140,13 @@ DrawingInnerCircle::draw_shape( bool erase )
                                          0.0, 2*M_PI, gdk_colour );
 }
 
+void
+DrawingInnerCircle::set_position( const Vector2D& c, const double r )
+{
+  center = c;
+  radius = r;
+}
+
 // --------- DrawingArc -----------
 
 DrawingArc::DrawingArc( const int _id, const long int rgb_col )
@@ -134,7 +155,7 @@ DrawingArc::DrawingArc( const int _id, const long int rgb_col )
   center = last_drawn_center = Vector2D( 0.0, 0.0 );
 }
 void
-DrawingArc::draw_shape(bool erase)
+DrawingArc::draw_shape(const bool erase)
 {
   if( erase )
     the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
@@ -148,43 +169,66 @@ DrawingArc::draw_shape(bool erase)
                                          start_angle, end_angle, gdk_colour );
 }
 
-
-// --------- DrawingRobot -----------
-
-DrawingRobot::DrawingRobot( const int _id, const long int rgb_col )
-  : DrawingCircle( _id, rgb_col )
+void
+DrawingArc::set_position( const Vector2D& c, const double ir, const double or,
+                          const double sa, const double ea )
 {
-  reset_last_displayed();
+  center = c;
+  inner_radius = ir;
+  outer_radius = or;
+  start_angle = sa;
+  end_angle = ea;
+}
 
-  robot_angle  = 0.0;
-  cannon_angle = 0.0;
-  radar_angle  = 0.0;
+// --------- DrawingWeaponGadget -----------
 
-  energy             = 0;
-  position_this_game = 1;
-  last_place         = 1;
-  score              = 0;
+DrawingWeaponGadget::DrawingWeaponGadget( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
+{
+  angle = 0.0;
+}
+
+// This function should not be called!
+void
+DrawingWeaponGadget::draw_shape( const bool erase )
+{
+  draw_shape( erase, Vector2D( 0.0, 0.0 ), 0.0, 0.0 );
 }
 
 void
-DrawingRobot::draw_shape( bool erase )
+DrawingWeaponGadget::draw_shape( const bool erase, const Vector2D& center,
+                                 const double radius, const double robot_angle )
 {
-  DrawingCircle::draw_shape( erase );
-  // Draw radar and cannon
-
   double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
 
-  if( radius*scale < 2.5 ) return;
-  // Draw Cannon
-  the_gui.get_arenawindow_p()->
+ the_gui.get_arenawindow_p()->
     draw_line( center,
-               angle2vec( cannon_angle + robot_angle ),
+               angle2vec( angle + robot_angle ),
                radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
                the_opts.get_d(OPTION_SHOT_RADIUS),
                *(the_gui.get_fg_gdk_colour_p()) );
+}
 
-  // Draw radar lines
-  Vector2D radar_dir = angle2vec( radar_angle + robot_angle );
+// --------- DrawingSensorGadget -----------
+
+DrawingSensorGadget::DrawingSensorGadget( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
+{
+  angle = 0.0;
+}
+
+// This function should not be called!
+void
+DrawingSensorGadget::draw_shape( const bool erase )
+{
+  draw_shape( erase, Vector2D( 0.0, 0.0 ), 0.0, 0.0 );
+}
+
+void
+DrawingSensorGadget::draw_shape( const bool erase, const Vector2D& center,
+                                 const double radius, const double robot_angle )
+{
+  Vector2D radar_dir = angle2vec( angle + robot_angle );
   the_gui.get_arenawindow_p()->
     draw_line( center - radius * 0.25 * radar_dir,
                rotate( radar_dir, M_PI / 4.0 ),
@@ -197,6 +241,40 @@ DrawingRobot::draw_shape( bool erase )
                radius / 1.5,
                radius / 20.0,
                *(the_gui.get_fg_gdk_colour_p()) );
+}
+
+// --------- DrawingRobot -----------
+
+DrawingRobot::DrawingRobot( const int _id, const long int rgb_col )
+  : DrawingCircle( _id, rgb_col )
+{
+  reset_last_displayed();
+
+  robot_angle  = 0.0;
+
+  energy             = 0;
+  position_this_game = 1;
+  last_place         = 1;
+  score              = 0;
+}
+
+void
+DrawingRobot::draw_shape( const bool erase )
+{
+  DrawingCircle::draw_shape( erase );
+  // Draw radar and cannon
+
+  double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
+
+  if( radius*scale < 2.5 ) return;
+
+  list<DrawingWeaponGadget>::iterator dwg_i;
+  for( dwg_i = weapon_list.begin(); dwg_i != weapon_list.end(); dwg_i++ )
+    dwg_i->draw_shape( erase, center, radius, robot_angle );
+
+  list<DrawingSensorGadget>::iterator dsg_i;
+  for( dsg_i = sensor_list.begin(); dsg_i != sensor_list.end(); dsg_i++ )
+    dsg_i->draw_shape( erase, center, radius, robot_angle );
 
   // Draw robot angle line
   the_gui.get_arenawindow_p()->
