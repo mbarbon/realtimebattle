@@ -893,7 +893,11 @@ ArenaRealTime::start_sequence()
     {
       robotp = li();
       if( robotp->use_fifo_instead_of_process() )
-        robotp->open_fifos();
+        {
+          robotp->open_fifos();
+          *robotp->get_outstreamp() << "@R" << endl;
+          robotp->set_values_at_process_start_up();
+        }      
       else
         robotp->start_process();
     }
