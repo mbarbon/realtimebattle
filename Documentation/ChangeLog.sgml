@@ -10,6 +10,14 @@ Change log
 
 New translation: Galician by Jesús Bravo Álvarez.
 
+It is now possible to create an <tt>arc</tt> (part of circle) in the arena. A new
+command <tt>poly_curve</tt> has been added to make it possible to create a
+series of <tt>arcs</tt> and <tt>lines</tt>.
+
+Two new arenas: <tt>Flower.arena</tt> and <tt>Pool.arena</tt>
+
+Improved drawing of inner_circles.
+
 <item> <bf>1.0.3</bf>
 <p>
 
