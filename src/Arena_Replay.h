@@ -30,7 +30,7 @@ public:
   Arena_Replay();
   ~Arena_Replay();
 
-  gint timeout_function();
+  bool timeout_function();
   void start_tournament(const String& logfilename);
   void end_game();
 private: 

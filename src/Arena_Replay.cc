@@ -32,9 +32,10 @@ Arena_Replay::~Arena_Replay()
 {
 }
 
-gint
+bool
 Arena_Replay::timeout_function()
 {
+  return true;
 }
   
 void 
