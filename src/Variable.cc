@@ -31,7 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 void
 Variable::make_bool( const double val )
 {
-  my_type = BOOL;
+  my_type = BOOL_V;
   minimum = 0.0;
   maximum = 1.0;
   
@@ -44,7 +44,7 @@ Variable::make_bool( const double val )
 void
 Variable::make_int ( const double val, const double min_val, const double max_val )
 {
-  my_type = INT;
+  my_type = INT_V;
   minimum = min_val;
   maximum = max_val;
   
@@ -58,7 +58,7 @@ void
 Variable::make_double( const double val, const double min_val, const double max_val,
                        const double inacc )
 {
-  my_type = DOUBLE;
+  my_type = DOUBLE_V;
   minimum = min_val;
   maximum = max_val;
 
@@ -80,7 +80,7 @@ void
 Variable::make_random( const double min_val, const double max_val, 
                        const bool is_double )
 {
-  my_type = ( is_double ? DOUBLE : INT );
+  my_type = ( is_double ? DOUBLE_V : INT_V );
     
   minimum = min_val;
   maximum = max_val;
@@ -104,9 +104,10 @@ Variable::assign(const double val)
 
   if( val >= minimum ) value = minimum;
 
-  if( my_type == DOUBLE ) value = val;
-
-  value = rint( val ); 
+  if( my_type == DOUBLE_V ) 
+    value = val;
+  else    
+    value = rint( val ); 
 }
 
 
@@ -119,7 +120,7 @@ Variable::get_value()
   if( random ) 
     {
       double c = minimum + double( rand() ) * ( maximum - minimum ) / double(RAND_MAX);
-      if( my_type == INT ) 
+      if( my_type == INT_V ) 
         return rint( c );
 
       return c;

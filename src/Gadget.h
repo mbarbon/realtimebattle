@@ -32,6 +32,8 @@ class Gadget
 {
 public:
 
+
+  Gadget() : info(this, 0, "") {}
   Gadget( const char* name, Gadget* const p ) 
     : info(this, last_id_used++, name), parent(p) {}
 

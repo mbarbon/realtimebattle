@@ -38,7 +38,7 @@ private:
 
   enum WeaponVars
   {
-    AMMUNITION,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
+    AMMUNITION=0,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
     AUTOFIRE, MAXROTATESPEED, SOUNDLEVEL,
     MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
     USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
@@ -46,15 +46,15 @@ private:
     ATTACHABLE, COLOUR, PRICE, MASS, LAST_WEAPONVAR
   };
 
-  const VariableDefinition variables[LAST_WEAPONVAR] = 
+  const VariableDefinition variable_def[LAST_WEAPONVAR] = 
   {
-    {"Ammunition", INT, 0, 0, INT_MAX,0,false,true,false},
+    {"Ammunition", INT_V, 0, 0, INT_MAX,0,false,true,false},
 
-    {"RotateToAngle", DOUBLE, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
-    {"RotateAmountAngle", DOUBLE, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
-    {"RotateSpeed", DOUBLE, 0, 0.0, DBL_MAX,0, false, true, true },
+    {"RotateToAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+    {"RotateAmountAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+    {"RotateSpeed", DOUBLE_V, 0, 0.0, DBL_MAX,0, false, true, true },
 
-    {"AutoFire", BOOL, false,0,0,0,false,true,true}
+    {"AutoFire", BOOL_V, false,0,0,0,false,true,true}
 
 //      "MaxRotateSpeed",
 
@@ -83,9 +83,22 @@ private:
 //      "Mass"
   };
 
+  Variable variables[LAST_WEAPONVAR];
+
   enum WeaponFcns
   {
-    SHOOT, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, LAST_WEAPONFCN
+    SHOOT=0, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, LAST_WEAPONFCN
+  };
+
+  const FunctionDefinition function_def[LAST_WEAPONFCN] = 
+  {
+    { "Shoot", true },
+    { "Mount", true },
+    { "Unmount", true },
+    { "Drop", true },
+    { "Rotate", true },
+    { "RotateTo", true },
+    { "RotateAmount", true }
   };
 
   Function functions[LAST_WEAPONFCN];

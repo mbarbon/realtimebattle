@@ -22,7 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Gadget.h"
 
-enum variable_type { BOOL, INT, DOUBLE };
+enum variable_type { BOOL_V, INT_V, DOUBLE_V };
 
 struct VariableDefinition
 {
@@ -41,7 +41,8 @@ class Variable : public Gadget
 {
 
 public:
-  
+
+  Variable() {}
   Variable( const char* name, Gadget* const p ) : Gadget(name, p) {}
   ~Variable() {}
 

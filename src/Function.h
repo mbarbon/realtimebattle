@@ -30,7 +30,7 @@ struct FunctionDefinition
 class Function : public Gadget
 {
 public:
-  Function() : Gadget( "", NULL ) {}
+  Function() {}
   Function(const char* name, Gadget* const p ) : Gadget(name, p) {}
   Function(const char* name, Gadget* const p, const int fcn ) 
     : Gadget(name, p), fcn_nr(fcn) {}
