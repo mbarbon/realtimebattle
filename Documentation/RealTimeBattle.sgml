@@ -274,7 +274,7 @@ start.
 <sect1>Robots and arena directories<label id="robot_and_arena_directories">
 <p>
 In order for the program to find the robots and arenas you have set two environmental variables,
-<tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt>. 
+<tt>RTB&lowbar;ROBOTDIR</tt> and <tt>RTB&lowbar;ARENADIR</tt>. 
 The directories <tt>/usr/games/RealTimeBattle/Robots</tt> and
 <tt>/usr/games/RealTimeBattle/Arenas</tt> are always searched, regardless of the environmental
 variables, but if you create a new directory, or if you installed RealTimeBattle in some other
@@ -282,13 +282,13 @@ directory, you need to set these variables.
 
 If you use <tt>bash</tt> you can e.g. add the following lines to your <tt>.bashrc</tt> file. 
 <verb>
-export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
-export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
+export RTB&lowbar;ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
+export RTB&lowbar;ARENADIR="$HOME/RealTimeBattle/Arenas/"
 </verb>
 In <tt>tcsh</tt>, add e.g.
 <verb>
-setenv RTB_ROBOTDIR "$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
-setenv RTB_ARENADIR "$HOME/RealTimeBattle/Arenas/"
+setenv RTB&lowbar;ROBOTDIR "$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
+setenv RTB&lowbar;ARENADIR "$HOME/RealTimeBattle/Arenas/"
 </verb>
 to the <tt>.cshrc</tt> file.
 
@@ -571,7 +571,7 @@ string. The string length is less than 500.
 
 <tag>GameOption [optionnr (int)] [value (double)]</tag> At the beginning of each game the robots
 will be sent a number of settings, which can be useful to the robot. For a complete list of these,
-look in the file <ref id="Messagetypes.h" name="Messagetypes.h"> for the <tt>game_option_type</tt>
+look in the file <ref id="Messagetypes.h" name="Messagetypes.h"> for the <tt>game&lowbar;option&lowbar;type</tt>
 enum. In the <ref id="Options" name="options chapter"> you can get more detailed information on each
 option. The <ref id="Debug level" name="debug level"> is also sent as a game option even though it
 is not in the options list.
@@ -600,13 +600,13 @@ only interesting i team-mode (which current isn't implemented), 1
 means a team-mate and 0 an enemy.
 
 <label id="RotationReached">
-<tag>RotationReached [what has reached]</tag> When the 
-<ref id="RobotOption" name="robot option SEND_ROTATION_REACHED"> is set appropriately, this message
+<tag>RotationReached [what has reached(int)]</tag> When the robot option 
+<ref id="RobotOption" name="SEND&lowbar;ROTATION&lowbar;REACHED"> is set appropriately, this message
 is sent when a rotation (with RotateTo or RotateAmount) has finished or the direction has changed
 (when sweeping). The argument corresponds to 'what to rotate' in e.g.
 <ref id="Rotate" name="Rotate">. 
 
-<tag>Energy [energy level]</tag> The end of each round the robot will
+<tag>Energy [energy level(double)]</tag> The end of each round the robot will
 get to know its energy level. It will not, however, get the exact
 energy, instead it is discretized into a number of <ref id="EnergyLevels" name="energy levels">.
 
@@ -656,18 +656,18 @@ will be killed forcefully.
 <label id="RobotOption">
 <tag>RobotOption [option nr (int)] [value (int)]</tag> Currently only
 two options are available:
-<descrip>
-<tag>SEND_SIGNAL</tag> tells the server to send
+
+<tt>SEND&lowbar;SIGNAL:</tt> Tells the server to send
 SIGUSR1 when there is a message waiting. Send this message (with
 argument 0=true) as soon as you are prepared to receive the signal.
 Default is false.
-<tag>SEND_ROTATION_REACHED</tag> If you want the server to send a 
+
+<tt>SEND&lowbar;ROTATION&lowbar;REACHED:</tt> If you want the server to send a 
 <ref id="RotationReached" name="RotationReached"> 
 message when a rotation is
 finished, you should set this option. With a value of 1, the message is sent when 
 a RotateTo or a RotateAmount is finished, with a value of 2, changes in sweep direction are
 also notified. Default is 0, i.e. no messages are sent.
-</descrip>
 
 <label id="NameAndColour">
 <tag>Name [name (string)]</tag> When receiving the <ref id="Initialize" name="Initialize"> message
@@ -954,14 +954,14 @@ double sidelength, i.e. four times bigger area.
 <p>
 In RealTimeBattle, it is very simple to construct your own arenas. The
 language consists of only eight commands, and there are essentially
-three building blocks: line, circle and inner_circle. This is mainly
+three building blocks: line, circle and inner&lowbar;circle. This is mainly
 because of speed reason, for circles and lines it is very easy to
-check if a collision has occured. Circle and inner_circle prevents
+check if a collision has occured. Circle and inner&lowbar;circle prevents
 robots from entering into a circle or getting outside a circle
 respectively. The line stops the robots from entering through the long
 side, but no check is made on the short side, so you have to put
 circles at each end of the line to make it a solid object. The
-commands <tt>polygon</tt> and <tt>closed_polygon</tt> are intended to
+commands <tt>polygon</tt> and <tt>closed&lowbar;polygon</tt> are intended to
 simplify this procedure, always giving a proper object.
 
 Note that RealTimeBattle does no check on whether the arena file gives
@@ -998,27 +998,27 @@ cookies and mines are placed. It also determines the visible area in the
 <ref id="Arena_window" name="arena window">. This command is required and may only be preceded by
 <tt>scale</tt>.
 
-<tag>inner_circle [bounce] [hardness] [center_x] [center_y] [radius]</tag>
+<tag>inner&lowbar;circle [bounce] [hardness] [center&lowbar;x] [center&lowbar;y] [radius]</tag>
  Robots are limited to the inside of this circle.
 
-<tag>circle [bounce] [hardness] [center_x] [center_y] [radius]</tag>
+<tag>circle [bounce] [hardness] [center&lowbar;x] [center&lowbar;y] [radius]</tag>
 Circle shaped wall.
 
 
-<tag>polygon [bounce] [hardness] [thickness] [number of vertices] ([center_x] [center_y])...</tag>
+<tag>polygon [bounce] [hardness] [thickness] [number of vertices] ([center&lowbar;x] [center&lowbar;y])...</tag>
  This will create a number of circles, connected by lines.
 
 
-<tag>closed_polygon [bounce] [hardness] [thickness] [number of vertices]
-([center_x] [center_y])...</tag>
+<tag>closed&lowbar;polygon [bounce] [hardness] [thickness] [number of vertices]
+([center&lowbar;x] [center&lowbar;y])...</tag>
  As a <tt>polygon</tt>, but the first and the last vertices are also
 connected by a line.
 
 
-<tag>line [bounce] [hardness] [thickness] [start_x] [start_y] [end_x] [end_y]</tag> Creates a
+<tag>line [bounce] [hardness] [thickness] [start&lowbar;x] [start&lowbar;y] [end&lowbar;x] [end&lowbar;y]</tag> Creates a
 line. See the <ref id="Arena construction" name="beginning of the chapter"> for more informations.
 
-<tag>exclusion_point [position_x] [position_y]</tag> When the arena
+<tag>exclusion&lowbar;point [position&lowbar;x] [position&lowbar;y]</tag> When the arena
 inside the boundary consists of several separated areas, you should
 exclude all but one by inserting exclusion points. All points from
 which you can draw a straight line to an exclusion point without
