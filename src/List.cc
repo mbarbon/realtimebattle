@@ -234,7 +234,6 @@ template class List<Robot>;
 
 #include "Structs.h"
 template class List<stat_t>;
-template class List<start_tournament_info_t>;
 
 #include "ArenaReplay.h"
 template class List<ArenaReplay::object_pos_info_t>;

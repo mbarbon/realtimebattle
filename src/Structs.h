@@ -60,6 +60,9 @@ enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS,
 
 struct start_tournament_info_t
 {
+  start_tournament_info_t( const start_tournament_info_t& i )
+    { row = i.row; selected = i.selected;
+    filename = i.filename; directory = i.directory; }
   start_tournament_info_t(const int r, const bool s,
                           const class String fn, const class String dir) :
     row(r), selected(s), filename(fn), directory(dir) {}

@@ -46,6 +46,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string.h>
 #include <iostream.h>
 #include <fstream.h>
+#include <list>
 
 #include "Various.h"
 #include "IntlDefs.h"
@@ -220,7 +221,7 @@ check_if_filename_is_arena( String& fname )
 
 void
 check_for_robots_and_arenas( String& word, 
-                             List<start_tournament_info_t>& tour_list,
+                             list<start_tournament_info_t>& tour_list,
                              List<String>& dir_list, 
                              const bool check_robots )
 {
@@ -268,9 +269,7 @@ check_for_robots_and_arenas( String& word,
     }
   if( found )
     {
-      start_tournament_info_t* info;
-      info = new start_tournament_info_t(0, false, full_file_name, "");
-      tour_list.insert_last( info );
+      tour_list.push_back( start_tournament_info_t(0, false, full_file_name, "") );
     }
   else
     {
@@ -283,7 +282,7 @@ check_for_robots_and_arenas( String& word,
 
 void
 search_directories( String directory, 
-                    List<start_tournament_info_t>& tour_list,
+                    list<start_tournament_info_t>& tour_list,
                     const bool check_robots )
 {
   DIR* dir;
@@ -299,11 +298,8 @@ search_directories( String directory,
           else
             res = check_if_filename_is_arena(full_file_name);
           if(res)
-            {
-              start_tournament_info_t* info;
-              info = new start_tournament_info_t(0, false, full_file_name, "");
-              tour_list.insert_last( info );
-            }
+            tour_list.push_back( start_tournament_info_t(0, false,
+                                                         full_file_name, "") );
         }
       closedir(dir);
     }
@@ -333,8 +329,8 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
   int n_o_sequences = 1;
   int looking_for = 0; // 0 = keyword, 1 = robot, 2 = arena
 
-  List<start_tournament_info_t> robot_list;
-  List<start_tournament_info_t> arena_list;
+  list<start_tournament_info_t> robot_list;
+  list<start_tournament_info_t> arena_list;
 
   for(;;)
     {
@@ -344,8 +340,8 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
 
       if( word == "" )
         {
-          int robots_counted = robot_list.number_of_elements();
-          int arenas_counted = arena_list.number_of_elements();
+          int robots_counted = robot_list.size();
+          int arenas_counted = arena_list.size();
           
           if (games_p_s == -1)
             games_p_s = arenas_counted;

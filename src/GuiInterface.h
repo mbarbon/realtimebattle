@@ -87,8 +87,8 @@ public:
   void interrupt_tournament                   ();
   void end_game                               ();
 
-  void start_tournament    ( const List<start_tournament_info_t>& robotfilename_list, 
-                             const List<start_tournament_info_t>& arenafilename_list, 
+  void start_tournament    ( const list<start_tournament_info_t>& robotfilename_list, 
+                             const list<start_tournament_info_t>& arenafilename_list, 
                              const int robots_p_game, 
                              const int games_p_sequence, 
                              const int n_o_sequences );

@@ -21,13 +21,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __VARIOUS__
 
 #include "List.h"
+#include <list>
 
 //#include "String.h"
 class String;
 struct start_tournament_info_t;
 
-typedef void (*StartTournamentFunction)( const List<start_tournament_info_t>&,
-                                         const List<start_tournament_info_t>&,
+typedef void (*StartTournamentFunction)( const list<start_tournament_info_t>&,
+                                         const list<start_tournament_info_t>&,
                                          const int, const int, const int, void* );
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
@@ -67,10 +68,10 @@ void split_colonseparated_dirs(String& dirs, List<String>& arenadirs);
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );
 void check_for_robots_and_arenas( String& word, 
-                                  List<start_tournament_info_t>& tour_list,
+                                  list<start_tournament_info_t>& tour_list,
                                   List<String>& dir_list, 
                                   const bool check_robots );
-void search_directories( String directory, List<start_tournament_info_t>& tour_list,
+void search_directories( String directory, list<start_tournament_info_t>& tour_list,
                          const bool check_robots );
 bool parse_tournament_file( const String& fname,
                             const StartTournamentFunction function,
