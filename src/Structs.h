@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -59,40 +59,39 @@ struct start_tournament_info_t
 };
 struct arena_info_t 
 {
+  arena_info_t(const string& f, const string& d) :
+    filename( f ), directory( d ), selected (false) {id = next_id ++;};
   string filename;
   string directory;
-  int row;
   bool selected;
 
-  string type;
+  int id; static int next_id;
 };
+
+class NetConnection;
 struct robot_info_t
 {
   robot_info_t( const robot_info_t& i )
   { 
-    row = i.row; selected = i.selected;
     filename = i.filename; directory = i.directory;
-    team = i.team; 
+    team = i.team; id = i.id;
+    nc = i.nc;
   }
-  robot_info_t(const string& fn, const string& dir, int& r, bool s, int t) :
-    filename(fn), directory(dir), row(r), selected(s), team(t) {}
+  robot_info_t(const string& fn, const string& dir, int t, NetConnection* nc) :
+    filename(fn), directory(dir), team(t), nc( nc ) {id = next_id ++;}
   string filename;
   string directory;
-  int row;
-  bool selected;
   int team;
+  int id; static int next_id;
+
+  NetConnection* nc;
+
 };
-struct match_info_t
-{
-  arena_info_t match_arena;
-  list<robot_info_t> robots;
-  vector<int> team_colors;
-};
+
 struct tourn_info_t
 {
-  list<match_info_t> matches;
-  list<match_info_t>::iterator current_match;
-  bool keep_same_robot_set;
+  list<robot_info_t> robots;
+  list<arena_info_t> arenas;
 };
 
 struct message_t
