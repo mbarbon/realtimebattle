@@ -42,7 +42,7 @@ extern class Gui* gui_p;
 #define line_p ((Line*)shape_p)
 #define circle_p ((Circle*)shape_p)
 #define icircle_p ((InnerCircle*)shape_p)
-
+#define arc_p ((Arc*)shape_p)
 // --------- DrawingShape -----------
 
 DrawingShape::DrawingShape( Shape* _shape_p )
@@ -192,6 +192,39 @@ DrawingInnerCircle::draw_shape(bool erase)
                  *(the_gui.get_bg_gdk_colour_p()),
                  true );
 }
+
+// --------- DrawingInnerArc -----------
+DrawingArc::DrawingArc( Shape* s )
+  : DrawingShape(s)
+{
+  last_drawn_center = ((Arc*)s)->get_center();
+}
+void
+DrawingArc::draw_shape(bool erase)
+{
+
+  if( erase )
+    the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
+                                           arc_p->get_inner_radius(), 
+                                           arc_p->get_outer_radius(),
+                                           arc_p->get_start_angle(),
+                                           arc_p->get_end_angle(),
+                                           *(the_gui.get_bg_gdk_colour_p()),
+                                           *(the_gui.get_bg_gdk_colour_p()),
+                                           true );
+  last_drawn_center = arc_p->get_center();
+
+  
+  the_gui.get_arenawindow_p()->draw_arc( arc_p->get_center(),
+                                         arc_p->get_inner_radius(), 
+                                         arc_p->get_outer_radius(),
+                                         arc_p->get_start_angle(),
+                                         arc_p->get_end_angle(),
+                                         gdk_colour, 
+                                         *(the_gui.get_bg_gdk_colour_p()),
+                                         true );
+}
+
 
 // --------- DrawingRobot -----------
 

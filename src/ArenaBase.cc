@@ -200,11 +200,11 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
   double radie, bounce_c, hardn, thickness;
   int vertices;
 
-  Vector2D vec1, vec2, vec0;
+  Vector2D vec1, vec2, vec0, center;
   WallLine* wall_linep;
   WallCircle* wall_circlep;
   WallInnerCircle* wall_inner_circlep;
-
+  WallArc* wall_arcp;
 
   file >> ws;
   file.get(text, 20, ' ');
@@ -269,6 +269,26 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> radie;
       wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
       object_lists[WALL].insert_last(wall_circlep);
+    }
+  else if( strcmp(text, "arc" ) == 0 )
+    {
+      if( succession < 3 ) 
+        Error(true, "Error in arenafile: 'arc' before 'boundary'", 
+              "ArenaBase::parse_arena_line");
+      succession = 4;
+      double angle1, angle2, radie2;
+      file >> bounce_c;
+      file >> hardn;
+      file >> center;
+      file >> radie;
+      file >> radie2;
+      file >> angle1;
+      file >> angle2;
+      
+      wall_arcp = new WallArc(scale*center, scale*radie, scale*radie2, 
+                              angle1 * M_PI / 180.0, angle2 * M_PI / 180.0,
+                              bounce_c, hardn);
+      object_lists[WALL].insert_last(wall_arcp);
     }
   else if( strcmp(text, "line" ) == 0 )
     {

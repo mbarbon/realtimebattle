@@ -50,4 +50,16 @@ public:
   ~WallLine() {}
 };
 
+
+class WallArc : public Arc
+{
+public:
+  WallArc(const Vector2D& c, const double& r1, const double& r2,
+          const double a1, const double a2, 
+          const double b_c, const double hardn) : Arc(c, r1, r2, a1, a2) 
+    { bounce_coeff = b_c; hardness_coeff = hardn; }
+  ~WallArc() {}
+};
+
+
 #endif __WALL__

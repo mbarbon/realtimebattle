@@ -82,6 +82,11 @@ public:
                                      const double radius,
                                      GdkColor& colour,
                                      const bool filled );
+  void draw_arc                    ( const Vector2D& center, 
+                                     const double radius1, const double radius2,
+                                     const double angle1, const double angle2,
+                                     GdkColor& colour, GdkColor& bgcolour, 
+                                     const bool filled );
   void draw_line                   ( const Vector2D& start,
                                      const Vector2D& direction,
                                      const double length, 

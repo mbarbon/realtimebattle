@@ -55,7 +55,7 @@ class WallLine;
 class WallCircle;
 class WallInnerCircle;
 
-static const double infinity = 1.0e10;  //approximatly ;-)
+static const double infinity = 1.0e10;  //approximately ;-)
 static const int max_debug_level = 5;
 
 extern class Options the_opts;

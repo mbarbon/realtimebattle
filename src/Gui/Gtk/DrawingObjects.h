@@ -103,6 +103,25 @@ protected:
   double last_drawn_radius;
 };
 
+
+
+// ---------------------------------------------------------------------------
+// class DrawingArc
+// ---------------------------------------------------------------------------
+
+class DrawingArc : public DrawingShape
+{
+public:
+  DrawingArc( Shape* s );
+  ~DrawingArc() {}
+
+  void draw_shape(bool erase);
+
+protected:
+  Vector2D last_drawn_center;
+};
+
+
 // ---------------------------------------------------------------------------
 // class DrawingRobot
 // ---------------------------------------------------------------------------

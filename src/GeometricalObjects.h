@@ -30,8 +30,8 @@ class Line : public Shape
 public:
   Line();
   Line(const Vector2D& sp, const Vector2D& d, const double len, const double th);
-  Line(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
-       const double b_c, const double hardn);
+  //  Line(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
+  //       const double b_c, const double hardn);
   virtual ~Line() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
@@ -59,7 +59,7 @@ public:
   Circle();
   Circle(const Vector2D& c, const double r); 
   Circle(const Vector2D& c, const double r, const long int col); 
-  Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
+  //  Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
   virtual ~Circle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
@@ -81,7 +81,7 @@ class InnerCircle : public Shape
 public:
   InnerCircle();
   InnerCircle(const Vector2D& c, const double r); 
-  InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn);
+  //  InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn);
   ~InnerCircle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
@@ -95,5 +95,51 @@ protected:
   Vector2D center;
   double radius;
 };
+
+
+
+
+// ---------------------  Arc : Shape ---------------------
+
+class Arc : public Shape 
+{
+public:
+  Arc();
+  Arc(const Vector2D& c, const double r1, const double r2,
+      const double a1, const double a2 ); 
+  //  Arc(const Vector2D& c, const double r1, const double r2,
+  //        const double a1, const double a2,
+  //        const double b_c, const double hardn);
+
+  ~Arc() {}
+
+  double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
+  bool within_distance(const Vector2D& pos, const double size);
+  Vector2D get_normal(const Vector2D& pos);
+
+  double get_inner_radius() { return inner_radius; }
+  double get_outer_radius() { return outer_radius; }
+  Vector2D get_center() { return center; }
+
+  double get_start_angle() { return start_angle; }
+  double get_end_angle() { return end_angle; }
+
+   
+protected:
+  Vector2D center;
+  double inner_radius;
+  double outer_radius;
+
+  // angles should be between -pi and pi
+  double start_angle;
+  double end_angle;
+
+private:
+  bool within_angle( const double a);
+
+  double mid_radiussqr;
+};
+
+
 
 #endif __GEOMETRICAL_OBJECTS__
