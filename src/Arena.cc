@@ -41,6 +41,21 @@ Arena::add_shot(const Shot& s)
     Error(true, "Couldn't add element", "Arena::add_shot");
 }
 
+
+void
+Arena::find_subsquares_for_shape( const Shape& s )
+{
+  for(int i=0; i< number_of_subsquares_x; i++)
+    for(int j=0; j< number_of_subsquares_y; j++)
+      {        
+        if( s.is_inside_subsquare( subsquares[i][j] ) )
+          {
+            subsquares[i][j].add(&s);
+          }
+            
+      }
+}
+
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
