@@ -1,3 +1,22 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
 #ifndef __PACKETS_H__
 #define __PACKETS_H__
 
@@ -27,13 +46,15 @@ enum packet_t
 
   PACKET_SERVER_MESSAGE,
   PACKET_CHAT_MESSAGE,
-  PACKET_ROBOT_MESSAGE,
 
   PACKET_SIGNAL,
   PACKET_FORCE_KILL,
 
   PACKET_ARENA,
   PACKET_LAUNCH_ROBOT, //Maybe use the submit packet too...
+
+  PACKET_ROBOT_MESSAGE, //Send and receive a information between robot and server
+  PACKET_ROBOT_SIGNAL,  //Maybe the robot_client will have to do it without instruction from server
 };
 
 class Packet
@@ -42,22 +63,23 @@ public:
   Packet( ) : data( "" ), size(0) {};
   Packet( string& d ) : data( d ) {};
   virtual ~Packet() {};
-  virtual string make_netstring() const {return "";};
-  string get_string_from_netstring( string& );
+  virtual string make_netstring() const {return "";};  //Get what is to send in the socket
+  string get_string_from_netstring( string& );         //Is it still in use???
   void remove_from_netstring( string& );
 
-  virtual int handle_packet(void*) {return 0;};
-  virtual packet_t packet_type() = 0;
+  virtual int handle_packet(void*) {return 0;};        //What is to do when we receive the packet
+  virtual packet_t packet_type() = 0;                  //Return the type of the packet (See list below)
 
 protected:
-  string& add_string_to_netstring( const string&, string& ) const;
+  //All this functions are not used anymore because there is problems with the '\0' char
+  string& add_string_to_netstring( const string&, string& ) const;      
   string& add_uint8_to_netstring( const unsigned int&, string& ) const;
   string& add_uint16_to_netstring( const unsigned int&, string& ) const;
   unsigned int get_uint8_from_netstring( const string& ) const;
   unsigned int get_uint16_from_netstring( const string& ) const;
   
-  string data;
-  unsigned int size;
+  string data;       //The data in the packet when reveived
+  unsigned int size; //The size of the packet... is it very useful???
 };
 
 
@@ -69,12 +91,12 @@ public:
     : name("") {};
   InitializationPacket( string& d )
     : Packet(d) {};
+
+#ifdef SEND_INITIALIZATION_PACKET
   InitializationPacket( const network_protocol_t& p, 
                         const client_t& c, 
                         const string& n )
     : protocol(p), client(c), name(n) {}
-
-#ifdef SEND_INITIALIZATION_PACKET
   string make_netstring() const;
 #endif SEND_INITIALIZATION_PACKET
 #ifdef RECV_INITIALIZATION_PACKET
@@ -97,9 +119,9 @@ public:
     : protocol( (network_protocol_t) RTB_UNKNOWN ) {}
   MetaServerInitializationPacket( string& d )
     : Packet(d) {};
+#ifdef SEND_METASERVER_INITIALIZATION_PACKET
   MetaServerInitializationPacket( const network_protocol_t& p )
     : protocol(p) {}
-#ifdef SEND_METASERVER_INITIALIZATION_PACKET
   string make_netstring() const;
 #endif
 #ifdef RECV_METASERVER_INITIALIZATION_PACKET
@@ -119,6 +141,7 @@ public:
     : name("") {};
   MetaServerDataPacket( string& d )
     : Packet(d) {};
+#ifdef SEND_METASERVER_DATA_PACKET
   MetaServerDataPacket( const string& n, const string & ver, 
                         int Port, int NbConn, 
                         const string& lang )
@@ -142,7 +165,6 @@ public:
     Nb_Conn = buf;
   }
 
-#ifdef SEND_METASERVER_DATA_PACKET
   string make_netstring() const;
 #endif
 #ifdef RECV_METASERVER_DATA_PACKET
@@ -286,26 +308,15 @@ protected:
 };
 #endif USE_SUBMIT_PACKET
 
-/*
-  class InitializationReplyPacket : virtual public Packet
-  {
-  public:
-  InitializationReplyPacket( const string& data );
-  private:
-  
-  };
-*/
-
-
 #ifdef USE_CLIENT_REQUEST_PACKET
 class ClientRequestPacket : public Packet
 {
 public:
   ClientRequestPacket()
     :exp(""), message("") {}
+#ifdef SEND_CLIENT_REQUEST_PACKET
   ClientRequestPacket( const string& req )
     : request( req ) {};
-#ifdef SEND_CLIENT_REQUEST_PACKET
   string make_netstring() const;
 #endif
 #ifdef RECV_CLIENT_REQUEST_PACKET
@@ -317,8 +328,56 @@ protected:
 };
 #endif
 
+
+#ifdef USE_LAUNCHROBOT_PACKET
+class LaunchRobotPacket : /* virtual */ public Packet
+{
+public:
+  LaunchRobotPacket() 
+    : robot_name("") {};
+#ifdef SEND_LAUNCHROBOT_PACKET
+  LaunchRobotPacket( string& name )
+    : robot_name(name) {};
+  string make_netstring() const;
+#endif SEND_LAUNCHROBOT_PACKET
+#ifdef RECV_LAUNCHROBOT_PACKET
+  int handle_packet( void* ) ; 
+#endif RECV_LAUNCHROBOT_PACKET
+  packet_t packet_type() { return PACKET_LAUNCH_ROBOT; };
+
+protected:
+  string robot_name;
+};
+#endif USE_LAUNCHROBOT_PACKET
+
+
+#ifdef USE_ROBOTMESSAGE_PACKET
+class RobotMessagePacket : /* virtual */ public Packet
+{
+public:
+  RobotMessagePacket() 
+    : robot_message("") {};
+#ifdef SEND_ROBOTMESSAGE_PACKET
+  RobotMessagePacket( string& mess )
+    : robot_message(mess) {};
+  string make_netstring() const;
+#endif SEND_ROBOTMESSAGE_PACKET
+#ifdef RECV_ROBOTMESSAGE_PACKET
+  int handle_packet( void* ) ; 
+#endif RECV_ROBOTMESSAGE_PACKET
+  packet_t packet_type() { return PACKET_LAUNCH_ROBOT; };
+
+protected:
+  string robot_message;
+};
+#endif USE_ROBOTMESSAGE_PACKET
+
+
+
 Packet* 
 make_packet( string& );
+
+
 
 
 #endif // __PACKETS_H__
