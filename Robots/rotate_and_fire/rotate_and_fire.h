@@ -115,6 +115,11 @@ protected:
   // The current time is stored in this variable.
   double current_time;
 
+  // If we get coordinates, these are stored here.
+  double current_x_coordinate;
+  double current_y_coordinate;
+  double current_robot_angle;
+
   // All game options are stored in these variables.
   double robot_max_rotate;
   double robot_cannon_max_rotate;

@@ -235,7 +235,6 @@ RotateAndFire::game_option( const int option, const double value )
     case DEBUG_LEVEL:
       debug_level = value;
       break;
-
     case SEND_ROBOT_COORDINATES:
       send_robot_coordinates = (int)rint(value);
       break;
@@ -276,10 +275,10 @@ void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate != - robot_rotate )
-  {
-    radar_and_cannon_rotate = - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate = - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 
   if( dist < 2 && acceleration != 0.0 )
     {
@@ -300,11 +299,11 @@ RotateAndFire::radar_shot( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 }
 
 // Radar info when a wall is seen.
@@ -315,11 +314,11 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 
   double old_acc = acceleration;
 
@@ -360,11 +359,18 @@ RotateAndFire::radar_cookie( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
+  if( debug_level >= 2 )
+    {
+      cout << "Debug " << _("Cookie found at") << " ("
+           << current_x_coordinate + dist*cos(angle + current_robot_angle)
+           << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
+           << ")" << endl;
+    }
 }
 
 // Radar info when a mine is seen.
@@ -373,12 +379,19 @@ RotateAndFire::radar_mine( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
   shoot( shot_min_energy );
+  if( debug_level >= 2 )
+    {
+      cout << "Debug " << _("Mine found at") << " ("
+           << current_x_coordinate + dist*cos(angle + current_robot_angle)
+           << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
+           << ")" << endl;
+    }
 }
 
 
@@ -388,10 +401,13 @@ RotateAndFire::radar_mine( const double dist, const double angle )
 void
 RotateAndFire::coordinates( const double x, const double y, const double rotation)
 {
-  // Doesn't currently use this information
+  if( send_robot_coordinates == 0 )
+    return;
+
+  current_x_coordinate = x;
+  current_y_coordinate = y;
+  current_robot_angle = rotation;
 }
-
-
 
 // Get information about time, speed and cannon_angle
 // Update current time and check how long time has passed since
@@ -589,6 +605,7 @@ RotateAndFire::check_messages( )
 
       cin >> msg_name;
       msg_t = name2msg_to_robot_type(msg_name);
+
       switch(msg_t)
         {
         case INITIALIZE:
