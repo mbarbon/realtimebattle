@@ -252,12 +252,13 @@ ArenaReplay::parse_log_line()
         log_file.get( message, 200, '\n' );
         ListIterator<Shape> li;
         find_object_by_id( object_lists[ROBOT], li, robot_id );
-        if( !li.ok() ) Error(false, "Robot not in list", "ArenaReplay::parse_log_line");
-        else
+        if( li.ok() ) 
           {
             Robot* robotp = (Robot*)li();
             print_message( robotp->get_robot_name(), (String)message );
           }
+        // else: robot sent a message before first game of sequences.
+        // Robot data is not yet known to us, thus ignore!
       }
       break;
     case 'C': // Cookie
