@@ -2,11 +2,7 @@
 #include <time.h>
 #include "Vector2D.h"
 #include "robot.h"
-
-extern "C"
-{
 #include "gui.h"
-}
 
 #define DEFAULT_WIDTH  600
 #define DEFAULT_HEIGHT 480
@@ -31,7 +27,7 @@ gint timeout_function(gpointer data)
   //  cout << "  Räkna: " << rakna << endl;
   //  g_timer_reset(&klocka);
 
-  draw_objects();
+  //  draw_objects();
 
   return true;
 }
@@ -93,9 +89,8 @@ int main ( int argc, char * argv[] )
       strcpy(robotnames[i],tempname);
     }
     
-  control_win( nr_robots, robotnames );
-  arena_win();
-
+  Gui gui( nr_robots, robotnames, 1000, 1000);
+  
   g_timer_start(&klocka);
 
   timeout_tag = gtk_timeout_add( 100, GtkFunction(timeout_function), (gpointer) "");
