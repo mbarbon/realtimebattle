@@ -4,6 +4,7 @@
 #include "Arena.h"
 #include "Gadget.h"
 #include "AllGadgets.h"
+#include "GadgetDefinition.h"
 #include "f_read.hh"
 #include "Variable.h"
 
@@ -26,26 +27,20 @@ void SkipUnknownObject(FILE* fp)
 {
   int NbDefine = 1;
   Spaces();
-  cout<<"Unknown object at line "<<line_no<<"... skip it\n";
+  //  cout<<"Unknown object at line "<<line_no<<"... skip it\n";
   while(read_line(fp)>0)
     {
       sscanf(buf, "%s", type);
       if(!strcmp(type, "EndDefine"))  //This is the end of a definition
 	{
-	  Spaces();
-	  cout<<buf;
 	  NbDefine--;
 	}
       if(!strcmp(type, "Define"))//There could be an other definition in it...
 	{
-	  Spaces();
-	  cout<<buf;
 	  NbDefine++;
 	}
       if(NbDefine < 1)     //This is the end of the unknown object
 	{
-	  Spaces();
-	  cout<<"Exit definition\n";
 	  break;
 	}
     }
@@ -78,7 +73,6 @@ int Arena::Read(FILE *fp)
 
   while (read_line(fp) > 0) 
     {
-    
       printf("%s", buf);
       if(strncmp(buf, "Define ", 7))
 	{
@@ -203,17 +197,15 @@ int  WeaponGadget::Read(FILE *fp)
 		}
 	      else
 		{
-		  NbSpace++;
 		  if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) )
 		    {
+		      GadgetDef->theGadget->Read(fp);
 		      gadget_def.push_back(GadgetDef);
 		    }
 		  else
 		    {
 		      SkipUnknownObject(fp);
 		    }
-		  
-		  NbSpace--;
 		}
 	    }
 	  else if(!strcmp(type, "Function"))
@@ -226,7 +218,13 @@ int  WeaponGadget::Read(FILE *fp)
 	  else if(!strcmp(type, "Shot"))
 	    {
 	      sscanf(buf, "%*s %s", type);
-	      cout<<&type[1]<<endl;
+	      if(type[0] == '$')
+		{
+		  cout<<"Create a Shot of type "<<&type[1]<<endl;
+		  GadgetDef = findGadgetDefinitionFor(&type[1], this);
+		  //shot = copy(GadgetDef->theGadget);
+		  //TODO : Make a copy of the definition in the Shot gadget of the weapon...
+		}
 	    }
 	  else
 	    {
@@ -360,4 +358,6 @@ string read_info_string(FILE *fp)
 
   return To_return;
 }
+
+
 

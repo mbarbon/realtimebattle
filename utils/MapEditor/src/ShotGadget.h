@@ -18,7 +18,6 @@ class ShotGadget : public Gadget
   };
   int Read(FILE*);
 
-
   enum ShotVars
   {
     DAMAGE=0, SPEED, SIZE, COSTPERDAMAGE, COSTPERSPEED,

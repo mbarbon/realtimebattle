@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "GadgetSet.h"
+#include "GadgetDefinition.h"
 
 class Variable;
 class Function;
@@ -39,7 +40,7 @@ public:
   {
     return 0;
   };
-
+  
   virtual void Print();
   virtual Gadget* NewInstance( const char* Name, Gadget* const p ) 
     { return new Gadget(Name, p); }
