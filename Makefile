@@ -110,10 +110,10 @@ install:
 
 uninstall:
 	rm -r $(INSTALLDIR); \
-	rm $(INFODIR)/RealTimeBattle.info.gz; \
 	rm $(INCLUDEDIR)/Messagetypes.h; \
 	rm $(BINDIR)/RealTimeBattle; \
-   install-info --delete --info-dir $(INFODIR) $(INFODIR)/RealTimeBattle.info.gz
+   install-info --delete --info-dir $(INFODIR) $(INFODIR)/RealTimeBattle.info.gz; \
+	rm $(INFODIR)/RealTimeBattle.info.gz
 
 rpm-install:
 	$(MAKE) -f Makefile.rpm rpm-install
