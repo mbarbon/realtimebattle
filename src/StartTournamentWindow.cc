@@ -441,7 +441,6 @@ StartTournamentWindow::set_entry( GtkWidget* widget,
       {
         int number_of_robots = mmf_p->stw_p->
           get_selected_robot_tournament()->number_of_elements();
-          number_of_robots++;
 
         int robots_per_sequence = 
           str2int( gtk_entry_get_text
