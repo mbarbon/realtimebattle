@@ -28,6 +28,8 @@ public:
   ArenaRealTime();
   virtual ~ArenaRealTime();
 
+  void clear();
+
   bool timeout_function();
   void start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
                         const List<start_tournament_info_t>& arenafilename_list, 
@@ -101,6 +103,8 @@ private:
   
   ofstream LOG_FILE;
   bool use_log_file;
+
+  int** robots_in_sequence;
 
   int number_of_arenas;
   int current_arena_nr;

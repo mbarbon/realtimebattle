@@ -87,7 +87,13 @@ ArenaReplay::timeout_function()
       break;
 
     case FINISHED:
-      return false;
+      if(auto_start_and_end)
+        {
+          if( statistics_file_name != "" )
+            save_statistics_to_file( statistics_file_name );
+
+          Quit();
+        }
       break;
 
     default:

@@ -82,12 +82,35 @@ ArenaRealTime::ArenaRealTime()
   set_filenames( global_log_fname, global_statistics_fname,
                  global_tournament_fname, global_message_fname,
                  global_option_fname );
+
+  robots_in_sequence = NULL;
 }
 
 ArenaRealTime::~ArenaRealTime()
 {
+  for(int i=0; i < sequences_in_tournament; i++)
+    delete [] robots_in_sequence[i];
+
+  if( robots_in_sequence != NULL )
+    delete robots_in_sequence;
+
   if( use_log_file && LOG_FILE ) LOG_FILE.close();
   if( use_message_file && message_file ) message_file.close();
+}
+
+
+void
+ArenaRealTime::clear()
+{
+  delete_lists(true, true, true, true);
+
+  for(int i=0; i < sequences_in_tournament; i++)
+    delete [] robots_in_sequence[i];
+
+  sequence_nr = 0;
+  sequences_in_tournament = 0;
+  
+  set_state( NOT_STARTED );
 }
 
 void

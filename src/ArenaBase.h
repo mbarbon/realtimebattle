@@ -85,8 +85,6 @@ public:
 
   bool space_available(const Vector2D& pos, const double margin);
 
-
-  void clear();
   virtual void interrupt_tournament();
   
   virtual bool timeout_function() = 0;
@@ -165,8 +163,6 @@ protected:
 
   String current_arena_filename;
   List<String> arena_filenames;               // list of Strings
-
-  int** robots_in_sequence;
 
   String statistics_file_name;
 

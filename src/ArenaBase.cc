@@ -88,8 +88,6 @@ ArenaBase::ArenaBase()
   all_robots_in_sequence.set_deletion_responsibility(false);
 
   debug_level = 0;
-
-  robots_in_sequence = NULL;
 }
 
 ArenaBase::~ArenaBase()
@@ -99,26 +97,6 @@ ArenaBase::~ArenaBase()
   sleep(1);
 
   delete_lists(true, true, true, true);
-
-  for(int i=0; i < sequences_in_tournament; i++)
-    delete [] robots_in_sequence[i];
-
-  if( robots_in_sequence != NULL )
-    delete robots_in_sequence;
-}
-
-void
-ArenaBase::clear()
-{
-  delete_lists(true, true, true, true);
-
-  for(int i=0; i < sequences_in_tournament; i++)
-    delete [] robots_in_sequence[i];
-
-  sequence_nr = 0;
-  sequences_in_tournament = 0;
-  
-  set_state( NOT_STARTED );
 }
 
 void
