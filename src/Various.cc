@@ -69,6 +69,7 @@ Error(const bool fatal, const String& error_msg, const String& function_name)
     }
 }
 
+// TODO: Make sure all threads have been returned
 void
 Quit(const bool success)
 {
