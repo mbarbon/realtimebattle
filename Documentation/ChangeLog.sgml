@@ -4,6 +4,10 @@
 <title>Change log
 <itemize>
 
+<item> <bf>0.9.8:</bf>
+<p>
+Some bugs in the new 'Rotate and Fire' code is fixed.
+
 <item> <bf>0.9.7:</bf>
 <p>
 Lots of internal changes, the class hierarchy is completely
