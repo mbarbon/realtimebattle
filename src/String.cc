@@ -77,6 +77,12 @@ split_string( const string& str, vector<string>& strlist, const string& separato
   return strlist;
 }
 
+string
+spaced_string( const char* ch )
+{
+  return( ' ' + string(ch) + ' ' );
+}
+
 // Remember to delete[] the copied string
 char*
 copy_to_c_string( const string& str )

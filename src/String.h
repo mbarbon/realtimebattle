@@ -31,6 +31,8 @@ void remove_initial_whitespace( string& );
 vector<string>& split_string( const string& str , vector<string>& strlist,
                               const string& separators = " \n\t\v\r\f" );
 
+string spaced_string( const char* );
+
 // Remember to delete[] the copied string
 char* copy_to_c_string( const string& str );
 
