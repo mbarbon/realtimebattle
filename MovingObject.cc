@@ -82,11 +82,19 @@ Robot::start_process()
       // Make the pipes non-blocking
       int pd_flags;
       if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for robot ", 
+        throw Error("Couldn't get pd_flags for pipe_out in robot ", 
                     robot_filename, "Robot::Robot, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for robot ", 
+        throw Error("Couldn't change pd_flags for pipe_out in robot ", 
+                    robot_filename, "Robot::Robot, child");
+
+      if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
+        throw Error("Couldn't get pd_flags for pipe_in in robot ", 
+                    robot_filename, "Robot::Robot, child");
+      pd_flags |= O_NONBLOCK;
+      if( fcntl(pipe_in[1], F_SETFL, pd_flags) == -1 ) 
+        throw Error("Couldn't change pd_flags for pipe_in in robot ", 
                     robot_filename, "Robot::Robot, child");
       
       // Check file attributes
@@ -110,6 +118,16 @@ Robot::start_process()
         throw Error("Couldn't get priority for robot ", robot_filename, "Robot::Robot, child");
       if( setpriority (PRIO_PROCESS, 0, old + 1) == -1)
         throw Error("Couldn't set priority for robot ", robot_filename, "Robot::Robot, child");
+      
+      // Close all pipes not belonging to the robot
+      
+      Robot* robotp;
+      GList* gl=g_list_next(the_arena.get_all_robots_in_sequence());
+      for(; gl != NULL; gl=g_list_next(gl))
+        {
+          robotp = (Robot*)gl->data;
+          if( robotp != this ) robotp->delete_pipes();
+        }
 
       // Deny file access
 
@@ -118,9 +136,7 @@ Robot::start_process()
       if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
         throw Error("Couldn't get file limits for robot ", robot_filename, "Robot::Robot, child");
 
-      // TODO: Deny file access
-
-      //res_limit.rlim_cur = ?;
+      res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
       if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
         throw Error("Couldn't limit file access for robot ", robot_filename, "Robot::Robot, child");
 
@@ -156,6 +172,13 @@ Robot::start_process()
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for pipe_in in robot ", 
+                    robot_filename, "Robot::Robot, parent");
+      if( (pd_flags = fcntl(pipe_out[1], F_GETFL, 0)) == -1 ) 
+        throw Error("Couldn't get pd_flags for pipe_out in robot ", 
+                    robot_filename, "Robot::Robot, parent");
+      pd_flags |= O_NONBLOCK;
+      if( fcntl(pipe_out[1], F_SETFL, pd_flags) == -1 ) 
+        throw Error("Couldn't change pd_flags for pipe_out in robot ", 
                     robot_filename, "Robot::Robot, parent");
 
       outstreamp = new ofstream(pipe_out[1]);
