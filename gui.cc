@@ -164,11 +164,13 @@ Gui::draw_circle( const Vector2D& center, const double radius, GdkColor& colour,
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
+  double x = max(1.0, 2.0*radius*get_zoom());
+  double y = max(1.0, 2.0*radius*get_zoom());
   gdk_draw_arc (drawing_area->window,
                 colour_gc,
                 filled,
                 change_to_pixels_x(center[0]-radius),change_to_pixels_y(center[1]-radius),
-                (int)(2.0*radius*get_zoom()), (int)(2.0*radius*get_zoom()),
+                (int)x, (int)y,
                 0, GDK_VARV);
 
   gdk_gc_destroy( colour_gc );
