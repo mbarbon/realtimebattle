@@ -6,6 +6,9 @@ enum message_to_robot_type
 {
   UNKNOWN_MESSAGE_TO_ROBOT = -1,
   INITIALIZE = 0,
+  YOUR_NAME,
+  YOUR_COLOUR,
+  GAME_OPTION,
   GAME_STARTS,
   GAME_FINISHES,
   SAVE_DATA,
@@ -57,6 +60,23 @@ enum warning_type
   MESSAGE_SENT_IN_ILLEGAL_STATE
 };
 
+enum game_option_type
+{
+  ROBOT_MAX_ROTATE,
+  ROBOT_CANNON_MAX_ROTATE,
+  ROBOT_RADAR_MAX_ROTATE,
+
+  ROBOT_START_ENERGY,
+  ROBOT_MAX_ENERGY,
+
+  SHOT_SPEED,
+  SHOT_MIN_ENERGY,
+  SHOT_MAX_ENERGY,
+  SHOT_ENERGY_INCREASE_SPEED,
+
+  TIMEOUT
+};
+
 enum object_type 
 { 
   NOOBJECT = -1, 
@@ -79,7 +99,10 @@ struct Message
 
 static const Message message_to_robot[20] = 
 {
-  {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
+  {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
+  {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
+  {"YourColor",  1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
+  {"GameOption", 1, {INT,    DOUBLE, NONE,   NONE}},  // arg 1: OPTION_NR,  arg 2:  value 
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
   {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
