@@ -958,7 +958,7 @@ Robot::get_messages()
                       throw Error("Shot on unknown object", "Robot::get_messages");
                     }
                 }
-              change_energy(-en * the_opts.get_d(OPTION_SHOOTING_PENALTY) );
+              change_energy(-en * the_arena.get_shooting_penalty() );
             }
           break;
         case ACCELERATE:
