@@ -120,7 +120,7 @@ ScoreWindow::~ScoreWindow()
 
 //
 // Sets the window title in the form of:
-// RealTimeBattle Score  Seq: 1 Game: 2 Time: 34
+// Score   Seq: 1 (2)  Game: 3 (4)  Time: 56
 //
 
 void

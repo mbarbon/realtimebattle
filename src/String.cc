@@ -258,6 +258,7 @@ String::find( const char c, const int start, const bool reverse ) const
 }
 
 //   if start or end negativ, count from the end. -1 == the last.
+// start = 0 and end = -1 => return the string as it is
 String
 get_segment(const String& str, const int start, const int end)
 {
