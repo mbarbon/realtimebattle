@@ -31,6 +31,7 @@ public:
   friend istream& operator>>(istream&, String&);  
 
   friend int str2int(const String&);
+  friend long str2long(const String&);
   friend double str2dbl(const String&);
   friend long str2hex(const String&);
   friend String hex2str(const long);

@@ -234,6 +234,12 @@ str2int(const String& str)
   return atoi(str.array);
 }
 
+long
+str2long(const String& str)
+{
+  return atol(str.array);
+}
+
 double
 str2dbl(const String& str)
 {
