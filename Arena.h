@@ -38,7 +38,7 @@ public:
                         int games_p_sequence);   
 
   Vector2D get_random_position();
-  GList* get_object_lists() { return object_lists; }
+  GList** get_object_lists() { return object_lists; }
   
 
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
@@ -47,7 +47,7 @@ public:
 private:
   gdouble timestep;
   gdouble total_time;
-  GTimer timer;
+  GTimer* timer;
   
   gdouble next_check_time;
 
@@ -76,12 +76,12 @@ private:
   void add_to_solid_object_list(class Shape&);
   void remove_from_solid_object_list(class Shape&);
 
-  GList object_lists[number_of_object_types];
+  GList* object_lists[number_of_object_types];
   
-  GList all_robots_in_tournament;
-  GList all_robots_in_sequence;
-  GList solid_objects;
-  GList arena_filenames;               // list of GStrings
+  GList* all_robots_in_tournament;
+  GList* all_robots_in_sequence;
+  GList* solid_objects;
+  GList* arena_filenames;               // list of GStrings
   
   int games_remaining_in_sequence;
   int games_per_sequence;
@@ -138,6 +138,9 @@ public:
   virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, 
                               const double size) = 0;
   //virtual void get_args(istream&) = 0;
+
+  void set_colour( int red, int green, int blue );
+  GdkColor get_colour() { return colour; }
 
 protected:
   touch_type touch_action;
@@ -279,8 +282,8 @@ protected:
 class Robot : private virtual MovingObject, private virtual Circle
 {
 public:
-  Robot(char* filename);
-  Robot(const Vector2D& c, const double r, char* filename); 
+  Robot(char* filename, Arena* ap);
+  //Robot(const Vector2D& c, const double r, char* filename, Arena* ap); 
   ~Robot();
   
   void move(const double timestep);  
@@ -293,10 +296,7 @@ public:
   bool is_process_running();
   void end_process();
   void kill_process_forcefully();
-
-  void set_colour( int red, int green, int blue );
-  GdkColor get_colour() { return colour; }
-  
+ 
   object_type get_object_type() { return ROBOT; }
   char* get_robotname();
   bool is_alive() { return alive; }
@@ -313,14 +313,14 @@ private:
   double cannon_speed;
   double robot_angle;
 
-  GdkColor colour;
+  //GdkColor colour;   colour finns i Shape !!!
   GString robot_name;
   GString robot_filename;
   GString robot_dir;
   int points;
 
-  istream instream;
-  ostream outstream;
+  ifstream* instreamp;
+  ofstream* outstreamp;
   pid_t pid;    
 };
 
