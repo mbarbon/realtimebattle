@@ -133,6 +133,7 @@ public:
 #ifndef NO_GRAPHICS
   GdkColor* get_bg_gdk_colour_p() { return &bg_gdk_colour; }
   GdkColor* get_fg_gdk_colour_p() { return &fg_gdk_colour; }
+  GdkColor* get_rtb_message_gdk_colour_p() { return &rtb_message_gdk_colour; }
 #endif NO_GRAPHICS
   long int get_bg_rgb_colour() { return bg_rgb_colour; }
   long int get_fg_rgb_colour() { return fg_rgb_colour; }
@@ -202,9 +203,11 @@ protected:
 #ifndef NO_GRAPHICS
   GdkColor bg_gdk_colour;
   GdkColor fg_gdk_colour;
+  GdkColor rtb_message_gdk_colour;
 #endif NO_GRAPHICS
   long int bg_rgb_colour;
   long int fg_rgb_colour;
+  long int rtb_message_rgb_colour;
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   
