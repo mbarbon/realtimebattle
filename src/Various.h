@@ -29,10 +29,18 @@ typedef void (*StartTournamentFunction)( const list<start_tournament_info_t>&,
                                          const list<start_tournament_info_t>&,
                                          const int, const int, const int, void* );
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define abs(a) ((a) > 0 ? (a) : -(a))
-#define sgn(a) ((a) > 0 ? 1 : -1)
+#ifndef min
+# define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+# define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+#ifndef abs
+# define abs(a) ((a) > 0 ? (a) : -(a))
+#endif
+#ifndef sgn
+# define sgn(a) ((a) > 0 ? 1 : -1)
+#endif
 
 void Error(const bool fatal, const string& error_msg, const string& function_name);
 void Quit(const bool success = true);
