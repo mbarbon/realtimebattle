@@ -15,7 +15,7 @@
 static const double infinity = 1.0e10;
 
 enum touch_type { NO_ACTION, BOUNCE, TRANSFORM };
-enum object_type { NOOBJECT, ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
+
 static const number_of_object_types = 6;
 
 
@@ -138,7 +138,7 @@ private:
 class Shape
 {
 public:
-  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5;}
+  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5; set_colour( 0x000000 ); }
   virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
@@ -220,7 +220,7 @@ public:
 class WallCircle : public virtual Wall, public virtual Circle
 {
 public:
-  WallCircle(const Vector2D& c, const double r) : Circle(c, r) {}
+  WallCircle(const Vector2D& c, const double r) : Circle(c, r) { set_colour( 0x333333 ); }
   ~WallCircle() {}
 };
 
@@ -228,7 +228,7 @@ class WallLine : public virtual Wall, public virtual Line
 {
 public:
   WallLine(const Vector2D& sp, const Vector2D& d, const double len, 
-           const double th) : Line(sp, d, len, th) {}
+           const double th) : Line(sp, d, len, th) { set_colour( 0x333333 ); }
   ~WallLine() {}
 };
 
@@ -317,15 +317,19 @@ public:
   void die();
  
   object_type get_object_type() { return ROBOT; }
-  char* get_robotname();
+  char* get_robotname() { return robot_name.str; }
   bool is_alive() { return alive; }
+  double get_energy() { return energy; }
+  void display_energy();
+  void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc );
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
   bool alive;
   bool process_running;
+  double energy; 
   double extra_air_resistance;
-  double energy;
+
   double radar_angle;
   double radar_speed;
   double cannon_angle;
@@ -342,6 +346,10 @@ private:
   ifstream* instreamp;
   ofstream* outstreamp;
   pid_t pid;    
+
+  GtkWidget* widget_energy;
+  GtkWidget* widget_place;
+  GtkWidget* widget_score;
 };
 
 // ---------------------  Shot : MovingObject  ---------------------
