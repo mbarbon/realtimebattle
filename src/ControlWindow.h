@@ -48,6 +48,7 @@ public:
   ~ControlWindow                   ();
 
   void set_window_title            ( const String& text );
+  void remove_replay_widgets       ();
   void clear_extra_widgets         ();
   void display_debug_widgets       ();
   void display_replay_widgets      ();
