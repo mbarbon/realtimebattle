@@ -94,6 +94,7 @@ public:
                                        GdkEventButton *event,
                                        class StatisticsWindow* sw_p );
 
+  GtkWidget* get_window_p          () { return window_p; }
   GtkWidget* get_clist               () { return clist; }
   enum stat_types get_type           () { return type; }
   int get_looking_at_nr              () { return looking_at_nr; }

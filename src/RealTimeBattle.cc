@@ -68,6 +68,7 @@ class Options the_opts;
 class ArenaController the_arena_controller;
 #ifndef NO_GRAPHICS
 class Gui the_gui;
+class ControlWindow* controlwindow_p;
 #endif
 
 bool no_graphics;
@@ -328,13 +329,11 @@ main ( int argc, char* argv[] )
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
 
-
 #ifndef NO_GRAPHICS
-  ControlWindow* control_window;
   if( !no_graphics )
     {
       the_arena.set_colours();
-      control_window = 
+      controlwindow_p = 
         new ControlWindow( -1, -1,
                            the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
                            the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
@@ -347,6 +346,8 @@ main ( int argc, char* argv[] )
                                  GtkFunction(update_function), (gpointer) NULL );
 
   gtk_main();
+
+  delete controlwindow_p;
 #else !NO_GRAPHICS
   
   update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );

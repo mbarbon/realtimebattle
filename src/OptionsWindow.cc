@@ -23,11 +23,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionsWindow.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
+#include "ArenaWindow.h"
+#include "ControlWindow.h"
+#include "MessageWindow.h"
+#include "ScoreWindow.h"
+#include "StatisticsWindow.h"
 #include "Options.h"
 #include "String.h"
 #include "Various.h"
 
 extern class Options the_opts;
+extern class ControlWindow* controlwindow_p;
 
 OptionsWindow::OptionsWindow( const int default_width,
                               const int default_height,
@@ -210,7 +216,19 @@ OptionsWindow::OptionsWindow( const int default_width,
       gtk_widget_show( entry_table );
       gtk_widget_show( button_table );
 
-      GtkWidget * label = gtk_label_new( page_titles[i] );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+      if( i == PAGE_SIZE_OF_WINDOWS )
+        {
+          GtkWidget* grab_button = gtk_button_new_with_label
+            ( " Grab sizes and positions from present windows " );
+          gtk_signal_connect( GTK_OBJECT( grab_button ), "clicked",
+                              (GtkSignalFunc) OptionsWindow::grab_windows, this );
+          gtk_box_pack_start( GTK_BOX( page_vbox ), grab_button, FALSE, FALSE, 0 );
+          gtk_widget_show( grab_button );
+        }
+#endif
+
+      GtkWidget* label = gtk_label_new( page_titles[i] );
       gtk_notebook_append_page( GTK_NOTEBOOK( notebook ),
                                 page_vbox, label );
     }
@@ -488,6 +506,83 @@ OptionsWindow::cancel( GtkWidget* widget,
                        class OptionsWindow* optionswindow_p )
 {
   the_opts.close_optionswindow();
+}
+
+void
+OptionsWindow::grab_windows( GtkWidget* widget,
+                             class OptionsWindow* optionswindow_p )
+{
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  option_info_t<long>* long_opts = the_opts.get_all_long_options();
+  if( the_gui.is_arenawindow_up() )
+    {
+      ArenaWindow* aw_p = the_gui.get_arenawindow_p();
+      int width, height;
+      int xpos, ypos;
+      gdk_window_get_size( aw_p->get_window_p()->window,
+                           &width, &height );
+      gdk_window_get_root_origin( aw_p->get_window_p()->window,
+                                  &xpos, &ypos );
+
+      long_opts[OPTION_ARENA_WINDOW_SIZE_X].value = width;
+      long_opts[OPTION_ARENA_WINDOW_SIZE_Y].value = height;
+      long_opts[OPTION_ARENA_WINDOW_POS_X].value = xpos;
+      long_opts[OPTION_ARENA_WINDOW_POS_Y].value = ypos;
+      optionswindow_p->update_all_gtk_entries();
+    }
+  {
+    int xpos, ypos;
+    gdk_window_get_root_origin( controlwindow_p->get_window_p()->window,
+                                &xpos, &ypos );
+
+    long_opts[OPTION_CONTROL_WINDOW_POS_X].value = xpos;
+    long_opts[OPTION_CONTROL_WINDOW_POS_Y].value = ypos;
+    optionswindow_p->update_all_gtk_entries();
+  }
+  if( the_gui.is_messagewindow_up() )
+    {
+      MessageWindow* mw_p = the_gui.get_messagewindow_p();
+      int width, height;
+      int xpos, ypos;
+      gdk_window_get_size( mw_p->get_window_p()->window,
+                           &width, &height );
+      gdk_window_get_root_origin( mw_p->get_window_p()->window,
+                                  &xpos, &ypos );
+
+      long_opts[OPTION_MESSAGE_WINDOW_SIZE_X].value = width;
+      long_opts[OPTION_MESSAGE_WINDOW_SIZE_Y].value = height;
+      long_opts[OPTION_MESSAGE_WINDOW_POS_X].value = xpos;
+      long_opts[OPTION_MESSAGE_WINDOW_POS_Y].value = ypos;
+      optionswindow_p->update_all_gtk_entries();
+    }
+  if( the_gui.is_scorewindow_up() )
+    {
+      ScoreWindow* sw_p = the_gui.get_scorewindow_p();
+      int width, height;
+      int xpos, ypos;
+      gdk_window_get_size( sw_p->get_window_p()->window,
+                           &width, &height );
+      gdk_window_get_root_origin( sw_p->get_window_p()->window,
+                                  &xpos, &ypos );
+
+      long_opts[OPTION_SCORE_WINDOW_SIZE_X].value = width;
+      long_opts[OPTION_SCORE_WINDOW_SIZE_Y].value = height;
+      long_opts[OPTION_SCORE_WINDOW_POS_X].value = xpos;
+      long_opts[OPTION_SCORE_WINDOW_POS_Y].value = ypos;
+      optionswindow_p->update_all_gtk_entries();
+    }
+  if( the_gui.is_statisticswindow_up() )
+    {
+      StatisticsWindow* sw_p = the_gui.get_statisticswindow_p();
+      int width, height;
+      gdk_window_get_size( sw_p->get_window_p()->window,
+                           &width, &height );
+
+      long_opts[OPTION_STATISTICS_WINDOW_SIZE_X].value = width;
+      long_opts[OPTION_STATISTICS_WINDOW_SIZE_Y].value = height;
+      optionswindow_p->update_all_gtk_entries();
+    }
+#endif
 }
 
 void

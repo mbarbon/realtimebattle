@@ -85,6 +85,9 @@ public:
   static void destroy_filesel     ( GtkWidget* widget,
                                     class OptionsWindow* optionswindow_p );
 
+  static void grab_windows        ( GtkWidget* widget,
+                                    class OptionsWindow* optionswindow_p );
+
   static void double_min          ( GtkWidget* widget,
                                     option_info_t<double>* option );
   static void double_def          ( GtkWidget* widget,
