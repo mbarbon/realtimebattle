@@ -64,6 +64,7 @@ void start_tournament_max_callback(GtkWidget *widget, gpointer data);
 void start_tournament_full_round_callback(GtkWidget *widget, gpointer data);
 void start_tournament_all_arenas_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
+void kill_and_start_new_tournament(bool really);
 void delete_event( GtkWidget * widget, gpointer data );
 void no_zoom_callback(GtkWidget *widget, gpointer data);
 void zoom_in_callback(GtkWidget *widget, gpointer data);

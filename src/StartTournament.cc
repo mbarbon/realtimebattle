@@ -8,6 +8,7 @@
 #include "Arena.h"
 #include "String.h"
 
+// This function is called whenever the user presses one of the min buttons
 void
 start_tournament_min_callback(GtkWidget *widget, gpointer data)
 {
@@ -20,6 +21,7 @@ start_tournament_min_callback(GtkWidget *widget, gpointer data)
     the_gui.set_entry(2, MMF_MIN);
 }
 
+// This function is called whenever the user presses one of the max buttons
 void
 start_tournament_max_callback(GtkWidget *widget, gpointer data)
 {
@@ -32,25 +34,42 @@ start_tournament_max_callback(GtkWidget *widget, gpointer data)
     the_gui.set_entry(2, MMF_MAX);
 }
 
+// This function is called whenever the user presses the full round button
 void
 start_tournament_full_round_callback(GtkWidget *widget, gpointer data)
 {
   the_gui.set_entry(2,MMF_FULL_ROUND);
 }
 
+// This function is called whenever the user presses the all arenas button
 void
 start_tournament_all_arenas_callback(GtkWidget *widget, gpointer data)
 {
   the_gui.set_entry(0,MMF_ALL_ARENAS);
 }
 
+// This function opens the start new tournament window if it isn't opened and closes it otherwise
 void
 start_tournament_button_callback(GtkWidget *widget, gpointer data)
 {
   if(the_gui.get_start_tournament_up() == false)
-    the_gui.setup_start_tournament_window();
+    if(the_arena.get_state() == NOT_STARTED || the_arena.get_state() == FINISHED)
+      the_gui.setup_start_tournament_window();
+    else
+      the_gui.ask_user("This action will kill the current tournament.\nDo you want do that?",&kill_and_start_new_tournament);
   else
     the_gui.close_start_tournament_window();
+}
+
+// This function kills the current tournament and opens the start new tournament window
+void
+kill_and_start_new_tournament(bool really)
+{
+  if(really)
+    {
+      the_arena.interrupt_tournament();
+      the_gui.setup_start_tournament_window();
+    }
 }
 
 void
