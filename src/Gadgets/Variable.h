@@ -72,6 +72,10 @@ public:
   const Variable& operator= (const Value& val) { assign(val); return *this; }
   void assign(const Value& val);
 
+  Variable& operator+=(int n);
+  Variable& operator-=(int n);
+  Variable& operator*=(int n);
+  Variable& operator/=(int n);
 
 private:
 

@@ -32,24 +32,24 @@ void
 Variable::make_bool( const double val )
 {
   my_type = BOOL_V;
-  minimum = 0.0;
-  maximum = 1.0;
+  minimum = 0;
+  maximum = 1;
   
   constant = true;
-  assign( val );
+  assign( int(rint(val)) );
   set_robot_permissions( false, false );
 }
 
 
 void
-Variable::make_int ( const double val, const double min_val, const double max_val )
+Variable::make_int( const double val, const double min_val, const double max_val )
 {
   my_type = INT_V;
-  minimum = min_val;
-  maximum = max_val;
+  minimum = int(min_val);
+  maximum = int(max_val);
   
   constant = true;
-  assign( val );
+  assign( int(rint(val)) );
   set_robot_permissions( false, false );
 }
 
@@ -58,6 +58,8 @@ void
 Variable::make_double( const double val, const double min_val, const double max_val,
                        const double inacc )
 {
+  my_type = DOUBLE_V;
+
   minimum = min_val;
   maximum = max_val;
 
@@ -81,8 +83,18 @@ Variable::make_random( const double min_val, const double max_val,
 {
   my_type = ( is_double ? DOUBLE_V : INT_V );
     
-  minimum = min_val;
-  maximum = max_val;
+  if( is_double )
+    {
+      minimum = min_val;
+      maximum = max_val;
+      value = min_val;
+    }
+  else
+    {
+      minimum = int(rint(min_val));
+      maximum = int(rint(max_val));
+      value = int(rint(min_val));
+    }
 
   constant = false;
   random = true;
@@ -104,16 +116,16 @@ Variable::assign(const Value& val)
   if( value.is_double )
     {
       if( value.d_val >= double(maximum) ) 
-        value.d_val = maximum;
+        value.d_val = double(maximum);
       else if( value.d_val <= double(minimum) )
-        value = minimum;
+        value.d_val = double(minimum);
     }
   else
     {
       if( value.i_val >= int(maximum) ) 
-        value.d_val = int(maximum);
+        value.i_val = int(maximum);
       else if( value.i_val <= int(minimum) )
-        value = int(minimum);
+        value.i_val = int(minimum);
     }
 }
 
@@ -153,4 +165,30 @@ Variable::get_value() const
   value.d_val = mean + err;
 
   return value;
+}
+
+Variable&
+Variable::operator+=(int n)
+{
+  assert( !value.is_double ); 
+  
+  value.i_val += n;
+
+  if( value.i_val >= int(maximum) ) value.i_val = int(maximum);
+  else if( value.i_val <= int(minimum) ) value.i_val = int(minimum);
+
+  return *this;
+}
+
+Variable&
+Variable::operator-=(int n)
+{
+  assert( !value.is_double ); 
+  
+  value.i_val -= n;
+
+  if( value.i_val >= int(maximum) ) value.i_val = int(maximum);
+  else if( value.i_val <= int(minimum) ) value.i_val = int(minimum);
+
+  return *this;
 }
