@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.3 rev 1
+<title>RealTimeBattle User Manual, version 0.9.4 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 2 January 1999
+<date> 3 January 1999
 
 <!-- <abstract> -->
 
@@ -223,10 +223,6 @@ information.
 <tag>Pause:</tag> Pauses for game, in <ref id="Command line options" name="competition-mode"> the
 pausing will be postponed until the end of the current game.
 
-<tag>Step:</tag> In a paused game this will move one time step
-forward. It is intended to simplify debugging of the robots and is
-only available in <ref id="Command line options" name="debug-mode">.
-
 <tag>End:</tag> Stops the current tournament.
 
 <tag>Options:</tag> Brings up the <ref id="Options_window" name="options window">.
@@ -235,6 +231,26 @@ only available in <ref id="Command line options" name="debug-mode">.
 
 <tag>Quit:</tag> Terminates the program.
 
+</descrip>
+
+In <ref id="Command line options" name="debug-mode"> there is another set of buttons available. They
+are intended to help with debugging of robots. Note that you can debug a running process; if you use
+<tt>gdb</tt> the command is <tt>gdb robot-name process-number</tt>.
+
+<descrip>
+<tag>Step:</tag> In a paused game this will move one time step forward. This is very useful when
+running the robot in a debugger, since otherwise the robot will be flooded with messages.
+
+<tag>End game:</tag> This will finish the current game. It has the same effect as an 
+<ref id="Timeout" name="timeout"> would have.
+
+<tag>Kill marked robot:</tag> In debug-mode, you can mark a robot in the
+<ref id="Score window" name="score window">. That robot will die if you press this button.
+
+<label id="Debug level">
+<tag>Debug level:</tag> Changing debug level is a way of telling robots how which messages they
+should send. The range is between 0 and 5, where 0 means no debugging and 5 is the highest level of
+debugging, i.e. all debug-messages should be send.
 </descrip>
 
 <sect1>Start new tournament window<label id="Start new tournament window">
@@ -557,7 +573,8 @@ string. The string length is less than 500.
 will be sent a number of settings, which can be useful to the robot. For a complete list of these,
 look in the file <ref id="Messagetypes.h" name="Messagetypes.h"> for the <tt>game_option_type</tt>
 enum. In the <ref id="Options" name="options chapter"> you can get more detailed information on each
-option.
+option. The <ref id="Debug level" name="debug level"> is also sent as a game option even though it
+is not in the options list.
 
 <tag>GameStarts</tag> This message is sent when the game starts
 (surprise!)
@@ -581,6 +598,13 @@ information on the robot. The opponents energy level will be given in
 the same manner as your own energy (see below). The second argument is
 only interesting i team-mode (which current isn't implemented), 1
 means a team-mate and 0 an enemy.
+
+<label id="RotationReached">
+<tag>RotationReached [what has reached]</tag> When the 
+<ref id="RobotOption" name="robot option SEND_ROTATION_REACHED"> is set appropriately, this message
+is sent when a rotation (with RotateTo or RotateAmount) has finished or the direction has changed
+(when sweeping). The argument corresponds to 'what to rotate' in e.g.
+<ref id="Rotate" name="Rotate">. 
 
 <tag>Energy [energy level]</tag> The end of each round the robot will
 get to know its energy level. It will not, however, get the exact
@@ -631,9 +655,19 @@ will be killed forcefully.
 <descrip>
 <label id="RobotOption">
 <tag>RobotOption [option nr (int)] [value (int)]</tag> Currently only
-one option is available, SEND_SIGNAL, which tells the server to send
+two options are available:
+<descrip>
+<tag>SEND_SIGNAL</tag> tells the server to send
 SIGUSR1 when there is a message waiting. Send this message (with
 argument 0=true) as soon as you are prepared to receive the signal.
+Default is false.
+<tag>SEND_ROTATION_REACHED</tag> If you want the server to send a 
+<ref id="RotationReached" name="RotationReached"> 
+message when a rotation is
+finished, you should set this option. With a value of 1, the message is sent when 
+a RotateTo or a RotateAmount is finished, with a value of 2, changes in sweep direction are
+also notified. Default is 0, i.e. no messages are sent.
+</descrip>
 
 <label id="NameAndColour">
 <tag>Name [name (string)]</tag> When receiving the <ref id="Initialize" name="Initialize"> message
