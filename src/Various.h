@@ -63,8 +63,6 @@ void read_dirs_from_system(GList*& robotdirs, GList*& arenadirs);
 void clean_dir_glists(GList*& robotdirs, GList*& arenadirs);
 void split_colonseparated_dirs(String& dirs, GList * gl);
 
-void search_directories( String directory, GList* dir_gl,
-                         const bool check_robots );
 bool check_if_filename_is_robot( String& fname );
 bool check_if_filename_is_arena( String& fname );
 
