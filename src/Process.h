@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,12 +17,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/*
- * Note from Benoit Rousseau (august 2001) :
- *   I think the process will only be used by the robot_client to launch
- *   a specific robot. I don't think we need variables such as Robot* my_robot
- *   or things like that...
- */
+//TODO : Change this file to RobotIO.h and RobotIO.cc
 
 #ifndef __PROCESS__
 #define __PROCESS__
@@ -36,7 +31,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Robot;
 
-class Process
+class RobotIO {
+ public:
+  virtual ~RobotIO() {};
+  virtual void start( const enum game_mode_t mode) = 0;
+  virtual bool is_process_running() = 0; //NOTE : Can this one be implemented ?
+  virtual void end()                = 0;
+
+  virtual string get_robot_filename() = 0;  //NOTE : do we really need this one ?
+  virtual ofstream* get_outstreamp()  = 0;
+  virtual ifstream* get_instreamp()   = 0;
+};
+
+class Process : public RobotIO
 {
 public:
   
