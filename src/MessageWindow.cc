@@ -169,8 +169,14 @@ MessageWindow::add_message( String name_of_messager, String message )
 
       int row = 0;
       gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+      GdkColor* fg_colour = NULL;
+      if( name_of_messager == "RealTimeBattle" )
+        fg_colour = the_arena.get_rtb_message_gdk_colour_p();
+      else
+        fg_colour = the_arena.get_fg_gdk_colour_p();
+
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                                the_arena.get_fg_gdk_colour_p() );
+                                fg_colour );
       gtk_clist_set_background( GTK_CLIST( clist ), row,
                                 the_arena.get_bg_gdk_colour_p() );
 
