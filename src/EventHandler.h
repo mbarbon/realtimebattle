@@ -49,7 +49,7 @@ private:
 
   void finish() { finished = true; }
 
-  priority_queue<class Event> event_queue;
+  priority_queue<const Event*> event_queue;
   
   Timer timer;
   double current_time;

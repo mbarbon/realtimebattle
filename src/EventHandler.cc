@@ -44,21 +44,22 @@ EventHandler::~EventHandler()
 void
 EventHandler::main_loop()
 {
+  double time_for_next_event;
+  struct timeval time_to_wait;
+  const Event* next_eventp;
 
   do
     {
 
       if( event_queue.empty() )
         Error(true, "Event queue unexpectedly empty", "EventHandler::eval_next_event");
+  
+      next_eventp = event_queue.top();
 
-      double time_for_next_event;
-  
-      struct timeval time_to_wait;
-  
       for(;;) 
         {
-          time_for_next_event = event_queue.top().get_time();
-          //          timer.double2timeval( time_for_next_event, time_to_wait );
+          time_for_next_event = next_eventp->get_time();
+          //          timer.double2timeval( time_for_next_event, time_to_wait );          
 
           if( time_to_wait.tv_usec == 0 ) break;    // Time to eval next event
           
@@ -67,7 +68,8 @@ EventHandler::main_loop()
 
       current_time = timer.get();
 
-      event_queue.top().eval();
+      next_eventp->eval();
+      delete next_eventp;
 
       event_queue.pop();
   
@@ -84,7 +86,7 @@ EventHandler::main_loop()
 void 
 EventHandler::insert_event( Event* ev )
 {
-  event_queue.push( *ev );
+  event_queue.push( ev );
 }
 
 void
