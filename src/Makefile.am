@@ -1,3 +1,5 @@
+SUBDIRS = Network
+
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
 
