@@ -60,6 +60,7 @@ RealTimeBattle_SOURCES = \
 	Shot.cc Shot.h \
 	String.cc String.h \
 	Structs.h \
+	Team.cc Team.h \
 	Timer.cc Timer.h \
 	Tournament.h Tournament.cc \
 	Various.cc Various.h \
