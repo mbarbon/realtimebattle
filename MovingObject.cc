@@ -114,13 +114,27 @@ Robot::kill_process_forcefully()
 }
 
 void
+Robot::live()
+{
+   alive = true; 
+}
+
+void
+Robot::die()
+{
+   alive = false;
+   // set points
+}
+
+
+void
 Robot::update_radar_and_cannon(const double timestep)
 {
   radar_angle += timestep*radar_speed;
   cannon_angle += timestep*cannon_speed;
-  Shape* closest_shape;
+  object_type closest_shape;
   double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape);
-  send_message(RADAR, dist, ((ArenaObject*)closest_shape)->get_object_type());
+  send_message(RADAR, dist, closest_shape);
 }
 
 void
@@ -129,12 +143,13 @@ Robot::set_initial_position_and_direction(const Vector2D& pos, double angle, dou
   center = pos;
   robot_angle = angle;
   radius = size;
+  velocity = Vector2D(0.1, 0.0); // Just for testing! 
 }
 
 void
 Robot::move(const double timestep)
 {
-  Shape* closest_shape;
+  object_type closest_shape;
   double dist = the_arena->get_shortest_distance(center, velocity, radius, closest_shape);
   if( dist > timestep )
     {
