@@ -24,16 +24,25 @@ private:
   double robot_hardness;
   double robot_protection;
 
+  double robot_start_energy;
+  double robot_max_energy;
+
   double robot_front_protection;
   double robot_front_hardness;
   double robot_front_bounce_coeff;
   double robot_cos_frontsize;
 
+  double robot_max_rotate;
+  double robot_cannon_max_rotate;
+  double robot_radar_max_rotate;
+
   double shot_radius;
   double shot_speed;
-  double start_energy;
   double shooting_penalty;
-  
+  double shot_min_energy;
+  double shot_max_energy;
+  double shot_energy_increase_speed;
+
   long background_colour;
   long foreground_colour;
 
@@ -65,15 +74,24 @@ public:
   double get_robot_hardness() { return robot_hardness; }
   double get_robot_protection() { return robot_protection; }
 
+  double get_robot_start_energy() { return robot_start_energy; }
+  double get_robot_max_energy() { return robot_max_energy; }
+
   double get_robot_front_protection() { return robot_front_protection; }
   double get_robot_front_hardness() { return robot_front_hardness; }
   double get_robot_front_bounce_coeff() { return robot_front_bounce_coeff; }
   double get_robot_cos_frontsize() { return robot_cos_frontsize; }
 
+  double get_robot_max_rotate() { return robot_max_rotate; } 
+  double get_robot_cannon_max_rotate() { return robot_cannon_max_rotate; }
+  double get_robot_radar_max_rotate() { return robot_radar_max_rotate; }
+
   double get_shot_radius() { return shot_radius; }
   double get_shot_speed() { return shot_speed; }
-  double get_start_energy() { return start_energy; }
   double get_shooting_penalty() { return shooting_penalty; }
+  double get_shot_min_energy() { return shot_min_energy; }
+  double get_shot_max_energy() { return shot_max_energy; }
+  double get_shot_energy_increase_speed() { return shot_energy_increase_speed; }
 
   long get_background_colour() { return background_colour; }
   long get_foreground_colour() { return foreground_colour; }

@@ -194,6 +194,8 @@ Robot::update_radar_and_cannon(const double timestep)
   radar_angle += timestep*radar_speed;
   cannon_angle += timestep*cannon_speed;
   robot_angle += timestep*robot_angle_speed;
+  shot_energy = min( opts.get_shot_max_energy(), 
+                     shot_energy+timestep*opts.get_shot_energy_increase_speed() );
   object_type closest_shape;
   void* col_obj;
   double dist = the_arena->
@@ -292,12 +294,13 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   robot_angle = angle;
   cannon_angle = 0.0;
   radar_angle = 0.0;
+  shot_energy = 0.0;
   radius = opts.get_robot_radius();
   protection_coeff = opts.get_robot_protection();
   hardness_coeff = opts.get_robot_hardness();
   bounce_coeff = opts.get_robot_bounce_coeff();
   mass = opts.get_robot_mass();
-  energy = opts.get_start_energy();
+  energy = opts.get_robot_start_energy();
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
 }
@@ -472,13 +475,22 @@ Robot::get_messages()
             colour = make_gdk_color(the_arena->find_free_color(home_colour, away_colour, this));
           }
           break;
-        case ROTATE: 
-          int bits;
-          double rot_speed;
-          *instreamp >> bits >> rot_speed;
-          if( (bits & 1) == 1) robot_angle_speed = rot_speed;
-          if( (bits & 2) == 2) cannon_speed = rot_speed;
-          if( (bits & 4) == 4) radar_speed = rot_speed;
+        case ROTATE:
+          { 
+            int bits;
+            double rot_speed;
+            *instreamp >> bits >> rot_speed;
+            
+            if( (bits & 1) == 1) 
+              robot_angle_speed = max(min(rot_speed, opts.get_robot_max_rotate()),
+                                      -opts.get_robot_max_rotate());  // between -max_rot and +max_rot
+            if( (bits & 2) == 2) 
+              cannon_speed = max(min(rot_speed, opts.get_robot_cannon_max_rotate()), 
+                                 -opts.get_robot_cannon_max_rotate());
+            if( (bits & 4) == 4) 
+              radar_speed = max(min(rot_speed, opts.get_robot_radar_max_rotate()), 
+                                -opts.get_robot_radar_max_rotate());
+          }
           break;
         case PRINT:
           instreamp->get(text, 80, '\n');
@@ -489,6 +501,10 @@ Robot::get_messages()
           {
             double en;
             *instreamp >> en;
+            en = min(en, shot_energy);
+            if( en < opts.get_shot_min_energy() ) break;
+            shot_energy -= en;
+
             Vector2D dir = Vector2D(cos(cannon_angle+robot_angle),sin(cannon_angle+robot_angle));
             double shot_radius = opts.get_shot_radius();
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
@@ -516,8 +532,8 @@ Robot::get_messages()
                   case WALL:
                     break;
                   case ROBOT:
-                    ((Robot*)col_obj)->change_energy(-energy);
-                    ((Robot*)col_obj)->send_message(COLLISION, SHOT, -energy);
+                    ((Robot*)col_obj)->change_energy(-en);
+                    ((Robot*)col_obj)->send_message(COLLISION, SHOT, -en);
                     break;
                   case SHOT:
                     ((Shot*)col_obj)->die();
@@ -599,7 +615,7 @@ Robot::name2msg_from_robot_type(char* msg_name)
 void
 Robot::change_energy(const double energy_diff)
 {
-  energy += energy_diff;
+  energy = min(energy+energy_diff, opts.get_robot_max_energy());
   display_energy();
   if( energy <= 0.0 ) die();
 }
