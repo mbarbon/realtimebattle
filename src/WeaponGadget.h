@@ -46,42 +46,7 @@ private:
     ATTACHABLE, COLOUR, PRICE, MASS, LAST_WEAPONVAR
   };
 
-  const VariableDefinition variable_def[LAST_WEAPONVAR] = 
-  {
-    {"Ammunition", INT_V, 0, 0, INT_MAX,0,false,true,false},
-
-    {"RotateToAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
-    {"RotateAmountAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
-    {"RotateSpeed", DOUBLE_V, 0, 0.0, DBL_MAX,0, false, true, true },
-
-    {"AutoFire", BOOL_V, false,0,0,0,false,true,true}
-
-//      "MaxRotateSpeed",
-
-//      "SoundLevel",
-
-//      "MountTime",
-//      "UnmountTime",
-//      "MountCost",
-//      "UnmountCost",
-
-//      "UseCostPerTime",
-
-//      "AmmoLimit",
-//      "StartAmmo",
-//      "ReloadTime",
-
-//      "TemperaturePerDamage",
-//      "MaxTemperature",
-
-//      "CoolDownPerTime",
-
-//      "Attachable",
-
-//      "Colour",
-//      "Price",
-//      "Mass"
-  };
+  const static VariableDefinition variable_def[LAST_WEAPONVAR]; 
 
   Variable variables[LAST_WEAPONVAR];
 
@@ -90,16 +55,7 @@ private:
     SHOOT=0, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, LAST_WEAPONFCN
   };
 
-  const FunctionDefinition function_def[LAST_WEAPONFCN] = 
-  {
-    { "Shoot", true },
-    { "Mount", true },
-    { "Unmount", true },
-    { "Drop", true },
-    { "Rotate", true },
-    { "RotateTo", true },
-    { "RotateAmount", true }
-  };
+  const static FunctionDefinition function_def[LAST_WEAPONFCN];
 
   Function functions[LAST_WEAPONFCN];
 

@@ -25,6 +25,56 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Variable.h"
 
 
+const VariableDefinition 
+WeaponGadget::variable_def[WeaponGadget::LAST_WEAPONVAR] = 
+{
+  {"Ammunition", INT_V, 0, 0, INT_MAX,0,false,true,false},
+  
+  {"RotateToAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+  {"RotateAmountAngle", DOUBLE_V, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+  {"RotateSpeed", DOUBLE_V, 0, 0.0, DBL_MAX,0, false, true, true },
+  
+  {"AutoFire", BOOL_V, false,0,0,0,false,true,true}
+
+//      "MaxRotateSpeed",
+
+//      "SoundLevel",
+
+//      "MountTime",
+//      "UnmountTime",
+//      "MountCost",
+//      "UnmountCost",
+
+//      "UseCostPerTime",
+
+//      "AmmoLimit",
+//      "StartAmmo",
+//      "ReloadTime",
+
+//      "TemperaturePerDamage",
+//      "MaxTemperature",
+
+//      "CoolDownPerTime",
+
+//      "Attachable",
+
+//      "Colour",
+//      "Price",
+//      "Mass"
+};
+
+
+const FunctionDefinition 
+WeaponGadget::function_def[WeaponGadget::LAST_WEAPONFCN] = 
+{
+  { "Shoot", true },
+  { "Mount", true },
+  { "Unmount", true },
+  { "Drop", true },
+  { "Rotate", true },
+  { "RotateTo", true },
+  { "RotateAmount", true }
+};
 
 WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
   : Gadget(name, p)
