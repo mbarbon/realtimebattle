@@ -45,8 +45,8 @@ protected:
 class StartTournamentEvent : public Event
 {
 public:
-  StartTournamentEvent(const double time, const string& filen )
-    : Event(time), filename(filen) {}
+  StartTournamentEvent(const double time, const string& the_file )
+    : Event(time), filename(the_file) {}
 
   void eval() const;
 
