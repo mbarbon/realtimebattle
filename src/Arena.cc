@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <iostream.h>
 #include <iomanip.h>
 
@@ -160,6 +161,8 @@ Arena::set_filenames(String& log_fname, const String& statistics_fname,
 void
 Arena::parse_tournament_file( String& fname )
 {
+  the_gui.read_dirs_from_system();
+
   ifstream file(fname.chars());
   if( !file )
     return; // Don't know yet what to do when it isn't possible to find the tournament file
@@ -167,53 +170,154 @@ Arena::parse_tournament_file( String& fname )
   int games_p_s = 1;
   int robots_p_s = 2;
   int n_o_sequences = 1;
+  int looking_for = 0; // 0 = keyword, 1 = robot, 2 = arena
+
+  int robots_counted = 0;
+  int arenas_counted = 0;
+
+  GList* robot_glist = g_list_alloc();
+  GList* arena_glist = g_list_alloc();
 
   for(;;)
     {
-      char temp;
       char buffer[200];
-      file >> ws;
-      file.get(buffer,200,':');
-      file.get(temp);
-      String keyword = make_lower_case(buffer);
-      if( keyword == "" )
+      file >> buffer;
+      String word(buffer);
+
+      if( word == "" )
         {
-          cout << "Games per sequence: " << games_p_s << endl;
-          cout << "Robots per sequence: " << robots_p_s << endl;
-          cout << "Number of sequences: " << n_o_sequences << endl;
-          cout << "Robots: " << endl;
-          cout << "Arenas: " << endl;
-          exit(EXIT_SUCCESS);
+          if (games_p_s == -1)
+            games_p_s = arenas_counted;
+          if (robots_p_s == -1)
+            robots_p_s = robots_counted;
+
+          // Startup the tournament
+
+          start_tournament( robot_glist , arena_glist, robots_p_s, games_p_s, n_o_sequences);  
+
+          // Finally, delete the GLists
+
+          GList* gl;
+
+          for(gl=g_list_next(robot_glist); gl != NULL; gl=g_list_next(gl))  
+            delete (start_tournament_glist_info_t*)(gl->data);
+          g_list_free(robot_glist);
+
+          for(gl=g_list_next(arena_glist); gl != NULL; gl=g_list_next(gl))  
+            delete (start_tournament_glist_info_t*)(gl->data);
+          g_list_free(arena_glist);
+
+          return;
         }
       //        return;
-      if(keyword == "games per sequence")
+      if((make_lower_case(word) == "games/sequence:") || (make_lower_case(word) == "g/s:"))
         {
-          file >> games_p_s;
-          file.get(buffer,200,'\n');
+          looking_for = 0;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            games_p_s = -1;
+          else
+            games_p_s = str2int( buffer );
         }
-      else if(keyword == "robots per sequence")
+      else if((make_lower_case(word) == "robots/sequence:") || (make_lower_case(word) == "r/s:"))
         {
-          file >> robots_p_s;
-          file.get(buffer,200,'\n');
+          looking_for = 0;
+          file >> buffer;
+          if( buffer[0] == '*' )
+            robots_p_s = -1;
+          else
+            robots_p_s = str2int( buffer );
         }
-      else if(keyword == "number of sequences")
+      else if((make_lower_case(word) == "sequences:") || (make_lower_case(word) == "seq:"))
         {
+          looking_for = 0;
           file >> n_o_sequences;
-          file.get(buffer,200,'\n');
         }
-      else if(keyword == "robots")
-        {
-          file.get(buffer,200,'\n');
-        }
-      else if(keyword == "arenas")
-        {
-          file.get(buffer,200,'\n');
-        }
+      else if((make_lower_case(word) == "robots:") || (make_lower_case(word) == "r:"))
+        looking_for = 1;
+      else if((make_lower_case(word) == "arenas:") || (make_lower_case(word) == "a:"))
+        looking_for = 2;
       else
         {
-          file.get(buffer,200,'\n');
-          cerr << "Unrecognized keyword in tournament file: " << keyword << endl;
+          switch(looking_for)
+            {
+            case 0:
+              {
+                looking_for = 0;
+                cerr << "Unrecognized keyword in tournament file: " << word << endl;
+              }
+              break;
+            case 1:
+              {
+                robots_counted++;
+
+                start_tournament_glist_info_t* info;
+                info = new start_tournament_glist_info_t(0,false,word,"");
+                GList* gl;
+                for(gl=g_list_next(the_gui.get_robotdirs());gl != NULL; gl=g_list_next(gl))
+                  {
+                    String* current_dir = (String*)gl->data;
+
+                    String full_file_name = *current_dir + info->filename;
+
+                    struct stat filestat;
+                    if( 0 == stat( full_file_name.chars(), &filestat ) )
+                      if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
+                        {
+                          info->filename = full_file_name;
+                          info->directory = *current_dir;
+                          info->selected = true;
+                          break;
+                        }
+                  }
+
+                if( info->selected )
+                  g_list_append(robot_glist, info);
+                else
+                  {
+                    cerr << "Couldn't find an executable robot with filename " << word << endl;
+                    delete info;
+                  }
+              }
+              break;
+            case 2:
+              {
+                arenas_counted++;
+                start_tournament_glist_info_t* info;
+                info = new start_tournament_glist_info_t(0,false,word,"");
+                GList* gl;
+                for(gl=g_list_next(the_gui.get_arenadirs());gl != NULL; gl=g_list_next(gl))
+                  {
+                    String* current_dir = (String*)gl->data;
+
+                    String full_file_name = *current_dir + info->filename;
+
+                    struct stat filestat;
+                    if( 0 == stat( full_file_name.chars(), &filestat ) && full_file_name.get_length() > 6 )
+                      // Check if file is a regular file that is readable and ends with .arena
+                      if( S_ISREG( filestat.st_mode) &&
+                          (filestat.st_mode & S_IROTH)  &&
+                          String(".arena") == get_segment(full_file_name, -6, -1) )
+                        {     
+                          info->filename = full_file_name;
+                          info->directory = *current_dir;
+                          info->selected = true;
+                          break;
+                        }
+                  }
+
+                if( info->selected )
+                  g_list_append(arena_glist, info);
+                else
+                  {
+                    cerr << "Couldn't find a robot with filename " << word << endl;
+                    delete info;
+                  }
+              }
+              break;
+            }
         }
+
     }
 }
 
@@ -643,6 +747,8 @@ Arena::timeout_function()
       break;
 
     case FINISHED:
+      if(auto_start_and_end)
+        gtk_main_quit();
       break;
       
     case STARTING_ROBOTS:
