@@ -7,6 +7,7 @@
 static const number_of_object_types = 6;
 
 volatile double acceleration = 0.0;
+volatile double robot_rotate = 0.0;
 volatile sig_atomic_t exit_robot = false;
 
 message_to_robot_type
@@ -42,7 +43,8 @@ check_messages(int sig)
           break;
         case GAME_STARTS:
           cout << "Print I am ready" << endl;
-          cout << "Rotate 1 0.5" << endl;
+          robot_rotate = 0.53;
+          cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Rotate 6 1.5" << endl;
           acceleration = 0.54;
           cout << "Acceleration " << acceleration << endl;
@@ -68,7 +70,12 @@ check_messages(int sig)
                     acceleration = 1.0;
 
                   if( old_acc != acceleration )
-                    cout << "Acceleration " << acceleration << endl;
+                    {
+                      cout << "Acceleration " << acceleration << endl;
+                      if( acceleration == 0.0 )
+                        robot_rotate = -robot_rotate;
+                      cout << "Rotate 1 " << robot_rotate << endl;
+                    }
                 }
                 break;
               case SHOT:
