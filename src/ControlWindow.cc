@@ -506,27 +506,20 @@ void
 ControlWindow::replay_tournament( GtkWidget* widget,
                                   class ControlWindow* cw_p )
 {
-  bool open = false;
-
-  if( the_arena_controller.is_started() )
-    if( the_arena.get_state() != NOT_STARTED &&
-        the_arena.get_state() != FINISHED )
-      {
-        List<String> string_list;
-        string_list.insert_last( new String( "Yes" ) );
-        string_list.insert_last( new String( "No"  ) );
-        Dialog( (String)"This action will kill the current tournament.\n" +
-                "Do you want do that?",
-                string_list,
-                (DialogFunction) ControlWindow::kill_and_open_filesel );
-      }
+  if( the_arena_controller.is_started() ||
+      ( the_arena.get_state() != NOT_STARTED &&
+        the_arena.get_state() != FINISHED ) )
+    {
+      List<String> string_list;
+      string_list.insert_last( new String( "Yes" ) );
+      string_list.insert_last( new String( "No"  ) );
+      Dialog( (String)"This action will kill the current tournament.\n" +
+              "Do you want do that?",
+              string_list,
+              (DialogFunction) ControlWindow::kill_and_open_filesel );
+    }
     else
-      open = true;
-  else
-    open = true;
-
-  if( open )
-    cw_p->open_replay_filesel();
+      cw_p->open_replay_filesel();
 }
 
 void
