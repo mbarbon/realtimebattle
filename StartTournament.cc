@@ -24,18 +24,18 @@ start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer butt
     case START_TORUNAMENT_REMOVE:
       break;
     case START_TORUNAMENT_SELECT_ALL_TOURNAMENT:
-      the_gui.start_tournament_change_selection( true,false,true );
+      the_gui.start_tournament_change_all_selection( true,false,true );
       break;
     case START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT:
-      the_gui.start_tournament_change_selection( true,false,false );
+      the_gui.start_tournament_change_all_selection( true,false,false );
       break;
     case START_TORUNAMENT_ADD:
       break;
     case START_TORUNAMENT_SELECT_ALL_DIRECTORY:
-      the_gui.start_tournament_change_selection( true,true,true );
+      the_gui.start_tournament_change_all_selection( true,true,true );
       break;
     case START_TORUNAMENT_UNSELECT_ALL_DIRECTORY:
-      the_gui.start_tournament_change_selection( true,true,false );
+      the_gui.start_tournament_change_all_selection( true,true,false );
       break;
     }
 }
@@ -48,32 +48,126 @@ start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer butt
     case START_TORUNAMENT_REMOVE:
       break;
     case START_TORUNAMENT_SELECT_ALL_TOURNAMENT:
-      the_gui.start_tournament_change_selection( false,false,true );
+      the_gui.start_tournament_change_all_selection( false,false,true );
       break;
     case START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT:
-      the_gui.start_tournament_change_selection( false,false,false );
+      the_gui.start_tournament_change_all_selection( false,false,false );
       break;
     case START_TORUNAMENT_ADD:
       break;
     case START_TORUNAMENT_SELECT_ALL_DIRECTORY:
-      the_gui.start_tournament_change_selection( false,true,true );
+      the_gui.start_tournament_change_all_selection( false,true,true );
       break;
     case START_TORUNAMENT_UNSELECT_ALL_DIRECTORY:
-      the_gui.start_tournament_change_selection( false,true,false );
+      the_gui.start_tournament_change_all_selection( false,true,false );
       break;
     }
 }
 
 void
-Gui::start_tournament_change_selection(bool robots, bool dir, bool all)
+start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
+                                 GdkEventButton *event, gpointer data )
 {
-  //  gtk_clist_select_row(GTK_CLIST(robots_in_directory_clist), 0,0);
+  the_gui.start_tournament_change_one_selection( row, clist );
+}
+
+start_tournament_glist_info_t *
+Gui::start_tournament_find_row_in_clist(const int row, GList * list)
+{
+  GList * gl;
+  for(gl = g_list_next(list); gl !=NULL; gl = g_list_next(gl))
+    {
+      start_tournament_glist_info_t * info_p = (start_tournament_glist_info_t *)gl->data;
+      if( info_p->row == row )
+        return info_p;
+    }
+  return NULL;
+}
+
+void
+Gui::start_tournament_change_one_selection(const int row, const GtkWidget * clist)
+{
+  GList * list;
+
+  if(clist == robots_in_tournament_clist)
+    list = selected_items_in_robot_tournament;
+  else if(clist == robots_in_directory_clist)
+    list = selected_items_in_robot_directory;
+  else if(clist == arenas_in_tournament_clist)
+    list = selected_items_in_arena_tournament;
+  else if(clist == arenas_in_directory_clist)
+    list = selected_items_in_arena_directory;
+
+  start_tournament_glist_info_t * info_p = start_tournament_find_row_in_clist( row, list );
+  if( info_p->selected )
+    info_p->selected = false;
+  else 
+    info_p->selected = true;
+}
+
+void
+Gui::start_tournament_change_all_selection(bool robots, bool dir, bool all)
+{
+  GList * gl;
+  GList * list;
+  GtkWidget * clist;
+
+
+  if( robots && dir )
+    {
+      list = selected_items_in_robot_directory;
+      clist = robots_in_directory_clist;
+    }
+  else if(robots && !dir)
+    {
+      list = selected_items_in_robot_tournament;
+      clist = robots_in_tournament_clist;
+    }
+  else if(!robots && dir)
+    {
+      list = selected_items_in_arena_directory;
+      clist = arenas_in_directory_clist;
+    }
+  else if(!robots && !dir)
+    {
+      list = selected_items_in_arena_tournament;
+      clist = arenas_in_tournament_clist;
+    }
+  for(gl = g_list_next(list); gl != NULL; gl = g_list_next(gl))
+    {
+      start_tournament_glist_info_t * info_p = (start_tournament_glist_info_t *)gl->data;
+      if( all )
+        {
+          info_p->selected = true;
+          gtk_clist_select_row(GTK_CLIST(clist), info_p->row, 0);
+        }
+      else
+        {
+          info_p->selected = false;
+          gtk_clist_unselect_row(GTK_CLIST(clist), info_p->row, 0);
+        }
+    }
+}
+
+void
+Gui::start_tournament_add_all_selected( bool robots )
+{
+}
+
+void
+Gui::start_tournament_remove_all_selected( bool robots )
+{
 }
 
 void
 Gui::setup_start_tournament_window()
 {
   GtkWidget * vbox, * hbox;
+
+  selected_items_in_robot_tournament = g_list_alloc();
+  selected_items_in_robot_directory = g_list_alloc();
+  selected_items_in_arena_tournament = g_list_alloc();
+  selected_items_in_arena_directory = g_list_alloc();
 
   start_tournament_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (start_tournament_window), "RealTimeBattle Start New Tournament");
@@ -100,6 +194,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(robots_in_tournament_clist, 150, 150);
+  gtk_signal_connect(GTK_OBJECT(robots_in_tournament_clist), "select_row",
+                     GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_box_pack_start (GTK_BOX (hbox), robots_in_tournament_clist, TRUE, TRUE, 0);
   gtk_widget_show( robots_in_tournament_clist );
 
@@ -148,6 +244,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(robots_in_directory_clist, 150, 150);
+  gtk_signal_connect(GTK_OBJECT(robots_in_directory_clist), "select_row",
+                     GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_box_pack_start (GTK_BOX (hbox), robots_in_directory_clist, TRUE, TRUE, 0);
   gtk_widget_show( robots_in_directory_clist );
 
@@ -172,7 +270,10 @@ Gui::setup_start_tournament_window()
                   gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(robots_in_directory_clist), row, 0, entry->d_name);
-                  selected_items_in_robot_directory = new int[row](false);
+
+                  start_tournament_glist_info_t * info;
+                  info = new start_tournament_glist_info_t(row,false,entry->d_name);
+                  g_list_append(selected_items_in_robot_directory, info);                  
                 }
           }
         closedir( robotdir );
@@ -193,6 +294,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(arenas_in_tournament_clist, 150, 150);
+  gtk_signal_connect(GTK_OBJECT(arenas_in_tournament_clist), "select_row",
+                     GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_tournament_clist, TRUE, TRUE, 0);
   gtk_widget_show( arenas_in_tournament_clist );
 
@@ -241,6 +344,8 @@ Gui::setup_start_tournament_window()
   gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
   gtk_widget_set_usize(arenas_in_directory_clist, 150, 150);
+  gtk_signal_connect(GTK_OBJECT(arenas_in_directory_clist), "select_row",
+                     GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_directory_clist, TRUE, TRUE, 0);
   gtk_widget_show( arenas_in_directory_clist );
 
@@ -268,8 +373,9 @@ Gui::setup_start_tournament_window()
                   gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_background_colour_p());
           
                   gtk_clist_set_text(GTK_CLIST(arenas_in_directory_clist), row, 0, entry->d_name);
-                  selected_items_in_arena_directory = new int[row](false);
-                  //                  cout << "selected_items_in_arena_directory[" << row << "]: " << selected_items_in_arena_directory[row] << endl;
+                  start_tournament_glist_info_t * info;
+                  info = new start_tournament_glist_info_t(row,false,entry->d_name);
+                  g_list_append(selected_items_in_arena_directory, info);
                 }
           }
         closedir( arenadir );
@@ -330,4 +436,9 @@ Gui::close_start_tournament_window()
 {
   start_tournament_up = false;
   gtk_widget_destroy ( start_tournament_window );
+
+  g_list_free(selected_items_in_robot_tournament);
+  g_list_free(selected_items_in_robot_directory);
+  g_list_free(selected_items_in_arena_tournament);
+  g_list_free(selected_items_in_arena_directory);
 }

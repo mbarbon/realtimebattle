@@ -42,6 +42,19 @@ enum start_tournament_button_t
   START_TORUNAMENT_UNSELECT_ALL_DIRECTORY = 5
 };
 
+struct start_tournament_glist_info_t
+{
+  start_tournament_glist_info_t(int r, bool s, char * t) :
+    row(r), selected(s)
+    {
+      text = new char[strlen(t)+1];
+      strcpy(text,t);
+    }
+  int row;
+  bool selected;
+  char * text;
+};
+
 void statistics_button_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
 void delete_event( GtkWidget * widget, gpointer data );
@@ -54,6 +67,8 @@ void buttons_in_statistics_callback(GtkWidget *widget, gpointer type_p);
 
 void start_tournament_select_robots_buttons_callback(GtkWidget *widget, gpointer button_number_p);
 void start_tournament_select_arenas_buttons_callback(GtkWidget *widget, gpointer button_number_p);
+void start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
+                                      GdkEventButton *event, gpointer data );
 
 class Gui
 {
@@ -100,8 +115,11 @@ public:
   void add_the_statistics_to_clist();
   void stat_make_title_button();
 
-  void start_tournament_change_selection(bool robots, bool dir, bool all);
-
+  void start_tournament_change_all_selection(bool robots, bool dir, bool all);
+  void start_tournament_change_one_selection(const int row, const GtkWidget * clist);
+  start_tournament_glist_info_t * start_tournament_find_row_in_clist(const int row, GList * lista);
+  void start_tournament_add_all_selected( bool robots );
+  void start_tournament_remove_all_selected( bool robots );
 
   int get_robot_nr( void * robotp, GList * robot_list );
   bool get_statistics_up() { return statistics_up; }
@@ -137,10 +155,10 @@ private:
 
   GdkColormap * colormap;
 
-  int * selected_items_in_robot_tournament;
-  int * selected_items_in_robot_directory;
-  int * selected_items_in_arena_tournament;
-  int * selected_items_in_arena_directory;
+  GList * selected_items_in_robot_tournament;
+  GList * selected_items_in_robot_directory;
+  GList * selected_items_in_arena_tournament;
+  GList * selected_items_in_arena_directory;
 
   int zoomfactor;
   Vector2D boundary[2];
