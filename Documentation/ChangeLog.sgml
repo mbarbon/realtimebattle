@@ -5,6 +5,11 @@
 Change log
 <itemize>
 
+<item> <bf>1.0.2</bf>
+<p>
+
+Fixed a bug that caused RealTimeBattle to crash when not using a gtkrc.
+
 <item> <bf>1.0.1</bf>
 <p>
 
