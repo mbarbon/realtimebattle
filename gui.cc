@@ -12,7 +12,7 @@
 #include "Options.h"
 #include "Vector2D.h"
 
-#define GDK_VARV 23040     // 64 * 360 degrees
+#define GDK_360_DEGREES 23040     // 64 * 360 degrees
 
 static char * colour_square[] =
 {
@@ -121,7 +121,7 @@ int
 Gui::change_to_pixels_x(const double input)
 {
   double res;
-  res = (input-boundary[0][0])*get_zoom();
+  res = (input-boundary[0][0])*get_zoom() + 0.5;
   return (int)res;
 }
 
@@ -129,7 +129,7 @@ int
 Gui::change_to_pixels_y(const double input)
 {
   double res;
-  res = (input-boundary[0][1])*get_zoom();
+  res = (input-boundary[0][1])*get_zoom() + 0.5;
   return (int)res;
 }
 
@@ -212,15 +212,23 @@ Gui::draw_circle( const Vector2D& center, const double radius, GdkColor& colour,
   colour_gc = gdk_gc_new( drawing_area->window );
   gdk_gc_set_foreground( colour_gc, &colour );
 
-  double x = max(1.0, 2.0*radius*get_zoom());
-  double y = max(1.0, 2.0*radius*get_zoom());
-  gdk_draw_arc (drawing_area->window,
-                colour_gc,
-                filled,
-                change_to_pixels_x(center[0]-radius),change_to_pixels_y(center[1]-radius),
-                (int)x, (int)y,
-                0, GDK_VARV);
-
+  double r;
+  if( (r = radius*get_zoom()) > 1.0 )
+    {
+      gdk_draw_arc (drawing_area->window,
+                    colour_gc,
+                    filled,
+                    change_to_pixels_x(center[0]-radius),change_to_pixels_y(center[1]-radius),
+                    (int)(r*2.0), (int)(r*2.0),
+                    0, GDK_360_DEGREES);
+    }
+  else
+    {
+      gdk_draw_point (drawing_area->window,
+                      colour_gc,
+                      change_to_pixels_x(center[0]), 
+                      change_to_pixels_y(center[1]));
+    }
   gdk_gc_destroy( colour_gc );
 }
 
@@ -235,7 +243,7 @@ Gui::draw_line(const Vector2D& start, const Vector2D& end, GdkColor& colour )
   gdk_draw_line (drawing_area->window,
                  colour_gc,
                  change_to_pixels_x(start[0]), change_to_pixels_y(start[1]),
-                 change_to_pixels_x(end[0]), change_to_pixels_y(start[1]));
+                 change_to_pixels_x(end[0]), change_to_pixels_y(end[1]));
 
   gdk_gc_destroy( colour_gc );
 }
