@@ -23,9 +23,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <pthread.h>
 #include <list>
 
-#include "ArenaBase.h"
+#include "Arena.h"
 #include "OptionHandler.h"
 #include "InformationDistributor.h"
+
+#define the_arena (*( the_arena_controller.get_the_arena()) )
+
+static const int max_debug_level = 5;
 
 class GuiInterface;
 
@@ -47,7 +51,7 @@ public:
 
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
-  ArenaBase* get_the_arena() { return my_arena; }
+  Arena* get_the_arena() { return my_arena; }
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
@@ -66,7 +70,7 @@ private:
   OptionHandler* main_opts;
   InformationDistributor distributor;
 
-  ArenaBase* my_arena;
+  Arena* my_arena;
 
 public: // global names etc.
   string option_filename;
