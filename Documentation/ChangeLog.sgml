@@ -4,6 +4,11 @@
 <title>Change log
 <itemize>
 
+<item> <bf>0.9.7:</bf>
+<p>
+
+It is now possible to redirect messages to a file or STDOUT.
+
 <item> <bf>0.9.6:</bf>
 <p>
 The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
