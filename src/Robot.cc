@@ -79,15 +79,7 @@ Robot::Robot(const String& filename)
     robot_plain_filename = get_segment(robot_filename, nr+1, -1);
 
 
-  fifo_instead_of_process = false;
-
-  if( String(".ififo") == get_segment(robot_filename, -6, -1) )
-    {
-      ififo_name = robot_filename;
-      ofifo_name = get_segment(ififo_name, 0, -7) + ".ofifo";
-      fifo_instead_of_process = true;
-    }
-
+  network_robot = false;
 
 
   plain_robot_name = "";
@@ -111,7 +103,6 @@ Robot::Robot(const String& filename)
   instreamp = NULL;
   outstreamp = NULL;
   pipes[0] = pipes[1] = -1;
-  ofifo_fd = ififo_fd = -1;
   pid = -1;
   last_drawn_robot_center = Vector2D(infinity,infinity);
 
@@ -143,7 +134,6 @@ Robot::~Robot()
     {
       if( is_process_running() ) kill_process_forcefully();
       delete_pipes();
-      delete_fifos();
     }
 } 
 
@@ -380,7 +370,7 @@ Robot::send_signal()
 {
   if( send_usr_signal )
     {
-      if( fifo_instead_of_process )
+      if( network_robot )
         *outstreamp << "@S" << signal_to_send << endl;
       else if( pid > 0 )
         kill(pid, signal_to_send);
@@ -390,7 +380,7 @@ Robot::send_signal()
 void
 Robot::kill_process_forcefully()
 {
-  if( fifo_instead_of_process )
+  if( network_robot )
     *outstreamp << "@K" << endl;
   else if( pid > 0 )
     kill(pid, SIGKILL);
@@ -400,29 +390,9 @@ Robot::kill_process_forcefully()
 }
 
 void
-Robot::open_fifos()
-{
-   // Open the fifos for read/write
-  
-  ififo_fd = open( ififo_name.chars(), O_RDONLY | O_NONBLOCK);
-
-  if( ififo_fd == -1 )
-    Error(true, "Couldn't open " + ififo_name, "Robot::open_fifos");  
-
-
-  ofifo_fd = open( ofifo_name.chars(), O_WRONLY | O_NONBLOCK);
-
-  if( ofifo_fd == -1 )
-    Error(true, "Couldn't open " + ofifo_name, "Robot::open_fifos");  
-
-  outstreamp = new ofstream(ofifo_fd);
-  instreamp = new ifstream(ififo_fd);
-}
-
-void
 Robot::delete_pipes()
 {
-  if( ! fifo_instead_of_process )
+  if( ! network_robot )
     {
       if( instreamp != NULL ) delete instreamp;
       instreamp = NULL;
@@ -441,27 +411,6 @@ Robot::delete_pipes()
       pipes[1] = -1;
     }
 }
-
-void
-Robot::delete_fifos()
-{
-  if( instreamp != NULL ) delete instreamp;
-  instreamp = NULL;
-  if( outstreamp != NULL ) delete outstreamp;
-  outstreamp = NULL;
-
-  if( ofifo_fd != -1 )
-    {
-      close(ofifo_fd);
-      ofifo_fd = -1;
-    }
-  if( ififo_fd != -1 )
-    {
-      close(ififo_fd);
-      ififo_fd = -1;
-    }
-}
-
 
 void
 Robot::live()
@@ -862,7 +811,7 @@ Robot::set_values_at_process_start_up()
 {
   process_running = true;
 
-  if( !fifo_instead_of_process )
+  if( !network_robot )
     {
       cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
       cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
@@ -1096,7 +1045,7 @@ Robot::get_messages()
 
                 case USE_NON_BLOCKING:
                   *instreamp >> val;
-                  if( fifo_instead_of_process )
+                  if( network_robot )
                     {
                       *outstreamp << '@' << ( val ? 'N' : 'B' ) << endl;
                       send_message(INITIALIZE, 1);  

@@ -241,22 +241,6 @@ check_if_filename_is_robot( String& fname )
       ( String(".robot") == get_segment(fname, -6, -1) ) )
     return true;
 
-    
-  // Check if file is a input fifo ending with .ififo
-  if( String(".ififo") == get_segment(fname, -6, -1) &&
-      S_ISFIFO( filestat.st_mode) && 
-      ( filestat.st_mode & ( S_IRUSR | S_IRGRP | S_IROTH) ) )
-    {
-
-      // Check the output fifo as well
-      String ofifo_name = get_segment(fname, 0, -7) + ".ofifo";
-
-      if( 0 == stat( fname.chars(), &filestat ) &&
-          S_ISFIFO( filestat.st_mode) && 
-          ( filestat.st_mode & ( S_IWUSR | S_IWGRP | S_IWOTH) ) )
-        return true;
-
-    }
 
   return false;
 }

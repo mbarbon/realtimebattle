@@ -65,17 +65,14 @@ public:
   void set_stats(const double pnts, const int pos, const double time_survived,
                  const bool make_stats);
   bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
+  bool is_networked() { return network_robot; }
   void start_process();
   bool is_process_running();
   void check_process();
   void send_signal();
   void end_process();
   void delete_pipes();
-  void delete_fifos();
   void kill_process_forcefully();
-  bool use_fifo_instead_of_process() { return fifo_instead_of_process; }
-
-  void open_fifos();
 
   void live();
   void die();
@@ -163,9 +160,6 @@ private:
   class String robot_filename;        // Filename with path  
   class String robot_plain_filename;  // Filename without path
 
-  class String ififo_name;
-  class String ofifo_name;
-
   bool colour_given;
   bool name_given;
   
@@ -181,14 +175,14 @@ private:
   double cpu_warning_limit;
   double cpu_timeout;
 
-  bool fifo_instead_of_process;
-
   ifstream* instreamp;
   ofstream* outstreamp;
+
   int pipes[2];
-  int ififo_fd;
-  int ofifo_fd;
   pid_t pid;    
+
+  bool network_robot;
+  List<String> message_list;  // For use by a network robot
 
   ListIterator<stat_t> current_game_stats;
 
