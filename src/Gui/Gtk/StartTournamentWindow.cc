@@ -47,7 +47,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaController.h"
 #include "IntlDefs.h"
-#include "ArenaRealTime.h"
+#include "Arena.h"
 #include "StartTournamentWindow.h"
 #include "Various.h"
 #include "GuiVarious.h"
@@ -837,72 +837,72 @@ void
 StartTournamentWindow::start( GtkWidget* widget,
                               class StartTournamentWindow* stw_p )
 {
-  if( stw_p->get_tournament_started_flag() == true )
-    return;
+//    if( stw_p->get_tournament_started_flag() == true )
+//      return;
 
-  if( the_arena_controller.is_started() )
-    if( the_arena.get_state() != NOT_STARTED && the_arena.get_state() != FINISHED )
-      return;
+//    if( the_arena_controller.is_started() )
+//      if( the_arena.get_state() != NOT_STARTED && the_arena.get_state() != FINISHED )
+//        return;
 
-  int value[3];
-  int robot_number = stw_p->get_selected_robot_tournament()->size();
+//    int value[3];
+//    int robot_number = stw_p->get_selected_robot_tournament()->size();
 
-  for( int i = 0; i < 3; i++ )
-    {
-      int min_value;
-      int max_value;
+//    for( int i = 0; i < 3; i++ )
+//      {
+//        int min_value;
+//        int max_value;
 
-      if(i != 1)
-        max_value = 10000;
-      else
-        {
-          max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),
-                           (long int) robot_number );
-        }
-      if(i != 1)
-        min_value = 1;
-      else
-        min_value = 2;
+//        if(i != 1)
+//          max_value = 10000;
+//        else
+//          {
+//            max_value = min( the_opts.get_l( OPTION_MAX_ROBOTS_ALLOWED ),
+//                             (long int) robot_number );
+//          }
+//        if(i != 1)
+//          min_value = 1;
+//        else
+//          min_value = 2;
 
-      value[i] = string2int( gtk_entry_get_text( GTK_ENTRY( stw_p->get_entries()[i] ) ) );
+//        value[i] = string2int( gtk_entry_get_text( GTK_ENTRY( stw_p->get_entries()[i] ) ) );
 
-      value[i] = min( max_value, value[i] );
-      value[i] = max( min_value, value[i] );
-    }
-  if( robot_number > 1 &&
-      !( stw_p->get_selected_arena_tournament()->size() ) )
-    {
-      stw_p->set_tournament_started_flag( true );
-      the_arena_controller.start_realtime_arena();
-      realtime_arena.start_tournament( *( stw_p->get_selected_robot_tournament() ),
-                                       *( stw_p->get_selected_arena_tournament() ),
-                                       value[1], value[0], value[2] );
+//        value[i] = min( max_value, value[i] );
+//        value[i] = max( min_value, value[i] );
+//      }
+//    if( robot_number > 1 &&
+//        !( stw_p->get_selected_arena_tournament()->size() ) )
+//      {
+//        stw_p->set_tournament_started_flag( true );
+//        the_arena_controller.start_realtime_arena();
+//        realtime_arena.start_tournament( *( stw_p->get_selected_robot_tournament() ),
+//                                         *( stw_p->get_selected_arena_tournament() ),
+//                                         value[1], value[0], value[2] );
 
-      // create the tmp rtb dir if it exists and save the current tournament there
-      create_tmp_rtb_dir();
-      stw_p->save_tournament_file( the_opts.get_s( OPTION_TMP_RTB_DIR ) +
-                                   tmp_tournament_file, false, false );
+//        // create the tmp rtb dir if it exists and save the current tournament there
+//        create_tmp_rtb_dir();
+//        stw_p->save_tournament_file( the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+//                                     tmp_tournament_file, false, false );
 
-      // close down StartTournamentWindow
-      the_gui.close_starttournamentwindow();
-    }
-  else
-    {
-      string error_msg( "" );
-      if( robot_number <= 1 )
-        error_msg += string("\n") + _("There must be at least two robots in the tournament.");
-      if( stw_p->selected_arena_tournament.size() )
-        error_msg += string("\n") + _("There are no arenas in the tournament.");
+//        // close down StartTournamentWindow
+//        the_gui.close_starttournamentwindow();
+//      }
+//    else
+//      {
+//        string error_msg( "" );
+//        if( robot_number <= 1 )
+//          error_msg += string("\n") + _("There must be at least two robots in the tournament.");
+//        if( stw_p->selected_arena_tournament.size() )
+//          error_msg += string("\n") + _("There are no arenas in the tournament.");
 
-      if( error_msg != "" )
-        {
-          list<string> button_list;
-          button_list.push_back( string( _(" Ok ") ) );
-          string info_text = _("Tournament could not be started.") + error_msg;
-          Dialog( info_text, button_list, 
-                  (DialogFunction) StartTournamentWindow::dummy_result );
-        }
-    }
+//        if( error_msg != "" )
+//          {
+//            list<string> button_list;
+//            button_list.push_back( string( _(" Ok ") ) );
+//            string info_text = _("Tournament could not be started.") + error_msg;
+//            Dialog( info_text, button_list, 
+//                    (DialogFunction) StartTournamentWindow::dummy_result );
+//          }
+//      }
 }
 
 void

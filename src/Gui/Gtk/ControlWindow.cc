@@ -31,8 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "Dialog.h"
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
-#include "ArenaReplay.h"
+#include "Arena.h"
 #include "Robot.h"
 #include "OptionHandler.h"
 
@@ -269,10 +268,10 @@ ControlWindow::display_replay_widgets()
   gtk_box_pack_start( GTK_BOX( extra_vbox ), hbox, FALSE, FALSE, 0 );
   gtk_widget_show( hbox );
 
-  current_replay_time_adjustment =
-    (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
-                                          replay_arena.get_length_of_current_game(),
-                                          0.1, 1.0, 1.0 );
+//    current_replay_time_adjustment =
+//      (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
+//                                            the_arena.get_length_of_current_game(),
+//                                            0.1, 1.0, 1.0 );
 
   gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
                       (GtkSignalFunc) change_current_replay_time,
@@ -411,20 +410,20 @@ ControlWindow::display_replay_widgets()
 void
 ControlWindow::change_time_limitations()
 {
-  if( displayed == REPLAY_WIDGETS )
-    {
-      // Possible memory leak: Do not know how to destroy old adjustment
-      // possibly destroyed by gtk_range_set_adjustment()
-      current_replay_time_adjustment =
-        (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
-                                              replay_arena.get_length_of_current_game(),
-                                              0.1, 1.0, 1.0 );
-      gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
-                          (GtkSignalFunc) change_current_replay_time,
-                          (gpointer) this );
-      gtk_range_set_adjustment( GTK_RANGE( time_control ),
-                                current_replay_time_adjustment );
-    }
+//    if( displayed == REPLAY_WIDGETS )
+//      {
+//        // Possible memory leak: Do not know how to destroy old adjustment
+//        // possibly destroyed by gtk_range_set_adjustment()
+//        current_replay_time_adjustment =
+//          (GtkAdjustment*) gtk_adjustment_new ( 0.0, 0.0,
+//                                                the_arena.get_length_of_current_game(),
+//                                                0.1, 1.0, 1.0 );
+//        gtk_signal_connect( GTK_OBJECT( current_replay_time_adjustment ), "value_changed",
+//                            (GtkSignalFunc) change_current_replay_time,
+//                            (gpointer) this );
+//        gtk_range_set_adjustment( GTK_RANGE( time_control ),
+//                                  current_replay_time_adjustment );
+//      }
 }
 
 ControlWindow::~ControlWindow()
@@ -456,47 +455,47 @@ ControlWindow::quit_rtb( GtkWidget* widget,
 void
 ControlWindow::pause( GtkWidget* widget, class ControlWindow* cw_p )
 {
-  if( the_arena_controller.is_started() )
-    the_arena.pause_game_toggle();
+//    if( the_arena_controller.is_started() )
+//      the_arena.pause_game_toggle();
 }
 
 void
 ControlWindow::step( GtkWidget* widget, gpointer data )
 {
-  if( the_arena_controller.is_started() )
-    the_arena.step_paused_game();
+//    if( the_arena_controller.is_started() )
+//      the_arena.step_paused_game();
 }
 
 void
 ControlWindow::end_game( GtkWidget* widget, gpointer data )
 {
-  if( the_arena_controller.is_started() )
-    if( the_arena.get_state() != NOT_STARTED &&
-        the_arena.get_state() != FINISHED )
-      the_arena.end_game();
+//    if( the_arena_controller.is_started() )
+//      if( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED )
+//        the_arena.end_game();
 }
 
 void
 ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 {
-  if( the_arena_controller.is_started() )
-    if(the_arena.get_state() == GAME_IN_PROGRESS || 
-       the_arena.get_state() == PAUSED )
-      {
-        Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
-        if( robotp != NULL )
-          robotp->die();
-      }
+//    if( the_arena_controller.is_started() )
+//      if(the_arena.get_state() == GAME_IN_PROGRESS || 
+//         the_arena.get_state() == PAUSED )
+//        {
+//          Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
+//          if( robotp != NULL )
+//            robotp->die();
+//        }
 }
 
 void
 ControlWindow::change_debug_level( GtkAdjustment *adj,
                                    class ControlWindow* cw_p )
 {
-  if( the_arena_controller.is_started() )
-    the_arena.set_debug_level
-      ( gtk_spin_button_get_value_as_int
-        ( GTK_SPIN_BUTTON( cw_p->debug_level ) ) );
+//    if( the_arena_controller.is_started() )
+//      the_arena.set_debug_level
+//        ( gtk_spin_button_get_value_as_int
+//          ( GTK_SPIN_BUTTON( cw_p->debug_level ) ) );
 }
 
 void
@@ -510,20 +509,20 @@ void
 ControlWindow::replay_tournament( GtkWidget* widget,
                                   class ControlWindow* cw_p )
 {
-  if( the_arena_controller.is_started() &&
-      ( the_arena.get_state() != NOT_STARTED &&
-        the_arena.get_state() != FINISHED ) )
-    {
-      string info_text = _("This action will kill the current tournament.\n"
-                           "Do you want to do that?");
-      list<string> string_list;
-      string_list.push_back( string( _("Yes") ) );
-      string_list.push_back( string( _("No")  ) );
-      Dialog( info_text, string_list,
-              (DialogFunction) ControlWindow::kill_and_open_filesel );
-    }
-    else
-      cw_p->open_replay_filesel();
+//    if( the_arena_controller.is_started() &&
+//        ( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED ) )
+//      {
+//        string info_text = _("This action will kill the current tournament.\n"
+//                             "Do you want to do that?");
+//        list<string> string_list;
+//        string_list.push_back( string( _("Yes") ) );
+//        string_list.push_back( string( _("No")  ) );
+//        Dialog( info_text, string_list,
+//                (DialogFunction) ControlWindow::kill_and_open_filesel );
+//      }
+//      else
+//        cw_p->open_replay_filesel();
 }
 
 void
@@ -548,11 +547,11 @@ ControlWindow::open_replay_filesel()
 void
 ControlWindow::kill_and_open_filesel( int result )
 {
-  if( the_arena_controller.is_started() && result == 1 )
-    {
-      the_arena.interrupt_tournament();
-      controlwindow_p->open_replay_filesel();
-    }
+//    if( the_arena_controller.is_started() && result == 1 )
+//      {
+//        the_arena.interrupt_tournament();
+//        controlwindow_p->open_replay_filesel();
+//      }
 }
 
 
@@ -659,25 +658,25 @@ ControlWindow::destroy_filesel( GtkWidget* widget,
 void
 ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
 {
-  if( the_arena_controller.is_started() )
-    if( the_arena.get_state() != NOT_STARTED &&
-        the_arena.get_state() != FINISHED )
-      {
-        string info_text = _("This action will kill the current tournament.\n"
-                             "Do you want to do that?");
-        list<string> string_list;
-        string_list.push_back( string( _("Yes") ) );
-        string_list.push_back( string( _("No")  ) );
-        Dialog( info_text, string_list,
-                (DialogFunction) ControlWindow::end_tournament );
-      }
+//    if( the_arena_controller.is_started() )
+//      if( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED )
+//        {
+//          string info_text = _("This action will kill the current tournament.\n"
+//                               "Do you want to do that?");
+//          list<string> string_list;
+//          string_list.push_back( string( _("Yes") ) );
+//          string_list.push_back( string( _("No")  ) );
+//          Dialog( info_text, string_list,
+//                  (DialogFunction) ControlWindow::end_tournament );
+//        }
 }
 
 void
 ControlWindow::end_tournament( int result )
 {
-  if( the_arena_controller.is_started() && result == 1 )
-    the_arena.interrupt_tournament();
+//    if( the_arena_controller.is_started() && result == 1 )
+//      the_arena.interrupt_tournament();
 }
 
 void
@@ -699,7 +698,7 @@ ControlWindow::rewind_pressed( GtkWidget* widget,
                                class ControlWindow* cw_p )
 {
   //  cout << "rewinding ... " << endl;
-  replay_arena.change_speed( false, true );
+  //  the_arena.change_speed( false, true );
 }
 
 void
@@ -707,7 +706,7 @@ ControlWindow::rewind_released( GtkWidget* widget,
                                 class ControlWindow* cw_p )
 {
   //  cout << "until released" << endl;
-  replay_arena.change_speed( false, false );
+  //  the_arena.change_speed( false, false );
 }
 
 void
@@ -715,7 +714,7 @@ ControlWindow::fast_forward_pressed( GtkWidget* widget,
                                      class ControlWindow* cw_p )
 {
   //  cout << "forwarding ... " << endl;
-  replay_arena.change_speed( true, true );
+  //  the_arena.change_speed( true, true );
 }
 
 void
@@ -723,7 +722,7 @@ ControlWindow::fast_forward_released( GtkWidget* widget,
                                       class ControlWindow* cw_p )
 {
   //  cout << "until released" << endl;
-  replay_arena.change_speed( true, false );
+  //  the_arena.change_speed( true, false );
 }
 
 void
@@ -731,7 +730,7 @@ ControlWindow::step_forward( GtkWidget* widget,
                              class ControlWindow* cw_p )
 {
   //  cout << "Stepping forward" << endl;
-  replay_arena.step_forward_or_backward( true );  
+  //  the_arena.step_forward_or_backward( true );  
 }
 
 void
@@ -739,42 +738,42 @@ ControlWindow::step_backward( GtkWidget* widget,
                               class ControlWindow* cw_p )
 {
   //  cout << "Stepping backward" << endl;
-  replay_arena.step_forward_or_backward( false );
+  //  the_arena.step_forward_or_backward( false );
 }
 
 void
 ControlWindow::next_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
-  replay_arena.change_game( 1, 0 );
+  //  the_arena.change_game( 1, 0 );
 }
 
 void
 ControlWindow::prev_game( GtkWidget* widget,
                           class ControlWindow* cw_p )
 {
-  replay_arena.change_game( -1, 0 );
+  //  the_arena.change_game( -1, 0 );
 }
 
 void
 ControlWindow::next_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
-  replay_arena.change_game( 0, 1 );
+  //  the_arena.change_game( 0, 1 );
 }
 
 void
 ControlWindow::prev_seq( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
-  replay_arena.change_game( 0, -1 );
+  //  the_arena.change_game( 0, -1 );
 }
 
 void
 ControlWindow::change_current_replay_time( GtkAdjustment *adj,
                                            class ControlWindow* cw_p )
 {
-  replay_arena.change_replay_time( adj->value );
+  //  the_arena.change_replay_time( adj->value );
 }
 
 void

@@ -150,17 +150,17 @@ ScoreWindow::~ScoreWindow()
 void
 ScoreWindow::set_window_title()
 {
-  string title = (string)
-    (string)_("Score") + "  " + 
-    (string)_(" Seq: ") + int2string( the_arena.get_sequence_nr() ) + 
-    " (" + int2string( the_arena.get_sequences_in_tournament() ) +
+//    string title = (string)
+//      (string)_("Score") + "  " + 
+//      (string)_(" Seq: ") + int2string( the_arena.get_sequence_nr() ) + 
+//      " (" + int2string( the_arena.get_sequences_in_tournament() ) +
 
-    ")  " + (string)_("Game") + ": " + int2string( the_arena.get_game_nr() ) +
-    " (" + int2string( the_arena.get_games_per_sequence() ) +
+//      ")  " + (string)_("Game") + ": " + int2string( the_arena.get_game_nr() ) +
+//      " (" + int2string( the_arena.get_games_per_sequence() ) +
 
-    ")  " + (string)_("Time") + ": " + int2string( (int)the_arena.get_total_time() );
+//      ")  " + (string)_("Time") + ": " + int2string( (int)the_arena.get_total_time() );
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
+//    gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
 
 //

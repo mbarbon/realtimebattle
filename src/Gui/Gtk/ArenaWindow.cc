@@ -27,9 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Gui.h"
 #include "ArenaWindow.h"
 #include "IntlDefs.h"
-#include "ArenaBase.h"
+#include "Arena.h"
 #include "ArenaController.h"
-#include "ArenaRealTime.h"
 #include "ControlWindow.h"
 #include "DrawingObjects.h"
 #include "Extras.h"
@@ -160,8 +159,8 @@ ArenaWindow::~ArenaWindow()
 void
 ArenaWindow::set_window_title()
 {
-  string title = (string)_("Arena") + "   " +
-    the_arena.get_current_arena_filename();
+  string title = (string)_("Arena") + "   ";// +
+    //    the_arena.get_current_arena_filename();
   gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
 
@@ -454,48 +453,48 @@ ArenaWindow::draw_line( const Vector2D& start, const Vector2D& direction,
 void
 ArenaWindow::drawing_area_scale_changed( const bool change_da_value )
 {
-  if( window_shown )
-    {
-      int width = scrolled_window->allocation.width - 24;
-      int height = scrolled_window->allocation.height - 24;
-      scrolled_window_size = Vector2D( (double)width,
-                                       (double)height );
-      double w = (double)( width * zoom );
-      double h = (double)( height * zoom );
-      double bw = the_arena.get_boundary()[1][0] -
-        the_arena.get_boundary()[0][0];
-      double bh = the_arena.get_boundary()[1][1] -
-        the_arena.get_boundary()[0][1];
-      if( w / bw >= h / bh )
-        {
-          drawing_area_scale = h / bh;
-          w = drawing_area_scale * bw;
-        }
-      else
-        {
-          drawing_area_scale = w / bw;
-          h = drawing_area_scale * bh;
-        }
+//    if( window_shown )
+//      {
+//        int width = scrolled_window->allocation.width - 24;
+//        int height = scrolled_window->allocation.height - 24;
+//        scrolled_window_size = Vector2D( (double)width,
+//                                         (double)height );
+//        double w = (double)( width * zoom );
+//        double h = (double)( height * zoom );
+//        double bw = the_arena.get_boundary()[1][0] -
+//          the_arena.get_boundary()[0][0];
+//        double bh = the_arena.get_boundary()[1][1] -
+//          the_arena.get_boundary()[0][1];
+//        if( w / bw >= h / bh )
+//          {
+//            drawing_area_scale = h / bh;
+//            w = drawing_area_scale * bw;
+//          }
+//        else
+//          {
+//            drawing_area_scale = w / bw;
+//            h = drawing_area_scale * bh;
+//          }
 
-      gtk_widget_set_usize( drawing_area, (int)w, (int)h );
-      if( change_da_value )
-        {
-          GtkAdjustment* hadj = gtk_scrolled_window_get_hadjustment
-            ( (GtkScrolledWindow*) scrolled_window );
-          gtk_adjustment_set_value( hadj,
-                                    ( ( hadj->value + hadj->page_size / 2 ) /
-                                      ( hadj->upper - hadj->lower ) ) *
-                                    (int)w - hadj->page_size / 2 );
-          GtkAdjustment* vadj = gtk_scrolled_window_get_vadjustment
-            ( (GtkScrolledWindow*) scrolled_window );
-          gtk_adjustment_set_value( vadj,
-                                    ( ( vadj->value + vadj->page_size / 2 ) /
-                                      ( vadj->upper - vadj->lower ) ) *
-                                    (int)h - vadj->page_size / 2 );
-        }
-      else
-        draw_everything();
-    }
+//        gtk_widget_set_usize( drawing_area, (int)w, (int)h );
+//        if( change_da_value )
+//          {
+//            GtkAdjustment* hadj = gtk_scrolled_window_get_hadjustment
+//              ( (GtkScrolledWindow*) scrolled_window );
+//            gtk_adjustment_set_value( hadj,
+//                                      ( ( hadj->value + hadj->page_size / 2 ) /
+//                                        ( hadj->upper - hadj->lower ) ) *
+//                                      (int)w - hadj->page_size / 2 );
+//            GtkAdjustment* vadj = gtk_scrolled_window_get_vadjustment
+//              ( (GtkScrolledWindow*) scrolled_window );
+//            gtk_adjustment_set_value( vadj,
+//                                      ( ( vadj->value + vadj->page_size / 2 ) /
+//                                        ( vadj->upper - vadj->lower ) ) *
+//                                      (int)h - vadj->page_size / 2 );
+//          }
+//        else
+//          draw_everything();
+//      }
 }
 
 // Warning! Do not use widget, may be NULL or undefined

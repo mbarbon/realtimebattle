@@ -341,10 +341,10 @@ void
 StatisticsWindow::save_stats( GtkWidget* widget,
                               class StatisticsWindow* sw_p )
 {
-  the_arena.save_statistics_to_file
-    ( gtk_file_selection_get_filename
-      ( GTK_FILE_SELECTION( sw_p->get_filesel() ) ) );
-  destroy_filesel( sw_p->get_filesel(), sw_p );
+//    the_arena.save_statistics_to_file
+//      ( gtk_file_selection_get_filename
+//        ( GTK_FILE_SELECTION( sw_p->get_filesel() ) ) );
+//    destroy_filesel( sw_p->get_filesel(), sw_p );
 }
 
 void
@@ -431,13 +431,13 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
           change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
           break;
         case STAT_TYPE_SEQUENCE:
-          change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
-          number = the_arena.get_sequence_nr();
+//            change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
+//            number = the_arena.get_sequence_nr();
           break;
         case STAT_TYPE_GAME:
-          change_sorting_in_clist( GTK_CLIST( clist ), 3, info_p->sw_p );
-          number = ( the_arena.get_sequence_nr() - 1 ) *
-            the_arena.get_games_per_sequence() + the_arena.get_game_nr();
+//            change_sorting_in_clist( GTK_CLIST( clist ), 3, info_p->sw_p );
+//            number = ( the_arena.get_sequence_nr() - 1 ) *
+//              the_arena.get_games_per_sequence() + the_arena.get_game_nr();
           break;
         case STAT_TYPE_ROBOT:
           change_sorting_in_clist( GTK_CLIST( clist ), 0, info_p->sw_p );
@@ -455,107 +455,107 @@ void
 StatisticsWindow::change_stats_viewed( GtkWidget* widget,
                                        struct change_stat_data_t* info_p )
 {
-  GtkWidget* clist = info_p->sw_p->get_clist();
-  stat_types sw_type = info_p->sw_p->get_type();
-  int number = info_p->sw_p->get_looking_at_nr();
+//    GtkWidget* clist = info_p->sw_p->get_clist();
+//    stat_types sw_type = info_p->sw_p->get_type();
+//    int number = info_p->sw_p->get_looking_at_nr();
 
-  int game = the_arena.get_game_nr();
-  int max_nr = -1;
+//    int game = the_arena.get_game_nr();
+//    int max_nr = -1;
 
-  switch( sw_type )
-    {
-    case STAT_TYPE_TOTAL:
-      max_nr = 1;
-      break;
-    case STAT_TYPE_SEQUENCE:
-      max_nr = the_arena.get_sequence_nr();
-      break;
-    case STAT_TYPE_GAME:
-      max_nr = ( the_arena.get_sequence_nr() - 1 ) *
-        the_arena.get_games_per_sequence() + game;
-      break;
-    case STAT_TYPE_ROBOT:
-      max_nr = the_arena.get_all_robots_in_tournament()->size();
-      break;
-    }
+//    switch( sw_type )
+//      {
+//      case STAT_TYPE_TOTAL:
+//        max_nr = 1;
+//        break;
+//      case STAT_TYPE_SEQUENCE:
+//        max_nr = the_arena.get_sequence_nr();
+//        break;
+//      case STAT_TYPE_GAME:
+//        max_nr = ( the_arena.get_sequence_nr() - 1 ) *
+//          the_arena.get_games_per_sequence() + game;
+//        break;
+//      case STAT_TYPE_ROBOT:
+//        max_nr = the_arena.get_all_robots_in_tournament()->size();
+//        break;
+//      }
 
-  if( info_p->extreme_change && max_nr > 0 )
-    {
-      if( info_p->change < 0 )
-        number = abs( info_p->change );
-      else if( info_p->change > 0 )
-        number = max( max_nr - info_p->change + 1, 1 );
-    }
-  else
-    {
-      number += info_p->change;
-      number = min( number, max_nr );
-      number = max( number, 1 );
-    }
+//    if( info_p->extreme_change && max_nr > 0 )
+//      {
+//        if( info_p->change < 0 )
+//          number = abs( info_p->change );
+//        else if( info_p->change > 0 )
+//          number = max( max_nr - info_p->change + 1, 1 );
+//      }
+//    else
+//      {
+//        number += info_p->change;
+//        number = min( number, max_nr );
+//        number = max( number, 1 );
+//      }
 
-  info_p->sw_p->set_looking_at_nr( number );
-  add_the_statistics_to_clist( clist, info_p->sw_p );
+//    info_p->sw_p->set_looking_at_nr( number );
+//    add_the_statistics_to_clist( clist, info_p->sw_p );
 }
 
 void
 StatisticsWindow::make_title_button()
 {
-  if( title_button_hbox != NULL )
-    gtk_widget_destroy( title_button_hbox );
-  title_button_hbox = gtk_hbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( title_button ), title_button_hbox );
-  gtk_widget_show( title_button_hbox );
+//    if( title_button_hbox != NULL )
+//      gtk_widget_destroy( title_button_hbox );
+//    title_button_hbox = gtk_hbox_new( FALSE, 10 );
+//    gtk_container_add( GTK_CONTAINER( title_button ), title_button_hbox );
+//    gtk_widget_show( title_button_hbox );
 
-  string title;
-  switch( type )
-    {
-    case STAT_TYPE_TOTAL:
-      title = _(" Grand Total ");
-      break;
-    case STAT_TYPE_SEQUENCE:
-      title = (string) _(" Sequence ") + int2string( looking_at_nr );
-      break;
-    case STAT_TYPE_GAME:
-      {
-        int gps = the_arena.get_games_per_sequence();
-        int game = looking_at_nr % gps;
-        int sequence = (looking_at_nr / gps ) + 1;
-        if( game == 0 )
-          {
-            game = gps;
-            sequence--;
-          }
-        title = (string) _(" Sequence: ") + int2string( sequence ) + "  " +
-          _("Game") + ": " + int2string( game );
-      }
-      break;
-    case STAT_TYPE_ROBOT:
-      {
-        int i=0;
-        list<DrawingRobot>::iterator li;
-        for( li = the_gui.get_robots_in_tournament()->begin();
-             li != the_gui.get_robots_in_tournament()->end(); li++ )
-          {
-            i++;
-            if( looking_at_nr == i )
-              {
-                GdkPixmap* col_pixmap;
-                GdkBitmap* bitmap_mask;
-                (*li).get_stat_pixmap(window_p->window, col_pixmap, bitmap_mask);
-                GtkWidget* pixmap_w = gtk_pixmap_new( col_pixmap, bitmap_mask );
-                gtk_box_pack_start( GTK_BOX( title_button_hbox ),
-                                    pixmap_w, FALSE, FALSE, 0 );
-                gtk_widget_show( pixmap_w );
-                title = (*li).get_robot_p()->get_robot_name();
-              }
-          }
-      }
-      break;
-    }
+//    string title;
+//    switch( type )
+//      {
+//      case STAT_TYPE_TOTAL:
+//        title = _(" Grand Total ");
+//        break;
+//      case STAT_TYPE_SEQUENCE:
+//        title = (string) _(" Sequence ") + int2string( looking_at_nr );
+//        break;
+//      case STAT_TYPE_GAME:
+//        {
+//          int gps = the_arena.get_games_per_sequence();
+//          int game = looking_at_nr % gps;
+//          int sequence = (looking_at_nr / gps ) + 1;
+//          if( game == 0 )
+//            {
+//              game = gps;
+//              sequence--;
+//            }
+//          title = (string) _(" Sequence: ") + int2string( sequence ) + "  " +
+//            _("Game") + ": " + int2string( game );
+//        }
+//        break;
+//      case STAT_TYPE_ROBOT:
+//        {
+//          int i=0;
+//          list<DrawingRobot>::iterator li;
+//          for( li = the_gui.get_robots_in_tournament()->begin();
+//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//            {
+//              i++;
+//              if( looking_at_nr == i )
+//                {
+//                  GdkPixmap* col_pixmap;
+//                  GdkBitmap* bitmap_mask;
+//                  (*li).get_stat_pixmap(window_p->window, col_pixmap, bitmap_mask);
+//                  GtkWidget* pixmap_w = gtk_pixmap_new( col_pixmap, bitmap_mask );
+//                  gtk_box_pack_start( GTK_BOX( title_button_hbox ),
+//                                      pixmap_w, FALSE, FALSE, 0 );
+//                  gtk_widget_show( pixmap_w );
+//                  title = (*li).get_robot_p()->get_robot_name();
+//                }
+//            }
+//        }
+//        break;
+//      }
 
-  GtkWidget* label = gtk_label_new( title.c_str() );
-  gtk_box_pack_start( GTK_BOX( title_button_hbox ), label, TRUE, TRUE, 0 );
-  gtk_widget_show( label );
+//    GtkWidget* label = gtk_label_new( title.c_str() );
+//    gtk_box_pack_start( GTK_BOX( title_button_hbox ), label, TRUE, TRUE, 0 );
+//    gtk_widget_show( label );
 }
 
 void
@@ -630,140 +630,140 @@ void
 StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
                                                class StatisticsWindow* sw_p )
 {
-  Robot* robot_p = NULL;
-  list<DrawingRobot>::iterator li;
-  list<stat_t>::const_iterator stat_li;
+//    Robot* robot_p = NULL;
+//    list<DrawingRobot>::iterator li;
+//    list<stat_t>::const_iterator stat_li;
 
-  GtkWidget* clist = sw_p->get_clist();
-  stat_types sw_type = sw_p->get_type();
-  int number = sw_p->get_looking_at_nr();
+//    GtkWidget* clist = sw_p->get_clist();
+//    stat_types sw_type = sw_p->get_type();
+//    int number = sw_p->get_looking_at_nr();
 
-  sw_p->make_title_button();
+//    sw_p->make_title_button();
 
-  gtk_clist_freeze( GTK_CLIST( clist ) );
-  gtk_clist_clear( GTK_CLIST( clist ) );
+//    gtk_clist_freeze( GTK_CLIST( clist ) );
+//    gtk_clist_clear( GTK_CLIST( clist ) );
 
-  switch( sw_type )
-    {
-    case STAT_TYPE_TOTAL:
-    case STAT_TYPE_SEQUENCE:
-      {
-        int number_of_robots = the_arena.get_number_of_robots();
+//    switch( sw_type )
+//      {
+//      case STAT_TYPE_TOTAL:
+//      case STAT_TYPE_SEQUENCE:
+//        {
+//          int number_of_robots = the_arena.get_number_of_robots();
 
-        double points[number_of_robots];
-        int position[number_of_robots];
+//          double points[number_of_robots];
+//          int position[number_of_robots];
 
-        int robot_nr = -1;
+//          int robot_nr = -1;
 
-        for( li = the_gui.get_robots_in_tournament()->begin();
-             li != the_gui.get_robots_in_tournament()->end(); li++ )
-          {
-            robot_nr++;
-            robot_p = (*li).get_robot_p();
-            points[robot_nr] = 0;
-            for( stat_li  = robot_p->get_statistics()->begin();
-                 stat_li != robot_p->get_statistics()->end(); stat_li++)
-              {
-                if( ( sw_type == STAT_TYPE_SEQUENCE &&
-                      (*stat_li).sequence_nr == number ) ||
-                    sw_type == STAT_TYPE_TOTAL )
-                  points[robot_nr] += (*stat_li).points;
-              }
-          }
+//          for( li = the_gui.get_robots_in_tournament()->begin();
+//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//            {
+//              robot_nr++;
+//              robot_p = (*li).get_robot_p();
+//              points[robot_nr] = 0;
+//              for( stat_li  = robot_p->get_statistics()->begin();
+//                   stat_li != robot_p->get_statistics()->end(); stat_li++)
+//                {
+//                  if( ( sw_type == STAT_TYPE_SEQUENCE &&
+//                        (*stat_li).sequence_nr == number ) ||
+//                      sw_type == STAT_TYPE_TOTAL )
+//                    points[robot_nr] += (*stat_li).points;
+//                }
+//            }
 
-        for(int i = 0;i<number_of_robots;i++)
-          {
-            int temp_pos = 1;
-            for(int j = 0;j<number_of_robots;j++)
-              if(points[j] > points[i])
-                temp_pos++;
-            position[i] = temp_pos;
-          }
+//          for(int i = 0;i<number_of_robots;i++)
+//            {
+//              int temp_pos = 1;
+//              for(int j = 0;j<number_of_robots;j++)
+//                if(points[j] > points[i])
+//                  temp_pos++;
+//              position[i] = temp_pos;
+//            }
 
-        robot_nr = -1;
-        for( li = the_gui.get_robots_in_tournament()->begin();
-             li != the_gui.get_robots_in_tournament()->end(); li++ )
-          {
-            robot_nr++;
-            robot_p = (*li).get_robot_p();
-            stat_t average_stat(0,0,0,0.0,0.0,0.0);
-            int number_of_stat_found = 0;
-            for( stat_li  = robot_p->get_statistics()->begin();
-                 stat_li != robot_p->get_statistics()->end(); stat_li++)
-              {
-                if( ( sw_type == STAT_TYPE_SEQUENCE &&
-                      (*stat_li).sequence_nr == number ) ||
-                    sw_type == STAT_TYPE_TOTAL )
-                  {
-                    number_of_stat_found++;
-                    average_stat.points += (*stat_li).points;
-                    average_stat.time_survived += (*stat_li).time_survived;
-                    average_stat.total_points += (*stat_li).points;
-                  }
-              }
+//          robot_nr = -1;
+//          for( li = the_gui.get_robots_in_tournament()->begin();
+//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//            {
+//              robot_nr++;
+//              robot_p = (*li).get_robot_p();
+//              stat_t average_stat(0,0,0,0.0,0.0,0.0);
+//              int number_of_stat_found = 0;
+//              for( stat_li  = robot_p->get_statistics()->begin();
+//                   stat_li != robot_p->get_statistics()->end(); stat_li++)
+//                {
+//                  if( ( sw_type == STAT_TYPE_SEQUENCE &&
+//                        (*stat_li).sequence_nr == number ) ||
+//                      sw_type == STAT_TYPE_TOTAL )
+//                    {
+//                      number_of_stat_found++;
+//                      average_stat.points += (*stat_li).points;
+//                      average_stat.time_survived += (*stat_li).time_survived;
+//                      average_stat.total_points += (*stat_li).points;
+//                    }
+//                }
 
-            if( number_of_stat_found > 0 )
-              {
-                average_stat.position = position[robot_nr];
-                average_stat.points /= number_of_stat_found;
-                average_stat.time_survived /= number_of_stat_found;
-                sw_p->add_new_row( robot_p, &(*li),
-                                   average_stat, number_of_stat_found );
-              }
-          }
-      }
-      break;
-    case STAT_TYPE_GAME:
-      {
-        int gps = the_arena.get_games_per_sequence();
-        int game = number % gps;
-        int sequence = ( number / gps ) + 1;
-        if( game == 0 )
-          {
-            game = gps;
-            sequence--;
-          }
+//              if( number_of_stat_found > 0 )
+//                {
+//                  average_stat.position = position[robot_nr];
+//                  average_stat.points /= number_of_stat_found;
+//                  average_stat.time_survived /= number_of_stat_found;
+//                  sw_p->add_new_row( robot_p, &(*li),
+//                                     average_stat, number_of_stat_found );
+//                }
+//            }
+//        }
+//        break;
+//      case STAT_TYPE_GAME:
+//        {
+//          int gps = the_arena.get_games_per_sequence();
+//          int game = number % gps;
+//          int sequence = ( number / gps ) + 1;
+//          if( game == 0 )
+//            {
+//              game = gps;
+//              sequence--;
+//            }
 
-        for( li = the_gui.get_robots_in_tournament()->begin();
-             li != the_gui.get_robots_in_tournament()->end(); li++ )
-          {
-            robot_p = (*li).get_robot_p();
+//          for( li = the_gui.get_robots_in_tournament()->begin();
+//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//            {
+//              robot_p = (*li).get_robot_p();
             
-            for( stat_li  = robot_p->get_statistics()->begin();
-                 stat_li != robot_p->get_statistics()->end(); stat_li++)
-              {
-                if((*stat_li).sequence_nr == sequence &&
-                   (*stat_li).game_nr == game)
-                  sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
-              }
-          }
-      }
-      break;
-    case STAT_TYPE_ROBOT:
-      {
-        int i=0;
+//              for( stat_li  = robot_p->get_statistics()->begin();
+//                   stat_li != robot_p->get_statistics()->end(); stat_li++)
+//                {
+//                  if((*stat_li).sequence_nr == sequence &&
+//                     (*stat_li).game_nr == game)
+//                    sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
+//                }
+//            }
+//        }
+//        break;
+//      case STAT_TYPE_ROBOT:
+//        {
+//          int i=0;
 
-        for( li = the_gui.get_robots_in_tournament()->begin();
-             li != the_gui.get_robots_in_tournament()->end(); li++ )
-          {
-            i++;
-            robot_p = (*li).get_robot_p();
-            if( i == number )
-              for( stat_li  = robot_p->get_statistics()->begin();
-                   stat_li != robot_p->get_statistics()->end(); stat_li++)
-                {
-                  sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
-                }
-          }
-      }
-      break;
-    }
+//          for( li = the_gui.get_robots_in_tournament()->begin();
+//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//            {
+//              i++;
+//              robot_p = (*li).get_robot_p();
+//              if( i == number )
+//                for( stat_li  = robot_p->get_statistics()->begin();
+//                     stat_li != robot_p->get_statistics()->end(); stat_li++)
+//                  {
+//                    sw_p->add_new_row( robot_p, &(*li), (*stat_li), -1 );
+//                  }
+//            }
+//        }
+//        break;
+//      }
 
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_sort( GTK_CLIST( clist ) );
-  //  gtk_clist_columns_autosize( GTK_CLIST( clist ) );
-#endif
-  gtk_clist_thaw( GTK_CLIST( clist ) );
+//  #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+//    gtk_clist_sort( GTK_CLIST( clist ) );
+//    //  gtk_clist_columns_autosize( GTK_CLIST( clist ) );
+//  #endif
+//    gtk_clist_thaw( GTK_CLIST( clist ) );
 }
 
 void
@@ -835,38 +835,38 @@ StatisticsWindow::row_selected( GtkWidget* clist, gint row,
                                 gint column, GdkEventButton *event,
                                 class StatisticsWindow* sw_p )
 {
-  stat_types sw_type = sw_p->get_type();
+//    stat_types sw_type = sw_p->get_type();
 
-  if( column == 1 && sw_type != STAT_TYPE_ROBOT )
-    {
-      gtk_clist_freeze( GTK_CLIST( clist ) );
+//    if( column == 1 && sw_type != STAT_TYPE_ROBOT )
+//      {
+//        gtk_clist_freeze( GTK_CLIST( clist ) );
 
-      gchar* clist_text;
+//        gchar* clist_text;
 
-      gtk_clist_get_text( GTK_CLIST( clist ), row, column, &clist_text );
-      string robot_name;
-      if( clist_text != NULL )
-        robot_name = clist_text;
+//        gtk_clist_get_text( GTK_CLIST( clist ), row, column, &clist_text );
+//        string robot_name;
+//        if( clist_text != NULL )
+//          robot_name = clist_text;
 
-      vector<Robot>::iterator li;
-      int counter = 0;
-      bool found_robot = false;
+//        vector<Robot>::iterator li;
+//        int counter = 0;
+//        bool found_robot = false;
 
-      for( li = the_arena.get_all_robots_in_tournament()->begin();
-           li != the_arena.get_all_robots_in_tournament()->end() && !found_robot;
-           li++ )
-        {
-          counter--;
-          if( (*li).get_robot_name() == robot_name )
-            {
-              found_robot = true;
-              change_type_data_t type_data( STAT_TYPE_ROBOT, sw_p );
-              change_table_type( clist, &type_data );
+//        for( li = the_arena.get_all_robots_in_tournament()->begin();
+//             li != the_arena.get_all_robots_in_tournament()->end() && !found_robot;
+//             li++ )
+//          {
+//            counter--;
+//            if( (*li).get_robot_name() == robot_name )
+//              {
+//                found_robot = true;
+//                change_type_data_t type_data( STAT_TYPE_ROBOT, sw_p );
+//                change_table_type( clist, &type_data );
 
-              change_stat_data_t stat_data( counter, true, sw_p );
-              change_stats_viewed( clist, &stat_data );
-            }
-        }
-      gtk_clist_thaw( GTK_CLIST( clist ) );
-    }
+//                change_stat_data_t stat_data( counter, true, sw_p );
+//                change_stats_viewed( clist, &stat_data );
+//              }
+//          }
+//        gtk_clist_thaw( GTK_CLIST( clist ) );
+//      }
 }

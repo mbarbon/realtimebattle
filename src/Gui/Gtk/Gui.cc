@@ -121,75 +121,75 @@ Gui::timeout_function()
 void
 Gui::update_lists()
 {
-  List<Shape>* object_lists;
-  object_lists = the_arena.get_object_lists();
+//    List<Shape>* object_lists;
+//    object_lists = the_arena.get_object_lists();
 
-  ListIterator<Shape> li;
+//    ListIterator<Shape> li;
 
-  for( int obj_type=ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
-    {
-      list<DrawingShape*>::iterator draw_li = drawing_objects_lists[obj_type].begin();
-      for( object_lists[obj_type].first(li); li.ok(); li++ )
-        {
-          if( draw_li != drawing_objects_lists[obj_type].end() )
-            {
-              if( (*draw_li)->get_id() != li()->get_id() )
-                //TODO: remove the object from arena.
-                {
-                  delete (*draw_li);
-                  drawing_objects_lists[obj_type].erase(draw_li);
-                }
-              draw_li++;
-            }
-          else
-            {
-              switch( obj_type )
-                {
-                case ROBOT:
-                  {
-                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].push_back( p );
-                  }
-                  break;
-                case SHOT:
-                  {
-                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].push_back( p );
-                  }
-                  break;
-                case WALL:
-                  if( typeid( *li() ) == typeid( WallLine ) )
-                    {
-                      DrawingShape* p = (DrawingShape*) new DrawingLine( li() );
-                      drawing_objects_lists[obj_type].push_back( p );
-                    }
-                  else if( typeid( *li() ) == typeid( WallCircle ) )
-                    {
-                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                      drawing_objects_lists[obj_type].push_back( p );
-                    }
-                  else if( typeid( *li() ) == typeid( WallInnerCircle ) )
-                    {
-                      DrawingShape* p = (DrawingShape*) new DrawingInnerCircle( li() );
-                      drawing_objects_lists[obj_type].push_back( p );
-                    }
-                  break;
-                case COOKIE:
-                  {
-                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].push_back( p );
-                  }
-                  break;
-                case MINE:
-                  {
-                    DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
-                    drawing_objects_lists[obj_type].push_back( p );
-                  }
-                  break;
-                }
-            }
-        }
-    }
+//    for( int obj_type=ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
+//      {
+//        list<DrawingShape*>::iterator draw_li = drawing_objects_lists[obj_type].begin();
+//        for( object_lists[obj_type].first(li); li.ok(); li++ )
+//          {
+//            if( draw_li != drawing_objects_lists[obj_type].end() )
+//              {
+//                if( (*draw_li)->get_id() != li()->get_id() )
+//                  //TODO: remove the object from arena.
+//                  {
+//                    delete (*draw_li);
+//                    drawing_objects_lists[obj_type].erase(draw_li);
+//                  }
+//                draw_li++;
+//              }
+//            else
+//              {
+//                switch( obj_type )
+//                  {
+//                  case ROBOT:
+//                    {
+//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+//                      drawing_objects_lists[obj_type].push_back( p );
+//                    }
+//                    break;
+//                  case SHOT:
+//                    {
+//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+//                      drawing_objects_lists[obj_type].push_back( p );
+//                    }
+//                    break;
+//                  case WALL:
+//                    if( typeid( *li() ) == typeid( WallLine ) )
+//                      {
+//                        DrawingShape* p = (DrawingShape*) new DrawingLine( li() );
+//                        drawing_objects_lists[obj_type].push_back( p );
+//                      }
+//                    else if( typeid( *li() ) == typeid( WallCircle ) )
+//                      {
+//                        DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+//                        drawing_objects_lists[obj_type].push_back( p );
+//                      }
+//                    else if( typeid( *li() ) == typeid( WallInnerCircle ) )
+//                      {
+//                        DrawingShape* p = (DrawingShape*) new DrawingInnerCircle( li() );
+//                        drawing_objects_lists[obj_type].push_back( p );
+//                      }
+//                    break;
+//                  case COOKIE:
+//                    {
+//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+//                      drawing_objects_lists[obj_type].push_back( p );
+//                    }
+//                    break;
+//                  case MINE:
+//                    {
+//                      DrawingShape* p = (DrawingShape*) new DrawingCircle( li() );
+//                      drawing_objects_lists[obj_type].push_back( p );
+//                    }
+//                    break;
+//                  }
+//              }
+//          }
+//      }
 }
 
 void
@@ -270,12 +270,12 @@ Gui::close_scorewindow()
 void
 Gui::open_statisticswindow()
 {
-  if( the_arena_controller.is_started() )
-    if( NULL == statisticswindow_p && the_arena.get_state() != NOT_STARTED )
-      statisticswindow_p = 
-        new StatisticsWindow( the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
-                              the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ),
-                              -1, -1 );
+//    if( the_arena_controller.is_started() )
+//      if( NULL == statisticswindow_p && the_arena.get_state() != NOT_STARTED )
+//        statisticswindow_p = 
+//          new StatisticsWindow( the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
+//                                the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ),
+//                                -1, -1 );
 }
 
 void
@@ -291,40 +291,40 @@ Gui::close_statisticswindow()
 void
 Gui::open_starttournamentwindow()
 {
-  bool open = false;
-  if( NULL == starttournamentwindow_p )
-    {
-      if( the_arena_controller.is_started() )
-        if( the_arena.get_state() != NOT_STARTED &&
-            the_arena.get_state() != FINISHED )
-          {
-            string info_text = _("This action will kill the current tournament.\n"
-                                 "Do you want to do that?");
-            list<string> string_list;
-            string_list.push_back( string( _("Yes") ) );
-            string_list.push_back( string( _("No")  ) );
-            Dialog( info_text, string_list,
-                    (DialogFunction) Gui::kill_and_start_new_tournament );
-          }
-        else
-          open = true;
-      else
-        open = true;
-    }
+//    bool open = false;
+//    if( NULL == starttournamentwindow_p )
+//      {
+//        if( the_arena_controller.is_started() )
+//          if( the_arena.get_state() != NOT_STARTED &&
+//              the_arena.get_state() != FINISHED )
+//            {
+//              string info_text = _("This action will kill the current tournament.\n"
+//                                   "Do you want to do that?");
+//              list<string> string_list;
+//              string_list.push_back( string( _("Yes") ) );
+//              string_list.push_back( string( _("No")  ) );
+//              Dialog( info_text, string_list,
+//                      (DialogFunction) Gui::kill_and_start_new_tournament );
+//            }
+//          else
+//            open = true;
+//        else
+//          open = true;
+//      }
 
-  if( open )
-    starttournamentwindow_p = 
-      new StartTournamentWindow( -1, -1, -1, -1 );
+//    if( open )
+//      starttournamentwindow_p = 
+//        new StartTournamentWindow( -1, -1, -1, -1 );
 }
 
 void
 Gui::kill_and_start_new_tournament( int result )
 {
-  if( the_arena_controller.is_started() && result == 1 )
-    {
-      the_arena.interrupt_tournament();
-      the_gui.open_starttournamentwindow();
-    }
+//    if( the_arena_controller.is_started() && result == 1 )
+//      {
+//        the_arena.interrupt_tournament();
+//        the_gui.open_starttournamentwindow();
+//      }
 }
 
 void
