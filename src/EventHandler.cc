@@ -27,7 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventHandler.h"
 #include "Event.h"
 #include "Timer.h"
-#include "Various.h"
+//#include "Various.h"
 
 EventHandler::EventHandler()
 {
@@ -35,6 +35,7 @@ EventHandler::EventHandler()
   finished = false;
   pausedTime = 0;
   paused = false;
+  NbRTEvent = NbGTEvent = 0;
 }
 
 EventHandler::~EventHandler()
@@ -48,7 +49,7 @@ void
 EventHandler::main_loop()
 {
   double time_for_next_event;
-  struct timeval time_to_wait;
+  //struct timeval time_to_wait;
   const Event* next_RTeventp;   //Next Event that is in realtime queue
   const Event* next_GTeventp;   //Next Event that is in gametime queue
   const Event* next_eventp;     //The one of the two we realy have to do...
@@ -59,7 +60,12 @@ EventHandler::main_loop()
       //Should we use the same algorithm twice, or should we test RT & GT at the same time (what I'm doing here)
       
       if( RT_event_queue.empty() || GT_event_queue.empty())
-        Error(true, "Event queue unexpectedly empty", "EventHandler::eval_next_event");
+        {
+	  cout<<"Erreur Irreversible...\n";
+	  exit(0);
+	}
+
+      //	Error(true, "Event queue unexpectedly empty", "EventHandler::eval_next_event");
       
       next_RTeventp = RT_event_queue.top();
       if(!paused)
@@ -86,10 +92,14 @@ EventHandler::main_loop()
           time_for_next_event = next_eventp->get_time();
 
           //          timer.double2timeval( time_for_next_event, time_to_wait );          
+
+          current_time = timer.get();
+
+	  if(time_for_next_event - current_time < 0) break;
+
+          //if( time_to_wait.tv_usec == 0 ) break;    // Time to eval next event
           
-          if( time_to_wait.tv_usec == 0 ) break;    // Time to eval next event
-          
-          select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
+          //select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
         }
 
       current_time = timer.get();
@@ -99,11 +109,15 @@ EventHandler::main_loop()
 
       if(RTEvent)
 	{
+	  cout<<"Poping from RTEventQueue\n";
 	  RT_event_queue.pop();
+	  NbRTEvent--;
 	}
       else
 	{
+	  cout<<"Poping from GTEventQueue\n";
 	  GT_event_queue.pop();
+	  NbGTEvent--;
 	}
   
     }  while( !finished );
@@ -120,6 +134,7 @@ void
 EventHandler::insert_event( Event* ev )
 {
   RT_event_queue.push( ev );
+  cout<<"There are "<<++NbRTEvent<<" events in the RT queue\n";
 }
 
 
@@ -127,12 +142,14 @@ void
 EventHandler::insert_RT_event (Event* ev)
 {
   RT_event_queue.push( ev );
+  cout<<"There are "<<++NbRTEvent<<" events in the RT queue\n";
 }
 
 void 
 EventHandler::insert_GT_event (Event* ev)
 {
   GT_event_queue.push( ev );
+  cout<<"There are "<<++NbGTEvent<<" events in the GT queue\n";
 }
 
 
