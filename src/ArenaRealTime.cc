@@ -785,7 +785,7 @@ ArenaRealTime::update_robots()
 {
   Robot* robotp;
 
-  int killed_robots = 0;
+  robots_killed_this_round = 0;
 
   ListIterator<Shape> li;
   for( object_lists[ROBOT].first(li); li.ok(); li++ )
@@ -809,7 +809,7 @@ ArenaRealTime::update_robots()
       if( !robotp->is_alive() ) 
         {
           object_lists[ROBOT].remove(li);
-          killed_robots++;
+          robots_killed_this_round++;
         }
       else
         {
@@ -818,12 +818,12 @@ ArenaRealTime::update_robots()
         }
     }
 
-  if( killed_robots > 0 )
+  if( robots_killed_this_round > 0 )
     {
       for( object_lists[ROBOT].first(li); li.ok(); li++ )
         {
           robotp = (Robot*)li();
-          robotp->add_points(killed_robots);
+          robotp->add_points(robots_killed_this_round);
 #ifndef NO_GRAPHICS
           if( robots_left < 15 && !no_graphics ) 
             robotp->display_score();
@@ -832,10 +832,10 @@ ArenaRealTime::update_robots()
 
       ListIterator<Robot> li2;
       for( all_robots_in_sequence.first(li2); li2.ok(); li2++ )
-        if( li2()->get_position_this_game() == -1 )
-          li2()->set_stats(killed_robots);
+        if( li2()->get_died_this_round() )
+          li2()->set_stats(robots_killed_this_round);
       
-      robots_left -= killed_robots;
+      robots_left -= robots_killed_this_round;
       broadcast(ROBOTS_LEFT, robots_left);
     }
 
