@@ -92,6 +92,8 @@ ArenaBase::~ArenaBase()
 
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
     delete [] robots_in_sequence[i];
+
+  delete robots_in_sequence;
 }
 
 void

@@ -128,6 +128,7 @@ ArenaRealTime::search_directories( String directory,
               tour_list.insert_last( info );
             }
         }
+      closedir(dir);
     }
 }
 
@@ -546,6 +547,8 @@ ArenaRealTime::timeout_function()
             save_statistics_to_file( statistics_file_name );
 #ifndef NO_GRAPHICS
           gtk_main_quit();
+#else NO_GRAPHICS
+          exit(EXIT_SUCCESS);
 #endif NO_GRAPHICS
         }
       break;
