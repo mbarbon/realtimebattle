@@ -15,6 +15,10 @@ robot coordinates</tt>. Look in the documentation for more info.
 
 New translation: Spanish by Mr_Tr
 
+The robot rotate_and_fire has been slightly changed to send debug-messages
+of the position of the mines (this is done as an example of how to use
+coordinates).
+
 Bugfix: CPU limits should work better now.
 
 Launching child processes is no longer strictly forbidden, since this gave
