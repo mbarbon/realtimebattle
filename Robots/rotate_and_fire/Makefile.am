@@ -1,5 +1,5 @@
 robotexecdir = $(ROBOTDIR)
-CXXFLAGS += -I$(top_srcdir)/src -I$(top_srcdir)/intl -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/intl -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 robotexec_PROGRAMS = rotate_and_fire_signal.robot \
                      rotate_and_fire_blocking.robot \
                      rotate_and_fire_select.robot

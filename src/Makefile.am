@@ -4,31 +4,13 @@ include_HEADERS = Messagetypes.h
 rtbheaderdir = $(RTB_DIR)
 rtbheader_DATA = Messagetypes.h
 
-if NO_GETOPT_LONG
-GETOPT_O = getopt.o
-else
-GETOPT_O =
-endif
-
-if ENABLE_CCMALLOC
-CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
-CXXFLAGS += $(GTK_CFLAGS) -I$(top_srcdir)/intl -DROBOTDIR='"$(ROBOTDIR)"'
-CXXFLAGS += -DARENADIR='"$(ARENADIR)"' -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
-else
-CCMALLOC_O =
-CXXFLAGS += $(GTK_CFLAGS) -I$(top_srcdir)/intl -DROBOTDIR='"$(ROBOTDIR)"'
-CXXFLAGS += -DARENADIR='"$(ARENADIR)"' -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
-endif
-
-
 if ENABLE_PROF
-CXXFLAGS += -pg
-CFLAGS += -pg
+PROFFLAGS = -pg
 endif
 
 if NO_GRAPHICS
 GRAPHICS_O = 
-CXXFLAGS += -DNO_GRAPHICS 
+GRAPHFLAGS += -DNO_GRAPHICS 
 else
 GRAPHICS_O = \
 	Gui.o ArenaWindow.o \
@@ -37,6 +19,22 @@ GRAPHICS_O = \
 	OptionsWindow.o \
 	ScoreWindow.o StatisticsWindow.o \
 	StartTournamentWindow.o Structs.o
+endif
+
+INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl $(PROFFLAGS) $(GRAPHFLAGS) \
+ -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
+ -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+
+if NO_GETOPT_LONG
+GETOPT_O = getopt.o
+else
+GETOPT_O =
+endif
+
+if ENABLE_CCMALLOC
+CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
+else
+CCMALLOC_O =
 endif
 
 RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(INTLLIBS) $(CCMALLOC_O) $(GTK_LIBS) 
