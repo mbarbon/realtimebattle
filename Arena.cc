@@ -349,9 +349,9 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
+  the_gui->setup_arena_window( boundary );
   the_gui->setup_score_window( this );
   the_gui->setup_message_window();
-  the_gui->setup_arena_window( boundary );
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
   g_timer_reset(timer);
