@@ -1,11 +1,14 @@
 SUBDIRS = Arenas Robots Documentation src
 
+rtbstddocsdir = $(DOCS_DIR)
+rtbstddocs_DATA = BUGS FAQ TODO README INSTALL ChangeLog
+
 rtbextradir = $(RTB_DIR)
+rtbextra_DATA RealTimeBattle.xpm 
 
-rtbextra_DATA = BUGS FAQ RealTimeBattle.xpm TODO README INSTALL ChangeLog
+EXTRA_DIST = $(rtbextra_DATA) $(rtbstddocs_DATA)
 
-EXTRA_DIST = $(rtbextra_DATA)
-
+AUTOMAKE_OPTIONS = foreign
 
 #If you compile the documentation from the sgml-sources with, you may change the paper-size to 'letter'.
 #Mainly for the author of the documentation.
