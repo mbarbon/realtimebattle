@@ -5,6 +5,12 @@
 Change log
 <itemize>
 
+<item> <bf>0.9.9:</bf>
+<p>
+Added support for internationalization. If it does not work for you configure with the
+command:
+%./configue --disable-nls
+
 <item> <bf>0.9.8:</bf>
 <p>
 A new Robot Option: USE&lowbar;NON&lowbar;BLOCKING. By setting this option to false
