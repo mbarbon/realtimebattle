@@ -1,4 +1,4 @@
-scale 0.75
+scale 0.595
 boundary -25.0 -25.0 25.0 25.0
 inner_circle 0.0 0.0 24.5 0.7 0.7
 circle -24.5   0.0     5.0 1.0 0.5
