@@ -29,6 +29,7 @@ extern BasicGadget AllGadgets[];
 
 GadgetDefinition* 
 createGadgetDef(string /* GadgetType */, const char*, Gadget* const);
-
+GadgetDefinition*
+findGadgetDefinitionFor(string /* GadgetName */, Gadget* );
 
 #endif

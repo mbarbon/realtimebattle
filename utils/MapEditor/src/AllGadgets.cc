@@ -34,19 +34,11 @@ createGadgetDef(string GadgetType, const char* Name, Gadget* const p)
   return ToReturn;
 }
 
-/* UnComment to make a test
-//g++ -o test AllGadgets.cc Gadget.cc
-
-#include <iostream.h>
-
-void main()
+GadgetDefinition*
+findGadgetDefinitionFor(string  GadgetName, Gadget* theGadget)
 {
-  cout<<"Test...\n";
-  AllGadgets[1].theGadget->NewInstance();
-  AllGadgets[0].theGadget->NewInstance();
-  AllGadgets[2].theGadget->NewInstance();
-  for(int i = 0; i < 3; i++)
-    delete  AllGadgets[i].theGadget;
-  cout<<"End of test...\n";
+  //Try to find in the courant gadget_def or in the parental gadget_def
+  cout<<"I try to find a definition for "<<GadgetName<<endl;
+  return NULL;
 }
-*/
+
