@@ -15,8 +15,8 @@ If your messages are not recognized at all, the problem may be that the STDOUT n
 flushed. In C++ this is done automatically by sending <tt>endl</tt> to <tt>cout</tt>, but in other
 languages you have to do it explicitly.
 
-Another common mistake is to forget whitespace between the arguments of a message. This can be hard
-to find, since the warning message is usually sent some messages later or not at all.
+Another common mistake is to forget whitespace between the arguments of a message. This problem can be hard
+to find since the warning message is usually sent too late or not at all.
 
 </descrip>
 </notes>
