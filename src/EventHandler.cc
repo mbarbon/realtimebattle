@@ -128,17 +128,17 @@ EventHandler::main_loop()
       current_time = time_for_next_event;
       current_game_time = timer.realtime2gametime( current_time );
 
-      cout << "Current time: " << current_time << endl;
+      cout << "Current time: " << current_time;
 
       if(RT_event)
 	{
-	  cout<<"Poping from RT_event_queue" << endl;
+	  //cout<<"Poping from RT_event_queue" << endl;
 	  RT_event_queue.pop();
           nb_RT_event--;
 	}
       else
 	{
-	  cout<<"Poping from GT_event_queue" << endl;
+	  //cout<<"Poping from GT_event_queue" << endl;
 	  GT_event_queue.pop();
           nb_GT_event--;
 	}
@@ -163,20 +163,16 @@ EventHandler::main_loop()
 
 void 
 EventHandler::insert_RT_event (Event* ev, bool absolute_time)
-{  
-  RT_event_queue.push( ev );
+{ 
   if( !absolute_time ) ev->add_time(current_time);
-
-  cout << "Added event to be run at " << ev->get_time() << endl;
-  cout << "There are " << ++nb_RT_event << " events in the RT queue" << endl;
+  RT_event_queue.push( ev );
 }
 
 void 
 EventHandler::insert_GT_event (Event* ev, bool absolute_time)
 {
-  GT_event_queue.push( ev );
   if( !absolute_time ) ev->add_time(current_game_time);
-  cout << "There are " << ++nb_GT_event <<" events in the GT queue" << endl;
+  GT_event_queue.push( ev );
 }
 
 void
