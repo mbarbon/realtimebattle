@@ -10,7 +10,6 @@ rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
-
 install-data-local:
 	gzip -f $(rtbinfodir)/RealTimeBattle.info; \
    if test "x$(INSTALL_INFO)" != "xno"; then \
@@ -27,6 +26,8 @@ uninstall-local:
 	rm -f $(rtbinfodir)/RealTimeBattle.info.gz; \
 	rmdir -p $(DOCS_DIR)/Documentation || true
 
+
+PAPER_SIZE = a4
 
 docs: RTB.html RTB.dvi RTB.info RTB.txt note-files note-files.html
 

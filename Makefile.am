@@ -10,15 +10,11 @@ EXTRA_DIST = $(rtbextra_DATA) $(rtbstddocs_DATA) RealTimeBattle.spec
 
 AUTOMAKE_OPTIONS = foreign
 
-#If you compile the documentation from the sgml-sources with, you may change the paper-size to 'letter'.
-#Mainly for the author of the documentation.
-export PAPER_SIZE = a4
-
 
 uninstall-local:
 	rmdir $(RTB_DIR)/Arenas || true; \
 	rmdir -p $(RTB_DIR)/Robots/* || true
-#   echo -e "\n** Uninstallation finished! **\n"   
+
 
 
 #These targets are indended mainly for the maintainer
