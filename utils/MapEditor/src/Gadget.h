@@ -39,10 +39,7 @@ public:
 
   ~Gadget();
 
-  virtual int Read(FILE* /* fp */, GtkWidget* /* ctree */, GtkCTreeNode*)
-  {
-    return 0;
-  };
+  int Read(FILE* /* fp */, GtkWidget* /* ctree */, GtkCTreeNode*);
   
   virtual vector<GadgetDefinition*>* Gadget_def() {return NULL;};
   virtual Gadget* Copy(Gadget*) {return NULL;};
@@ -88,9 +85,43 @@ class ExplosionGadget : public Gadget
       cout<<"Creating a new Explosion\n"; 
       return new ExplosionGadget(Name, p); 
     };
-   int Read(FILE*, GtkWidget*, GtkCTreeNode*);
 protected:
    //float mySize;
+};
+
+
+class DefenseGadget : public Gadget
+{
+ public:
+  DefenseGadget( const char* Name, Gadget* const p ) : Gadget(Name, p)
+    {}
+  Gadget* NewInstance( const char* Name, Gadget* const p)
+    {
+      return new DefenseGadget(Name, p);
+    }
+};
+
+
+class SensorGadget : public Gadget
+{
+ public:
+  SensorGadget( const char* Name, Gadget* const p ) : Gadget(Name, p)
+    {}
+  Gadget* NewInstance( const char* Name, Gadget* const p)
+    {
+      return new SensorGadget(Name, p);
+    }
+};
+
+class EnvironmentGadget : public Gadget
+{
+ public:
+  EnvironmentGadget( const char* Name, Gadget* const p ) : Gadget(Name, p)
+    {}
+  Gadget* NewInstance( const char* Name, Gadget* const p)
+    {
+      return new EnvironmentGadget(Name, p);
+    }
 };
 
 #endif

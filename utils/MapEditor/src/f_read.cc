@@ -121,63 +121,8 @@ int Arena::ReadHead(FILE *fp)
     }
 }
 
-int WallGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
-{
-  int n;
-  Spaces(); cout<<"Reading a Wall\n";
 
-  GtkCTreeNode* mynode =
-    AddToTree(ctree, parent, this);
-
-  while(read_line(fp)>0)
-    {
-      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
-	{
-	  if(!strcmp(type, "InfoString"))
-	    {
-	      info_string = read_info_string(fp);
-	    }
-	  else if(!strcmp(type, "Define"))
-	    {
-	      SkipUnknownObject(fp);
-	    }
-	  else if(!strcmp(type, "EndDefine"))
-	    {
-	      break;
-	    }
-	}
-    }
-}
-
-int ExplosionGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
-{
-  Spaces(); cout<<"Reading a Explosion\n";
-  cout<<"Adding myself to the tree\n";
-  GtkCTreeNode* mynode =
-    AddToTree(ctree, parent, this);
-
-  int n;
-  int NbDefine = 0;
-  while(read_line(fp)>0)
-    {
-      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
-	{
-	  if(!strcmp(type, "InfoString"))
-	    {
-	      info_string = read_info_string(fp);
-	    }
-	  else if(!strcmp(type, "Define"))
-	    {
-	      SkipUnknownObject(fp);
-	    }
-	  else if(!strcmp(type, "EndDefine"))
-	    {
-	      break;
-	    }
-	}
-    }
-}
-int  WeaponGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
+int Gadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 {
   Spaces();
   cout<<"Reading the Weapon "<<name<<endl;
@@ -226,29 +171,6 @@ int  WeaponGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 	    {
 	      break;
 	    }
-	  else if(!strcmp(type, "Shot"))
-	    {
-	      /*
-		sscanf(buf, "%*s %s", type);
-		if(type[0] == '$')
-		{
-		Spaces(); cout<<"Create a Shot of type "<<&type[1]<<endl;
-		GadgetDef = findGadgetDefinitionFor(&type[1], this);
-		Spaces();
-		if(GadgetDef)
-		{
-		cout<<&type[1]<<" is a known definition\n";
-		}
-		else
-		{
-		cout<<"I don't know what "<<&type[1]<<" is...\n";
-		}
-		//shot = copy(*(GadgetDef->theGadget));
-		//TODO : Make a copy of the definition in the Shot gadget of the weapon...
-	      
-		}
-	      */
-	    }
 	  else
 	    {
 	      /*
@@ -287,50 +209,8 @@ int  WeaponGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 	}
     }
   NbSpace--;
+  return 0;
 }
-
-int  ShotGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
-{
-  Spaces(); cout<<"Reading a shot gadget\n";
-  NbSpace++;
-  GtkCTreeNode* mynode =
-    AddToTree(ctree, parent, this);
-
-  int n;
-  int NbDefine = 0;
-  while(read_line(fp)>0)
-    {
-      if((sscanf(buf, "%s", type)) == 1)        //Skip empty line
-	{
-	  
-	  if(!strcmp(type, "InfoString"))
-	    {
-	      info_string = read_info_string(fp);
-	    }
-	  else if(!strcmp(type, "Define"))
-	    {
-	      SkipUnknownObject(fp);
-	    }
-	  else if(!strcmp(type, "EndDefine"))
-	    {
-	      break;
-	    }
-	  /*
-	    //Skip a couple of things...
-	    if(!strcmp(type, "Define"))     //There could be an other definition in it...
-	    NbDefine++;
-	    if(!strcmp(type, "EndDefine"))  //This is the end of a definition
-	    NbDefine--;              
-	    
-	    if(NbDefine < 0)                       //This is the end of the unknown object
-	    break;
-	  */
-	}
-    }
-  NbSpace--;
-}
-
-
 
 int read_line(FILE *fp)
 {
