@@ -844,6 +844,8 @@ void
 Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
   center = pos;
+  start_pos = pos;
+  start_angle = angle;
   robot_angle.set_rot (angle, 0.0, -infinity, infinity, NORMAL_ROT);
   cannon_angle.set_rot(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   radar_angle.set_rot (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
