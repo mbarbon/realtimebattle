@@ -11,10 +11,7 @@ extern "C"
 #define DEFAULT_WIDTH  600
 #define DEFAULT_HEIGHT 480
 
-int rakna = 0;
 GTimer klocka;
-double tidssnitt=0;
-bool frsta=false;
 
 void print_help_message( void )
 {
@@ -28,13 +25,14 @@ gint timeout_function(gpointer data)
   double tid;
 
   tid = g_timer_elapsed(&klocka, &musec);
-  tidssnitt = tid / ++rakna;
-
-  insert_message( "RealTimeBattle", "Hej" );
-
+  //  tidssnitt = tid / ++rakna;
+  //  insert_message( "RealTimeBattle", "Hej" );
   //  cout << "  Microsecs: " << musec;
   //  cout << "  Räkna: " << rakna << endl;
   //  g_timer_reset(&klocka);
+
+  draw_objects();
+
   return true;
 }
 
@@ -100,11 +98,9 @@ int main ( int argc, char * argv[] )
 
   g_timer_start(&klocka);
 
-  timeout_tag = gtk_timeout_add( 9, GtkFunction(timeout_function), (gpointer) "");
+  timeout_tag = gtk_timeout_add( 100, GtkFunction(timeout_function), (gpointer) "");
 
   gtk_main();
-
-  cout << "Tidssnitt: " << tidssnitt << "  Räkna: " << rakna << endl;
 
   return EXIT_SUCCESS;
 }

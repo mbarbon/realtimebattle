@@ -1,9 +1,68 @@
 #include <math.h>
 #include "gui.h"
 
+#define GDK_VARV 23040
+
 GtkWidget * message;
-GtkWidget *vscrollbar;
+GtkWidget * drawing_area;
+GtkWidget * vscrollbar;
 GdkColor colour;
+GdkColor da_bkg_colour;
+
+void draw_objects ( void )
+{
+  GdkGC * bkg_gc, * blue_gc;
+
+  bkg_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( bkg_gc, &da_bkg_colour );
+
+  blue_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( blue_gc, &colour );
+
+  gdk_draw_rectangle (drawing_area->window,
+                      bkg_gc,
+                      TRUE,
+                      0, 0,
+                      drawing_area->allocation.width,
+                      drawing_area->allocation.height);
+  
+  gdk_draw_arc (drawing_area->window,
+                blue_gc,
+                TRUE,
+                150, 50,
+                50, 700,
+                0, 23037);
+
+  gdk_draw_arc (drawing_area->window,
+                blue_gc,
+                TRUE,
+                250, 50,
+                50, 700,
+                0, 23038);
+
+  // Ett varv = 360 * 64 = 23040
+
+  gdk_draw_arc (drawing_area->window,
+                blue_gc,
+                TRUE,
+                350, 50,
+                50, 700,
+                0, 23039);
+
+  gdk_draw_rectangle (drawing_area->window,
+                      blue_gc,
+                      FALSE,
+                      50, 50,
+                      50, 50);
+
+  gdk_draw_line (drawing_area->window,
+                 blue_gc,
+                 50, 150,
+                 100, 200);
+
+  gdk_gc_destroy( blue_gc );
+  gdk_gc_destroy( bkg_gc );
+}
 
 void insert_message (char * robot_name, char * write_message)
 {
@@ -247,9 +306,7 @@ void arena_win( void )
 {
   GtkWidget *window;
   GtkWidget *scrolled_window;
-  GtkWidget *drawing_area;
 
-  GdkColor gdk_color;
   GdkColormap *colormap;
 
   /* Window */
@@ -281,12 +338,10 @@ void arena_win( void )
   /* Background Colour */
 
   colormap = gdk_window_get_colormap (drawing_area->window);
-  gdk_color.red = 64255;
-  gdk_color.green = 61695;
-  gdk_color.blue = 59135;
-  gdk_color_alloc (colormap, &gdk_color);
-  gdk_window_set_background (drawing_area->window, &gdk_color);
+  da_bkg_colour.red = 64255;
+  da_bkg_colour.green = 61695;
+  da_bkg_colour.blue = 59135;
+  gdk_color_alloc (colormap, &da_bkg_colour);
+  gdk_window_set_background (drawing_area->window, &da_bkg_colour);
   gdk_window_clear (drawing_area->window);
-
 }
-
