@@ -1065,7 +1065,8 @@ Robot::get_messages()
                 !no_graphics && !realtime_arena.get_use_message_file() )
               the_gui.get_messagewindow_p()->add_message( robot_name, text );
 #endif
-            realtime_arena.print_to_messagefile( robot_name, text );
+            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
+              realtime_arena.print_to_messagefile( robot_name, text );
           }
           break;
 
