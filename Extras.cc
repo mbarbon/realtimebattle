@@ -1,8 +1,7 @@
 #include "Arena.h"
 
-Cookie::Cookie(const Vector2D& c, const double r, const double e)
+Cookie::Cookie(const Vector2D& c, const double r, const double e) : Circle(c, r)
 {
-  my_shape = Circle(c, r);
   energy = e;
 }
 
