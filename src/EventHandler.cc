@@ -49,8 +49,6 @@ EventHandler::~EventHandler()
 }
 
 
-
-
 void
 EventHandler::main_loop()
 {
