@@ -7,25 +7,31 @@ Change log
 
 <item> <bf>0.9.8:</bf>
 <p>
-A new Robot Option: USE_NON_BLOCKING. By setting this option to false
+A new Robot Option: USE&lowbar;NON&lowbar;BLOCKING. By setting this option to false
 robots input and output pipes are blocked, so that the robot automatically
 waits for the next message when reading from the STDIN. If you use this,
 signals are no longer necessary to inform about new messages.
 
-Some bugs in the new 'Rotate and Fire' code are fixed.
+Replay game. You can now replay a game form its log. Note that logfiles
+made with earlier versions are incompatible with the replay function.
+
+New game option: <tt>Fast forward factor</tt>, which determines how fast the game
+will be when the fast forward or the rewind button is pressed.
 
 The default RealTimeBattle installation-directory is now
 <tt>EPREFIX/games/RealTimeBattle</tt> instead of
 <tt>PREFIX/games/RealTimeBattle</tt>.
 
-A replay function has been added. Note that logfiles made with earlier versions are
-incompatible with the replay function.
+Some bugs in the new 'Rotate and Fire' code are fixed.
 
 It is now possible to show hidden windows.
 
 The window for starting tournaments now remembers a tournament and the next time an
 tournament is to be played, the participating robots and arenas of the last tournament
 is shown.
+
+New game option: <tt>Robot startup time</tt>, the time between the
+launching the robot processes and the beginning of the game.
 
 <item> <bf>0.9.7:</bf>
 <p>
