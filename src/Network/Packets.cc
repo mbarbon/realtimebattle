@@ -35,6 +35,12 @@ ostream& operator<<(ostream& ost, const Packet& P)
   return ost;
 }
 
+void
+PacketFactory::add_connection( NetConnection* nc )
+{
+  my_connections.push_back( nc );
+}
+
 string&
 Packet::add_string_to_netstring( const string& str, string& netstr ) const
 {

@@ -92,8 +92,6 @@ public:
   
   NetConnection* connect_to_an_other_server( string, int port_number = 0 );
 
-  void go_through_read_buffers();  //NOTE : Useless
-
   bool accept_new_server();                //Accept a new connection
   int port_num() {return port_number;}     //my port
 
@@ -154,8 +152,10 @@ private:
   
   //NOTE : maybe join those together with by_type_connections with by_type_connections
   map<int, PacketFactory*> packet_factories; //Or maybe map.first should be the channel
-  map<int, bool> accept_conn;       //Can we still add some connections
 
+  //NOTE : useless : must be done by the PacketFactory
+  map<int, bool> accept_conn;       //Can we still add some connections
+  
   PacketFactory* packet_factory(int channel) 
     {
       return packet_factories[ channel ];

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -38,13 +38,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventRT.h"
 #include "EventHandler.h"
 
-class ServerPacketFactory my_serverpacketfactory;
-class InitPacketFactory   my_initpacketfactory;
-
 SocketServer::SocketServer()
 {
-  packet_factories[ 0 ] = &my_initpacketfactory;
-  packet_factories[ SERVER_CONNECTION ] = &my_serverpacketfactory;
+  packet_factories[ 0 ] = new InitPacketFactory;
+  packet_factories[ SERVER_CONNECTION ] = new ServerPacketFactory;
   //  packet_factories[ TOURN_AGREE_CHANNEL ] = &my_tournament_agreement_packetfactory; //NOTE : Do I need it here ?
 
   my_id = 0;
@@ -458,21 +455,20 @@ SocketServer::accept_connection()
   next_id++;
 
   nc->the_socket = new_socket;
-
   nc->make_nonblocking();
-
   nc->connected = true;
 
   all_connections.push_back( nc );
   //cout<<"Now we are "<<all_connections.size() + 1<<endl;
   //  by_type_connections[0].push_back( nc );
   connection_factory[ nc ] = packet_factory( 0 );
+  packet_factory( 0 )-> add_connection( nc );
 
   return nc;
 }
 
 bool
-SocketServer::accept_new_server()
+SocketServer::accept_new_server()  //USELESS : This must be done in the PacketFactory
 {
   //TODO : find the most efficient servers
   if( max_nb_friends - by_type_connections[ SERVER_CONNECTION ].size() > 0 ) 
@@ -482,7 +478,7 @@ SocketServer::accept_new_server()
 }
 
 vector<string>
-SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_addresses = 0)
+SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_addresses = 0)  //USELESS : must be done by the ServerPacketFactory ?
 {
   vector<string> v;
   map<int, PacketFactory*>::iterator it;
@@ -545,15 +541,6 @@ SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_ad
     }
   return v;
 }
-
-void
-SocketServer::go_through_read_buffers()
-{
-  list_It_NetConn li;
-  for( li = all_connections.begin(); li != all_connections.end(); li++ )
-    ;//cout << (**li).read_buffer << endl; // Very temporary
-}
-
 
 struct ptr_is_not_connected  //Use in the next function
 {
@@ -659,7 +646,12 @@ SocketServer::~SocketServer()
     }
   all_connections.clear();
 
-  //Save my friends
+  //Delete all the packet factories
+  for(map<int, PacketFactory*>::iterator mi = packet_factories.begin();
+      mi != packet_factories.end(); mi ++)
+    delete mi->second;
+
+  //Save my friends (NOTE : Don't know if we need this anymore....)
   ofstream ofs(friends_opt_file.c_str());
   for(unsigned int i = 0; i < friends.size(); i ++)
     {//TODO : choose those to save...
@@ -676,7 +668,6 @@ exit_cleanly(int Sign)
 void
 quit()
 {
-  
   exit( 0 );
 }
 

@@ -110,9 +110,9 @@ InitializationPacket::handle_packet(void* p_void)
       is >> his_host_name >> port_num >> max_friends;
       
       //TODO : Check if it is not already connected
-      if( my_socketserver.accept_new_server() )
+      if( my_socketserver.accept_new_server() ) //Try just to add it to the packet factory, maybe it will accept it, otherwise it will close it
 	{
-	  nc->set_type(SERVER_CONNECTION);
+	  nc->set_type(SERVER_CONNECTION);   //NOTE : Is it usefull ?
 	  my_socketserver. by_type_connections[SERVER_CONNECTION]. push_back(nc);
 	  my_socketserver. connection_factory[ nc ] = &my_serverpacketfactory;
 	  
@@ -163,9 +163,13 @@ InitializationPacket::handle_packet(void* p_void)
       if(my_socketserver.channel_protocol(channel) == protocol) {
 	cout<<"Ok, he can connect\n";
 	nc->set_type(channel);
-	my_socketserver. by_type_connections[channel]. push_back(nc);
+	my_socketserver. by_type_connections[channel]. push_back(nc);  //USELESS
 	my_socketserver. connection_factory[ nc ] = my_socketserver.packet_factory( channel );
 	cout<<my_socketserver. connection_factory[ nc ]->Protocol()<<endl;
+
+	//TODO : add this connection to the packet factory and remove it from InitPacketFactory 
+
+	my_socketserver. connection_factory[ nc ]->add_connection( nc );
 	return 1;
       }
     }
