@@ -1092,15 +1092,11 @@ Robot::get_messages()
                   double a1, d1, a2, d2;
                   *instreamp >> a1 >> d1 >> a2 >> d2;
                   
-                  a1 += robot_angle.pos;
-                  a2 += robot_angle.pos;
-                  
-                  Vector2D start = d1 * angle2vec(a1);                  
-                  Vector2D direction = d2 * angle2vec(a2) - start;
+                  Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
+                  Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
                   
                   the_gui.get_arenawindow_p()->
-                    draw_line(start + center, direction, 
-                              1.0, 0.1, gdk_colour);
+                    draw_line(start + center, direction, 1.0, gdk_colour);
                 }
 #endif NO_GRAPHICS              
             }
@@ -1120,9 +1116,7 @@ Robot::get_messages()
                   double a, d, r;
                   *instreamp >> a >> d >> r;
 
-                  a += robot_angle.pos;
-                
-                  Vector2D c = d * angle2vec(a) + center;
+                  Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
 
                   the_gui.get_arenawindow_p()->
                     draw_circle(c, r, gdk_colour, false);
@@ -1457,14 +1451,14 @@ Robot::display_score()
 void
 Robot::draw_radar_and_cannon()
 {
-  if( radius*the_gui.get_arenawindow_p()->
-      get_drawing_area_scale() < 2.5 ) return;
+  double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
+
+  if( radius*scale < 2.5 ) return;
   // Draw Cannon
   the_gui.get_arenawindow_p()->
     draw_line( center,
                angle2vec(cannon_angle.pos+robot_angle.pos),
-               ( radius - the_opts.get_d(OPTION_SHOT_RADIUS) -
-                 1.0 / the_gui.get_arenawindow_p()->get_drawing_area_scale() ),
+               radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
                the_opts.get_d(OPTION_SHOT_RADIUS),
                *(the_arena.get_fg_gdk_colour_p()) );
 
@@ -1487,8 +1481,7 @@ Robot::draw_radar_and_cannon()
   the_gui.get_arenawindow_p()->
     draw_line( center,
                angle2vec(robot_angle.pos),
-               radius * 0.9,
-               radius / 40.0,
+               radius * 0.9 - 1.0 / scale,
                *(the_arena.get_fg_gdk_colour_p()) );
 }
 
