@@ -32,11 +32,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "InformationDistributor.h"
 
 extern class ArenaController the_arena_controller;
+extern pthread_mutex_t the_mutex;
 
-GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
-                            int argc, char** argv )
+GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
 {
-  mutex_p = _mutex_p;
   plain_name = name;
   library_name = "libRTBGui_" + name + ".so";
 
@@ -49,6 +48,8 @@ GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
   func_UsageMessage = (const string (*)())load_symbol( "GIUsageMessage" );
   func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
   func_Main = (int (*)( GuiClientInterface* ))load_symbol( "GIMain" );
+  func_Main_pre = (void* (*)( void* ))load_symbol( "GIMain_pre" );
+  unique_id = (unsigned int*)load_symbol( "GI_unique_id" );
 
   if(!(*func_Init)( argc, argv ))
     Error( true, "Couldn't initialize gui " + name,
@@ -83,7 +84,7 @@ GuiInterface::~GuiInterface()
 void
 GuiInterface::startup()
 {
-  pthread_create(&thread, NULL, GIMain_pre, (void*)this);
+  pthread_create(&thread, NULL, func_Main_pre, (void*)this);
 }
 
 void
@@ -96,19 +97,19 @@ GuiInterface::shutdown()
 
 //TODO: A Better way to end the gui.
 void
-GuiInterface::quit( bool exit_program )
+GuiInterface::quit_program( int _success )
 {
-  the_arena_controller.quit_gui( (GuiServerInterface*)this, exit_program );
+  apply_request( new QuitProgramRequest( _success ) );
 }
 
 // TODO: Make sure that the event is not deleted before the gui has used it!
 const InfoBase*
 GuiInterface::check_information() const
 {
-  pthread_mutex_lock( mutex_p );
+  pthread_mutex_lock( &the_mutex );
   const InfoBase* info =
     the_arena_controller.get_distributor()->get_information( information_reader_id );
-  pthread_mutex_unlock( mutex_p );
+  pthread_mutex_unlock( &the_mutex );
   return info;
 }
 
@@ -123,19 +124,3 @@ GuiInterface::process_all_requests()
     }
 }
 
-// PreMain function
-void*
-GIMain_pre( void* arg )
-{
-  int res = ((GuiInterface*) arg)->Main( (GuiClientInterface*) arg );
-  GIExit( res );
-  return NULL;
-}
-
-// TODO: GIExit should maybe do something more
-void
-GIExit( int returncode )
-{
-  int* returncode_p = new int(returncode);
-  pthread_exit(returncode_p);
-}

@@ -43,7 +43,7 @@ public:
 
   virtual const InfoBase* check_information () const = 0;
   virtual void apply_request                ( GuiRequest* req ) = 0;
-  virtual void quit                         ( bool exit_program = false ) = 0;
+  virtual void quit_program                 ( int ) = 0;
 
 private:
 };
@@ -58,6 +58,7 @@ public:
   virtual void shutdown                  () = 0;
 
   virtual void process_all_requests      () = 0;
+  virtual const unsigned int get_unique_id() const = 0;
   virtual const pthread_t* get_thread_p  () const = 0;
   virtual const int get_reader_id        () const = 0;
 
@@ -65,6 +66,9 @@ public:
   virtual const string Name              () const = 0;
   virtual const string UsageMessage      () const = 0;
   virtual int Main                       ( GuiClientInterface* gi ) = 0;
+
+  virtual const bool operator==          ( const unsigned int& ) = 0;
+  virtual const bool operator!=          ( const unsigned int& ) = 0;
 private:
 };
 
@@ -73,7 +77,7 @@ class GuiInterface : public GuiClientInterface, public GuiServerInterface
 public:
   // Constructor & Destructor
 
-  GuiInterface( const string&, pthread_mutex_t*, int, char** );
+  GuiInterface( const string&, int, int, char** );
   ~GuiInterface();
 
   // Start up and Shut down the gui
@@ -89,12 +93,13 @@ public:
 
   void apply_request                   ( GuiRequest* req )
   { request_stack.push( req ); }
-  void quit                            ( bool exit_program = false );
+  void quit_program                    ( int );
 
 
   // Functions for the server.
 
   void process_all_requests            ();
+  const unsigned int get_unique_id     () const { return *unique_id; }
   const pthread_t* get_thread_p        () const { return &thread; }
   const int get_reader_id              () const { return information_reader_id; };
 
@@ -103,6 +108,11 @@ public:
   const string UsageMessage            () const { return (*func_UsageMessage)(); }
   int Main                             ( GuiClientInterface* gi )
   { return (*func_Main)( gi ); }
+
+  const bool operator==                ( const unsigned int& id )
+  { return *unique_id == id; }
+  const bool operator!=                ( const unsigned int& id )
+  { return *unique_id != id; }
 
 private:
 
@@ -115,7 +125,7 @@ private:
 
   // internal variables
 
-  long int unique_id;
+  unsigned int* unique_id;
   int information_reader_id;
 
   string plain_name;
@@ -131,36 +141,7 @@ private:
   const string (*func_UsageMessage)();
   bool (*func_Init)( int, char** );
   int (*func_Main)( GuiClientInterface* );
-
-  // Mutex
-  pthread_mutex_t* mutex_p;
+  void* (*func_Main_pre)( void* );
 };
-
-// ---------------------------------------------------------------------------
-// These functions should be defined by the gui.
-// ---------------------------------------------------------------------------
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// The name of the gui should be returned as a const string
-const string GIName();
-// The usage string of the gui should be returned as a const string
-const string GIUsageMessage();
-
-// Initialization of gui
-bool GIInit( int , char** );
-// The main loop of the gui
-int  GIMain( GuiClientInterface* );
-// Exit from gui. This function should not needed to be set from gui.
-void GIExit( int );
-
-//Internal GI functions
-void* GIMain_pre( void* arg );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif __GUIINTERFACE__
