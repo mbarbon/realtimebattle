@@ -108,32 +108,4 @@ private:
   int new_debug_level;
 };
 
-//Send every change in the Tournament to other servers ...
-class BroadCastTournamentChangeRequest : public GuiRequest
-{
- public:
-  BroadCastTournamentChangeRequest  (string type, string value) 
-    : channel(channel), type(type), value(value) {}
-  ~BroadCastTournamentChangeRequest () {}
- 
- private:
-  void accept                () const;
-  int channel;
-  string type;
-  string value;
-};
-
-class OpenTournamentAgreementChannelRequest : public GuiRequest
-{
- public:
-  OpenTournamentAgreementChannelRequest(bool create_channel) 
-    : create_channel(create_channel)
-    {}
- private:
-  void accept                 () const;
-  bool create_channel;
-};
-
-
-
 #endif // __GUIREQUEST__

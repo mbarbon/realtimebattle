@@ -29,6 +29,8 @@ class Tournament;
 class SocketServer;
 
 
+//NOTE : No GUI in the server... and Events are only used in the server
+// Is it very necessary to have such an event ?
 class CheckGUIEvent : public Event
 {
 public:
@@ -49,8 +51,8 @@ protected:
 class CheckSocketEvent : public Event
 {
  public:
-  CheckSocketEvent(const double refresh_time, SocketServer* socket_server) 
-    : Event(refresh_time), refresh(refresh_time), server_p(socket_server) {}
+  CheckSocketEvent(const double time, const double refresh_time, SocketServer* socket_server) 
+    : Event(time), refresh(refresh_time), server_p(socket_server) {}
 
   void eval() const;
 

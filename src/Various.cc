@@ -87,8 +87,7 @@ Quit(const bool success)
   the_arena_controller.exit_all_guis(); // Necessary to join all threads!
 
   if( !success )
-    exit(EXIT_SUCCESS);
-  //the_eventhandler.quit();
+    exit(EXIT_FAILURE);  
       
   exit(EXIT_SUCCESS);
 }

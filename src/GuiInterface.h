@@ -27,13 +27,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GuiRequest.h"
 #include "InfoClasses.h"
-#include "TournamentAgreementPackets.h"
 
 // ---------------------------------------------------------------------------
 // class GuiInterface and it's associated classes
 // ---------------------------------------------------------------------------
 // All interactions between the gui and server should go through this class.
-// TODO : This class needs to be threadsafe!
+// This class needs to be threadsafe!
 // ---------------------------------------------------------------------------
 
 class GuiClientInterface
@@ -67,12 +66,9 @@ public:
   virtual const string Name              () const = 0;
   virtual const string UsageMessage      () const = 0;
   virtual int Main                       ( GuiClientInterface* gi ) = 0;
-  virtual int handle_agreement_packet    ( TournamentCommitChangePacket* ) = 0;
 
   virtual const bool operator==          ( const unsigned int& ) = 0;
   virtual const bool operator!=          ( const unsigned int& ) = 0;
-  virtual const void net_command         ( const string& ) = 0;
-
 private:
 };
 
@@ -110,18 +106,13 @@ public:
   // Gui functions
   const string Name                    () const { return (*func_Name)(); }
   const string UsageMessage            () const { return (*func_UsageMessage)(); }
-  int Main                             ( GuiClientInterface* gci )
-  { return ((*func_Main)( gci )); }
+  int Main                             ( GuiClientInterface* gi )
+  { return (*func_Main)( gi ); }
 
-  const void net_command         ( const string& command) {
-    func_Command(command);
-  }
   const bool operator==                ( const unsigned int& id )
   { return *unique_id == id; }
   const bool operator!=                ( const unsigned int& id )
   { return *unique_id != id; }
-
-  int handle_agreement_packet          ( TournamentCommitChangePacket* p );
 
 private:
 
@@ -151,9 +142,6 @@ private:
   bool (*func_Init)( int, char** );
   int (*func_Main)( GuiClientInterface* );
   void* (*func_Main_pre)( void* );
-  void (*func_Command)( string );
-
-  int (*func_handle_agreement) (Packet*);
 };
 
 #endif // __GUIINTERFACE__

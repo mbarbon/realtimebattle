@@ -46,24 +46,21 @@ void
 CheckGUIEvent::eval() const 
 {
   // Note: might have to supply process_all_options() with eventhandler in the future.
-  //cout<<"CheckGUIEvent::eval()\n";
   gui_p->process_all_requests();
 
   pthread_mutex_lock( &the_mutex );
-  //  list<unsigned int>::iterator li;
-  //if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
-  //    != GI_exit_list.end() )
-  //  {
-  //     the_arena_controller.exit_gui( *li );
-  //    GI_exit_list.erase( li );
-  //    pthread_mutex_unlock( &the_mutex );
-  //    return;
-  //  }
-
-  Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
-
+  list<unsigned int>::iterator li;
+  if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
+      != GI_exit_list.end() )
+    {
+      the_arena_controller.exit_gui( *li );
+      GI_exit_list.erase( li );
+      pthread_mutex_unlock( &the_mutex );
+      return;
+    }
   pthread_mutex_unlock( &the_mutex );
 
+  Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
   the_eventhandler.insert_RT_event(next_event);
 }
 
@@ -71,16 +68,17 @@ CheckGUIEvent::eval() const
 void
 CheckSocketEvent::eval() const
 {
-  //cout<<"CheckSocketEvent::eval()\n";
+  // Note : Migth have to distribute this event for each connection...
   server_p->check_socket();
-  Event* next_event = new CheckSocketEvent(refresh, server_p);
+
+  Event* next_event = new CheckSocketEvent(refresh, refresh, server_p);
   the_eventhandler.insert_RT_event(next_event);
 }
 
 void
 StartTournamentEvent::eval() const 
 {
-  //cout<<"StartTournamentEvent::eval() const \n";
+
   Tournament* t = new Tournament();
   /*
     t = new Tournament(filename);
@@ -100,14 +98,12 @@ StartTournamentEvent::eval() const
 void
 PrepareForNewMatchEvent::eval() const
 {
-  //cout<<"PrepareForNewMatchEvent::eval() const\n";
   my_tournament->prepare_for_new_match();
 }
 
 void
 StartNewMatchEvent::eval() const
 {
-  //cout<<"StartNewMatchEvent::eval() const\n";
   my_match->start_new_match();
 }
 
@@ -115,6 +111,5 @@ StartNewMatchEvent::eval() const
 void
 EndMatchEvent::eval() const
 {
-  //cout<<"EndMatchEvent::eval() const\n";
   my_match->end_match();
 }
