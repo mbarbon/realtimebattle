@@ -191,28 +191,28 @@ Options::Options()
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000, "Arena search path", NULL);
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena x winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena window width", NULL);
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena y winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 25, 10000, 6, "Initial Arena window height", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 294, 50, 10000, 6, "Initial Message x winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 294, 50, 10000, 6, "Initial Message window width", NULL);
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 110, 25, 10000, 6, "Initial Message y winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 110, 25, 10000, 6, "Initial Message window height", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Score x winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 50, 10000, 6, "Initial Score window width", NULL);
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 50, 10000, 6, "Initial Score y winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 50, 10000, 6, "Initial Score window height", NULL);
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 50, 10000, 6, "Initial Statistics x winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 50, 10000, 6, "Initial Statistics window width", NULL);
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
-    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 50, 10000, 6, "Initial Statistics y winodwsize", NULL);
+    option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 50, 10000, 6, "Initial Statistics window height", NULL);
 
   get_options_from_rtbrc();
   options_window_up = false;
@@ -438,7 +438,7 @@ Options::setup_options_window()
   gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
   gtk_widget_show( notebook );
 
-  char * page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot", "Extras", "Time", "Size of windows", "Misc" };
+  char * page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot", "Extras", "Time", "Window sizes", "Misc" };
   for(int i=0; i < LAST_PAGE; i++)
     {
       int number_of_options = 0;
