@@ -23,18 +23,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __TOURN_AGREE_PACKET_H__
 
 #include "Packets.h"
+#include "Structs.h"
 
 class TournamentAgreementPacketFactory: public PacketFactory {
  public:
   /* TODO : construct this class with a GuiInterface pointer as argument... */
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_AGREEMENT ;};
   Packet* MakePacket(string &); 
+ protected:
+  tourn_info_t my_tournament;
 };
 
 class TournamentCommitChangePacket : /* virtual */ public Packet {
 public:
-  TournamentCommitChangePacket()
-    : change("") {};
+  TournamentCommitChangePacket(tourn_info_t* tourn)
+    : tourn_p(tourn), change("") {};
   TournamentCommitChangePacket( const string& c ) 
     : change(c)  {};
   TournamentCommitChangePacket( const string& t, const string& c)
@@ -46,6 +49,7 @@ public:
   string& type()  {return type_init;}
   string& value() {return change;}
 protected:
+  tourn_info_t *tourn_p;
   string type_init;
   string change;
 };

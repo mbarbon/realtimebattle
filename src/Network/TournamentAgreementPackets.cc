@@ -16,8 +16,6 @@
 
 #include "String.h"
 
-TournamentAgreementPacketFactory my_tournament_agreement_packetfactory;
-
 Packet*
 TournamentAgreementPacketFactory::MakePacket( string& netstr )
 {
@@ -25,7 +23,7 @@ TournamentAgreementPacketFactory::MakePacket( string& netstr )
 
   //  cout<<"TournamentAgreementPacketFactory::MakePacket\n";
 
-  if     (type == "TC")    return new TournamentCommitChangePacket( );
+  if     (type == "TC")    return new TournamentCommitChangePacket( &my_tournament );
 
   //else if(type == "@C")    return new CommandPacket( );
   //else if(type == "SL")    return new SubmitListPacket( );
@@ -41,10 +39,10 @@ TournamentCommitChangePacket::make_netstring() const
   //TODO : split it in 2 : type_of_change and value_of_change
   ostrstream os;
   os << change << ends;
-    
+  
   string n_str;
   n_str = "TC";
-
+  
   n_str += string( os.str() );
   return n_str;
 }
@@ -62,15 +60,13 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
   if(type_init == "AddRobot")
     {
       is >> change;
+      cout<<"Add the following robot : "<<change<<endl;
+      //tourn_p->current_match->...
     }
   else
     {
       return 1;
     }
-
-
-  //  the_arena_controller.the_gui()->handle_agreement_packet( this );
-  //  gui_p -> net_command ("Agreement " + data); 
 
   return 0;
 }

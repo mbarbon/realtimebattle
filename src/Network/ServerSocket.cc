@@ -34,6 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ServerPackets.h"
 #include "ServerSocket.h"
+#include "TournamentAgreementPackets.h"
 
 #include "EventRT.h"
 #include "EventHandler.h"
@@ -173,47 +174,8 @@ SocketServer::find_first_point( )
   //Maybe there is no use for file_name but for debuging.
   //TODO : Put the friends addresses in the option file ?
 {
-  /*
-  //Find the first point in the network
-  for(unsigned int i = 0; i < friends.size(); i ++)
-    {
-      friend_on_ring* F;
-      NetConnection* nc;
-      F = &(friends[i]);
-      nc = connect_to_an_other_server(F->name, F->port);
-      if( nc )
-	{
-	  cout<<"connected to "<<F->port<<endl;
-	  nc->send_data( InitializationPacket( "Join" ).make_netstring() );
-	  connection_factory[ nc ] = &my_serverpacketfactory;
-
-	  if(F->mark < 100) {F->mark ++;}
-	  return;
-	}
-      else
-	{
-	  if(F->mark > 0) {F->mark --;}
-	}
-    }
-  //If I come to this point, I'm not connected to anybody : I'm the leader
-  */
   my_id = next_id = 1;
 }
-/*
-bool 
-SocketServer::not_connected_to(string h, int p, int c = SERVER_CONNECTION)
-{
-  //NOTE : most find something to do in case they use the channel argument
-  for(list_It_NetConn li = by_type_connections[c].begin();
-      li != by_type_connections[c].end(); li ++)
-    {
-      //      ServerState s = server_states[*li];
-      if(h == s.address && p == s.port) //doesn't work all the time : find a better way to check the address
-	return false;
-    }
-  return true;
-}
-*/
 
 void
 SocketServer::close_socket()
@@ -264,12 +226,28 @@ SocketServer::check_socket()
       bzero(buffer, 256);
       fgets(buffer, 255, stdin);
       
-      string buf = string (buffer);
+      istrstream is(buffer);
+      string command;
+      is >> command;
       
-      if( buf == "quit\n")   //The quit event (maybe a click for a chat)
+      if( command == "quit")   //The quit event (maybe a click for a chat)
 	{ 
 	  cout<<"Ciao\n";
 	  exit( 0 );
+	}
+      else if(command == "mount") //mount a packetfactory on a channel
+	{
+	  string packetfact; int channel;
+	  is >> packetfact;
+	  PacketFactory* to_mount = NULL;
+	  if(packetfact == "server") {
+	    to_mount = new ServerPacketFactory();
+	  } else if(packetfact == "negociation") {
+	    to_mount = new TournamentAgreementPacketFactory ();
+	  }
+	  if( to_mount ) {
+	    channel = open_channel( to_mount );
+	  }
 	}
     }
 
@@ -334,6 +312,9 @@ SocketServer::channel_is_used(int c)
 
 int
 SocketServer::open_channel(PacketFactory* PF) {
+
+  assert(PF != NULL);
+
   int channel = 2;
   while( 1 )
     {
