@@ -41,7 +41,8 @@ public:
   ~MessageWindow                 ();
 
   void set_window_title          ();
-  void add_message               ( String name_of_messager, String message );
+  void add_message               ( const String& name_of_messager, 
+                                   const String& message );
 
   static void hide_window        ( GtkWidget* widget, GdkEvent* event,
                                    class MessageWindow* messagewindow_p );

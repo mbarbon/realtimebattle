@@ -151,7 +151,8 @@ MessageWindow::set_window_title()
 }
 
 void
-MessageWindow::add_message( String name_of_messager, String message )
+MessageWindow::add_message( const String& name_of_messager, 
+                            const String& message )
 {
   if( window_shown )
     {
