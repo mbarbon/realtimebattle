@@ -35,6 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "IntlDefs.h"
 #include "GuiInterface.h"
+#include "Structs.h"
 
 extern class Options the_opts;
 extern bool no_graphics;
@@ -58,6 +59,7 @@ GIExit( int returncode )
   pthread_exit(returncode_p);
 }
 
+
 // ArenaController constructor
 
 ArenaController::ArenaController()
@@ -71,7 +73,7 @@ ArenaController::ArenaController()
   message_filename = "";
   replay_filename = "";
 
-  game_mode = ArenaBase::NORMAL_MODE;
+  game_mode = NORMAL_MODE;
   debug_level = 1;
   auto_start_and_end = false;
 }
@@ -141,13 +143,10 @@ ArenaController::parse_command_line( int argc, char** argv )
     {"version", 0, &version_flag, true},
     {"help", 0, &help_flag, true},
 
-    {"debug_mode", 0, &game_mode,
-     ArenaBase::DEBUG_MODE},
+    {"debug_mode", 0, &game_mode, DEBUG_MODE},
     {"debug_level", 1, 0, 0},
-    {"normal_mode", 0, &game_mode,
-     ArenaBase::NORMAL_MODE},
-    {"competition_mode", 0, &game_mode,
-     ArenaBase::COMPETITION_MODE},
+    {"normal_mode", 0, &game_mode, NORMAL_MODE},
+    {"competition_mode", 0, &game_mode, COMPETITION_MODE},
     {"option_file", 1, 0, 0},
     {"log_file", 1, 0, 0},
     {"statistics_file", 1, 0, 0},
@@ -185,7 +184,7 @@ ArenaController::parse_command_line( int argc, char** argv )
             {
             case 3:
               debug_level = str2int( optarg );
-              game_mode = ArenaBase::DEBUG_MODE;
+              game_mode = DEBUG_MODE;
               break;
             case 6: 
               option_filename = (String)optarg;
@@ -215,20 +214,20 @@ ArenaController::parse_command_line( int argc, char** argv )
 
 
         case 'd':
-          game_mode = ArenaBase::DEBUG_MODE;
+          game_mode = DEBUG_MODE;
           break;
 
         case 'D':
           debug_level = str2int( optarg );
-          game_mode = ArenaBase::DEBUG_MODE;
+          game_mode = DEBUG_MODE;
           break;
 
         case 'n':
-          game_mode = ArenaBase::NORMAL_MODE;
+          game_mode = NORMAL_MODE;
           break;
 
         case 'c':
-          game_mode = ArenaBase::COMPETITION_MODE;
+          game_mode = COMPETITION_MODE;
           break;
 
         case 'v':

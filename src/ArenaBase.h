@@ -69,7 +69,7 @@ public:
   ArenaBase();
   virtual ~ArenaBase();
 
-  enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
+  //  enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
 
   double get_shortest_distance(const Vector2D& pos, 

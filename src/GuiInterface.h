@@ -23,8 +23,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <pthread.h>
 #include <list>
 
+
 #include "Options.h"
-#include "ArenaBase.h"
+//#include "ArenaBase.h"
+#include "Structs.h"
 
 class ArenaController;
 class String;
@@ -81,7 +83,7 @@ public:
   double get_total_time                       ();
   state_t get_state                           ();
   Vector2D* get_boundary                      ();
-  enum ArenaBase::game_mode_t get_game_mode   ();
+  enum game_mode_t get_game_mode              ();
   int get_debug_level                         ();
   int get_max_debug_level                     ();
 

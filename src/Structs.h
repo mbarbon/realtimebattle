@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 
+enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
 struct stat_t
 {
