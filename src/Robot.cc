@@ -1439,7 +1439,8 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 bool
 Robot::get_default_non_blocking_state()
 {
-  String filename = "/tmp/rtb/" + robot_plain_filename;
+  String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+    "/" + robot_plain_filename;
   
   int fd;
   if( ( fd = open(filename.chars(), O_RDONLY) ) != -1 )
@@ -1451,14 +1452,15 @@ Robot::get_default_non_blocking_state()
   return true;
 }
 
-// If non_blocking is _not_ used, a file, /tmp/rtb/"robotname", is created.
-//
+// If non_blocking is _not_ used, a file, OPTION_TMP_RTB_DIR/"robotname"
+// , is created.
 void
 Robot::set_non_blocking_state(const bool non_bl)
 {
   if( non_bl == use_non_blocking ) return;
 
-  String filename = "/tmp/rtb/" + robot_plain_filename;
+  String filename = the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+    "/" + robot_plain_filename;
 
   create_tmp_rtb_dir();
 

@@ -468,7 +468,7 @@ parse_tournament_file( const String& fname, const StartTournamentFunction functi
 void
 create_tmp_rtb_dir()
 {
-  String dirname = "/tmp/rtb";
+  String dirname = the_opts.get_s( OPTION_TMP_RTB_DIR );
   struct stat filestat;
   if( 0 != stat( dirname.chars(), &filestat ) ) 
     mkdir( dirname.chars(), S_IRWXU | S_IRWXG | S_IRWXO );

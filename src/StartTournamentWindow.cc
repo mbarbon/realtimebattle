@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "List.h"
 #include "Dialog.h"
 
-const String tmp_tournament_file( "/tmp/rtb/tmp.tour" );
+const String tmp_tournament_file( "/tmp.tour" );
 
 StartTournamentWindow::StartTournamentWindow( const int default_width,
                                               const int default_height,
@@ -378,7 +378,8 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
       }
   }  
 
-  load_tournament_file( tmp_tournament_file, false );
+  load_tournament_file( the_opts.get_s( OPTION_TMP_RTB_DIR ) +
+                        tmp_tournament_file, false );
   gtk_widget_show( window_p );
 }
 

@@ -262,6 +262,10 @@ Options::Options()
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
                           false, false, "Arena search path" );
 
+  all_string_options[OPTION_TMP_RTB_DIR] =
+    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "/tmp/rtb", "", "", 1000,
+                          false, false, "Directory for temporary files" );
+
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 185, 10000, 6,
                         false, false, "Initial Arena window width" );
