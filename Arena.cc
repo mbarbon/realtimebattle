@@ -78,7 +78,7 @@ Arena::parse_file(istream& file)
   WallInnerCircle* wall_inner_circlep;
 
   int succession = 1;
-  double scale = 1.0;
+  double scale = the_opts.get_d(OPTION_ARENA_SCALE);
   do
     {
       // TODO: max 20 should be read
@@ -87,7 +87,9 @@ Arena::parse_file(istream& file)
         {
           if( succession != 1 ) throw Error("'scale' not first", "Arena::parsefile");
           succession = 2;
-          file >> scale;
+          double scl;
+          file >> scl;
+          scale *= scl;
         }
       else if( strcmp(text, "boundary" ) == 0 )
         {

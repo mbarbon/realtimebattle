@@ -129,6 +129,9 @@ Options::Options()
   all_long_options[OPTION_MINE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, 0xff0000, 0x000000, 0xffffff, 6, "Mine colour", NULL);
 
+  all_double_options[OPTION_ARENA_SCALE] = 
+    option_info_t<double>(ENTRY_DOUBLE, 1.0, 0.001, 1000, 12, "Arena scale", NULL);
+
   all_double_options[OPTION_MAX_TIMESTEP] = 
     option_info_t<double>(ENTRY_DOUBLE, 0.5, 0.05, 1.0, 12, "Max timestep", NULL);
 
