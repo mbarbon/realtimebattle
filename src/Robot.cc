@@ -618,7 +618,7 @@ Robot::get_current_game_stats()
               return current_game_stats;
             }          
         }
-      Error(false, "Couldn't find stats", "Robot::find_current_game_stats");  
+      Error(true, "Couldn't find stats", "Robot::get_current_game_stats");  
     }
 
   return current_game_stats;
@@ -1640,13 +1640,14 @@ Robot::display_score()
                            4, String(p).non_const_chars());
       }
 
-  
-  if( last_displayed_score != (int)(10 * get_total_points()) )
+
+  double pnts = get_total_points();
+  if( last_displayed_score != (int)(10 * pnts) )
     {
-      last_displayed_score = (int)(10 * get_total_points());
+      last_displayed_score = (int)(10 * pnts);
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist,
-                         5, String(get_total_points()).non_const_chars());
+                         5, String(pnts).non_const_chars());
     }
 }
 
