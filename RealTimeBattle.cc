@@ -102,7 +102,7 @@ main ( int argc, char* argv[] )
   for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
   delete [] robotnames;
   
-  timeout_tag = gtk_timeout_add( 100, GtkFunction(update_function), (gpointer) &the_arena);
+  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) &the_arena);
 
   gtk_main();
 
