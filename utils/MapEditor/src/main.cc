@@ -1,9 +1,22 @@
-#include<iostream.h>
-#include "Arena.h"
+#include <gtk/gtk.h>
+#include "MainWindow.h"
 
 
-main()
+
+int main( int   argc,
+	  char *argv[] )
 {
-  Arena myArena;
-  myArena.Read("Original.arena");
+
+  gtk_init (&argc, &argv);
+
+  GtkWidget* window = init_main_window();
+  
+  gtk_widget_show(window);
+
+  message("Ready...\n");
+
+  gtk_main ();
+  
+  return(0);
 }
+
