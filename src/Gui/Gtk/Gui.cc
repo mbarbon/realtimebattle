@@ -51,14 +51,14 @@ class ControlWindow* controlwindow_p;
 const String
 GIName()
 {
-  static const String name("Gtk+ based GUI");
+  static const String name(_("Gtk+ based GUI"));
   return name;
 }
 
 const String
 GIUsageMessage()
 {
-  static const String usage("No options");
+  static const String usage(_("No options"));
   return usage;
 }
 
@@ -114,7 +114,7 @@ Gui::main_loop( GuiInterface* _gi_p )
 int
 Gui::timeout_function()
 {
-  update_lists();
+  //  update_lists();
   return true;
 }
 
