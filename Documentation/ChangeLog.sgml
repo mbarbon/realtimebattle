@@ -13,6 +13,8 @@ expect for the following.
 
 GTK+ is no longer necessary when compiling without graphics.
 
+Optimizations. At least the non-graphics version should be a lot faster now.
+
 It is now possible to redirect messages to a file or STDOUT.
 
 Clicking on a robots name in the statistics window now results in showing
@@ -20,7 +22,8 @@ statistics for that robot.
 
 Window resizing is working well for gtk 1.1.x and later.
 
-Grab windows is now implemented for gtk 1.1.x and later.
+For gtk 1.1.x and later you can now grab window positions and sizes via a button in the
+options window.
 
 Two new keywords added to the messaging language: DebugLine and 
 DebugCircle. These can be used to draw directly to the arena when running
