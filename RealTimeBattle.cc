@@ -81,7 +81,7 @@ main ( int argc, char* argv[] )
     
   Gui gui( nr_robots, robotnames, 1000, 1000);
   Arena the_arena;
-  the_arena.start_tournament( robotnames, arenanames, 1);
+  the_arena.start_tournament( robotnames, arenanames, 1, 3);
 
   for(int i=0; i<nr_robots; i++) delete [] robotnames[i];
   delete [] robotnames;
