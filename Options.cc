@@ -37,15 +37,15 @@ Options::Options()
   shot_speed = 10.0;
   shooting_penalty = 0.075;
   shot_min_energy = 0.5;
-  shot_max_energy = 15.0;
-  shot_energy_increase_speed = 5.0;   // [energypoints / s]
+  shot_max_energy = 30.0;
+  shot_energy_increase_speed = 10.0;   // [energypoints / s]
 
   background_colour = 0xfaf0e6;  // linen
   foreground_colour = 0x000000;   // black
 
   cookie_max_energy = 15.0;
   cookie_min_energy = 10.0;
-  cookie_frequency = 1.0/15.0;
+  cookie_frequency = 1.0/30.0;
   cookie_radius = 0.3;
   cookie_colour = 0x35d715;
 
