@@ -18,12 +18,11 @@ System dependent problems are present. We need help with bug-reports to overcome
 
 <tag>Problem when using more robots in the tournament than in the sequence</tag>
 <p> 
-This should be fixed now.
+This should be fixed in 0.9.3.
 
 <tag>Gtk+ 1.1 doesn't work</tag>
-<p> 
-Currently only the stable version of Gtk+ works (1.0.x), this will hopefully change in the future.
-Contributions are welcome.
+<p>
+Fixed in version 0.9.4 (hopefully). 
 
 <tag>Windows resizing</tag>
 <p> 

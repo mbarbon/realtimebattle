@@ -4,6 +4,22 @@
 <title>Change log
 <itemize>
 
+<item> <bf>0.9.4:</bf>
+More bugfixes
+<itemize>
+<item> It should be working alright with Gtk+ 1.1.x now.
+<item> Problems with the environmental-variables fixed.
+</itemize>
+
+and this time also some improvements
+<itemize>
+<item> Enhanced debug-mode, you can now change debug-levels, kill specified robots or the current
+game. Thanks to Ward & Pieter for the ideas.
+<item> When a rotation has finished, the robot will now get a message if it wishes. Thanks to Artur
+Adib for the suggestion.
+<item> The included robots are no longer GPL'd, they have no license at all now! Feel free to
+(ab)use as you wish, but don't blame us if there is a problem (-:
+</itemize>
 
 <item> <bf>0.9.3:</bf> 
 <p>
