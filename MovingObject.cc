@@ -4,6 +4,7 @@
 #include <strstream.h>
 #include <signal.h>
 #include "Arena.h"
+#include "Error.h"
 
 Robot::Robot(char* filename)
 {
