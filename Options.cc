@@ -26,10 +26,10 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,"Slide/break friction", NULL);
 
   all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,"Max acceleration", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,"Robot max acceleration", NULL);
 
   all_double_options[OPTION_ROBOT_MIN_ACCELERATION] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, -0.5, -10.0, 0.0, 12,"Min acceleration", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, -0.5, -10.0, 0.0, 12,"Robot min acceleration", NULL);
     
   all_double_options[OPTION_ROBOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.1, 10.0, 12, "Robot radius", NULL);
@@ -46,6 +46,9 @@ Options::Options()
   all_double_options[OPTION_ROBOT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12, "Robot protection coefficient", NULL);
 
+  all_double_options[OPTION_ROBOT_COS_FRONTSIZE] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, cos(M_PI/6.0), -1.0, 1.0, 12, "Robot frontsize (cos(front angle))", NULL);
+
   all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12, "Robot front bounce coefficient", NULL);
 
@@ -54,9 +57,6 @@ Options::Options()
 
   all_double_options[OPTION_ROBOT_FRONT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.9, 0.0, 1.0, 12, "Robot front protection coefficient", NULL);
-
-  all_double_options[OPTION_ROBOT_COS_FRONTSIZE] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, cos(M_PI/6.0), -1.0, 1.0, 12, "Robot frontsize (cos(front angle))", NULL);
 
   all_double_options[OPTION_ROBOT_START_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 100.0, 0.01, 10000.0, 12, "Robot start energy", NULL);
@@ -152,16 +152,16 @@ Options::Options()
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 2.5, 0.01, 100000000.0, 12, "Extra CPU time [s]", NULL);
 
   all_double_options[OPTION_CPU_PERIOD] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 60.0, 1.0, 100000000.0, 12, "Minimum time to wait for more CPU time [s]", NULL);
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 60.0, 1.0, 100000000.0, 12, "Extra CPU period [s]", NULL);
 
   all_double_options[OPTION_CPU_WARNING_PERCENT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.9, 0.1, 1.0, 12, "CPU time warning percentage", NULL);
 
   all_string_options[OPTION_STATISTICS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "statistics.txt", "", "", 100, "File to save the statistics", NULL);
+    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "statistics.txt", "", "", 100, "Statistics savefile", NULL);
 
   all_string_options[OPTION_OPTIONS_SAVE_FILE] =
-    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "File to save the options", NULL);
+    option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "options.txt", "", "", 100, "Options savefile", NULL);
 
   options_window_up = false;
 }
