@@ -49,6 +49,7 @@ public:
   void parse_command_line( int, char** );
 
   void quit_gui( GuiServerInterface* gui_p, bool exit_program );
+  void exit_all_guis();
   
   //  void start_arena();
   //  void close_arena();

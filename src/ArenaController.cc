@@ -43,6 +43,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Structs.h"
 #include "String.h"
 #include "Various.h"
+#include "InformationDistributor.h"
 
 // ArenaController constructor
 
@@ -68,17 +69,24 @@ ArenaController::~ArenaController()
 {
   //  if( started ) close_arena();
 
-  list<GuiServerInterface*>::iterator li;
-  for( li = gui_list.begin(); li != gui_list.end(); li++ )
-    {
-      (*li)->shutdown();
-      delete ((GuiInterface*)*li);
-    }
-  gui_list.clear();
+  exit_all_guis();
 
   pthread_mutex_destroy( &gi_mutex );
 
   delete main_opts;
+}
+
+void
+ArenaController::exit_all_guis()
+{
+  list<GuiServerInterface*>::iterator li;
+  for( li = gui_list.begin(); li != gui_list.end(); li++ )
+    {
+      distributor.make_reader_quit( (*li)->get_reader_id() );
+      (*li)->shutdown();
+      delete ((GuiInterface*)*li);
+    }
+  gui_list.clear();
 }
 
 int
@@ -395,6 +403,7 @@ ArenaController::initialize_options()
 void
 ArenaController::quit_gui( GuiServerInterface* gui_p, bool exit_program )
 {
+  // TODO: Redo with an event!
   list<GuiServerInterface*>::iterator li;
   if( exit_program )
     {
