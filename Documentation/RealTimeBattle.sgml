@@ -436,7 +436,7 @@ following information is given:
 <tag>Header:</tag> H [games/sequence] [robots/sequence] [sequences] [robots]
 <tag>Arena info:</tag> A [line from the arena file]
 <tag>Game start:</tag> G [sequence number] [game number]
-<tag>Option:</tag> O [option] [value]
+<tag>Option:</tag> O [option:value]
 <tag>List of robot properties:</tag> L [robot id] [robot colour] [robot name]
 <tag>Robot position info:</tag> R [robot id] [x] [y] [cannon angle] [radar angle] [energy]
 <tag>Time:</tag> T [time elapsed]
