@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 0.9.8 rev 1
+<title>RealTimeBattle User Manual, version 0.9.9 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 16 July 1999
+<date> 9 August 1999
 
 <!-- <abstract> -->
 
@@ -459,6 +459,7 @@ following information is given:
 <tag>Game start:</tag> G [sequence number] [game number]
 <tag>Option:</tag> O [option:value]
 <tag>List of robot properties:</tag> L [robot id] [robot colour] [robot name]
+<label id="RobotPositionInfo">
 <tag>Robot position info:</tag> R [robot id] [x] [y] [cannon angle] [radar angle] [energy]
 <tag>Time:</tag> T [time elapsed]
 <tag>Print message:</tag> P [robot id] [message to print]
@@ -1144,9 +1145,8 @@ or if you have a fast computer you may want to speed the game up.
 <tag>Update interval:</tag> This option determines the time between robot
 updates, i.e., how often the robot states are changed. It is not influenced
 by the 'Time Scale' and cannot be altered when the program is running. 
-The accuracy is 1/100 s if RTB was compiled with graphics (in this case 
-<tt>gtk+</tt> is responsible for calling the updating function), otherwise 
-the accuracy is one microsecond.
+The accuracy is 1/100 s (depending of the precision of the system that RealTimeBattle
+is running on).
 
 <label id="RobotStartupTime">
 <tag>Robot startup time:</tag> Determines the time between the robot processes are executed
@@ -1171,6 +1171,12 @@ amount of its CPU time it will receive a warning message.
 
 <tag>Process check interval:</tag> In <ref id="Command line options" name="competition-mode"> this
 will decide how often the program will check for CPU usage.
+
+<label id="LoggingFrequency">
+<tag>Logging frequency:</tag> To reduce the size of
+<ref name="log files" id="log_files"> you can increase this option. With this option,
+<ref name="robot position info" id="RobotPositionInfo"> are only logged every n:th
+<ref name="update interval" id="UpdateInterval">.
 
 </descrip>
 
