@@ -103,6 +103,7 @@ private:
 
   // These variables contains the current values of the robot rotation,
   // acceleration and brake.
+  double radar_and_cannon_rotate;
   double robot_rotate;
   double acceleration;
   double brake_value;
@@ -345,8 +346,10 @@ RotateAndFire::game_starts()
   last_shot_hit_time = -2.0;
   current_time = 0;
 
+  radar_and_cannon_rotate =
+    robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
   rotate( 1, robot_rotate );
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  rotate( 6, radar_and_cannon_rotate );
   accelerate( acceleration );
 }
 
@@ -362,7 +365,11 @@ RotateAndFire::radar_noobject( const double dist, const double angle )
 void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
-  rotate( 6, -robot_rotate );
+  if( radar_and_cannon_rotate != - robot_rotate )
+  {
+    radar_and_cannon_rotate = - robot_rotate;
+    rotate( 6, radar_and_cannon_rotate );
+  }
 
   if( dist < 2 && acceleration != 0.0 )
     {
@@ -380,7 +387,13 @@ RotateAndFire::radar_robot( const double dist, const double angle )
 void
 RotateAndFire::radar_shot( const double dist, const double angle )
 {
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  if( radar_and_cannon_rotate !=
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
+  {
+    radar_and_cannon_rotate =
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+    rotate( 6, radar_and_cannon_rotate );
+  }
 }
 
 // Radar info when a wall is seen.
@@ -389,7 +402,13 @@ RotateAndFire::radar_shot( const double dist, const double angle )
 void
 RotateAndFire::radar_wall( const double dist, const double angle )
 {
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  if( radar_and_cannon_rotate !=
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
+  {
+    radar_and_cannon_rotate =
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+    rotate( 6, radar_and_cannon_rotate );
+  }
 
   double old_acc = acceleration;
 
@@ -427,14 +446,26 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 void
 RotateAndFire::radar_cookie( const double dist, const double angle )
 {
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  if( radar_and_cannon_rotate !=
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
+  {
+    radar_and_cannon_rotate =
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+    rotate( 6, radar_and_cannon_rotate );
+  }
 }
 
 // Radar info when a mine is seen.
 void
 RotateAndFire::radar_mine( const double dist, const double angle )
 {
-  rotate( 6, robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate );
+  if( radar_and_cannon_rotate !=
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
+  {
+    radar_and_cannon_rotate =
+      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+    rotate( 6, radar_and_cannon_rotate );
+  }
   shoot( shot_min_energy );
 }
 
@@ -606,7 +637,7 @@ RotateAndFire::exit_robot()
 void
 RotateAndFire::pre_checking_messages()
 {
-  if(rand() < (RAND_MAX/100) && rotate_allowed )
+  if(rand() < (RAND_MAX/200) && rotate_allowed )
     {
       robot_rotate = -robot_rotate;
       rotate( 1, robot_rotate );
