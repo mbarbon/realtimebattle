@@ -44,8 +44,13 @@ class Variable : public Gadget
 public:
 
   Variable() {}
-  Variable( const char* name, Gadget* const p ) : Gadget(name, p, VARIABLE_GDT) {}
+  Variable( const char* name, Gadget* const p ) : Gadget(name, p, GAD_VARIABLE) {}
   ~Variable() {}
+
+  static Gadget* new_variable( const char* name, Gadget* const p )
+  {
+    return new Variable( name, p );
+  }
 
   void make_bool( const double val=double(false) );
 

@@ -34,6 +34,11 @@ public:
 
   DefenseGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_defensegadget( const char* name, Gadget* const p )
+  {
+    return new DefenseGadget( name, p );
+  }
+
   enum DefenseVars
   {
     COLLISIONPROTECTION=0, HEATPROTECTION, SHOTPROTECTION, FRONTANGLE,

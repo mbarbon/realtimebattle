@@ -34,6 +34,11 @@ public:
 
   RobotBodyGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_robotbodygadget( const char* name, Gadget* const p )
+  {
+    return new RobotBodyGadget( name, p );
+  }
+
   enum RobotBodyVars
   {
     HEALTH=0, FUEL, X_POS, Y_POS, DIRECTION, X_VEL, Y_VEL, RADIUS,

@@ -31,11 +31,16 @@ class Function : public Gadget
 {
 public:
   Function() {}
-  Function(const char* name, Gadget* const p ) : Gadget(name, p, FUNCTION_GDT) {}
+  Function(const char* name, Gadget* const p ) : Gadget(name, p, GAD_FUNCTION) {}
   Function(const char* name, Gadget* const p, const int fcn ) 
-    : Gadget(name, p, FUNCTION_GDT), fcn_nr(fcn) {}
+    : Gadget(name, p, GAD_FUNCTION), fcn_nr(fcn) {}
 
   ~Function() {}
+
+  static Gadget* new_function( const char* name, Gadget* const p )
+  {
+    return new Function( name, p );
+  }
 
   //void operator() () { parent->eval_function(fcn_nr); }
 

@@ -34,6 +34,11 @@ public:
 
   CommunicationGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_communicationgadget( const char* name, Gadget* const p )
+  {
+    return new CommunicationGadget( name, p );
+  }
+
 private:
 
   enum CommunicationVars

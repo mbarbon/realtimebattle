@@ -34,6 +34,11 @@ public:
 
   ShotGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_shotgadget( const char* name, Gadget* const p )
+  {
+    return new ShotGadget( name, p );
+  }
+
   enum ShotVars
   {
     DAMAGE=0, SPEED, SIZE, COSTPERDAMAGE, COSTPERSPEED,

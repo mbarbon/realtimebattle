@@ -36,6 +36,12 @@ public:
 
   WeaponGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_weapongadget( const char* name, Gadget* const p )
+  {
+    return new WeaponGadget( name, p );
+  }
+
+
   enum WeaponVars
   {
     AMMUNITION=0,  STOPANGLE, LEFTANGLE, RIGHTANGLE, ROTATESPEED,

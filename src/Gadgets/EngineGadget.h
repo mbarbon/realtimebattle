@@ -34,6 +34,11 @@ public:
 
   EngineGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_enginegadget( const char* name, Gadget* const p )
+  {
+    return new EngineGadget( name, p );
+  }
+
 private:
 
   enum EngineVars

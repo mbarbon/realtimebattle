@@ -34,6 +34,11 @@ public:
 
   ExplosionGadget( const char* name, Gadget* const p );
 
+  static Gadget* new_explosiongadget( const char* name, Gadget* const p )
+  {
+    return new ExplosionGadget( name, p );
+  }
+
 
   //  friend class Explosion;
 

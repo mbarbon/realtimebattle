@@ -35,8 +35,13 @@ class Script : public Gadget
 {
 public:
   
-  Script( const char* name, Gadget* const p ) : Gadget(name,p, SCRIPT_GDT) {}
+  Script( const char* name, Gadget* const p ) : Gadget(name,p, GAD_SCRIPT) {}
   ~Script() {}
+
+  static Gadget* new_script( const char* name, Gadget* const p )
+  {
+    return new Script( name, p );
+  }
 
   void run();
   void continue_script() {}
