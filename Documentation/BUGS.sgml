@@ -1,6 +1,7 @@
 <!doctype linuxdoc system>
 
-<notes>BUGS
+<notes>
+BUGS
 
 This is a list of the currently known bugs in this version of the program. If you have
 found another bug, please look at the most recent version of 
@@ -26,7 +27,7 @@ The sort feature is missing in gtk+ 1.0, so this will probably never work.
 <tag>I can't resize windows in gtk+ 1.0 </tag>
 <p> 
 We have still not found a solution to this, but it now works in gtk+ >= 1.1.x.
-If you can't resize in gtk+ >= 1.1.x either, you have to upgrade to RTB 0.9.7.
+If you can't resize in gtk+ >= 1.1.x either, you have to upgrade to RTB >= 0.9.7.
 
 </descrip>
 </notes>
