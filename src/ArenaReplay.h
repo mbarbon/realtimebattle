@@ -73,6 +73,8 @@ private:
   void end_tournament           ();
 
   char parse_log_line           ();
+  void parse_log_line_forward   ( const char first_letter );
+  void parse_log_line_rewind    ( const char first_letter );
   void parse_this_interval      ();
   void parse_this_time_index    ();
   void beginning_of_prev_line   ();
