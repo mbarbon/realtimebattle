@@ -28,7 +28,7 @@ robots:
 	cd $(ROBOTDIR) && $(MAKE)
 
 html_docs:
-	cd $(DOCSDIR) && $(MAKE)
+	cd $(DOCSDIR) && $(MAKE) html
 
 docs:
 	cd $(DOCSDIR) && $(MAKE) all
