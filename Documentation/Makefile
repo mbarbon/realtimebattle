@@ -21,4 +21,4 @@ RealTimeBattle.txt: RealTimeBattle.sgml
 	sgml2txt RealTimeBattle.sgml
 
 clean:
-	rm -f *~ *.{aux,log,toc,tex,dvi,html,info}
+	rm -f *~ *.{aux,log,toc,tex,dvi,html,info,ps}

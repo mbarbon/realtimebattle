@@ -29,7 +29,7 @@ docs:
 clean: root_clean rtb_clean robot_clean doc_clean html_clean
 
 root_clean:
-	rm -f *~ $(ARENADIR)/*~
+	rm -f *~ $(ARENADIR)/*~ RealTimeBattle.tar.gz
 
 rtb_clean:
 	cd $(SRCDIR) && $(MAKE) clean

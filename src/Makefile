@@ -53,7 +53,7 @@ Statistics.o: Statistics.cc Vector2D.h Gui.h Various.h Options.h Arena.h Message
 StartTournament.o: StartTournament.cc Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h String.h
 
 clean:
-	rm -f *~ *.o core*
+	rm -f *~ RealTimeBattle *.o core*
 
 ETAGS:
 	etags *.cc *.h
