@@ -23,8 +23,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ScoreWindow.h" 
 #include "StatisticsWindow.h" 
 #include "Gui.h"
-#include "Arena_Controller.h"
-#include "Arena_RealTime.h"
+#include "Dialog.h"
+#include "ArenaController.h"
+#include "ArenaRealTime.h"
 #include "Robot.h"
 #include "Options.h"
 #include "String.h"
@@ -76,7 +77,6 @@ ControlWindow::ControlWindow( const int default_width,
     { " Options ",
       (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
     { " Statistics ",
-      //      (GtkSignalFunc) statistics_button_callback       , TRUE  },
       (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
     { "         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
@@ -105,7 +105,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Debug-mode buttons
 
-  if( the_arena.get_game_mode() == Arena_Base::DEBUG_MODE )
+  if( the_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
     {
       GtkWidget* vseparator = gtk_vseparator_new();
       gtk_box_pack_start( GTK_BOX (hbox), vseparator, FALSE, FALSE, 0 );
@@ -309,13 +309,19 @@ ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
 {
   if( the_arena.get_state() != NOT_STARTED &&
       the_arena.get_state() != FINISHED )
-    the_gui.ask_user("This action will kill the current tournament.\nDo you want do that?",&(ControlWindow::end_tournament));
+    {
+      List<String> string_list;
+      string_list.insert_last( new String( "Yes" ) );
+      string_list.insert_last( new String( "No"  ) );
+      Dialog( "This action will kill the current tournament.\nDo you want do that?",
+              string_list, (DialogFunction) ControlWindow::end_tournament );
+    }
 }
 
 void
-ControlWindow::end_tournament( bool really )
+ControlWindow::end_tournament( int result )
 {
-  if(really)
+  if( result == 1 )
     the_arena.interrupt_tournament();
 }
 

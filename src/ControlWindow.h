@@ -30,6 +30,8 @@ struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 typedef void* gpointer;
 
+struct dialog_result_t;
+
 class ControlWindow
 {
 public:
@@ -54,7 +56,7 @@ public:
   static void decrease_debug_level ( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p );
   static void end_clicked          ( GtkWidget* widget, gpointer data ); 
-  static void end_tournament       ( bool really );
+  static void end_tournament       ( int result );
   static void options_clicked      ( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p );
   static void statistics_clicked   ( GtkWidget* widget,

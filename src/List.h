@@ -2,7 +2,7 @@
 #define __LIST__
 
 //#include <stdlib.h>
-//#include <iostream.h>
+#include <iostream.h>
 
 template<class T>
 struct ListNode
