@@ -102,7 +102,7 @@ OptionsWindow::OptionsWindow( const int default_width,
       GtkWidget* description_table = gtk_table_new( number_of_options, 1, TRUE );
       GtkWidget* entry_table = gtk_table_new( number_of_options, 1, TRUE );
       GtkWidget* button_table = gtk_table_new( number_of_options, 3, TRUE );
-      gtk_box_pack_start( GTK_BOX( page_hbox ), description_table, TRUE, TRUE, 0 );
+      gtk_box_pack_start( GTK_BOX( page_hbox ), description_table, FALSE, TRUE, 0 );
       gtk_box_pack_start( GTK_BOX( page_hbox ), entry_table, TRUE, TRUE, 0 );
       gtk_box_pack_start( GTK_BOX( page_hbox ), button_table, FALSE, TRUE, 0 );
 
