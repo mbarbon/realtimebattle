@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <limits.h>
 #include <float.h>
+#include <vector>
 
 #include "Gadget.h"
 #include "Variable.h"
@@ -48,7 +49,9 @@ public:
     LAST_ENVIRONMENTVAR
   };
 
-  Gadget* build_in_variable( const string & s, const Gadget*  );
+  Gadget* create_instance( const string & s, const Gadget*  );
+
+  void set_geometry_list( const vector<string> & );
 
 private:
 

@@ -36,6 +36,7 @@ enum gadget_t
   GAD_BALL,
   GAD_EQUIPMENT,
   GAD_ENVIRONMENT,
+  GAD_GEOMETRY,
   GAD_ROBOTBODY,
   GAD_SCORING,
 
@@ -59,6 +60,7 @@ static const char gadget_types[][LAST_GADGET] =
   "Ball",
   "Equipment",
   "Environment",
+  "Geometry",
   "RobotBody",
   "Scoring",
 

@@ -54,14 +54,12 @@ public:
     };
   void add_script_line( string& s )
     { //Make it better for futur uses
-      cout<<"Creating a script\n";
       ScriptLine new_line;
       new_line.line_nr = 0;
       new_line.function = ACTION;
       new_line.is_variable = false;
       new_line.str_p = new string( s );
       commands.push_back(new_line);
-      cout<<"Added\n";
     }
 
   enum ScriptFunction

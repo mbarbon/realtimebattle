@@ -73,6 +73,8 @@ public:
 
   virtual Gadget* create_instance( const string& s, const Gadget* ) { return NULL; }
 
+  Gadget* find_by_name( const string& gadget_name ); 
+
 protected:
 
   void init_variables( const VariableDefinition* var_def, const int last_var );

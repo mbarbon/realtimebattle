@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,43 +21,56 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __WALL__
 
 #include "GeometricalObjects.h"
+#include "WallGadget.h"
 
-class WallCircle : public Circle
+//TODO : for each class : add the wallgadget corresponding to the description !!!
+
+class Wall 
 {
-public:
+ public:
+  Wall(const WallGadget* wg) : wg(wg) 
+    {}
+ protected:
+  const WallGadget* wg;
+};
+
+class WallCircle : public Circle, public Wall
+{
+ public:
   WallCircle(const Vector2D& c, const double r, 
-             const double b_c, const double hardn) : Circle(c, r) 
-    { bounce_coeff = b_c; hardness_coeff = hardn; }
+             const WallGadget* wg ) 
+    : Circle(c, r), Wall( wg ) 
+    { }
 
   ~WallCircle() {}
 };
 
-class WallInnerCircle : public InnerCircle
+class WallInnerCircle : public InnerCircle, public Wall
 {
 public:
   WallInnerCircle(const Vector2D& c, const double r, 
-             const double b_c, const double hardn) : InnerCircle(c, r) 
-    { bounce_coeff = b_c; hardness_coeff = hardn; }
+		  const WallGadget* wg ) : InnerCircle(c, r) , Wall( wg )
+    { }
   ~WallInnerCircle() {}
 };
 
-class WallLine : public Line
+class WallLine : public Line, public Wall
 {
 public:
-  WallLine(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
-           const double b_c, const double hardn) : Line(sp, d, len, th) 
-    { bounce_coeff = b_c; hardness_coeff = hardn; }
+  WallLine(const Vector2D& sp, const Vector2D& d, const double len,
+           const WallGadget* wg ) : Line(sp, d, len) , Wall( wg )
+    { }
   ~WallLine() {}
 };
 
 
-class WallArc : public Arc
+class WallArc : public Arc, public Wall
 {
 public:
   WallArc(const Vector2D& c, const double& r1, const double& r2,
           const double a1, const double a2, 
-          const double b_c, const double hardn) : Arc(c, r1, r2, a1, a2) 
-    { bounce_coeff = b_c; hardness_coeff = hardn; }
+          const WallGadget* wg ) : Arc(c, r1, r2, a1, a2), Wall( wg ) 
+    {  }
   ~WallArc() {}
 };
 

@@ -173,6 +173,8 @@ main( int argc, char* argv[] )
 
   set<Robot*> s;
   Arena* a = new Arena("/tmp/roussebe/RealTimeBattle/Arenas/Original.arena", s);
+  cout<<"Arena parsed\n";
+
   delete a;
   exit(0);
 

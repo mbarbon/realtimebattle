@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <strstream>
 #include <math.h>
 
 #include "Variable.h"
@@ -127,6 +128,33 @@ Variable::assign(const Value& val)
       else if( value.i_val <= int(minimum) )
         value.i_val = int(minimum);
     }
+}
+
+void
+Variable::set_variable_info(string& var, string& s_value)
+{
+  //TODO : make this look better
+  //NOTE : maybe they can be treated as variables like in other gadgets !!!
+
+  istrstream is(s_value.c_str());
+  if( var == "Information" || var == "Parameter" || var == "Random") {
+    bool b = ((s_value==string("true"))?true:false) ;
+    
+    if(var == "Information")    public_readable = b;
+    else if(var == "Parameter") public_writable = b;
+    else if(var == "Random")    random = b;
+  }
+  else if (var == "MinValue" || var == "MaxValue" || var == "Inaccuracy" || var == "DefaultValue") {
+    float f; is >> f;
+
+    if(var == "MinValue") minimum = f;
+    else if(var == "MaxValue") maximum = f;
+    else if(var == "Inaccuracy") inaccuracy = f;
+    else if(var == "DefaultValue") value = f;
+  }
+  else if (var == "Digits") {
+    int i; is >> i;
+  }
 }
 
 

@@ -52,7 +52,7 @@ EnvironmentGadget::EnvironmentGadget( const char* name, Gadget* const p )
 }
 
 Gadget* 
-EnvironmentGadget::build_in_variable( const string & s, const Gadget* build_as )
+EnvironmentGadget::create_instance( const string & s, const Gadget* build_as )
 {
   /*  cout<<s<<endl;
   if( equal_strings_nocase( s, "Shot") )
@@ -66,6 +66,14 @@ EnvironmentGadget::build_in_variable( const string & s, const Gadget* build_as )
     }
     else*/
     return NULL;
+}
+
+void
+EnvironmentGadget::set_geometry_list( const vector<string>& the_list )
+{
+  for(int i = 0; i < the_list.size(); i ++)
+    cout<<the_list[i]<<"  ";
+  cout<<endl;
 }
 
 void

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ init_new_gadget_functions()
     ExplosionGadget::new_explosiongadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_FUNCTION] ) ] =
     Function::new_function;
+  new_gadget_functions[ lowercase( gadget_types[GAD_GEOMETRY] ) ] =
+    GeometryGadget::new_geometrygadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_ROBOTBODY] ) ] =
     RobotBodyGadget::new_robotbodygadget;
   new_gadget_functions[ lowercase( gadget_types[GAD_SCRIPT] ) ] =

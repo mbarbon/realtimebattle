@@ -98,7 +98,6 @@ WeaponGadget::create_instance( const string & s, const Gadget* build_as )
   if( equal_strings_nocase( s, "Shot") )
     {
       //TODO : dynamic_cast<ShotGadget*> (build_as);
-      cout<<"Here\n";
       ShotGadget* build_as_shot = (ShotGadget*) build_as;
       instance["Shot"]  = new ShotGadget( s.c_str(), this );
       (*instance["Shot"]) = *build_as_shot;

@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class Line : public Shape
 {
 public:
   Line();
-  Line(const Vector2D& sp, const Vector2D& d, const double len, const double th);
+  Line(const Vector2D& sp, const Vector2D& d, const double len);
   //  Line(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
   //       const double b_c, const double hardn);
   virtual ~Line() {}
@@ -49,6 +49,7 @@ public:
 protected:
   Vector2D start_point;
   Vector2D direction;
+  //TODO : remove this 2 variables
   double length;
   double thickness;
 };
@@ -62,7 +63,7 @@ public:
   Circle();
   Circle(const Vector2D& c, const double r); 
   Circle(const Vector2D& c, const double r, const long int col); 
-  //  Circle(const Vector2D& c, const double r, const double b_c, const double hardn);
+
   virtual ~Circle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) const;
@@ -87,7 +88,7 @@ class InnerCircle : public Shape
 public:
   InnerCircle();
   InnerCircle(const Vector2D& c, const double r); 
-  //  InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn);
+
   ~InnerCircle() {}
 
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size) const;

@@ -34,6 +34,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EngineGadget.h"
 #include "EnvironmentGadget.h"
 #include "ExplosionGadget.h"
+#include "GeometryGadget.h"
 #include "RobotBodyGadget.h"
 #include "ShotGadget.h"
 #include "SensorGadget.h"

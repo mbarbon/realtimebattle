@@ -130,3 +130,14 @@ Gadget::eval_message(const string& msg)
 
   return true;
 }
+
+Gadget* 
+Gadget::find_by_name( const string& gadget_name )
+{
+  Gadget* to_return;
+  if( (to_return = my_gadgets.find_by_name( gadget_name )) == NULL )
+    {
+      if(parent == NULL) return NULL;
+      else               return parent->find_by_name( gadget_name );
+    }
+}

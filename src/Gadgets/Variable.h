@@ -90,6 +90,8 @@ public:
   const Variable& operator= (const Value& val) { assign(val); return *this; }
   void assign(const Value& val);
 
+  void set_variable_info( string& var, string& value );
+
   Variable& operator+=(int n);
   Variable& operator-=(int n);
   Variable& operator*=(int n);

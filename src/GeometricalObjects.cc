@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ Line::Line()
   thickness = 0.0;
 }
 
-Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th) :
-  start_point( sp ),  direction( d ), length( len ), thickness( th )
+Line::Line(const Vector2D& sp, const Vector2D& d, const double len) :
+  start_point( sp ),  direction( d ), length( len )
 {
 }
 

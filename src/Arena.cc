@@ -131,9 +131,11 @@ void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
   enum load_file_mode_t { LAF_DEFINING_MODE, LAF_VARIABLE_MODE,
-                          LAF_SCRIPT_MODE, LAF_GEOMETRY_MODE };
+                          LAF_SCRIPT_MODE, LAF_GEOMETRY_MODE,
+			  LAF_ENVIRONMENT_MODE };
 
   load_file_mode_t mode = LAF_DEFINING_MODE;
+  stack<int> mode_stack;
 
   string top_filename = filename;
   if( !find_full_arena_filename( top_filename ))
@@ -164,6 +166,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 	    { //TODO : make two separate cases !
 	      delete current_file;
 	      file_stack.pop();
+	      //if(file_stack.size() > 0)
 	      current_file = file_stack.top();
 	      continue;
 	    }
@@ -183,9 +186,16 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 
       if( wordlist.size() > 0 )
         {
-	  for(int i = 0; i < wordlist.size(); i ++)
+	  cout<<(int) mode<<" : ";
+	  for(unsigned int i = 0; i < mode_stack.size(); i++)
+	    cout<<"\t";
+	  for(unsigned int i = 0; i < wordlist.size(); i ++)
 	    cout<<"{"<<wordlist[i]<<"} ";
 	  cout<<endl;
+	  
+	  //
+	  //  Mode free analyse
+	  //
 
           if( first_line && wordlist[0][0] == '!' )  //This may be the arena version
             {
@@ -202,45 +212,62 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 	      //Put the include file on the top of the stack
               file_stack.push( current_file = new ifstream( wordlist[1].c_str() ) );
             }
-          else if( mode == LAF_DEFINING_MODE &&
+          else if( /*mode == LAF_DEFINING_MODE &&*/
                    equal_strings_nocase( wordlist[0], "Define" ) &&
                    wordlist.size() > 2 )  
             {
-	      cout<<"Starting a definition " << wordlist[1] << "  " << wordlist[2] << endl;
               Gadget* gadget =
                 AllGadgets::create_gadget_by_stringtype( wordlist[1],
                                                          wordlist[2].c_str(),
                                                          current_gadget );
 
               assert( gadget != NULL );
-	      cout<<"Gadget created\n";
 
               current_gadget->get_my_gadgets().add( gadget->get_info() );
               current_gadget = dynamic_cast<Gadget*> (gadget);  //Is it necessary ?
 
+	      mode_stack.push(mode);
+
               if( gadget->get_info().type == GAD_SCRIPT )  //Use a stack instead !!!
                 mode = LAF_SCRIPT_MODE;
-	      else if( gadget->get_info().type == GAD_ENVIRONMENT )
+	      else if( gadget->get_info().type == GAD_GEOMETRY )
 		mode = LAF_GEOMETRY_MODE;
 	      else if( gadget->get_info().type == GAD_VARIABLE )
 		mode = LAF_VARIABLE_MODE;
+	      else if( gadget->get_info().type == GAD_ENVIRONMENT )
+		mode = LAF_ENVIRONMENT_MODE;
+	      else
+		mode = LAF_DEFINING_MODE;
             }
-
           else if( equal_strings_nocase( wordlist[0], "EndDefine" ) )
             {
               if( wordlist.size() > 2 && wordlist[2] != current_gadget->get_name() )
                 Error( true, "Ending wrong definition", "Arena::load_arena_file" );
               current_gadget = current_gadget->get_parent();
-              mode = LAF_DEFINING_MODE;
-            }
+
+	      //TODO : make it end in a different way !
+	      if(mode == LAF_ENVIRONMENT_MODE)  //this should be the end of the file ?!?
+		return;
+
+	      if(mode_stack.size() > 0)
+		{
+		  mode = (load_file_mode_t)mode_stack.top();
+		  mode_stack.pop();
+		}
+	    }
 	  else if( equal_strings_nocase( wordlist[0], "InfoString") )
 	    {
 	    }
+
+	  //
+	  // Mode dependant analyse
+	  //
+
           else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Function" ) &&
                    wordlist.size() > 2 )
             { //Is this the right place for this ???
-	      Function* func_p = dynamic_cast<Function*> ( current_gadget->get_my_gadgets().find_by_name( wordlist[1] ) );
+	      Function* func_p = dynamic_cast<Function*> ( current_gadget->find_by_name( wordlist[1] ) );
 	      assert( func_p != NULL );
 
               if( equal_strings_nocase( wordlist[2], "default" ) )
@@ -260,40 +287,48 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
             }          
           else if( mode == LAF_VARIABLE_MODE )
             {
-	      cout<<"Setting a variable :\n";
-	      //cout<<current_gadget->get_info().name<<endl;
-              //assert( typeid(current_gadget) == typeid(Variable*) );
-              // TODO: set variable info.
+	      Variable* var = dynamic_cast<Variable*> (current_gadget);
+	      var->set_variable_info(wordlist[0], wordlist[1]);
             }
           else if( mode == LAF_SCRIPT_MODE )
             {
               (dynamic_cast<Script*>(current_gadget))->add_script_lines( wordlist );
-            }            
-          else if( mode == LAF_GEOMETRY_MODE )
-            {//Hmmm
-	      if(equal_strings_nocase( wordlist[0], "Define" ) &&
-		 wordlist.size() > 2 )
-		{  
-
-		  Gadget* gadget =
-		    AllGadgets::create_gadget_by_stringtype( wordlist[1],
-							     wordlist[2].c_str(),
-							     current_gadget );
-		  
-		  assert( gadget != NULL );
-		  cout<<"Gadget created\n";
-		  
-		  current_gadget->get_my_gadgets().add( gadget->get_info() );
-		  current_gadget = dynamic_cast<Gadget*> (gadget);  //Is it necessary ?
-		  
-		}	      
             }
+          else if( mode == LAF_GEOMETRY_MODE )
+            {
+	      GeometryGadget* the_geometry = dynamic_cast<GeometryGadget*> (current_gadget);
+
+	      if(equal_strings_nocase(wordlist[0], "Scale"))
+		{
+		  istrstream is(wordlist[1].c_str());
+		  double d; is >> d;
+		  the_geometry->set_scale( d );
+		}
+	      else if(equal_strings_nocase(wordlist[0], "Boundary"))
+		{
+		  wordlist.erase( wordlist.begin() );
+		  the_geometry->set_boundary( wordlist );
+		}
+	      else {
+		WallGadget* the_shape_wall 
+		  = dynamic_cast<WallGadget*> (the_geometry->find_by_name( wordlist[1] )); 
+		
+		the_geometry->set_shape(wordlist, the_shape_wall);
+	      }		
+            }
+	  else if( mode == LAF_ENVIRONMENT_MODE && 
+		   equal_strings_nocase( wordlist[0], "GeometryList" ))
+	    {
+	      EnvironmentGadget* environment = dynamic_cast<EnvironmentGadget*> (current_gadget);
+	      wordlist.erase( wordlist.begin() );
+	      environment->set_geometry_list(wordlist);
+	    }
           else if( wordlist.size() > 1 )
             {
 	      if(wordlist[1][0] == '$')
 		{ //This is a particular variable of the system
-		  Gadget* gadp = current_gadget->get_my_gadgets().
-		    find_by_name( wordlist[1].substr(1, wordlist[1].length() - 1) );
+		  Gadget* gadp = current_gadget->find_by_name
+		    ( wordlist[1].substr(1, wordlist[1].length() - 1) );
 		  assert( gadp != NULL );
 		  Gadget* gad_res = current_gadget->create_instance(wordlist[0], gadp);
 		  assert( gad_res != NULL );
@@ -302,8 +337,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 		{
 		  Gadget* gadp;
 		  
-		  if( (gadp = (current_gadget->get_my_gadgets().
-			       find_by_name( wordlist[0] ))))
+		  if( (gadp = (current_gadget->find_by_name( wordlist[0] ))))
 		    { //This is a normal variable ;
 		      Variable* var_p = (Variable*) gadp;
 		      
@@ -322,10 +356,6 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 		      }
 		    }
 		}
-	      //sleep( 1 );
-
-              //assert( typeid(gadp) == typeid(Variable*) );
-              // TODO: set value to the found gadget
             }
         }
     }

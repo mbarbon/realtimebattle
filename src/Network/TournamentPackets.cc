@@ -71,6 +71,7 @@ string OldRTBMessagePacket::make_netstring() const
 
 int OldRTBMessagePacket::handle_packet( )
 {
+  return 0;
 }
 
 string RobotCommandPacket::make_netstring() const
@@ -80,4 +81,5 @@ string RobotCommandPacket::make_netstring() const
 
 int RobotCommandPacket::handle_packet( )
 {
+  return 0;
 }

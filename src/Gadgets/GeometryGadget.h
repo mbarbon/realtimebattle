@@ -22,12 +22,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <limits.h>
 #include <float.h>
+#include <vector>
 
 #include "Gadget.h"
 #include "Variable.h"
 #include "Function.h"
 #include "../Arena.h"
 #include "../EventHandler.h"
+
+  class WallGadget;
 
 class GeometryGadget : public Gadget
 {
@@ -40,19 +43,17 @@ public:
     return new GeometryGadget( name, p );
   }
 
+  Gadget* create_instance( const string & s, const Gadget*  );
 
-  enum GeometryVars
-  {
-    FRICTION = 0, AIRRESISTANCE, GRAVITY, VISIBILITY, TEMPERATURE,
-    MATCHTIMELIMIT, TIMELIMIT, FIXEDLENGTH, TIMEOUT,
-    LAST_GEOMETRYVAR
-  };
-
-  Gadget* build_in_variable( const string & s, const Gadget*  );
+  void set_scale( double );
+  void set_boundary( vector<string>& );
+  void set_shape(vector<string>&, WallGadget*);
 
 private:
+  set<Shape*> walls;
 
-  const static VariableDefinition variable_def[LAST_GEOMETRYVAR]; 
+  double scale;
+  double boundary[4];
 
   void eval_function(const int fcn);
 };
