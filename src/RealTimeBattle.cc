@@ -75,7 +75,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 #include "ServerSocket.h"
-
+#include "TournamentAgreementPackets.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
@@ -172,6 +172,7 @@ main( int argc, char* argv[] )
   signal(SIGINT,  exit_cleanly);
 
   my_socketserver.init(argc, argv); //We don't always need a network to play, do we ?
+  my_socketserver.open_channel( new TournamentAgreementPacketFactory );
   Event* new_event = new CheckSocketEvent(0.1, &my_socketserver );
   the_eventhandler.insert_RT_event(new_event);
   cout<<"Server succesfully initialized\n";

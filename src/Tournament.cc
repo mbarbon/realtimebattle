@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <vector>
 #include <math.h>
 #include <fstream.h>
+#include <strstream>
 
 #include "Tournament.h"
 #include "Gadgets/ArenaGadget.h"
@@ -33,21 +34,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 #include "EventHandler.h"
 #include "EventRT.h"
+#include "TournamentAgreementPackets.h"
 #include "TournamentPackets.h"
-
-//  Tournament::Tournament(const int robots_p_match,
-//                         const int number_o_matches,
-//                         const vector<Robot*>& robots,
-//                         const vector<ArenaGadget>& arenas) : 
-//    robots_per_match(robots_p_match), 
-//    number_of_matches(number_o_matches),
-//    the_robots(robots),
-//    the_arenagadgets(arenas)
-//  {
-//    start();
-//  }
-
-//NOTE : Maybe we should prepare the Tournament instead of running everything...
+#include "ServerSocket.h"
 
 Tournament::Tournament() :
   robots_per_match(0),
@@ -59,19 +48,9 @@ Tournament::Tournament() :
 Tournament::Tournament(const tourn_info_t& new_tournament_info ) :
   my_tournament_info(new_tournament_info)
 {
-  start();
-}
-
-Tournament::Tournament(list<NetConnection*>& negociators, const tourn_info_t& new_tournament_info ) :
-  my_tournament_info(new_tournament_info)
-{
-  //TODO : create a Robot PacketFactory
-  //TODO : create a View PacketFactory
-
-  //TODO : tell all the connection which protocol I will use and where !
-  //TODO : release each communications
-
+  //Tell to run all the robots !
   //TODO : Start
+  //start();
 }
 
 Tournament::Tournament(const int robots_p_match,
@@ -94,6 +73,14 @@ Tournament::Tournament(const string& tournament_file)
     }
 
   cout<<"End of Tournament::Tournament\n";
+}
+
+void
+Tournament::set_packet_factories(TournamentRobotPacketFactory* robots,
+				 TournamentViewPacketFactory* views)
+{
+  robot_packet_factory = robots;
+  view_packet_factory  = views;
 }
 
 bool
@@ -163,8 +150,22 @@ Tournament::start()
   
   // TODO: Load all arenafiles.
 
-  // TODO: Create the_robots
+  //Tell the NetConnection to run the robots
+  for(list<robot_info_t>::iterator ri = my_tournament_info.robots.begin(); 
+      ri != my_tournament_info.robots.end(); ri ++)
+    {
+      int rand_id = rand()%256;
+      //Use a packet to do it !!!
+      ostrstream unique_name, os; 
+      unique_name<<ri->filename<<"_"<<ri->id<<"/"<<rand_id; 
 
+      os<<"RunRobot "<<ri->filename<<" "<<ri->directory<<" "<<ri->id<<" "<<rand_id;
+      TournamentCommitChangePacket P( os.str() );
+      ri->nc->send_data( P.make_netstring() );
+
+      the_robots.push_back(new Robot(unique_name.str(), ri->id));
+    }
+  
 
   started = true;
 

@@ -42,7 +42,7 @@ class RobotBodyGadget;
 class Robot : public RollingObject
 {
 public:
-  Robot(const string& filename, NetConnection* nc);
+  Robot(const string&, int);
   Robot(const int r_id, const long int col, const string& name);
   ~Robot();
 

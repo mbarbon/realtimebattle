@@ -27,7 +27,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Robot.h"
 #include "Structs.h"
 
-
 class Match
 {
 public:
@@ -53,6 +52,9 @@ private:
 // It will start the games in order and store the results using 
 // the Statistics class.
 
+class TournamentRobotPacketFactory;
+class TournamentViewPacketFactory;
+
 class Tournament
 {
  public:
@@ -64,7 +66,10 @@ class Tournament
 
   Tournament();       //Need to have attributes one by one using the GUI and the Network
 
-  Tournament(list<NetConnection*>& negociators, const tourn_info_t& new_tournament);
+  Tournament(const tourn_info_t& new_tournament);
+
+  void set_packet_factories(TournamentRobotPacketFactory*,
+			    TournamentViewPacketFactory* );
 
   /* NOTE : No use unless having a dynamic tournament.
             As we can run only one tournament at the time (can't we ?) no need for it 
@@ -74,8 +79,6 @@ class Tournament
              const vector<string>& robot_filenames,     //Robot_filenames not enough : also need the computer who will run it
              const vector<string>& arena_filenames);    //As robot (Or maybe the arena have to be localy stored)
 
-  Tournament(const tourn_info_t& new_tournament);
-  
   Tournament(const string& tournament_file);
   
   ~Tournament() {}
@@ -122,6 +125,8 @@ private:
 
   vector<ArenaGadget> the_arenagadgets;
   
+  TournamentRobotPacketFactory* robot_packet_factory;
+  TournamentViewPacketFactory*  view_packet_factory;
   bool load_succeeded;
 
   tourn_info_t my_tournament_info;

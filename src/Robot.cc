@@ -41,8 +41,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 int Robot::nb_robots = 0;
 
-Robot::Robot(const string& filename, NetConnection* nc) : 
-  owner( nc ), connected_to_robot_client( false ), robot_filename( filename )
+Robot::Robot(const string& uniqueness_name, int id) : 
+  robot_name( uniqueness_name ), robot_name_uniqueness_number( id )
 {
   //  velocity = Vector2D(0.0, 0.0);
   //  acceleration = 0.0;
@@ -50,18 +50,13 @@ Robot::Robot(const string& filename, NetConnection* nc) :
   plain_robot_name = "";
 
   nb_robots ++;
-  char Code[20];
-
-  sprintf( Code, "%d-%drtb_robot", nb_robots, int(rand() % 15) );
-  robot_name = string( Code );
 
   robot_name_uniqueness_number = 0;
 
   send_rotation_reached = 0;
   killed = true;
 
-  id = 0; //the_arena.increase_robot_count();
-
+  owner = NULL;
 }
 
 /*Robot::Robot(const string& filename)
