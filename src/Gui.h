@@ -180,7 +180,7 @@ public:
 
 private:
   void read_dirs_from_system();
-  void split_semicolonseparated_dirs(String& dirs, GList * gl);
+  void split_colonseparated_dirs(String& dirs, GList * gl);
 
   bool statistics_up;
   bool start_tournament_up;

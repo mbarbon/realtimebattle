@@ -185,13 +185,13 @@ Gui::~Gui()
   g_list_free(arenadirs);
 }
 
-// This function splits a string of semicolonseparated directories into a glist
+// This function splits a string of colonseparated directories into a glist
 void
-Gui::split_semicolonseparated_dirs(String& dirs, GList * gl)
+Gui::split_colonseparated_dirs(String& dirs, GList * gl)
 {
-  String current_dir;
+  String current_dir = dirs;
   int pos, lastpos = 0;
-  while( (pos = dirs.find(';', lastpos)) != -1 )
+  while( (pos = dirs.find(':', lastpos)) != -1 )
     {
       current_dir = get_segment(dirs, lastpos, pos-1);
       if(current_dir[current_dir.get_length() - 1] != '/')
@@ -199,6 +199,9 @@ Gui::split_semicolonseparated_dirs(String& dirs, GList * gl)
 
       String * str = new String(current_dir);
       g_list_append(gl,str);
+
+      cerr << *str << endl;
+
       lastpos = pos+1;
     }
 
@@ -210,6 +213,8 @@ Gui::split_semicolonseparated_dirs(String& dirs, GList * gl)
 
       String * str = new String(current_dir);
       g_list_append(gl,str);
+
+      cerr << *str << endl;
     }
 }
 
@@ -219,7 +224,7 @@ Gui::read_dirs_from_system()
   String dirs;
   if(NULL != getenv("RTB_ROBOTDIR"))
       dirs = getenv("RTB_ROBOTDIR");
-  split_semicolonseparated_dirs(dirs,robotdirs);
+  split_colonseparated_dirs(dirs,robotdirs);
 
 #ifdef INSTALLDIR
   String * str = new String(INSTALLDIR "/Robots/");
@@ -230,7 +235,7 @@ Gui::read_dirs_from_system()
       dirs = getenv("RTB_ARENADIR");
   else
       dirs = "Arenas/";
-  split_semicolonseparated_dirs(dirs,arenadirs);
+  split_colonseparated_dirs(dirs,arenadirs);
 
 #ifdef INSTALLDIR
   str = new String(INSTALLDIR "/Arenas/");
