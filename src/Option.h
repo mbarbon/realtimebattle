@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@ public:
     : value_type(v), group(g), broadcast_option(br), log_option(lo), description(t) {}
   virtual ~Option                      () {}
 
+  virtual Option* copy                 () = 0;
+
   virtual const string get_string_val  () const = 0;
   virtual const string get_string_min  () const = 0;
   virtual const string get_string_max  () const = 0;
@@ -59,7 +61,7 @@ public:
   virtual const bool change_value      ( const string&, const bool def = false ) = 0;
   virtual string& make_correct_string_val( string& ) const = 0;
   
-private:
+protected:
   option_value_t value_type;
   const int group;
 
@@ -89,6 +91,7 @@ public:
     min_value(mn), max_value(mx), hexadecimal(hex) {}
   ~LongOption                          () {}
 
+  Option* copy                         ();
   const long int get_value             () const { return value; }
   const string get_string_val          () const { return make_string_val( value ); }
   const string get_string_min          () const
@@ -133,6 +136,7 @@ public:
     min_value(mn), max_value(mx) {}
   ~DoubleOption                        () {}
 
+  Option* copy                         ();
   const double& get_value              () const { return value; }
   const string get_string_val          () const;
   const string get_string_min          () const;
@@ -171,6 +175,7 @@ public:
       default_value(val), max_chars(mc) {}
   ~StringOption                        () {}
 
+  Option* copy                         ();
   const string& get_value              () const { return value; }
   const string get_string_val          () const { return value; }
   const string get_string_min          () const { return ""; }
@@ -208,6 +213,7 @@ public:
       value( val ), default_value( val ) {}
   ~BooleanOption                       () {}
 
+  Option* copy                         ();
   const bool get_value                 () const { return value; }
   const string get_string_val          () const
   { return make_string_of_bool(value); }

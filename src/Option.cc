@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,6 +26,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Option.h"
 #include "String.h"
+
+Option*
+LongOption::copy()
+{
+  LongOption* opt_p =
+    new LongOption( group,
+                    value,
+                    min_value,
+                    max_value,
+                    broadcast_option,
+                    log_option,
+                    description.c_str(),
+                    hexadecimal );
+  opt_p->default_value = default_value;
+
+  return (Option*)opt_p;
+}
 
 const string
 LongOption::make_string_val( const long int temp_value ) const
@@ -120,6 +137,22 @@ LongOption::make_correct_string_val( string& str ) const
     str.erase( first_pos, 1 );
 
   return str;
+}
+
+Option*
+DoubleOption::copy()
+{
+  DoubleOption* opt_p =
+    new DoubleOption( group,
+                      value,
+                      min_value,
+                      max_value,
+                      broadcast_option,
+                      log_option,
+                      description.c_str() );
+  opt_p->default_value = default_value;
+
+  return (Option*)opt_p;
 }
 
 const string
@@ -219,6 +252,21 @@ DoubleOption::make_correct_string_val( string& str ) const
   return str;
 }
 
+Option*
+StringOption::copy()
+{
+  StringOption* opt_p =
+    new StringOption( group,
+                      value,
+                      max_chars,
+                      broadcast_option,
+                      log_option,
+                      description.c_str() );
+  opt_p->default_value = default_value;
+
+  return (Option*)opt_p;
+}
+
 void
 StringOption::reset_value()
 {
@@ -232,6 +280,20 @@ StringOption::change_value( const string& newval, const bool def )
   if( def )
     default_value = newval;
   return true;
+}
+
+Option*
+BooleanOption::copy()
+{
+  BooleanOption* opt_p =
+    new BooleanOption( group,
+                       value,
+                       broadcast_option,
+                       log_option,
+                       description.c_str() );
+  opt_p->default_value = default_value;
+
+  return (Option*)opt_p;
 }
 
 const bool
