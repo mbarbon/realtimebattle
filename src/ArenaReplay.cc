@@ -40,14 +40,12 @@ ArenaReplay::timeout_function()
 }
   
 void 
-ArenaReplay::start_tournament( String& logfilename )
+ArenaReplay::start_tournament()
 {
-  ifstream file( logfilename.chars() );
-
   do
     {
-      parse_log_line( file );
-    } while( !file.eof() );
+      parse_log_line( log_file );
+    } while( !log_file.eof() );
 }
   
 void 
@@ -263,4 +261,13 @@ ArenaReplay::parse_log_line( ifstream& file )
     }
 
   return first_letter;
+}
+
+void
+ArenaReplay::set_filenames( String& replay_file )
+{
+  if( replay_file != "-" )
+    log_file.open( replay_file.chars() );
+  else
+    log_file.attach( STDIN_FILENO );
 }

@@ -32,8 +32,9 @@ public:
   ~ArenaReplay                 ();
 
   bool timeout_function        ();
-  void start_tournament        ( String& logfilename );
+  void start_tournament        ();
   void end_game                ();
+  void set_filenames           ( String& replay_file );
 private: 
   void update                  ();
   void start_game              ();
@@ -42,6 +43,8 @@ private:
   void end_tournament          ();
 
   char parse_log_line          ( ifstream& file );
+
+  ifstream log_file;
 };
 
 
