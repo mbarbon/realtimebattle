@@ -81,6 +81,7 @@ public:
   int get_position_this_game() { return position_this_game; }
   double get_total_points() { return total_points; }
   void add_points(double pts) { points_this_game += pts; total_points += pts; }
+  bool get_died_this_round() { return died_this_round; }
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
 
@@ -146,6 +147,7 @@ private:
   double points_this_game;
   int position_this_game;
   double time_survived_in_sequence;
+  bool died_this_round;
 
   double cpu_next_limit;
   double cpu_warning_limit;

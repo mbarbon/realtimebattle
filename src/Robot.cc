@@ -80,6 +80,7 @@ Robot::Robot(const String& filename)
   signal_to_send = 0;
   send_rotation_reached = 0;
   alive = false;
+  died_this_round = false;
   total_points = 0.0;
   
   has_competed = false;
@@ -389,7 +390,7 @@ Robot::die()
   if( alive )
     {
       alive = false;
-      position_this_game = -1;
+      died_this_round = true;
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
@@ -405,6 +406,8 @@ Robot::die()
 void
 Robot::set_stats(int robots_killed_same_time)
 {
+  died_this_round = false;
+
   int adjust = robots_killed_same_time - 1;
   position_this_game = the_arena.get_robots_left() - adjust;
   add_points( 1.0 + ((double)adjust) * 0.5 );
@@ -499,6 +502,8 @@ Robot::get_last_position()
 
   ListIterator<stat_t> li;
   statistics.last(li);
+
+  if( !li.ok() ) return 0;
   return li()->position;
 }
 
