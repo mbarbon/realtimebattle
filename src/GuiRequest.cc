@@ -51,13 +51,11 @@ TogglePauseGameRequest::accept() const
 void
 StartTournamentRequest::accept() const
 {
-  // TODO: have to supply tournament with Robot* and ArenaGadget which is
-  //       stupid in my opinion.
-//    the_eventhandler.set_tournament( new Tournament( rounds_per_match,
-//                                                     robots_per_match,
-//                                                     number_of_matches,
-//                                                     all_robots,
-//                                                     all_arenas ) );
+  the_eventhandler.set_tournament( new Tournament( rounds_per_match,
+                                                   robots_per_match,
+                                                   number_of_matches,
+                                                   robot_files,
+                                                   arena_files ) );
 }
 
 void
