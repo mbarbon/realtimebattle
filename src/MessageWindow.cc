@@ -27,6 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaRealTime.h"
 #include "String.h"
 #include "Robot.h"
+#include "Various.h"
 
 extern class ControlWindow* controlwindow_p;
 
@@ -112,7 +113,7 @@ MessageWindow::MessageWindow( const int default_width,
   char* titles[2] = { "Robot", "Message" };
   clist = gtk_clist_new_with_titles( 2, titles );
   gtk_clist_set_selection_mode( GTK_CLIST( clist ),
-                                GTK_SELECTION_EXTENDED );
+                                GTK_SELECTION_BROWSE );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 130 );
   gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 1000 );
   gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
@@ -122,6 +123,13 @@ MessageWindow::MessageWindow( const int default_width,
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_clist_set_shadow_type( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
+
+  GtkStyle* clist_style = gtk_style_new();
+  clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
+  clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+  clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+  clist_style->fg[GTK_STATE_SELECTED] = *(the_gui.get_fg_gdk_colour_p());
+  gtk_widget_set_style( clist, clist_style );
 #else
   gtk_clist_set_border( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_clist_set_policy( GTK_CLIST( clist ),
@@ -162,14 +170,9 @@ MessageWindow::add_message( const String& name_of_messager,
           name_of_messager != "RealTimeBattle" )
         return;
 
-      char* lst[2];
+      char* lst[2] = { name_of_messager.non_const_chars(),
+                       message.non_const_chars() };
   
-      for(int j=0;j<2;j++)
-        {
-          lst[j] = new char[30];
-          strcpy(lst[j],"");
-        }
-
       int row = 0;
       gtk_clist_insert( GTK_CLIST( clist ), row, lst );
       GdkColor* fg_colour = NULL;
@@ -180,15 +183,10 @@ MessageWindow::add_message( const String& name_of_messager,
 
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
                                 fg_colour );
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
       gtk_clist_set_background( GTK_CLIST( clist ), row,
                                 the_gui.get_bg_gdk_colour_p() );
-
-      gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
-                          name_of_messager.non_const_chars() );
-      gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
-                          message.non_const_chars() );
-
-      for(int i=0; i<2; i++) delete [] lst[i];
+#endif
     }
 }
 

@@ -186,17 +186,15 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                   if( ( robot && check_if_filename_is_robot( full_file_name ) ) ||
                       ( !robot && check_if_filename_is_arena( full_file_name ) ) )
                     {
-                      char* lst[] = { "" };
+                      char* lst[] = { entry->d_name };
 
                       int row = gtk_clist_append( GTK_CLIST( dir_clist ), lst );
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
                       gtk_clist_set_foreground( GTK_CLIST( dir_clist ), row, 
                                                 the_gui.get_fg_gdk_colour_p());
                       gtk_clist_set_background( GTK_CLIST( dir_clist ), row, 
                                                 the_gui.get_bg_gdk_colour_p());
-
-                      gtk_clist_set_text( GTK_CLIST( dir_clist ),
-                                          row, 0, entry->d_name);
-
+#endif
                       start_tournament_info_t* info;
                       info = new start_tournament_info_t
                         ( row, false,
@@ -425,6 +423,13 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
                         all_clists_height );
   gtk_container_add( GTK_CONTAINER( scrolled_win ),
                      clist );
+
+  GtkStyle* clist_style = gtk_style_new();
+  clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
+  clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+  clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+  clist_style->fg[GTK_STATE_SELECTED] = *(the_gui.get_fg_gdk_colour_p());
+  gtk_widget_set_style( clist, clist_style );
 #else
   gtk_clist_set_border( GTK_CLIST( clist ),
                         GTK_SHADOW_IN );
@@ -595,10 +600,12 @@ new_tournament( const List<start_tournament_info_t>& robotfilename_list,
           char* lst[] = { "" };
 
           int row = gtk_clist_append( GTK_CLIST( tour_clist ), lst );
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
           gtk_clist_set_foreground( GTK_CLIST( tour_clist ), row, 
                                     the_gui.get_fg_gdk_colour_p());
           gtk_clist_set_background( GTK_CLIST( tour_clist ), row, 
                                     the_gui.get_bg_gdk_colour_p());
+#endif
       
           String fname = info->filename;
           fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
@@ -901,10 +908,12 @@ StartTournamentWindow::add_all_selected( const bool robots )
           char * list[] = { "" };
           
           int row = gtk_clist_append( GTK_CLIST( clist_tourn ), list );
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
           gtk_clist_set_foreground( GTK_CLIST( clist_tourn ), row,
                                     the_gui.get_fg_gdk_colour_p() );
           gtk_clist_set_background( GTK_CLIST( clist_tourn ), row,
                                     the_gui.get_bg_gdk_colour_p() );
+#endif
 
           gtk_clist_set_text( GTK_CLIST( clist_tourn ), row, 0,
                               info_dir_p->filename.non_const_chars() );

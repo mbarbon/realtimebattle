@@ -259,6 +259,13 @@ StatisticsWindow::StatisticsWindow( const int default_width,
                       (GtkSignalFunc) change_sorting_in_clist,
                       (gpointer) this );
   gtk_container_add( GTK_CONTAINER( scrolled_win ), clist );
+
+  GtkStyle* clist_style = gtk_style_new();
+  clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
+  clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
+  clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
+  clist_style->fg[GTK_STATE_SELECTED] = *(the_gui.get_fg_gdk_colour_p());
+  gtk_widget_set_style( clist, clist_style );
 #else
   gtk_clist_set_border( GTK_CLIST( clist ), GTK_SHADOW_IN );
   gtk_clist_set_policy( GTK_CLIST( clist ), GTK_POLICY_AUTOMATIC,
@@ -363,7 +370,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
         {
           gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
           gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Name" );
-          gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 20 );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 120 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
                                               GTK_JUSTIFY_CENTER );
