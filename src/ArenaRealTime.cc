@@ -29,6 +29,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream.h>
 #include <iomanip.h>
 #include <stdarg.h>
+#include <sys/stat.h>
 
 #if HAVE_DIRENT_H
 # include <dirent.h>
@@ -130,7 +131,7 @@ ArenaRealTime::set_filenames( String& log_fname,
     }
   else
     {
-      LOG_FILE.open(log_fname.chars(), ios::out, 0600);
+      LOG_FILE.open(log_fname.chars(), ios::out, S_IRUSR | S_IWUSR);
       use_log_file = true;
       if( !LOG_FILE )
         {
@@ -159,7 +160,7 @@ ArenaRealTime::set_filenames( String& log_fname,
   else
     {
       use_message_file = true;
-      message_file.open( message_fname.chars(), ios::out, 0600 );
+      message_file.open( message_fname.chars(), ios::out, S_IRUSR | S_IWUSR );
       if( !message_file )
         {
           Error( false, "Couldn't open message file. Message file disabled",

@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <sys/stat.h>
+
 #include "ArenaReplay.h"
 #include "ArenaController.h"
 #include "Various.h"
@@ -568,7 +570,7 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
   else
     {
       use_message_file = true;
-      message_file.open( message_fname.chars(), ios::out, 0600 );
+      message_file.open( message_fname.chars(), ios::out, S_IRUSR | S_IWUSR );
       if( !message_file )
         {
           Error( false, "Couldn't open message file. Message file disabled",
