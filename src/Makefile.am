@@ -10,10 +10,7 @@ if ENABLE_PROF
 PROFFLAGS = -pg
 endif
 
-if NO_GRAPHICS
-GRAPHICS_O = 
-GRAPHFLAGS += -DNO_GRAPHICS 
-else
+if GUI_GTK
 GRAPHICS_O = \
 	Gui.o ArenaWindow.o \
 	ControlWindow.o Dialog.o \
@@ -21,6 +18,9 @@ GRAPHICS_O = \
 	OptionsWindow.o \
 	ScoreWindow.o StatisticsWindow.o \
 	StartTournamentWindow.o Structs.o
+else
+GRAPHICS_O = 
+GRAPHFLAGS += -DNO_GRAPHICS 
 endif
 
 INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl $(PROFFLAGS) $(GRAPHFLAGS)
