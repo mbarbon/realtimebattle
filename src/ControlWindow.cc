@@ -719,7 +719,7 @@ ControlWindow::step_forward( GtkWidget* widget,
                              class ControlWindow* cw_p )
 {
   cout << "Stepping forward" << endl;
-  replay_arena.step_forward( 1 );  
+  replay_arena.step_forward_or_backward( true );  
 }
 
 void
@@ -727,7 +727,7 @@ ControlWindow::step_backward( GtkWidget* widget,
                               class ControlWindow* cw_p )
 {
   cout << "Stepping backward" << endl;
-  replay_arena.step_forward( -1 );  
+  replay_arena.step_forward_or_backward( false );
 }
 
 void
