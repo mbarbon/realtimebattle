@@ -153,7 +153,9 @@ Gui::add_new_row( void * rp, void * sp )
   gtk_clist_set_background(GTK_CLIST(stat_clist), row, the_arena->get_background_colour_p());
   char str[30];
 
-  if(stat_table_type == STAT_TABLE_GAME)
+  if(stat_table_type == STAT_TABLE_GAME ||
+     stat_table_type == STAT_TABLE_SEQUENCE ||
+     stat_table_type == STAT_TABLE_TOTAL)
     {
       char ** col_sq;
       GdkPixmap * colour_pixmap;
@@ -182,7 +184,11 @@ Gui::add_new_row( void * rp, void * sp )
   ss4 >> str;
   gtk_clist_set_text(GTK_CLIST(stat_clist), row, 2, str);
 
-  ss5 << statp->points;
+  if(stat_table_type == STAT_TABLE_SEQUENCE ||
+     stat_table_type == STAT_TABLE_TOTAL)
+    ss5 << setiosflags(ios::fixed) << setprecision(2) << statp->points;
+  else
+    ss5 << statp->points;
   ss5 >> str;
   gtk_clist_set_text(GTK_CLIST(stat_clist), row, 3, str);
 
@@ -207,9 +213,64 @@ Gui::add_the_statistics_to_clist()
   switch( stat_table_type )
     {
     case STAT_TABLE_TOTAL:
-      break;
+      {
+        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          {
+            robotp = (Robot *)gl->data;
+            stat_t average_stat(0,0,0,0.0,0.0,0.0);
+            stat_t * statp = NULL;
+            int number_of_stat_found = 0;
+
+            for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+              {
+                statp = (stat_t*)(stat_gl->data);
+                number_of_stat_found++;
+                average_stat.position += statp->position;
+                average_stat.points += statp->points;
+                average_stat.time_survived += statp->time_survived;
+                average_stat.total_points += statp->points;
+              }
+            if( number_of_stat_found > 0 )
+              {
+                average_stat.position /= number_of_stat_found;
+                average_stat.points /= number_of_stat_found;
+                average_stat.time_survived /= number_of_stat_found;
+                add_new_row( robotp, &average_stat );
+              }
+          }
+        break;
+      }
     case STAT_TABLE_SEQUENCE:
-      break;
+      {
+        for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
+          {
+            robotp = (Robot *)gl->data;
+            stat_t average_stat(0,0,0,0.0,0.0,0.0);
+            stat_t * statp = NULL;
+            int number_of_stat_found = 0;
+
+            for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
+              {
+                statp = (stat_t*)(stat_gl->data);
+                if(statp->sequence_nr == stat_looking_at_nr)
+                  {
+                    number_of_stat_found++;
+                    average_stat.position += statp->position;
+                    average_stat.points += statp->points;
+                    average_stat.time_survived += statp->time_survived;
+                    average_stat.total_points += statp->points;
+                  }
+              }
+            if( number_of_stat_found > 0 )
+              {
+                average_stat.position /= number_of_stat_found;
+                average_stat.points /= number_of_stat_found;
+                average_stat.time_survived /= number_of_stat_found;
+                add_new_row( robotp, &average_stat );
+              }
+          }
+        break;
+      }
     case STAT_TABLE_GAME:
       {
         int looking_at_game = stat_looking_at_nr % the_arena->get_games_per_sequence();
@@ -267,8 +328,23 @@ Gui::stat_make_title_button()
   switch(stat_table_type)
     {
     case STAT_TABLE_TOTAL:
+      {
+        GtkWidget * label = gtk_label_new("Grand Total");
+        gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, TRUE, 0);
+        gtk_widget_show( label );
+      }
       break;
     case STAT_TABLE_SEQUENCE:
+      {
+        strstream ss;
+        char str[50];
+        GtkWidget * label;
+        ss << "Sequence: " << stat_looking_at_nr << endl;
+        ss.getline(str,50,'\n');
+        label = gtk_label_new(str);
+        gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, TRUE, 0);
+        gtk_widget_show( label );
+      }
       break;
     case STAT_TABLE_GAME:
       {
@@ -312,12 +388,10 @@ Gui::stat_make_title_button()
                                                               get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
                 GtkWidget * pixmap_widget = gtk_pixmap_new( colour_pixmap, bitmap_mask );
-                //                gtk_container_add(GTK_CONTAINER(stat_title_hbox), pixmap_widget);
                 gtk_box_pack_start (GTK_BOX (stat_title_hbox), pixmap_widget, FALSE, FALSE, 0);
                 gtk_widget_show( pixmap_widget );
 
                 GtkWidget * label = gtk_label_new(robotp->get_robotname());
-                //                gtk_container_add(GTK_CONTAINER(stat_title_hbox), label);
                 gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, FALSE, 0);
                 gtk_widget_show( label );
               }
@@ -433,6 +507,8 @@ Gui::setup_statistics_window()
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   gtk_widget_show (hbox);
 
+  gtk_widget_show(statistics_window);
+
   bool made_middle_button = false;
   for(int i=1;i<5;i++)
     {
@@ -440,7 +516,7 @@ Gui::setup_statistics_window()
         {
           GdkPixmap * pixmap;
           GdkBitmap * bitmap_mask;
-          pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
+          pixmap = gdk_pixmap_create_from_xpm_d( statistics_window->window, &bitmap_mask,
                                                  the_arena->get_background_colour_p(),
                                                  (gchar **)lower_button_xpms[i-1] );
           GtkWidget * pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
@@ -489,8 +565,6 @@ Gui::setup_statistics_window()
   gtk_widget_set_usize(stat_clist, 380,350);
   gtk_box_pack_start (GTK_BOX (vbox), stat_clist, TRUE, TRUE, 0);
   gtk_widget_show(stat_clist);
-
-  gtk_widget_show(statistics_window);
 
   add_the_statistics_to_clist();
   statistics_up = true;
