@@ -19,13 +19,14 @@ extern class Options the_opts;
 extern class Arena the_arena;
 extern class Gui the_gui;
 
+enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
+               SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
+
 
 // --------------------------  Arena --------------------------
 class Arena 
 {
 public:
-  enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
-                 SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
   enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 

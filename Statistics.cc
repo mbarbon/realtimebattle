@@ -10,7 +10,7 @@
 void
 statistics_button_callback(GtkWidget *widget, gpointer data)
 {
-  if(the_arena.get_state() != Arena::NOT_STARTED)
+  if(the_arena.get_state() != NOT_STARTED)
     {
       if(the_gui.get_statistics_up() == false)
         the_gui.setup_statistics_window();

@@ -56,7 +56,7 @@ start_tournament_button_callback(GtkWidget *widget, gpointer data)
 void
 start_tournament_start_callback(GtkWidget *widget, gpointer data)
 {
-  if(the_arena.get_state() == Arena::NOT_STARTED || the_arena.get_state() == Arena::FINISHED)
+  if(the_arena.get_state() == NOT_STARTED || the_arena.get_state() == FINISHED)
     the_gui.start_new_tournament();
 }
 
