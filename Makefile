@@ -1,11 +1,15 @@
 export DEBUG_MODE = no
-export PAPER_SIZE = A4
+export PAPER_SIZE = a4
 
 SRCDIR=src
 ROBOTDIR=Robots
 DOCSDIR=Documentation
 HTMLDIR=HTML
 ARENADIR=Arenas
+
+BINDIR=/usr/bin
+INFODIR=/usr/info
+INSTALLDIR=/usr/games/RealTimeBattle
 
 target: RealTimeBattle robots
 all: RealTimeBattle robots docs ETAGS
@@ -44,7 +48,12 @@ tar.gz:
 
 
 install:
-#NOT YET DONE!!!
-
-
-
+	mkdir $(INSTALLDIR) $(INSTALLDIR)/Arenas $(INSTALLDIR)/Robots
+	cp $(SRCDIR)/RealTimeBattle $(BINDIR)/RealTimeBattle; \
+	cp $(DOCSDIR)/RealTimeBattle.info $(INFODIR)/RealTimeBattle.info: \
+	gzip $(INFODIR)/RealTimeBattle.info; \
+	cp $(ARENADIR)/*.arena    $(INSTALLDIR)/Arenas/; \
+	cp $(ROBOTDIR)/empty      $(INSTALLDIR)/Robots/empty; \
+	cp $(ROBOTDIR)/fire       $(INSTALLDIR)/Robots/fire; \
+	cp $(ROBOTDIR)/thomastest $(INSTALLDIR)/Robots/thomastest; \
+	cp $(ROBOTDIR)/thomas2    $(INSTALLDIR)/Robots/thomas2; \
