@@ -191,19 +191,18 @@ Robot::get_last_position()
 void
 Robot::update_radar_and_cannon(const double timestep)
 {
-  radar_angle += timestep*radar_speed;
-  cannon_angle += timestep*cannon_speed;
-  robot_angle += timestep*robot_angle_speed;
+  robot_angle.pos += timestep*robot_angle.vel;
+  cannon_angle.pos += timestep*cannon_angle.vel;
+  radar_angle.pos += timestep*radar_angle.vel;
   shot_energy = min( opts.get_shot_max_energy(), 
                      shot_energy+timestep*opts.get_shot_energy_increase_speed() );
   object_type closest_shape;
   void* col_obj;
   double dist = the_arena->
-    get_shortest_distance(center, Vector2D(cos(radar_angle+robot_angle), 
-                                           sin(radar_angle+robot_angle)), 
+    get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
                           0.0, closest_shape, col_obj);
-  send_message(RADAR, dist, closest_shape, radar_angle);
-  send_message(INFO, the_arena->get_total_time(), length(velocity), cannon_angle); 
+  send_message(RADAR, dist, closest_shape, radar_angle.pos);
+  send_message(INFO, the_arena->get_total_time(), length(velocity), cannon_angle.pos); 
 }
 
 void
@@ -211,7 +210,7 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 {
   double h, p, b;
   
-  if( -dot(normal, Vector2D(cos(robot.robot_angle), sin(robot.robot_angle))) > opts.get_robot_cos_frontsize() )
+  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > opts.get_robot_cos_frontsize() )
     {
       h = opts.get_robot_front_hardness();
       b = opts.get_robot_front_bounce_coeff();
@@ -232,7 +231,7 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
   double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
   robot.change_energy(-injury);
 
-  robot.send_message(COLLISION, WALL, -injury, -angle(normal)-robot.robot_angle);
+  robot.send_message(COLLISION, WALL, -injury, -vec2angle(normal)-robot.robot_angle.pos);
 }
 
 void
@@ -241,7 +240,7 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   double h1, h2, p1, p2, b1, b2;
   Vector2D dir1_2 = unit(robot2.center - robot1.center);
   
-  if( dot(dir1_2, Vector2D(cos(robot1.robot_angle), sin(robot1.robot_angle))) > opts.get_robot_cos_frontsize() )
+  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > opts.get_robot_cos_frontsize() )
     {
       h1 = opts.get_robot_front_hardness();
       b1 = opts.get_robot_front_bounce_coeff();
@@ -254,7 +253,7 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
       p1 = robot1.protection_coeff;
     }
 
-  if( -dot(dir1_2, Vector2D(cos(robot2.robot_angle), sin(robot2.robot_angle))) > opts.get_robot_cos_frontsize() )
+  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > opts.get_robot_cos_frontsize() )
     {
       h2 = opts.get_robot_front_hardness();
       b2 = opts.get_robot_front_bounce_coeff();
@@ -275,25 +274,25 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   robot1.velocity += tmp;
   robot2.velocity -= mass_quotient * tmp;
 
-  double an = angle(normal);
+  double an = vec2angle(normal);
   double en_diff = 0.5 * robot1.mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
-  robot1.send_message(COLLISION, ROBOT, -injury, an-robot1.robot_angle);
+  robot1.send_message(COLLISION, ROBOT, -injury, an-robot1.robot_angle.pos);
 
   en_diff = 0.5 * robot2.mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
-  robot2.send_message(COLLISION, ROBOT, -injury, -an-robot2.robot_angle);
+  robot2.send_message(COLLISION, ROBOT, -injury, -an-robot2.robot_angle.pos);
 }
 
 void
 Robot::set_initial_values(const Vector2D& pos, const double angle)
 {
   center = pos;
-  robot_angle = angle;
-  cannon_angle = 0.0;
-  radar_angle = 0.0;
+  robot_angle.set (angle, 0.0, -infinity, infinity, NORMAL_ROT);
+  cannon_angle.set(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
+  radar_angle.set (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   shot_energy = 0.0;
   radius = opts.get_robot_radius();
   protection_coeff = opts.get_robot_protection();
@@ -308,7 +307,7 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
 void
 Robot::change_velocity(const double timestep)
 {
-  Vector2D dir = Vector2D(cos(robot_angle),sin(robot_angle));
+  Vector2D dir = angle2vec(robot_angle.pos);
   double gt = opts.get_grav_const() * timestep;
   double fric = opts.get_roll_friction() * (1.0 - break_percent) + 
     opts.get_slide_friction() * break_percent;
@@ -359,7 +358,7 @@ Robot::move(const double timestep, int iterstep)
             Shot* shotp =(Shot*)colliding_object;
             double en =  -shotp->get_energy();
             change_energy( en );
-            send_message(COLLISION, SHOT, en, angle(shotp->get_center()-center)-robot_angle);
+            send_message(COLLISION, SHOT, en, vec2angle(shotp->get_center()-center)-robot_angle.pos);
             shotp->die();
             g_list_remove((the_arena->get_object_lists())[SHOT], shotp);
             delete shotp;
@@ -370,7 +369,7 @@ Robot::move(const double timestep, int iterstep)
             Cookie* cookiep =(Cookie*)colliding_object;
             double en =  cookiep->get_energy();
             change_energy( en );
-            send_message(COLLISION, COOKIE, en, angle(cookiep->get_center()-center)-robot_angle);
+            send_message(COLLISION, COOKIE, en, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
             cookiep->die();
             g_list_remove((the_arena->get_object_lists())[COOKIE], cookiep);
             delete cookiep;
@@ -381,7 +380,7 @@ Robot::move(const double timestep, int iterstep)
             Mine* minep =(Mine*)colliding_object;
             double en =  -minep->get_energy();
             change_energy( en );
-            send_message(COLLISION, MINE, en, angle(minep->get_center()-center)-robot_angle);
+            send_message(COLLISION, MINE, en, vec2angle(minep->get_center()-center)-robot_angle.pos);
             minep->die();
             g_list_remove((the_arena->get_object_lists())[MINE], minep);
             delete minep;
@@ -482,14 +481,71 @@ Robot::get_messages()
             *instreamp >> bits >> rot_speed;
             
             if( (bits & 1) == 1) 
-              robot_angle_speed = max(min(rot_speed, opts.get_robot_max_rotate()),
-                                      -opts.get_robot_max_rotate());  // between -max_rot and +max_rot
+              robot_angle.set( robot_angle.pos,  
+                               max(min(rot_speed, opts.get_robot_max_rotate()),
+                                   -opts.get_robot_max_rotate()),  // between -max_rot and +max_rot                  
+                               -infinity, infinity, NORMAL_ROT );
             if( (bits & 2) == 2) 
-              cannon_speed = max(min(rot_speed, opts.get_robot_cannon_max_rotate()), 
-                                 -opts.get_robot_cannon_max_rotate());
+              cannon_angle.set( cannon_angle.pos,  
+                                max(min(rot_speed, opts.get_robot_cannon_max_rotate()),
+                                    -opts.get_robot_cannon_max_rotate()),  // between -max_rot and +max_rot                  
+                                -infinity, infinity, NORMAL_ROT );
             if( (bits & 4) == 4) 
-              radar_speed = max(min(rot_speed, opts.get_robot_radar_max_rotate()), 
-                                -opts.get_robot_radar_max_rotate());
+              radar_angle.set( radar_angle.pos,  
+                                max(min(rot_speed, opts.get_robot_radar_max_rotate()),
+                                    -opts.get_robot_radar_max_rotate()),  // between -max_rot and +max_rot                  
+                                -infinity, infinity, NORMAL_ROT );
+          }
+          break;
+        case ROTATE_TO:
+          {
+            int bits;
+            double rot_speed, rot_end_angle;
+            *instreamp >> bits >> rot_speed >> rot_end_angle;
+            
+          }
+          break;
+        case ROTATE_AMOUNT:
+          {
+            int bits;
+            double rot_speed, rot_amount;
+            *instreamp >> bits >> rot_speed >> rot_amount;
+            if( bits & 1)
+              {
+                if( rot_amount > 0 )
+                    robot_angle.set( robot_angle.pos, 
+                                     min( fabs(rot_speed), opts.get_robot_max_rotate() ),
+                                     -infinity, robot_angle.pos + rot_amount, ROTATE_TO_RIGHT );
+                else
+                  robot_angle.set( robot_angle.pos, 
+                                   min( fabs(rot_speed), opts.get_robot_max_rotate() ),
+                                   robot_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
+              }
+            if( bits & 2)
+              {
+                if( rot_amount > 0 )
+                    cannon_angle.set( cannon_angle.pos, 
+                                     min( fabs(rot_speed), opts.get_robot_cannon_max_rotate() ),
+                                     -infinity, cannon_angle.pos + rot_amount, ROTATE_TO_RIGHT );
+                else
+                  cannon_angle.set( cannon_angle.pos, 
+                                   min( fabs(rot_speed), opts.get_robot_cannon_max_rotate() ),
+                                    cannon_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
+              }
+            if( bits & 4)
+              {
+                if( rot_amount > 0 )
+                    radar_angle.set( radar_angle.pos, 
+                                     min( fabs(rot_speed), opts.get_robot_radar_max_rotate() ),
+                                     -infinity, radar_angle.pos + rot_amount, ROTATE_TO_RIGHT );
+                else
+                  radar_angle.set( radar_angle.pos, 
+                                   min( fabs(rot_speed), opts.get_robot_radar_max_rotate() ),
+                                   radar_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
+              }
+          }
+        case SWEEP:
+          {
           }
           break;
         case PRINT:
@@ -505,7 +561,7 @@ Robot::get_messages()
             if( en < opts.get_shot_min_energy() ) break;
             shot_energy -= en;
 
-            Vector2D dir = Vector2D(cos(cannon_angle+robot_angle),sin(cannon_angle+robot_angle));
+            Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
             double shot_radius = opts.get_shot_radius();
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
             if( the_arena->space_available( shot_center, shot_radius + eps ) )
@@ -536,7 +592,7 @@ Robot::get_messages()
                       Robot* robotp = (Robot*)col_obj;
                       robotp->change_energy(-en);
                       robotp->send_message(COLLISION, SHOT, -en, 
-                                           angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle());
+                                           vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
                     }
                     break;
                   case SHOT:
@@ -687,13 +743,13 @@ Robot::draw_radar_and_cannon( Gui& the_gui )
 {
   // Draw Cannon
   the_gui.draw_line( center,
-                     Vector2D(cos(cannon_angle+robot_angle),sin(cannon_angle+robot_angle)),
+                     angle2vec(cannon_angle.pos+robot_angle.pos),
                      opts.get_robot_radius() - opts.get_shot_radius(),
                      opts.get_shot_radius(),
                      *(the_arena->get_foreground_colour_p()) );
 
   // Draw radar lines
-  Vector2D radar_dir( cos(radar_angle+robot_angle),sin(radar_angle+robot_angle) );
+  Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
   the_gui.draw_line( center - opts.get_robot_radius() * 0.25 * radar_dir,
                      rotate( radar_dir, M_PI / 4.0 ),
                      opts.get_robot_radius() / 1.5,
@@ -738,7 +794,7 @@ Shot::move(const double timestep)
             Robot* robotp = (Robot*)colliding_object;
             robotp->change_energy(-energy);
             robotp->send_message(COLLISION, SHOT, -energy,
-                                 angle(center-robotp->get_center()) - robotp->get_robot_angle());
+                                 vec2angle(center-robotp->get_center()) - robotp->get_robot_angle().pos);
             die();
           }
           break;
