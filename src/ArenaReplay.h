@@ -21,24 +21,27 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __ARENA_REPLAY__
 
 #include "ArenaBase.h"
+#include "fstream.h"
 
 class String;
 
 class ArenaReplay : public ArenaBase
 {
 public:
-  ArenaReplay();
-  ~ArenaReplay();
+  ArenaReplay                  ();
+  ~ArenaReplay                 ();
 
-  bool timeout_function();
-  void start_tournament(const String& logfilename);
-  void end_game();
+  bool timeout_function        ();
+  void start_tournament        ( String& logfilename );
+  void end_game                ();
 private: 
-  void update();
-  void start_game();
-  void start_sequence();
-  void end_sequence();
-  void end_tournament();
+  void update                  ();
+  void start_game              ();
+  void start_sequence          ();
+  void end_sequence            ();
+  void end_tournament          ();
+
+  char parse_log_line          ( ifstream& file );
 };
 
 
