@@ -470,7 +470,7 @@ Arena::timeout_function()
           }
         else
           {
-            if( COMPETITION_MODE && total_time > next_check_time ) check_robots();
+            if( game_mode == COMPETITION_MODE && total_time > next_check_time ) check_robots();
             
             // Place mines and cookies
             if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
