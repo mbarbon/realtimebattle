@@ -152,6 +152,7 @@ ArenaBase::interrupt_tournament()
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
+          controlwindow_p->remove_replay_widgets();
           the_gui.close_scorewindow();
           the_gui.close_arenawindow();
           the_gui.close_messagewindow();

@@ -30,7 +30,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "MessageWindow.h"
 #include "ArenaWindow.h"
 #include "ScoreWindow.h"
+#include "ControlWindow.h"
 #include "Robot.h"
+
+extern class ControlWindow* controlwindow_p;
 
 ArenaReplay::ArenaReplay()
 {
@@ -80,6 +83,7 @@ ArenaReplay::timeout_function()
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
+          controlwindow_p->display_replay_widgets();
           the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
           the_gui.get_arenawindow_p()->draw_everything();      
           the_gui.get_scorewindow_p()->add_robots();
@@ -112,7 +116,17 @@ ArenaReplay::parse_this_interval()
       parse_log_line();
     }
   
-  if( log_file.eof() ) set_state( FINISHED );
+  if( log_file.eof() )
+    {
+      set_state( FINISHED );
+#ifndef NO_GRAPHICS
+      if( !no_graphics )
+        {
+          controlwindow_p->remove_replay_widgets();
+          the_gui.close_arenawindow();
+        }
+#endif
+    }
 }
   
 void 
