@@ -1,7 +1,10 @@
 #!/bin/sh
 
+#
 # Script to run latex as many times as necessary to make a dvi file.
 #
+# This is a file is a modified version of the file yodl2dvi.sh, which can
+# be found in the yodl package.
 #
 
 #################################################### Print error msg and die.
