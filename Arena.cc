@@ -521,26 +521,29 @@ make_gdk_color(const long col)
 double
 Arena::colour_dist(const long col1, const GdkColor& col2)
 {
-  return( abs((col1 & 0xff)*0x101 - col2.blue)*
+  return( ((double)abs((col1 & 0xff)*0x101 - col2.blue))*
           log(1.0 + sqrt((col1 & 0xff)*0x101 + col2.blue))/log(2.0) +
-          abs(((col1 & 0xff00) >> 8)*0x101 - col2.green)*
+          ((double)abs(((col1 & 0xff00) >> 8)*0x101 - col2.green))*
           log(1.0 + sqrt(((col1 & 0xff00) >> 8)*0x101 + col2.green))/log(2.0) +
-          abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red)*
+          ((double)abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red))*
           log(1.0 + sqrt(((col1 & 0xff0000) >> 16)*0x101 + col2.red))/log(2.0));
 }
 
 bool
 Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
 {
+  double d;
   for(GList* gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl))
     {
       if((Robot *)gl->data != robotp)
         {
-          if( colour_dist( colour, ((Robot*)gl->data)->get_colour() ) < min_dist ) return false;
+          d = colour_dist( colour, ((Robot*)gl->data)->get_colour() );
+          if( d < min_dist ) return false;          
         }
     }
   
-  if( colour_dist( colour, background_colour ) < min_dist ) return false;
+  d = colour_dist( colour, background_colour );
+  if( d < min_dist ) return false;
 
   return true;
 }
@@ -550,14 +553,14 @@ Arena::find_free_color(const long home_colour, const long away_colour, const Rob
 {  
   long tmp_colour;
 
-  for(double min_dist = 130000.0; min_dist > 0.5 ; min_dist *= 0.8)
+  for(double min_dist = 200000.0; min_dist > 0.5 ; min_dist *= 0.8)
     {
       if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
       if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
       for(int i=0; i<25; i++)
         {
           tmp_colour = rand() & 0xffffff;
-          if( is_colour_allowed(tmp_colour, min_dist, robotp) ) return tmp_colour;
+          if( is_colour_allowed(tmp_colour, min_dist*2, robotp) ) return tmp_colour;
         }                  
     }
    throw Error("Impossible to find colour", "Arena::find_free_colour");
