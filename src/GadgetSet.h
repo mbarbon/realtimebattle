@@ -51,7 +51,7 @@ class Gadget;
 
 struct GadgetInfo
 {
-  GadgetInfo(Gadget* const gp, const long int id_nr, const string& nm) 
+  GadgetInfo(Gadget* const gp, const long int id_nr, const char* nm) 
     : gadgetp(gp), id(id_nr), name(nm) {}
 
   ~GadgetInfo() {}

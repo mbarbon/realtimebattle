@@ -26,10 +26,32 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 
-WeaponGadget::WeaponGadget( const string& name, const int ammo ) 
-  : Gadget(name), Ammunition( string("Ammunition") )
+WeaponGadget::WeaponGadget( const char* name, Gadget* const p ) 
+  : Gadget(name, p)
 {
-  Ammunition.make_int( ammo, 0 );
+  functions[SHOOT] = Function( "Shoot", this, SHOOT );
+}
+
+void
+WeaponGadget::eval_function( const int fcn )
+{
   
-  my_gadgets.add( Ammunition.get_info() );
+  switch( WeaponFcns(fcn) )
+    {
+    case SHOOT:
+      shoot();
+      break;
+    case MOUNT:
+      break;
+    case UNMOUNT:
+      break;
+    case DROP:
+      break;
+    case ROTATE:
+      break;
+    case ROTATETO:
+      break;
+    case ROTATEAMOUNT:
+      break;
+    }
 }

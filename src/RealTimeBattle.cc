@@ -70,6 +70,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GuiInterface.h"
 
+#include "Gadget.h"
+
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
 #endif
@@ -79,6 +81,7 @@ class ArenaController the_arena_controller;
 
 bool no_graphics;
 
+int Gadget::last_id_used = 0;
 
 //  void
 //  update_function(const long int interval_usec)
@@ -157,7 +160,7 @@ main ( int argc, char* argv[] )
   signal(SIGPIPE, sig_handler);
   signal(SIGFPE, sigfpe_handler);
 
-  
+
   EventHandler the_eventhandler;
   
   the_eventhandler.main_loop();

@@ -32,7 +32,9 @@ class Gadget
 {
 public:
 
-  Gadget( const string& name ) : info(this, last_id_used++, name) {}
+  Gadget( const char* name, Gadget* const p ) 
+    : info(this, last_id_used++, name), parent(p) {}
+
   ~Gadget() {}
 
   long int get_unique_id() { return info.id; }
@@ -42,6 +44,8 @@ public:
 
   static void set_last_id_used() { last_id_used = 0; }
   
+  void eval_function(const int fcn) {}
+
 protected:
 
   GadgetInfo info;
@@ -51,7 +55,7 @@ protected:
 
   // Pointer to the gadget in the GadgetDefinition hierarchy which defined
   // this gadget
-  Gadget* defining_gadget;
+  //  Gadget* defining_gadget;
 
   GadgetSet my_gadgets;
 

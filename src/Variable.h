@@ -22,15 +22,28 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Gadget.h"
 
+enum variable_type { BOOL, INT, DOUBLE };
+
+struct VariableDefinition
+{
+  char* name;
+  enum variable_type type;
+  double value;
+  double min_val;
+  double max_val;
+  double inaccuracy;
+  bool random;
+  bool readable;
+  bool writable;
+};
+
 class Variable : public Gadget
 {
 
 public:
   
-  Variable( const string& name ) : Gadget(name) {}
+  Variable( const char* name, Gadget* const p ) : Gadget(name, p) {}
   ~Variable() {}
-
-  enum var_type { BOOL, INT, DOUBLE };
 
   void make_bool( const double val=double(false) );
 
@@ -63,7 +76,7 @@ private:
   double get_value();
 
 
-  var_type my_type;
+  variable_type my_type;
   // all types are represented as double
   double value;
 

@@ -20,19 +20,30 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __FUNCTION_GADGET__
 #define __FUNCTION_GADGET__
 
+struct FunctionDefinition
+{
+  char* name;
+  bool enabled;
+};
+
 
 class Function : public Gadget
 {
 public:
-  
-  Function() {}
+  Function() : Gadget( "", NULL ) {}
+  Function(const char* name, Gadget* const p ) : Gadget(name, p) {}
+  Function(const char* name, Gadget* const p, const int fcn ) 
+    : Gadget(name, p), fcn_nr(fcn) {}
+
   ~Function() {}
 
-  void operator() () { (*my_function)(); }
+  void operator() () { parent->eval_function(fcn_nr); }
+
+  void set(const int fcn) { fcn_nr = fcn; }
 
 private:
 
-  void (*my_function)(void);
+  int fcn_nr;
 
 };
 

@@ -20,20 +20,86 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __WEAPON_GADGET__
 #define __WEAPON_GADGET__
 
+#include <limits.h>
+#include <float.h>
+
 #include "Gadget.h"
 #include "Variable.h"
+#include "Function.h"
 
 
 class WeaponGadget : public Gadget
 {
 public:
 
-  WeaponGadget( const string& name, const int ammo=0 );
+  WeaponGadget( const char* name, Gadget* const p );
 
 private:
+
+  enum WeaponVars
+  {
+    AMMUNITION,  ROTATETOANGLE, ROTATEAMOUNTANGLE, ROTATESPEED,
+    AUTOFIRE, MAXROTATESPEED, SOUNDLEVEL,
+    MOUNTTIME, UNMOUNTTIME, MOUNTCOST, UNMOUNTCOST,
+    USECOSTPERTIME, AMMOLIMIT, STARTAMMO, RELOADTIME,
+    TEMPERATUREPERDAMAGE, MAXTEMPERATURE, COOLDOWNPERTIME,
+    ATTACHABLE, COLOUR, PRICE, MASS, LAST_WEAPONVAR
+  };
+
+  const VariableDefinition variables[LAST_WEAPONVAR] = 
+  {
+    {"Ammunition", INT, 0, 0, INT_MAX,0,false,true,false},
+
+    {"RotateToAngle", DOUBLE, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+    {"RotateAmountAngle", DOUBLE, 0, -DBL_MAX, DBL_MAX,0, false, true, true },
+    {"RotateSpeed", DOUBLE, 0, 0.0, DBL_MAX,0, false, true, true },
+
+    {"AutoFire", BOOL, false,0,0,0,false,true,true}
+
+//      "MaxRotateSpeed",
+
+//      "SoundLevel",
+
+//      "MountTime",
+//      "UnmountTime",
+//      "MountCost",
+//      "UnmountCost",
+
+//      "UseCostPerTime",
+
+//      "AmmoLimit",
+//      "StartAmmo",
+//      "ReloadTime",
+
+//      "TemperaturePerDamage",
+//      "MaxTemperature",
+
+//      "CoolDownPerTime",
+
+//      "Attachable",
+
+//      "Colour",
+//      "Price",
+//      "Mass"
+  };
+
+  enum WeaponFcns
+  {
+    SHOOT, MOUNT, UNMOUNT, DROP, ROTATE, ROTATETO, ROTATEAMOUNT, LAST_WEAPONFCN
+  };
+
+  Function functions[LAST_WEAPONFCN];
+
+  void shoot() {}
   
-  Variable Ammunition;
+  void eval_function(const int fcn);
   
+
+
+
+  //  ShotGadget* shot;
+
+
 
 };
 
