@@ -191,8 +191,6 @@ if SGML2TXT
 		sgml2txt --filter -D table=char -c latin $<; \
 		echo "mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@"; \
 		mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@; \
-#		echo "mv $(subst .sgml,.txt,$<) $@"; \
-#		mv $(subst .sgml,.txt,$<) $@; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
@@ -201,6 +199,10 @@ else
 	@echo "Warning: $@ cannot be generated, sgml2txt is missing."; \
 	touch $@
 endif
+
+#		echo "mv $(subst .sgml,.txt,$<) $@"; \
+#		mv $(subst .sgml,.txt,$<) $@; \
+
 
 #Just to allow for non-existing .sgml-file
 %.sgml: 
