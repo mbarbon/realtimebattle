@@ -143,6 +143,7 @@ public:
   void set_game_mode( const enum game_mode_t gm);
 
   int get_debug_level() { return debug_level; }
+  bool is_max_debug_level() { return debug_level == max_debug_level; }
   virtual int set_debug_level( const int new_level);
 
   void pause_game_toggle();
