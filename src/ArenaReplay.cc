@@ -388,6 +388,8 @@ ArenaReplay::parse_log_line()
 
         log_file >> sequence_nr >> game_nr;
 
+        get_time_positions_in_game();
+
         ListIterator<Shape> li;
         for( object_lists[ROBOT].first(li); li.ok(); li++ )
           ((Robot*)li())->
@@ -400,22 +402,28 @@ ArenaReplay::parse_log_line()
       break;
     case 'H': // Header
       {
-        log_file >> games_per_sequence >> robots_per_game 
-                 >> sequences_in_tournament >> number_of_robots;
+        char buffer[400];
+        log_file.get( buffer, 400, '\n' );
+        log_file >> ws;
+//          log_file >> games_per_sequence >> robots_per_game 
+//                   >> sequences_in_tournament >> number_of_robots;
       }
       break;
     case 'L': // List of robot properties
       {
-        int robot_id;
-        char robot_colour[7];
-        char name[200];
-        log_file >> robot_id >> ws;
-        log_file.get( robot_colour, 7, ' ');
-        long int col = str2hex( (String)robot_colour );
-        log_file.get( name, 200, '\n' );
-        Robot* robotp = new Robot( robot_id, col, (String)name );
-        object_lists[ROBOT].insert_last(robotp); // array better?
-        all_robots_in_tournament.insert_last(robotp); // used by statistics
+        char buffer[400];
+        log_file.get( buffer, 400, '\n' );
+        log_file >> ws;
+//          int robot_id;
+//          char robot_colour[7];
+//          char name[200];
+//          log_file >> robot_id >> ws;
+//          log_file.get( robot_colour, 7, ' ');
+//          long int col = str2hex( (String)robot_colour );
+//          log_file.get( name, 200, '\n' );
+//          Robot* robotp = new Robot( robot_id, col, (String)name );
+//          object_lists[ROBOT].insert_last(robotp); // array better?
+//          all_robots_in_tournament.insert_last(robotp); // used by statistics
       }
       break;
     case 'A': // Arena file line
