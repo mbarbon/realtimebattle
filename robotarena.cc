@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
-#include "pos.h"
+#include "Vector2D.h"
 #include "robot.h"
 
 extern "C"

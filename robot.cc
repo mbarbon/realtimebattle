@@ -51,6 +51,7 @@ Robot::Robot(const char * rfn)
       strcpy(robotfilename,temp2);
     }
 
+  cout << robotfilename << endl;
   // Create Pipes
 
   if (pipe (pipe_from))

@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <strings.h>
 #include <stdio.h>
-#include "pos.h"
+#include "Vector2D.h"
 #include "messagetypes.h"
 
 #define FIFO_TO_ROBOT_FILE_ADD   ".to"
@@ -18,7 +18,6 @@ public:
   char * get_robotname( char * name );
 
 private:
-  Position pos;
   char * robotfilename;
   char * robotname;
   char * robotcode;
@@ -29,10 +28,6 @@ private:
   pid_t robot_pid;
 
   bool active;
-
-  double robot_direction;
-  double cannon_direction;
-  double speed;
 
 private:
   class InitError
