@@ -38,11 +38,16 @@ equal_strings_nocase( const string& s, const string& t )
   string::const_iterator li_s = s.begin();
   string::const_iterator li_t = t.begin();
 
-  while( li_s != s.end() && li_t != t.end() )
+  while( (li_s != s.end()) && (li_t != t.end()) )
     if( toupper(*li_s) != toupper(*li_t) )
       return false;
+    else
+      {
+        li_s++;
+        li_t++;
+      }
 
-  return( s.size() == t.size() );
+  return( s.length() == t.length() );
 }
 
 // Remember to delete[] the copied string
