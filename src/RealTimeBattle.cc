@@ -60,6 +60,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <floatingpoint.h>
 #endif
 
+#include <list>
+
 #include "IntlDefs.h"
 //#include "OptionHandler.h"
 
@@ -81,30 +83,10 @@ class ArenaController the_arena_controller;
 class EventHandler the_eventhandler;
 class Arena* the_arenap;
 
-
-bool no_graphics;
+list<unsigned int> GI_exit_list;
+pthread_mutex_t the_mutex;
 
 int Gadget::last_id_used = 0;
-
-//  void
-//  update_function(const long int interval_usec)
-//  {
-//    struct timeval timeout;
-//    timeout.tv_sec = 0;
-//    timeout.tv_usec = interval_usec;
-//    bool res = true;
-
-//    do
-//      {
-//        timeout.tv_sec = 0;
-//        timeout.tv_usec = interval_usec;
-//        select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
-//        if( the_arena_controller.is_started() )
-//          res = the_arena.timeout_function();
-//      } 
-//    while( res );
-
-//  }
 
 RETSIGTYPE
 sig_handler (int signum)
@@ -155,6 +137,7 @@ main ( int argc, char* argv[] )
   textdomain( "RealTimeBattle" );
 
   the_arena_controller.init( argc, argv );
+  pthread_mutex_init( &the_mutex, NULL );
 
   //  parse_command_line(argc, argv);
 
@@ -165,7 +148,7 @@ main ( int argc, char* argv[] )
   
   the_eventhandler.main_loop();
 
-  //  update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
-  
+  pthread_mutex_destroy( &the_mutex );
+
   return EXIT_SUCCESS;
 }
