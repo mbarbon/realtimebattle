@@ -103,6 +103,7 @@ main ( int argc, char* argv[] )
   catch ( Error the_error )
 	 {
 		the_error.print_message();
+      delete the_arena;
 		return EXIT_FAILURE;
 	 }
 
