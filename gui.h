@@ -9,6 +9,7 @@
 #include "String.h"
 
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
+enum min_max_full_t { MMF_MIN, MMF_MAX, MMF_FULL_ROUND };
 enum stat_button_t
 {
   STAT_BUTTON_TOTAL = 0,
@@ -53,6 +54,9 @@ void pause_button_callback(GtkWidget * widget, gpointer data);
 void step_button_callback(GtkWidget * widget, gpointer data);
 void end_button_callback(GtkWidget * widget, gpointer data);
 void statistics_button_callback(GtkWidget *widget, gpointer data);
+void start_tournament_min_callback(GtkWidget *widget, gpointer data);
+void start_tournament_max_callback(GtkWidget *widget, gpointer data);
+void start_tournament_full_round_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
 void delete_event( GtkWidget * widget, gpointer data );
 void no_zoom_callback(GtkWidget *widget, gpointer data);
@@ -123,6 +127,7 @@ public:
   start_tournament_glist_info_t * start_tournament_find_row_in_clist(const int row, GList * lista);
   void start_tournament_add_all_selected( bool robots );
   void start_tournament_remove_all_selected( bool robots );
+  void set_entry(const int entry, const enum min_max_full_t mmf);
 
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }

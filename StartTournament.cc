@@ -10,6 +10,36 @@
 #include "String.h"
 
 void
+start_tournament_min_callback(GtkWidget *widget, gpointer data)
+{
+  String name((char *) data);
+  if( name == String("Games per sequence") )
+    the_gui.set_entry(0, MMF_MIN);
+  if( name == String("Robots per sequence") )
+    the_gui.set_entry(1, MMF_MIN);
+  if( name == String("Number of sequences") )
+    the_gui.set_entry(2, MMF_MIN);
+}
+
+void
+start_tournament_max_callback(GtkWidget *widget, gpointer data)
+{
+  String name((char *) data);
+  if( name == String("Games per sequence") )
+    the_gui.set_entry(0, MMF_MAX);
+  if( name == String("Robots per sequence") )
+    the_gui.set_entry(1, MMF_MAX);
+  if( name == String("Number of sequences") )
+    the_gui.set_entry(2, MMF_MAX);
+}
+
+void
+start_tournament_full_round_callback(GtkWidget *widget, gpointer data)
+{
+  the_gui.set_entry(2,MMF_FULL_ROUND);
+}
+
+void
 start_tournament_button_callback(GtkWidget *widget, gpointer data)
 {
   if(the_gui.get_start_tournament_up() == false)
@@ -285,6 +315,55 @@ Gui::start_tournament_remove_all_selected( bool robots )
 }
 
 void
+Gui::set_entry(const int entry, const enum min_max_full_t mmf)
+{
+  switch( mmf )
+    {
+    case MMF_MIN:
+      {
+        if(entry != 1)
+          gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ), "1" );
+        else
+          gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ), "2" );
+        break;
+      }
+    case MMF_MAX:
+      {
+        if(entry != 1)
+          gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ), "9999" );
+        else
+          {
+            GList * gl;
+            int number_of_robots = 0;
+            for(gl = g_list_next(selected_items_in_robot_tournament); gl !=NULL; gl = g_list_next(gl))
+              number_of_robots++;
+            if( number_of_robots > 120 )
+              number_of_robots = 120;
+            gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ), String(number_of_robots).chars() );
+          }
+        break;
+      }
+    case MMF_FULL_ROUND:
+      {
+        GList * gl;
+        int number_of_robots = 0;
+        for(gl = g_list_next(selected_items_in_robot_tournament); gl !=NULL; gl = g_list_next(gl))
+          number_of_robots++;
+        int robots_per_sequence = str2int(gtk_entry_get_text(GTK_ENTRY(start_tournament_entries[1])));
+        if( number_of_robots < robots_per_sequence )
+          robots_per_sequence = number_of_robots;
+        if( robots_per_sequence > 120 )
+          robots_per_sequence = 120;
+        if( robots_per_sequence < 2 )
+          robots_per_sequence = 2;
+        gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[entry] ),
+                            String(min(9999,binomial(number_of_robots,robots_per_sequence))).chars() );
+      break;
+      }
+    }
+}
+
+void
 Gui::setup_start_tournament_window()
 {
   GtkWidget * vbox, * hbox;
@@ -512,22 +591,29 @@ Gui::setup_start_tournament_window()
 
   char * label_titles[] = { "Games per sequence", "Robots per sequence", "Number of sequences" };
 
-  GtkWidget * hbox2 = gtk_hbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (vbox), hbox2);
+  GtkWidget * hbox2 = gtk_hbox_new (FALSE, 100);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox2, FALSE, FALSE, 0);
   gtk_widget_show (hbox2);
 
-  vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
-  gtk_widget_show (vbox2);
+  GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (hbox2), internal_hbox, FALSE, FALSE, 0);
+  gtk_widget_show (internal_hbox);
+
+  GtkWidget * description_table = gtk_table_new( 3, 1, TRUE );
+  GtkWidget * entry_table = gtk_table_new( 3, 1, TRUE );
+  GtkWidget * button_table = gtk_table_new( 3, 12, TRUE );
+  gtk_box_pack_start (GTK_BOX (internal_hbox), description_table, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (internal_hbox), entry_table, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (internal_hbox), button_table, FALSE, FALSE, 0);
 
   for( int i=0;i<3;i++ )
     {
-      hbox = gtk_hbox_new (FALSE, 5);
-      gtk_container_add (GTK_CONTAINER (vbox2), hbox);
-      gtk_widget_show (hbox);
+      GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
+      gtk_table_attach_defaults( GTK_TABLE( description_table ), internal_hbox, 0, 1, i, i + 1 );
+      gtk_widget_show (internal_hbox);
 
       GtkWidget * label = gtk_label_new(label_titles[i]);
-      gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, FALSE, 0);
       gtk_widget_show(label);
 
       start_tournament_entries[i] = gtk_entry_new_with_max_length(4);
@@ -540,10 +626,45 @@ Gui::setup_start_tournament_window()
 
       gtk_signal_connect(GTK_OBJECT(start_tournament_entries[i]), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
-      gtk_box_pack_start (GTK_BOX (hbox), start_tournament_entries[i], FALSE, FALSE, 0);
+      gtk_table_attach_defaults( GTK_TABLE( entry_table ), start_tournament_entries[i], 0, 1, i, i + 1 );
       gtk_widget_set_usize(start_tournament_entries[i], 36,18);
       gtk_widget_show(start_tournament_entries[i]);
+
+      GtkWidget * button;
+      int add = 0;
+      if( i != 2 ) add = 3;
+
+      button = gtk_button_new_with_label ("Min");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (start_tournament_min_callback), (gpointer) label_titles[i] );
+      gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 0, 3 + add, i, i + 1 );
+      gtk_widget_show (button);
+
+      if( i == 2 )
+        {
+          button = gtk_button_new_with_label ("Full Round");
+          gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                              GTK_SIGNAL_FUNC (start_tournament_full_round_callback), (gpointer) NULL );
+          gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 3, 9, i, i + 1 );
+          gtk_widget_show (button);
+        }
+
+      button = gtk_button_new_with_label ("Max");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (start_tournament_max_callback), (gpointer) label_titles[i] );
+      gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 9 - add, 12, i, i + 1 );
+      gtk_widget_show (button);
     }
+
+  gtk_table_set_row_spacings( GTK_TABLE( description_table ) , 5 );
+  gtk_table_set_col_spacings( GTK_TABLE( description_table ) , 5 );
+  gtk_table_set_row_spacings( GTK_TABLE( entry_table ) , 5 );
+  gtk_table_set_col_spacings( GTK_TABLE( entry_table ) , 5 );
+  gtk_table_set_row_spacings( GTK_TABLE( button_table ) , 5 );
+  gtk_table_set_col_spacings( GTK_TABLE( button_table ) , 5 );
+  gtk_widget_show( description_table );
+  gtk_widget_show( entry_table );
+  gtk_widget_show( button_table );
 
   vbox2 = gtk_vbox_new (FALSE, 5);
   gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
