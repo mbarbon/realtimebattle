@@ -110,7 +110,8 @@ ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
       for( li = gui_list.begin(); li != gui_list.end(); li++ )
         {
           (*li)->shutdown();
-          delete *li;
+          //TODO: Find a way to delete *li in a clean manner
+          //          delete *li;
         }
       gui_list.clear();
       Quit();
@@ -120,7 +121,8 @@ ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
       if( (li = find( gui_list.begin(), gui_list.end(), gui_p )) != gui_list.end() )
         {
           (*li)->shutdown();
-          delete *li;
+          //TODO: Find a way to delete *li in a clean manner
+          //          delete *li;
           gui_list.erase(li);
         }
     }
@@ -338,7 +340,6 @@ ArenaController::parse_command_line( int argc, char** argv )
   auto_start_and_end
     = ( ( tournament_filename != "" ) ||
         ( replay_filename == "-" ) );
-
 }
 
 
