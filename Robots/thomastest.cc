@@ -259,8 +259,7 @@ check_messages(int sig)
           break;
         case WARNING:
           cin.getline(text,80,'\n');
-          cerr << text << endl;
-          cerr << "Thomas: Help, I got a yellow card!" << endl;
+          cout << "Print Help, I got a yellow card!  " << text << endl;
           break;
         case EXIT_ROBOT:
           cout << "Print Shutting down and leaving" << endl;
