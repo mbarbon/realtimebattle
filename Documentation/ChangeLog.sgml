@@ -17,6 +17,10 @@ options. Place your default directories in your <tt>.rtbrc</tt> for permanent op
 
 Added some buttons to the options window.
 
+Load and Save buttons now uses the gtk fileselector.
+
+The savefile-options is removed
+
 Keyword <tt>Break</tt> is changed to the correct spelling <tt>Brake</tt>.
 
 New robot option: <tt>SIGNAL</tt>, which will replace the old <tt>SEND_SIGNAL</tt>. You can now
@@ -27,6 +31,8 @@ corresponding new version as soon as possible, since obsolete keyword will be co
 within a number of releases and certainly before 1.0.
 
 Long command line options are now available.
+
+The Message Output is now changed into a clist.
 
 Bugfixes:
 
