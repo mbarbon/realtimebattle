@@ -150,6 +150,8 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           current_file->get( buffer, 400, '\n' );
           current_file->get();
           str_buffer += buffer;
+          if( ((count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0) )
+            str_buffer += '\n';
         }
       vector<string> wordlist = special_split_string( buffer, wordlist );
       remove_comments( wordlist );
@@ -281,7 +283,8 @@ Arena::sufficient_arena_version( vector<string>& wordlist ) const
 
 // Splits the strings into whitespace separated words. Special strings (e.g. strings
 // separated by ") is taken as ONE word, this is translated if surrounded by _( )
-// TODO: Enable removal of \ and other c-formating info.
+// TODO: Enable use of backslash-sequences other than \,\n,\t (if needed).
+// TODO: It should be possible to write this function in a better way.
 vector<string>&
 Arena::special_split_string( const string& str, vector<string>& strlist ) const
 {
@@ -304,17 +307,31 @@ Arena::special_split_string( const string& str, vector<string>& strlist ) const
           translatable = true;
           beg_pos = pos + 3;
         }
+      string::size_type temp_pos = beg_pos;
       string::size_type end_pos = str.find( '"', beg_pos );
+      string temp_string = str.substr( beg_pos, end_pos - beg_pos );
       if( str.substr( end_pos, 2 ) == "\")" && translatable )
-        {
-          strlist.push_back( _( (str.substr( beg_pos, end_pos - beg_pos )).c_str() ) );
-          beg_pos = end_pos + 2;
-        }
+        beg_pos = end_pos + 2;
       else
         {
-          strlist.push_back( str.substr( beg_pos, end_pos - beg_pos ) );
+          translatable = false;
           beg_pos = end_pos + 1;
         }
+      string::size_type backslash_pos = 0;
+      while( (backslash_pos = temp_string.find( '\\', temp_pos) != string::npos ) )
+        {
+          if( temp_string.substr( backslash_pos, 2 ) == "\\\n" )
+            temp_string.erase( backslash_pos, 2 );
+          if( temp_string.substr( backslash_pos, 2 ) == "\\n" )
+            temp_string.replace( backslash_pos, 2, "\n" );
+          if( temp_string.substr( backslash_pos, 2 ) == "\\t" )
+            temp_string.replace( backslash_pos, 2, "\t" );
+          temp_pos = backslash_pos;
+        }
+      if( translatable )
+        strlist.push_back( _( temp_string.c_str() ) );
+      else
+        strlist.push_back( temp_string ) );
     }
 
   vector<string> tmp_list;
