@@ -731,8 +731,24 @@ Gui::close_start_tournament_window()
 
   gtk_widget_destroy ( start_tournament_window );
 
+
+  // delete lists 
+
+  GList* gl;
+
+  for(gl=g_list_next(selected_items_in_robot_tournament); gl != NULL; gl=g_list_next(gl))  
+    delete (start_tournament_glist_info_t*)(gl->data);
   g_list_free(selected_items_in_robot_tournament);
+
+  for(gl=g_list_next(selected_items_in_robot_directory); gl != NULL; gl=g_list_next(gl))  
+    delete (start_tournament_glist_info_t*)(gl->data);
   g_list_free(selected_items_in_robot_directory);
+
+  for(gl=g_list_next(selected_items_in_arena_tournament); gl != NULL; gl=g_list_next(gl))  
+    delete (start_tournament_glist_info_t*)(gl->data);
   g_list_free(selected_items_in_arena_tournament);
+
+  for(gl=g_list_next(selected_items_in_arena_directory); gl != NULL; gl=g_list_next(gl)) 
+    delete (start_tournament_glist_info_t*)(gl->data);
   g_list_free(selected_items_in_arena_directory);
 }
