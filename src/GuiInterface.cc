@@ -117,7 +117,7 @@ GuiInterface::process_all_requests()
 {
   while( !request_stack.empty() )
     {
-      request_stack.top()->execute();
+      request_stack.top()->accept();
       delete request_stack.top();
       request_stack.pop();
     }

@@ -59,6 +59,7 @@ public:
 
   virtual void process_all_requests      () = 0;
   virtual const pthread_t* get_thread_p  () const = 0;
+  virtual const int get_reader_id        () const = 0;
 
   // Gui functions
   virtual const string Name              () const = 0;
@@ -95,6 +96,7 @@ public:
 
   void process_all_requests            ();
   const pthread_t* get_thread_p        () const { return &thread; }
+  const int get_reader_id              () const { return information_reader_id; };
 
   // Gui functions
   const string Name                    () const { return (*func_Name)(); }
