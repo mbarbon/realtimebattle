@@ -1,0 +1,913 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2000-06-28 20:20+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Mc_Tr <mc_tr@email.com>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ArenaController.cc:111
+msgid "Environment"
+msgstr "Entorno"
+
+#: src/ArenaController.cc:112
+msgid "Robot"
+msgstr ""
+
+#: src/ArenaController.cc:113
+msgid "Shot"
+msgstr "Disparo"
+
+#: src/ArenaController.cc:114
+msgid "Extras"
+msgstr ""
+
+#: src/ArenaController.cc:115 src/Gui/Gtk/ScoreWindow.cc:156
+msgid "Time"
+msgstr "Tiempo"
+
+#.    group_names.push_back( _("Window sizes") );
+#: src/ArenaController.cc:117
+msgid "Misc"
+msgstr ""
+
+#: src/ArenaController.cc:137
+msgid "Gravitational Constant"
+msgstr "Constante gravitatoria"
+
+#: src/ArenaController.cc:350
+msgid "Background colour"
+msgstr "Color de fondo"
+
+#: src/ArenaController.cc:354
+msgid "Foreground colour"
+msgstr "Color de primer plano"
+
+#: src/ArenaController.cc:358
+msgid "Colour for RTB messages"
+msgstr "Color para los mensajes"
+
+#: src/ArenaController.cc:630
+msgid " Usage: RealTimeBattle [options] "
+msgstr " Uso: RealTimeBattle [opciones] "
+
+#: src/ArenaController.cc:631
+msgid " Options:"
+msgstr " Opciones: "
+
+#: src/ArenaController.cc:632
+msgid "    --debug_mode,                -d   debug mode"
+msgstr "    --debug_mode,                -d   modo debug"
+
+#: src/ArenaController.cc:633
+msgid ""
+"    --debug_level [0-5],         -D   sets the initial debug level. Implies "
+"-d"
+msgstr ""
+"    --debug_level [0-5],         -D   Nivel de debug inicial. necesario -d"
+
+#: src/ArenaController.cc:634
+msgid "    --normal_mode,               -n   normal mode (default)"
+msgstr "    --normal_mode,               -n   modo normal (predeterminado)"
+
+#: src/ArenaController.cc:635
+msgid "    --competition_mode,          -c   competition mode"
+msgstr "    --competition_mode,          -c   modo competición"
+
+#: src/ArenaController.cc:637
+#, fuzzy
+msgid "    --use_gui [gui],             -g   sets the gui to be used"
+msgstr "    --version,                   -v   muestra la verión"
+
+#: src/ArenaController.cc:638
+msgid ""
+"    --option_file [file],        -o   selects option-file (default: "
+"$HOME/.rtbrc)"
+msgstr ""
+"    --option_file [archivo],        -o   fichero de opciones "
+"(predeterminado: $HOME/.rtbrc)"
+
+#: src/ArenaController.cc:640
+msgid ""
+"    --log_file [file],           -l   make log file, if 'file' is '-'\n"
+"                                      the log is sent to STDOUT"
+msgstr ""
+"    --log_file [archivo],           -l   archivo de log, si es '-'\n"
+"                                      el log se envia a STDOUT"
+
+#: src/ArenaController.cc:643
+msgid ""
+"    --tournament_file [file],    -t   specify a tournament file to\n"
+"                                      autostart a tournament"
+msgstr ""
+"    --tournament_file [archivo],    -t   archivo de torneo que se\n"
+"                                      iniciará automáticamente"
+
+#: src/ArenaController.cc:646
+msgid ""
+"    --statistics_file [file],    -s   file to print the statistics to\n"
+"                                       when autostarting"
+msgstr ""
+"    --statistics_file [archivo],    -s   archivo donde se volcarán \n"
+"                                       las estadisticas"
+
+#: src/ArenaController.cc:649
+msgid ""
+"    --message_file [file],       -m   redirect messages to 'file'.\n"
+"                                      With '-' as 'file', STDOUT is used.\n"
+"                                      If both log and messages are sent\n"
+"                                      to STDOUT, '-m' will be ignored"
+msgstr ""
+"    --message_file [archivo],       -m   envia los mensajes al 'archivo'.\n"
+"                                      Con '-' como 'archivo', se usará "
+"STDOUT.\n"
+"                                      Si se envián tanto el log como los "
+"mensajes\n"
+"                                      a STDOUT, '-m' no se tendrá en cuenta."
+
+#: src/ArenaController.cc:654
+msgid ""
+"    --replay [file]              -r   a log file to replay.\n"
+"                                      if '-' is specified as file,\n"
+"                                      input is taken from STDIN"
+msgstr ""
+"    --replay [archivo]              -r   archivo log a recrear.\n"
+"                                      si se indica '-' como archivo,\n"
+"                                      la entrada se coge de STDIN"
+
+#: src/ArenaController.cc:658
+msgid "    --help,                      -h   prints this message"
+msgstr "    --help,                      -h   muestra este mensaje"
+
+#: src/ArenaController.cc:659
+msgid "    --version,                   -v   prints the version number"
+msgstr "    --version,                   -v   muestra la verión"
+
+#: src/ArenaController.cc:666
+msgid "Commandline options for gui"
+msgstr ""
+
+#: src/Various.cc:62
+msgid "Error in"
+msgstr "Error en"
+
+#: src/Gui/Gtk/ArenaWindow.cc:80
+msgid " No Zoom "
+msgstr " No Zoom "
+
+#: src/Gui/Gtk/ArenaWindow.cc:82
+msgid " Zoom In "
+msgstr " Aumentar zoom "
+
+#: src/Gui/Gtk/ArenaWindow.cc:84
+msgid " Zoom Out "
+msgstr " Disminuir zoom "
+
+#: src/Gui/Gtk/ArenaWindow.cc:155
+msgid "Arena"
+msgstr "Arena"
+
+#: src/Gui/Gtk/ControlWindow.cc:76
+msgid " New Tournament "
+msgstr " Nuevo CamPeonaTO "
+
+#: src/Gui/Gtk/ControlWindow.cc:78
+msgid " Replay Tournament "
+msgstr " Cargar Campeonato "
+
+#: src/Gui/Gtk/ControlWindow.cc:80
+msgid " Pause "
+msgstr " Pausa "
+
+#: src/Gui/Gtk/ControlWindow.cc:82
+msgid " End "
+msgstr " FIN "
+
+#: src/Gui/Gtk/ControlWindow.cc:84
+msgid " Options "
+msgstr " Opciones "
+
+#: src/Gui/Gtk/ControlWindow.cc:86
+msgid " Statistics "
+msgstr " Estadisticas "
+
+#: src/Gui/Gtk/ControlWindow.cc:88
+msgid "         Quit         "
+msgstr "       QUITAR       "
+
+#: src/Gui/Gtk/ControlWindow.cc:114
+msgid "Show arena window"
+msgstr "Ver la arena"
+
+#: src/Gui/Gtk/ControlWindow.cc:116
+msgid "Show message window"
+msgstr "Ver los mensajes"
+
+#: src/Gui/Gtk/ControlWindow.cc:118
+msgid "Show score window"
+msgstr "Ver los puntos"
+
+#: src/Gui/Gtk/ControlWindow.cc:200
+msgid " Step "
+msgstr " Paso "
+
+#: src/Gui/Gtk/ControlWindow.cc:202
+msgid " End Game "
+msgstr " Fin Juego "
+
+#: src/Gui/Gtk/ControlWindow.cc:204
+msgid " Kill Marked Robot "
+msgstr " Matar robots marcados "
+
+#: src/Gui/Gtk/ControlWindow.cc:232
+msgid " Debug Level: "
+msgstr " Nivel de Debug: "
+
+#: src/Gui/Gtk/ControlWindow.cc:333
+msgid " Step forward "
+msgstr " Paso adelante "
+
+#: src/Gui/Gtk/ControlWindow.cc:337
+msgid " Step backward "
+msgstr " Paso atrás "
+
+#: src/Gui/Gtk/ControlWindow.cc:341
+msgid " Next Game "
+msgstr " Siguiente Partida "
+
+#: src/Gui/Gtk/ControlWindow.cc:345
+msgid " Prev Game "
+msgstr " Partida anterior "
+
+#: src/Gui/Gtk/ControlWindow.cc:349
+msgid " Next Seq "
+msgstr " Siguiente Sequencia "
+
+#: src/Gui/Gtk/ControlWindow.cc:353
+msgid " Prev Seq "
+msgstr " Secuencia Previa "
+
+#: src/Gui/Gtk/ControlWindow.cc:441
+msgid "*Starting robots*"
+msgstr "* Iniciando Robots *"
+
+#: src/Gui/Gtk/ControlWindow.cc:444
+msgid "*Shutting down robots*"
+msgstr "* Finalizando Robots *"
+
+#: src/Gui/Gtk/ControlWindow.cc:448
+msgid "*Running*"
+msgstr "* Ejecutando ... *"
+
+#: src/Gui/Gtk/ControlWindow.cc:454
+msgid "*Paused*"
+msgstr "* Pausado *"
+
+#: src/Gui/Gtk/ControlWindow.cc:457
+msgid "*Exiting*"
+msgstr "* Saliendo *"
+
+#: src/Gui/Gtk/ControlWindow.cc:460
+msgid "*Finished*"
+msgstr "* Terminado *"
+
+#: src/Gui/Gtk/ControlWindow.cc:560
+msgid "Choose a log file to replay"
+msgstr "Selecciona el archivo de log a recrear."
+
+#: src/Gui/Gtk/Gui.cc:51
+msgid "Gtk+ based GUI"
+msgstr ""
+
+#: src/Gui/Gtk/Gui.cc:58 src/Gui/none/Gui.cc:39
+#, fuzzy
+msgid "No options"
+msgstr " Cargar opciones "
+
+#. TODO: a better way to recognize Window size page
+#: src/Gui/Gtk/Gui.cc:114 src/Gui/Gtk/OptionsWindow.cc:132
+msgid "Window sizes"
+msgstr "Tamaño ventanas"
+
+#: src/Gui/Gtk/Gui.cc:122
+msgid "Initial Arena window width"
+msgstr "Anchura de la ventana de Arenas"
+
+#: src/Gui/Gtk/Gui.cc:126
+msgid "Initial Arena window height"
+msgstr "Altura de la ventana de Arenas"
+
+#: src/Gui/Gtk/Gui.cc:130
+msgid "Initial Arena window x position"
+msgstr "Posición x de la ventana de Arenas"
+
+#: src/Gui/Gtk/Gui.cc:134
+msgid "Initial Arena window y position"
+msgstr "Posición y de la ventana de Arenas"
+
+#: src/Gui/Gtk/Gui.cc:138
+msgid "Initial Control window x position"
+msgstr "Posición x de la ventana de Control"
+
+#: src/Gui/Gtk/Gui.cc:142
+msgid "Initial Control window y position"
+msgstr "Posición y de la ventana de Control"
+
+#: src/Gui/Gtk/Gui.cc:146
+msgid "Initial Message window width"
+msgstr "Anchura de la ventana de Mensajes"
+
+#: src/Gui/Gtk/Gui.cc:150
+msgid "Initial Message window height"
+msgstr "Altura de la ventana de Mensajes"
+
+#: src/Gui/Gtk/Gui.cc:154
+msgid "Initial Message window x position"
+msgstr "Posición x de la ventana de Mensajes"
+
+#: src/Gui/Gtk/Gui.cc:158
+msgid "Initial Message window y position"
+msgstr "Posición y de la ventana de Mensajes"
+
+#: src/Gui/Gtk/Gui.cc:162
+msgid "Initial Score window width"
+msgstr "Anchura de la ventana de Puntuación"
+
+#: src/Gui/Gtk/Gui.cc:166
+msgid "Initial Score window height"
+msgstr "Altura de la ventana de Puntuación"
+
+#: src/Gui/Gtk/Gui.cc:170
+msgid "Initial Score window x position"
+msgstr "Posición de la ventana de Puntuación"
+
+#: src/Gui/Gtk/Gui.cc:174
+msgid "Initial Score window y position"
+msgstr "Posición de la ventana de Puntuación"
+
+#: src/Gui/Gtk/Gui.cc:178
+msgid "Initial Statistics window width"
+msgstr "Anchura de la ventana de Estadisticas"
+
+#: src/Gui/Gtk/Gui.cc:182
+msgid "Initial Statistics window height"
+msgstr "Altura de la ventana de Estadisticas"
+
+#: src/Gui/Gtk/MessageWindow.cc:80
+msgid " Clear all messages "
+msgstr " Borra todos los mensajes "
+
+#: src/Gui/Gtk/MessageWindow.cc:82
+msgid " Show only marked robot "
+msgstr " Ver únicamente el robot marcado "
+
+#: src/Gui/Gtk/MessageWindow.cc:84
+msgid " Show all "
+msgstr " Ver todos "
+
+#: src/Gui/Gtk/MessageWindow.cc:112 src/Gui/Gtk/StatisticsWindow.cc:95
+msgid " Robot "
+msgstr ""
+
+#: src/Gui/Gtk/MessageWindow.cc:112
+msgid " Message "
+msgstr " Mensaje "
+
+#: src/Gui/Gtk/MessageWindow.cc:185
+msgid "Messages"
+msgstr " Mensajes "
+
+#: src/Gui/Gtk/MessageWindow.cc:189
+msgid " All "
+msgstr " Todo "
+
+#: src/Gui/Gtk/OptionsWindow.cc:54
+msgid "Options"
+msgstr "Opciones"
+
+#: src/Gui/Gtk/OptionsWindow.cc:135
+msgid " Grab sizes and positions from present windows "
+msgstr "Guardar tamaños y posiciones de las ventanas actuales"
+
+#: src/Gui/Gtk/OptionsWindow.cc:168 src/Gui/Gtk/StartTournamentWindow.cc:305
+msgid " Min "
+msgstr ""
+
+#: src/Gui/Gtk/OptionsWindow.cc:170
+msgid " Def "
+msgstr ""
+
+#: src/Gui/Gtk/OptionsWindow.cc:172 src/Gui/Gtk/StartTournamentWindow.cc:339
+msgid " Max "
+msgstr " Máx "
+
+#: src/Gui/Gtk/OptionsWindow.cc:214
+#, fuzzy
+msgid "Default"
+msgstr " Predeterminado "
+
+#: src/Gui/Gtk/OptionsWindow.cc:216
+#, fuzzy
+msgid "Load options"
+msgstr " Cargar opciones "
+
+#: src/Gui/Gtk/OptionsWindow.cc:217
+#, fuzzy
+msgid "Save options"
+msgstr " Salvar opciones "
+
+#: src/Gui/Gtk/OptionsWindow.cc:218
+#, fuzzy
+msgid "Save as default"
+msgstr " Salvar como predeterminado "
+
+#: src/Gui/Gtk/OptionsWindow.cc:220
+#, fuzzy
+msgid "Apply"
+msgstr " Aplicar "
+
+#: src/Gui/Gtk/OptionsWindow.cc:221
+msgid "Ok"
+msgstr ""
+
+#: src/Gui/Gtk/OptionsWindow.cc:222
+#, fuzzy
+msgid "Cancel"
+msgstr " Cancelar "
+
+#: src/Gui/Gtk/OptionsWindow.cc:311
+msgid "Choose an options file to load"
+msgstr "Nombre del archivo a cargar"
+
+#: src/Gui/Gtk/OptionsWindow.cc:318
+msgid "Choose an options file to save"
+msgstr "Nombre del archivo a guardar"
+
+#: src/Gui/Gtk/ScoreWindow.cc:74 src/Gui/Gtk/StatisticsWindow.cc:229
+#: src/Gui/Gtk/StatisticsWindow.cc:372
+msgid "Name"
+msgstr "Nombre"
+
+#: src/Gui/Gtk/ScoreWindow.cc:74
+msgid "Energy"
+msgstr "Energia"
+
+#: src/Gui/Gtk/ScoreWindow.cc:74
+msgid "Place"
+msgstr "Lugar"
+
+#: src/Gui/Gtk/ScoreWindow.cc:75
+msgid "Last"
+msgstr "Último"
+
+#: src/Gui/Gtk/ScoreWindow.cc:75 src/Gui/Gtk/ScoreWindow.cc:149
+msgid "Score"
+msgstr "Puntos"
+
+#: src/Gui/Gtk/ScoreWindow.cc:150
+msgid " Seq: "
+msgstr " Sec: "
+
+#: src/Gui/Gtk/ScoreWindow.cc:153 src/Gui/Gtk/StatisticsWindow.cc:92
+#: src/Gui/Gtk/StatisticsWindow.cc:391
+msgid "Game"
+msgstr "Juego"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:47
+msgid "Statistics"
+msgstr "Estadisticas"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:84
+msgid " Close "
+msgstr " Cerrar "
+
+#: src/Gui/Gtk/StatisticsWindow.cc:86
+msgid " Save Statistics "
+msgstr " Guardar Estadisticas "
+
+#: src/Gui/Gtk/StatisticsWindow.cc:88
+msgid " Total "
+msgstr ""
+
+#: src/Gui/Gtk/StatisticsWindow.cc:90
+msgid " Sequence Total "
+msgstr " Total de la Secuencia "
+
+#: src/Gui/Gtk/StatisticsWindow.cc:229
+msgid "Position"
+msgstr "Posición"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:229
+msgid "Points"
+msgstr "Puntos"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:230 src/Gui/Gtk/StatisticsWindow.cc:349
+msgid "Games"
+msgstr "Juegos"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:230
+msgid "Survival Time"
+msgstr "Tiempo de supervivencia"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:230
+msgid "Total Points"
+msgstr "Puntos Totales"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:318
+msgid "Choose a statistics file to save"
+msgstr "Archivo para guardar las estadisticas"
+
+#: src/Gui/Gtk/StatisticsWindow.cc:390
+msgid "Seq"
+msgstr "Sec"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:74
+#, fuzzy
+msgid "Start New Tournament"
+msgstr " Nuevo CamPeonaTO "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:123
+msgid "Robots in Tournament"
+msgstr "Robots en el Torneo"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:124
+msgid "Robots in Directory"
+msgstr "Robots en el directorio"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:133
+msgid "Arenas in Tournament"
+msgstr "Arens en el Torneo"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:134
+msgid "Arenas in Directory"
+msgstr "Arenas en el directorio"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:151
+msgid " Remove "
+msgstr ""
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:151
+#: src/Gui/Gtk/StartTournamentWindow.cc:153
+msgid " Select All "
+msgstr " Selecciona todo "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:152
+#: src/Gui/Gtk/StartTournamentWindow.cc:153
+msgid " Unselect All "
+msgstr " Deselecciona todo "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:152
+msgid " Add "
+msgstr " Añadir "
+
+#. Choose Number of games per sequence, Number of robots per sequence
+#. and Number of sequences
+#: src/Gui/Gtk/StartTournamentWindow.cc:246
+msgid "Games per sequence"
+msgstr "Juegos por secuencia"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:246
+msgid "Robots per sequence"
+msgstr "Robots por secuencia"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:247
+msgid "Number of sequences"
+msgstr "Nº de secuencias"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:317
+msgid " All Arenas "
+msgstr " Todas las Arenas "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:329
+msgid " Full Round "
+msgstr " Ronda entera "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:367
+msgid " Load tournament "
+msgstr " Cargar Torneo "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:367
+msgid " Save tournament "
+msgstr " Guardar Torneo "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:389
+msgid " Start "
+msgstr " Empezar "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:389
+msgid " Cancel "
+msgstr " Cancelar "
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:499
+msgid "Choose a tournament file to load"
+msgstr "Archivo torneo a cargar"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:533
+msgid "Choose file to save tournament into"
+msgstr "Archivo torneo a guardar"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:577
+msgid "Error in specified tournament file."
+msgstr "Error en el archivo especificado"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:579
+#: src/Gui/Gtk/StartTournamentWindow.cc:754
+msgid " Ok "
+msgstr ""
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:580
+msgid "Tournament could not be loaded."
+msgstr "El torneo no puedo cargarse"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:744
+msgid "There are too few robots in the tournament."
+msgstr "No hay suficientes robots en el torneo"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:746
+msgid "There are no arenas in the tournament."
+msgstr "No hay arenas en el torneo"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:749
+msgid "Could not open file."
+msgstr "No se puede abrir el archivo"
+
+#: src/Gui/Gtk/StartTournamentWindow.cc:755
+msgid "Tournament could not be saved."
+msgstr "El torneo no ha podido ser guardado"
+
+#: src/Gui/none/Gui.cc:32
+msgid "No graphics at all"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:287
+msgid "Brakes locked: Robot found and at distance"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:344
+msgid "Acceleration"
+msgstr "Acelaración"
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:345
+msgid "Brake"
+msgstr "Freno"
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:348
+msgid "Modular angle, Angle"
+msgstr "Angulo modular, Angulo"
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:465
+msgid "New rotation"
+msgstr "Nueva rotación"
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:466
+msgid "New acceleration"
+msgstr "Nueva acelaración"
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:469
+msgid "Hit too many times! Flee!"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:483
+msgid "Cookie eaten!"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:490
+msgid "Oh no! A mine"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:503
+msgid "Unknown message: "
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:506
+msgid "Process time low: "
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:509
+msgid "Message sent in illegal state: "
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:512
+msgid "Unknown option: "
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:515
+msgid "Obsolete Keyword: "
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:539
+msgid "Shutting down and leaving"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:553
+msgid "New"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:637
+msgid "Unknown Object seen!"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:705
+msgid "Collided with Unknown Object!"
+msgstr ""
+
+#~ msgid "*Pausing after game*"
+#~ msgstr "* Pausar despues del juego *"
+
+#~ msgid "Game %d of sequence %d begins on arena"
+#~ msgstr "Ha comenzado la partida %d de la secuencia %d."
+
+#~ msgid "Robot with filename %s has not given any name"
+#~ msgstr "El Robot con el nombre de fichero %s no ha dado nombre."
+
+#~ msgid "Game %d of sequence %d"
+#~ msgstr "Partida %d de la secuencia %d."
+
+#~ msgid ""
+#~ "This action will kill the current tournament.\n"
+#~ "Do you want to do that?"
+#~ msgstr ""
+#~ "Con esto abortaras el campeonato actual.\n"
+#~ "¿Estás seguro?"
+
+#~ msgid "Yes"
+#~ msgstr "Si"
+
+#~ msgid "Air resistance"
+#~ msgstr "Resistencia del Aire"
+
+#~ msgid "Roll friction"
+#~ msgstr "Fricción de giro"
+
+#~ msgid "Slide/brake friction"
+#~ msgstr "Fricción de frenado"
+
+#~ msgid "Robot max acceleration"
+#~ msgstr "Acelaración máxima"
+
+#~ msgid "Robot min acceleration"
+#~ msgstr "Aceleración mínima"
+
+#~ msgid "Robot radius"
+#~ msgstr "Radio"
+
+#~ msgid "Robot mass"
+#~ msgstr "Masa"
+
+#~ msgid "Robot bounce coefficient"
+#~ msgstr "Coeficiente de salto."
+
+#~ msgid "Robot hardness coefficient"
+#~ msgstr "Coeficiente de dureza"
+
+#~ msgid "Robot protection coefficient"
+#~ msgstr "Coeficiente de protección"
+
+#~ msgid "Robot frontsize [radians]"
+#~ msgstr "Tamaño [radianes]"
+
+#~ msgid "Robot front bounce coefficient"
+#~ msgstr "Coeficiente de salto delantero"
+
+#~ msgid "Robot front hardness coefficient"
+#~ msgstr "Coeficiente de dureza delantero"
+
+#~ msgid "Robot front protection coefficient"
+#~ msgstr "Coeficiente de protección delantero"
+
+#~ msgid "Robot start energy"
+#~ msgstr "Energia de inicio"
+
+#~ msgid "Robot max energy"
+#~ msgstr "Energia máxima"
+
+#~ msgid "Robot max rotate speed [rad/s]"
+#~ msgstr "Velcidad máxima de rotación [rad/s]"
+
+#~ msgid "Robot cannon max rotate speed [rad/s]"
+#~ msgstr "Velocidad máxima velocidad de rotación del cañon [rad/s]"
+
+#~ msgid "Robot radar max rotate speed [rad/s]"
+#~ msgstr "Velocidad máxima velocidad de rotación del radar [rad/s]"
+
+#~ msgid "Process check interval"
+#~ msgstr "Intérvalo de chequeo del proceso"
+
+#~ msgid "Robot energy levels"
+#~ msgstr "Niveles de energia"
+
+#~ msgid "Shot radius"
+#~ msgstr "Radio"
+
+#~ msgid "Shot speed"
+#~ msgstr "Velocidad"
+
+#~ msgid "Shooting penalty (times shot energy)"
+#~ msgstr "Penalización"
+
+#~ msgid "Shot min energy"
+#~ msgstr "Energia mínima"
+
+#~ msgid "Shot max energy"
+#~ msgstr "Energia máxima"
+
+#~ msgid "Shot energy increase speed [energy/s]"
+#~ msgstr "Velocidad de aumento de energia energia/s]"
+
+#~ msgid "Cookie max energy"
+#~ msgstr "Emergia máxima"
+
+#~ msgid "Cookie min energy"
+#~ msgstr "Emegia mínima"
+
+#~ msgid "Cookie frequency [cookies per second]"
+#~ msgstr "Frecuencia de cookies [por segundo]"
+
+#~ msgid "Cookie radius"
+#~ msgstr "Radio"
+
+#~ msgid "Cookie colour"
+#~ msgstr "Color"
+
+#~ msgid "Mine max energy"
+#~ msgstr "Energia máxima"
+
+#~ msgid "Mine min energy"
+#~ msgstr "Energia mínima"
+
+#~ msgid "Mine frequency [mines per second]"
+#~ msgstr "Frecuencia de minas [por segundo]"
+
+#~ msgid "Mine radius"
+#~ msgstr "Radio"
+
+#~ msgid "Mine colour"
+#~ msgstr "Color"
+
+#~ msgid "Arena scale"
+#~ msgstr "Escala de la Arena"
+
+#~ msgid "Fast forward factor"
+#~ msgstr "Velocidad de 'Adelante'"
+
+#~ msgid "Timescale"
+#~ msgstr "Scala de tiempo"
+
+#~ msgid "Update interval [s]"
+#~ msgstr "Intervalo de refresco [s]"
+
+#~ msgid "Robot startup time [s]"
+#~ msgstr "Retardo de inicio [s]"
+
+#~ msgid "Start CPU time [s]"
+#~ msgstr "Límite de gasto de CPU [s]"
+
+#~ msgid "Extra CPU time [s]"
+#~ msgstr "Tiempo extra de uso de CPU [s]"
+
+#~ msgid "Extra CPU period [s]"
+#~ msgstr "Periodo del uso extra de la CPU [s]"
+
+#~ msgid "CPU time warning percentage"
+#~ msgstr "Porcentaje de aviso en el uso de la CPU"
+
+#~ msgid "Logging frequency [Each n:th update interval]"
+#~ msgstr "Frecuencia de 'logeo' [refresca cada n-veces]"
+
+#~ msgid "Max robots allowed simultaneously"
+#~ msgstr "Número máximo de robot simultaneos"
+
+#~ msgid "Robot search path"
+#~ msgstr "Ruta de busqueda de robots"
+
+#~ msgid "Arena search path"
+#~ msgstr "Ruta de busqueda de arenas"
+
+#~ msgid "Directory for temporary files"
+#~ msgstr "Directorio para archivos temporales"
+
+#~ msgid "    --no_graphics,               -g   no graphics will be displayed"
+#~ msgstr "    --no_graphics,               -g   sin gráficos"
+
+#~ msgid " Grand Total "
+#~ msgstr " Gran TOTAL "
+
+#~ msgid " Sequence "
+#~ msgstr " Secuencia "
+
+#~ msgid " Sequence: "
+#~ msgstr " Secuencia: "
+
+#~ msgid "There must be at least two robots in the tournament."
+#~ msgstr "Deben existir al menos dos robots en el torneo."
+
+#~ msgid "Tournament could not be started."
+#~ msgstr "El torneo no se ha podido iniciar."
