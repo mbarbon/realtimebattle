@@ -146,12 +146,14 @@ void
 Robot::bounce_on_wall(Wall* colliding_object)
 {
   velocity = -velocity;  // TODO: bounce on wall
+  send_message(COLLISION, WALL, 0.0);
 }
 
 void
 Robot::bounce_on_robot(Robot* colliding_object)
 {
   velocity = -velocity;  // TODO: bounce on robot
+  send_message(COLLISION, ROBOT, 0.0);
 }
 
 void
@@ -197,8 +199,14 @@ Robot::move(const double timestep)
           bounce_on_robot((Robot*)colliding_object);
           break;
         case SHOT:
-          change_energy(-((Shot*)colliding_object)->get_energy());
-          ((Shot*)colliding_object)->die();
+          {
+            double en =  -((Shot*)colliding_object)->get_energy();
+            change_energy( en );
+            send_message(COLLISION, SHOT, en);
+            Shot* shotp =(Shot*)colliding_object;
+            g_list_remove((the_arena->get_object_lists())[SHOT], shotp);
+            delete shotp;
+          }
           break;
         case COOKIE:
           break;
@@ -290,15 +298,22 @@ Robot::get_messages()
           break;
         case SHOOT:
           {
-            double energy;
-            *instreamp >> energy;
+            double en;
+            *instreamp >> en;
             Vector2D dir = Vector2D(cos(cannon_angle),sin(cannon_angle));
             double shot_radius = the_arena->get_shot_radius();
-            Shot* shotp = new Shot( center + (radius+1.5*shot_radius)*dir, 
-                                    shot_radius,
-                                    dir * the_arena->get_shot_speed(),
-                                    the_arena, energy );
-            g_list_append((the_arena->get_object_lists())[SHOT], shotp);
+            Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
+            if( the_arena->space_available( shot_center, shot_radius + 0.00001 ) )
+              {
+                Shot* shotp = new Shot( shot_center, shot_radius,
+                                        velocity + dir * the_arena->get_shot_speed(),
+                                        the_arena, en );
+                g_list_append((the_arena->get_object_lists())[SHOT], shotp);
+              }
+            else
+              {  // TODO: shooting: direct hit if too close
+              }
+
           }
           break;
         case ACCELERATE:
@@ -334,7 +349,27 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy += energy_diff;
+  display_energy();
   if( energy <= 0.0 ) die();
+}
+
+void
+Robot::display_energy()
+{
+  strstream ss;
+  char str_energy[5];
+
+  ss << (int)energy;
+  ss >> str_energy;
+  gtk_entry_set_text (GTK_ENTRY (widget_energy), str_energy);
+}
+
+void
+Robot::set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc )
+{
+  widget_energy = en;
+  widget_place = pl;
+  widget_score = sc;
 }
 
 Shot::Shot(const Vector2D& c, const double r, 
@@ -343,6 +378,7 @@ Shot::Shot(const Vector2D& c, const double r,
 {
   alive = true;
   energy = en;
+  set_colour( 0x333333 );
 }
 
 void
@@ -365,6 +401,7 @@ Shot::move(const double timestep)
           break;
         case ROBOT:
           ((Robot*)colliding_object)->change_energy(-energy);
+          ((Robot*)colliding_object)->send_message(COLLISION, SHOT, -energy);
           die();
           break;
         case SHOT:
