@@ -35,7 +35,7 @@ typedef struct _GdkEventButton GdkEventButton;
 typedef int gint;
 typedef void* gpointer;
 
-class Robot;
+class DrawingRobot;
 
 class ScoreWindow
 {
@@ -61,9 +61,9 @@ public:
 
   GtkWidget* get_window_p          () { return window_p; }
   GtkWidget* get_clist             () { return clist; }
-  Robot* get_selected_robot        () { return selected_robot; }
+  DrawingRobot* get_selected_robot () { return selected_robot; }
   bool is_window_shown             () { return window_shown; }
-  void set_selected_robot          ( Robot* rp ) { selected_robot = rp; }
+  void set_selected_robot          ( DrawingRobot* rp ) { selected_robot = rp; }
   void set_window_shown            ( bool r ) { window_shown = r; }
 
 private:
@@ -73,7 +73,7 @@ private:
   GtkWidget* window_p;
   GtkWidget* clist;
 
-  Robot* selected_robot;
+  DrawingRobot* selected_robot;
 };
 
 #endif NO_GRAPHICS

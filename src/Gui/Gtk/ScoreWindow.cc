@@ -150,17 +150,17 @@ ScoreWindow::~ScoreWindow()
 void
 ScoreWindow::set_window_title()
 {
-//    string title = (string)
-//      (string)_("Score") + "  " + 
-//      (string)_(" Seq: ") + int2string( the_arena.get_sequence_nr() ) + 
-//      " (" + int2string( the_arena.get_sequences_in_tournament() ) +
+  string title = (string)
+    (string)_("Score") + "  " + 
+    (string)_(" Seq: ") + int2string( the_gui.get_match_nr() ) + 
+    " (" + int2string( the_gui.get_number_of_matches() ) +
 
-//      ")  " + (string)_("Game") + ": " + int2string( the_arena.get_game_nr() ) +
-//      " (" + int2string( the_arena.get_games_per_sequence() ) +
+    ")  " + (string)_("Game") + ": " + int2string( the_gui.get_game_nr() ) +
+    " (" + int2string( the_gui.get_games_per_match() ) +
 
-//      ")  " + (string)_("Time") + ": " + int2string( (int)the_arena.get_total_time() );
+    ")  " + (string)_("Time") + ": " + int2string( (int)the_gui.get_match_time() );
 
-//    gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
+  gtk_window_set_title( GTK_WINDOW( window_p ), title.c_str() );
 }
 
 //
@@ -210,46 +210,46 @@ ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
                                  GdkEventButton *event,
                                  class ScoreWindow* scorewindow_p )
 {
-//    if( event == NULL ) return;
+  if( event == NULL ) return;
 
-//    Robot* robotp;
+  DrawingRobot* robotp;
   
-//    ListIterator<Shape> li;
-//    for( the_arena.get_object_lists()[ROBOT].first(li); li.ok(); li++ )
-//      {
-//        robotp = (Robot*)li();
+  list<DrawingShape*>::const_iterator ds_ci;
+  for( ds_ci  = the_gui.get_drawing_objects_lists()[ROBOT].begin();
+       ds_ci != the_gui.get_drawing_objects_lists()[ROBOT].end(); ds_ci++ )
+    {
+      robotp = ((DrawingRobot*)(*ds_ci));
 
-//        if( row == robotp->get_row_in_score_clist() )
-//          scorewindow_p->set_selected_robot( robotp );
-//      }
+      if( row == robotp->get_row_in_score_clist() )
+        scorewindow_p->set_selected_robot( robotp );
+    }
 }
 
 //
 // This function updates all information about all robots in the sequence
 //
-
 void
 ScoreWindow::update_robots()
 {
-//    if( the_arena.get_game_nr() == 1 )
-//      {
-//        add_robots();
-//        return;
-//      }
+  if( the_gui.get_game_nr() == 1 )
+    {
+      add_robots();
+      return;
+    }
 
-//    Robot* robot_p;
-//    List<Shape>* object_lists = the_arena.get_object_lists();
-//    ListIterator<Shape> li;
-  
-//    for( object_lists[ROBOT].first(li); li.ok(); li++ )
-//      {
-//        robot_p = (Robot*)li();
-//        robot_p->reset_last_displayed();
-//        for( int i = 2; i <=5 ; i++ )
-//          gtk_clist_set_text( GTK_CLIST( clist ),
-//                              robot_p->get_row_in_score_clist(), i, "" );
-//        robot_p->display_score();
-//      }
+  DrawingRobot* robot_p = NULL;
+  list<DrawingShape*>::const_iterator ds_ci;
+  list<DrawingShape*> robot_list = the_gui.get_drawing_objects_lists()[ROBOT];
+
+  for( ds_ci = robot_list.begin(); ds_ci != robot_list.end(); ds_ci++ )
+    {
+      robot_p = ((DrawingRobot*)(*ds_ci));
+      robot_p->reset_last_displayed();
+      for( int i = 2; i <=5 ; i++ )
+        gtk_clist_set_text( GTK_CLIST( clist ),
+                            robot_p->get_row_in_score_clist(), i, "" );
+      robot_p->display_score( GTK_CLIST( clist ) );
+    }
 }
 
 // 
@@ -259,55 +259,54 @@ ScoreWindow::update_robots()
 void
 ScoreWindow::add_robots()
 {
-//    gtk_clist_clear( GTK_CLIST( clist ) );
-//    Robot* robot_p;
-//    List<Shape>* object_lists = the_arena.get_object_lists();
-//    ListIterator<Shape> li;
+  gtk_clist_clear( GTK_CLIST( clist ) );
+  DrawingRobot* robot_p = NULL;
+  list<DrawingShape*>::const_iterator ds_ci;
+  list<DrawingShape*> robot_list = the_gui.get_drawing_objects_lists()[ROBOT];
+  bool found_robot = false;
 
-//    bool found_robot = false;
+  for( ds_ci = robot_list.begin(); ds_ci != robot_list.end(); ds_ci++ )
+    {
+      robot_p = ((DrawingRobot*)(*ds_ci));
 
-//    for( object_lists[ROBOT].first(li); li.ok(); li++ )
-//      {
-//        robot_p = (Robot*)li();
+      char* empty_list[] = { "", "", "", "", "", "" };
+      int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
 
-//        char* empty_list[] = { "", "", "", "", "", "" };
-//        int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
+      gtk_clist_set_foreground( GTK_CLIST( clist ), row,
+                                the_gui.get_fg_gdk_colour_p() );
+      gtk_clist_set_background( GTK_CLIST( clist ), row,
+                                the_gui.get_bg_gdk_colour_p() );
 
-//        gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-//                                  the_gui.get_fg_gdk_colour_p() );
-//        gtk_clist_set_background( GTK_CLIST( clist ), row,
-//                                  the_gui.get_bg_gdk_colour_p() );
+      robot_p->set_row_in_score_clist( row );
 
-//        robot_p->set_row_in_score_clist( row );
+      GdkPixmap* colour_pixmap;
+      GdkBitmap* bitmap_mask;
+      robot_p->get_score_pixmap( window_p->window,
+                                colour_pixmap, bitmap_mask );
+      gtk_clist_set_pixmap( GTK_CLIST( clist ), row, 0,
+                            colour_pixmap, bitmap_mask );
+      gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
+                          robot_p->get_name().c_str() );
+      gtk_clist_set_text( GTK_CLIST( clist ), row, 3, "" );
+      robot_p->reset_last_displayed();
+      robot_p->display_score( GTK_CLIST( clist ) );
+      if( selected_robot == NULL && row == 0 )
+        selected_robot = robot_p;
+      if( selected_robot == robot_p )
+        {
+          found_robot = true;
+          gtk_clist_select_row( GTK_CLIST( clist ), row, 1 );
+        }
+    }
 
-//        GdkPixmap* colour_pixmap;
-//        GdkBitmap* bitmap_mask;
-//        robot_p->get_score_pixmap( window_p->window,
-//                                  colour_pixmap, bitmap_mask );
-//        gtk_clist_set_pixmap( GTK_CLIST( clist ), row, 0,
-//                              colour_pixmap, bitmap_mask );
-//        gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
-//                            robot_p->get_robot_name().non_const_chars() );
-//        gtk_clist_set_text( GTK_CLIST( clist ), row, 3, "" );
-//        robot_p->reset_last_displayed();
-//        robot_p->display_score();
-//        if( selected_robot == NULL && row == 0 )
-//          selected_robot = robot_p;
-//        if( selected_robot == robot_p )
-//          {
-//            found_robot = true;
-//            gtk_clist_select_row( GTK_CLIST( clist ), row, 1 );
-//          }
-//      }
-
-//    if( !found_robot )
-//      for( object_lists[ROBOT].first(li); li.ok(); li++ )
-//        {
-//          robot_p = (Robot*)li();
-//          if( robot_p->get_row_in_score_clist() == 0 )
-//            {
-//              selected_robot = robot_p;
-//              gtk_clist_select_row( GTK_CLIST( clist ), 0, 1 );
-//            }
-//        }
+  if( !found_robot )
+    for( ds_ci = robot_list.begin(); ds_ci != robot_list.end(); ds_ci++ )
+      {
+        robot_p = ((DrawingRobot*)(*ds_ci));
+        if( robot_p->get_row_in_score_clist() == 0 )
+          {
+            selected_robot = robot_p;
+            gtk_clist_select_row( GTK_CLIST( clist ), 0, 1 );
+          }
+      }
 }
