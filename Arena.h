@@ -42,6 +42,7 @@ public:
   Vector2D get_random_position();
 
   GList** get_object_lists() { return object_lists; }
+  GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   Gui* get_the_gui() { return the_gui; }
   double get_max_acceleration() { return max_acceleration; }
   double get_min_acceleration() { return min_acceleration; }
