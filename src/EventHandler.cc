@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ EventHandler::main_loop()
       current_time = time_for_next_event;
       current_game_time = timer.realtime2gametime( current_time );
 
-      cout << "Current time: " << current_time;
+//        cout << "Current time: " << current_time;
 
       if(RT_event)
 	{

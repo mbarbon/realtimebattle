@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -39,19 +39,29 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Messagetypes.h"
 
-// Class with static only members that contains various functions and
-// information that deals with a gadget in some way and does not
-// fit into the ordinary gadgetclasses.
-// Do not create an object of this class.
-// TODO: If we decide to use Namespaces this should be a namespace instead.
+/** Class with static only members that contains various functions and
+ *  information that deals with a gadget in some way and does not
+ *  fit into the ordinary gadgetclasses.
+ *  Do not create an object of this class.
+ *  TODO: If we decide to use Namespaces this should be a namespace instead. */
 class AllGadgets
 {
 public:
-  // Create a gadget that matches the gadget_type supplied.
+  /** Create a gadget that matches the gadget_type supplied.
+   *  @see    gadget_t
+   *  @param  type The type of Gadget to create, in form of a gadget_t.
+   *  @param  name The name to be given to this gadget.
+   *  @param  p    The parent of the gadget.
+   *  @return A newly allocated Gadget-pointer of the specified type. */
   static Gadget* create_gadget_by_gadget_type ( const gadget_t    type,
                                                 const char*       name,
                                                 Gadget* const     p );
-  // Create a gadget that matches the string gadgettype supplied.
+  /** Create a gadget that matches the string gadgettype supplied.
+   *  @see    gadget_types
+   *  @param  type The type of Gadget to create, in form of a string.
+   *  @param  name The name to be given to this gadget.
+   *  @param  p    The parent of the gadget.
+   *  @return A newly allocated Gadget-pointer of the specified type. */
   static Gadget* create_gadget_by_stringtype  ( const string&     type,
                                                 const char*       name,
                                                 Gadget* const     p );
