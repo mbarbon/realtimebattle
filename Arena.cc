@@ -446,15 +446,17 @@ Arena::timeout_function()
                 }
             end_game();
           }
-
-        if( COMPETITION_MODE && total_time > next_check_time ) check_robots();
-
-        // Place mines and cookies
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
-          add_cookie();
-
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_MINE_FREQUENCY) )
-          add_mine();
+        else
+          {
+            if( COMPETITION_MODE && total_time > next_check_time ) check_robots();
+            
+            // Place mines and cookies
+            if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
+              add_cookie();
+            
+            if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_MINE_FREQUENCY) )
+              add_mine();
+          }
       }
       break;
     case PAUSING_BETWEEN_GAMES:
@@ -463,6 +465,9 @@ Arena::timeout_function()
 
     case EXITING:
       return false;
+      
+    case NO_STATE:
+      throw Error("Arena state is NO_STATE, shouldn't ever happen!", "Arena::timeout_function");
     }
 
   if( halt_next )
