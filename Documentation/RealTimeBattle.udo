@@ -13,31 +13,31 @@
 
 !begin_document
 
-!maketitle
-!tableofcontents
+   !maketitle
+   !tableofcontents
 
-!node Introduction  
-!label Introduction
-!include Introduction.udo
+   !node Introduction  
+   !label Introduction
+   !include Introduction.udo
 
 #!node History  !label History
 #!include History.udo
 
-!node Usage  
-!label Usage
-!include Usage.udo
+   !node Usage  
+   !label Usage
+   !include Usage.udo
 
-!node Robot construction
-!label RobotConstruction
-!include RobotConstruction.udo
+   !node Robot construction
+   !label RobotConstruction
+   !include RobotConstruction.udo
 
-!node Options
-!label Options
-!include Options.udo
+   !node Options
+   !label Options
+   !include Options.udo
 
-!node Arena construction
-!label ArenaConstruction
-#!include ArenaConstruction.udo
+   !node Arena construction
+   !label ArenaConstruction
+   !include ArenaConstruction.udo
 
 #!node Concluding remarks
 #!label ConcludingRemarks
@@ -52,8 +52,8 @@
 #!include Appendices.udo
 
 #to get rid of error message in AboutUdo
-!autoref [on] 
-!autoref_items [on]
+   !autoref [on] 
+   !autoref_items [on]
 
 !end_document
 

@@ -23,36 +23,36 @@ Options:
 The differences between the three modes are shown in the following table
 
 !begin_table [|l|cccccc|] !hline
-         !! Debug     !! Pause !! Step    !! Robots may   !! Robots   !! Robot
-    Mode !! command   !! in    !! through !! start child- !! may open !! CPU time
-         !! available !! game  !! game    !! processes    !! files    !! unlimited
-!hline
-    Debug       !! Yes !! Yes !! Yes !! Yes !! Yes !! Yes
-    Normal      !! No  !! Yes !! No  !! No  !! No  !! Yes
-    Competition !! No  !! No  !! No  !! No  !! No  !! No
-!hline
+   !! Debug     !! Pause !! Step    !! Robots may   !! Robots   !! Robot
+   Mode !! command   !! in    !! through !! start child- !! may open !! CPU time
+   !! available !! game  !! game    !! processes    !! files    !! unlimited
+   !hline
+   Debug       !! Yes !! Yes !! Yes !! Yes !! Yes !! Yes
+   Normal      !! No  !! Yes !! No  !! No  !! No  !! Yes
+   Competition !! No  !! No  !! No  !! No  !! No  !! No
+   !hline
 !end_table
 
 !subnode Control window
 
 !begin_description
-!item [New tournament:] 
-   This will start a new tournament. Section (!link [Start new tournament window] [TournamentWindow])
-   will give more information.
-!item [Pause:] 
-   Pauses for game, in (!link [(!T)competition-mode(!t)] [CommandLineOptions]) the pausing will be
-   postponed until the end of the current game.  
-!item [Step:]
-   In a paused game this will move one time step forward. It is intended to simplify debugging of
-   the robots and is only available in (!link [(!T)debug-mode(!t)] [CommandLineOptions]). 
-!item [End:]
-   Stops the current tournament.
-!item [Options:]
-   Brings up the (!link [options window] [OptionsWindow]). 
-!item [Statistics:]
-   Displays the (!link [statistics window] [StatisticsWindow]).
-!item [Quit:]
-   Terminates the program.
+   !item [New tournament:] 
+         This will start a new tournament. Section (!link [Start new tournament window] [TournamentWindow])
+         will give more information.
+   !item [Pause:] 
+         Pauses for game, in (!link [(!T)competition-mode(!t)] [CommandLineOptions]) the pausing will be
+         postponed until the end of the current game.  
+   !item [Step:]
+         In a paused game this will move one time step forward. It is intended to simplify debugging of
+         the robots and is only available in (!link [(!T)debug-mode(!t)] [CommandLineOptions]). 
+   !item [End:]
+         Stops the current tournament.
+   !item [Options:]
+         Brings up the (!link [options window] [OptionsWindow]). 
+   !item [Statistics:]
+         Displays the (!link [statistics window] [StatisticsWindow]).
+   !item [Quit:]
+         Terminates the program.
 !end_description
 
 !subnode Start new tournament window
@@ -83,10 +83,10 @@ You can study the statistics of the current tournament in some different ways. Y
 display 
 
 !begin_itemize
-!item statistics on individual (!T)Robot(!t)s,
-!item the result of a (!T)game(!t),
-!item the (!T)sequence total(!t) or
-!item the (!T)total(!t) of the tournament.
+   !item statistics on individual (!T)Robot(!t)s,
+   !item the result of a (!T)game(!t),
+   !item the (!T)sequence total(!t) or
+   !item the (!T)total(!t) of the tournament.
 !end_itemize
 
 Pressing the arrowed buttons will move you to the first, back one, forward one or to the last
