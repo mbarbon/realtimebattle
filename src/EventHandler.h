@@ -83,6 +83,8 @@ class QuitEvent : public GTEvent;
 class EventHandler;
 extern EventHandler the_eventhandler;
 
+class Tournament;
+
 class EventHandler
 {
 
@@ -103,6 +105,8 @@ class EventHandler
   void quit();  
   void finish_game();
   
+  void set_tournament( Tournament* const t );
+
  private:
   
   typedef const Event* ep;
@@ -118,6 +122,8 @@ class EventHandler
   double game_speed_before_pause;
 
   bool finished;
+
+  Tournament* the_tournament;
 
   int nb_RT_event;
   int nb_GT_event;

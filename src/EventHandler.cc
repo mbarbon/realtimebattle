@@ -28,17 +28,23 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Event.h"
 #include "Timer.h"
 #include "Various.h"
+#include "Tournament.h"
 
 EventHandler::EventHandler()
 {
   current_time = 0.0;
   game_speed_before_pause = 0.0;
+
+  the_tournament = NULL;
   nb_RT_event = 0;
   nb_GT_event = 0;
 }
 
 EventHandler::~EventHandler()
 {
+  if( the_tournament != 0 )
+    delete the_tournament;
+
 }
 
 
@@ -104,15 +110,16 @@ EventHandler::main_loop()
       
       for(;;) 
         {
-          //          timer.double2timeval( time_for_next_event, time_to_wait );          
+          timer.double2timeval( time_for_next_event, time_to_wait );          
 
-          current_time = timer.get_realtime();
+          //          current_time = timer.get_realtime();
 
-	  if(time_for_next_event - current_time < 0) break;
+	  //if(time_for_next_event - current_time < 0) break;
 
-          //if( time_to_wait.tv_usec == 0 ) break;    // Time to eval next event
+          if( time_to_wait.tv_usec == 0 && time_to_wait.tv_sec == 0 ) 
+            break;    // Time to eval next event
           
-          //select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
+          select(FD_SETSIZE, NULL, NULL, NULL, &time_to_wait);
         }
 
       current_time = timer.get_realtime();
@@ -196,6 +203,17 @@ EventHandler::get_time()
   return current_time; 
 }
 
+void
+EventHandler::set_tournament( Tournament* const t )
+{
+  if( the_tournament != NULL )
+    {
+      delete the_tournament;
+      the_tournament = NULL;
+    }
+
+  the_tournament = t;
+}
 
 
 
