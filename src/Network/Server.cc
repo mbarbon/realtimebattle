@@ -40,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <stdio.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 
 #include <string>
 
@@ -106,12 +107,31 @@ server(int socket_fd)
   //  signal(SIGPIPE, exit_cleanly);
 
 
+ 
+
+
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
 
   char buffer[80];
 
   in_socket.get(buffer, 80, '\n');
+
+ // Make socket non_blocking
+
+  int pd_flags;
+  if( (pd_flags = fcntl(socket_fd, F_GETFL, 0)) == -1 ) 
+    {
+      cerr << "Server: couldn't get pd_flags for socket: ";
+      perror( NULL );
+    }
+
+  pd_flags |= O_NONBLOCK;
+  if( fcntl(socket_fd, F_SETFL, pd_flags) == -1 ) 
+    {
+      cerr << "Server: couldn't change pd_flags for socket: ";
+      perror( NULL );
+    }
 
   robotname = buffer;
 
@@ -147,7 +167,7 @@ server(int socket_fd)
 
   // Open the fifos for read/write
   
-  int ififo_fd = open( ififo_name.c_str(), O_RDONLY );
+  int ififo_fd = open( ififo_name.c_str(), O_RDONLY | O_NONBLOCK);
 
   if( ififo_fd == -1 )
     {
@@ -177,6 +197,8 @@ server(int socket_fd)
 
   struct timeval time_to_wait;
 
+  struct timeval current_time;
+
   finish = false;
 
   while( !finish )
@@ -195,42 +217,70 @@ server(int socket_fd)
         {      
           in_socket >> ws;
           in_socket.clear();
-          in_socket.get(buffer, 80, '\n');
-
-          if( in_socket.fail() )
+          in_socket.peek();
+          while( !in_socket.eof() )
             {
-              cerr << "Reading in_socket failed!" << endl;
-              exit_cleanly( SIGALRM );
-            }
 
-          cout << buffer << endl;
-          ofifo_stream << buffer << endl;      
-          //          cout << "!" << flush;   
+              in_socket.get(buffer, 80, '\n');
+
+              if( in_socket.fail() )
+                {
+                  cerr << "Reading in_socket failed!" << endl;
+                  exit_cleanly( SIGALRM );
+                }
+              
+//                gettimeofday(&current_time, NULL);
+//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//                cout << "server <<<s: " << buffer << endl;
+              
+              ofifo_stream << buffer << endl;      
+              
+//                gettimeofday(&current_time, NULL);
+//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//                cout << "server >>>f: " << buffer << endl;
+              //          cout << "!" << flush;   
+              in_socket >> ws;
+              in_socket.clear();
+              in_socket.peek();
+            }
         }
 
       if( FD_ISSET( ififo_fd, &fifo_and_socket) )
         {      
           ififo_stream >> ws;
           ififo_stream.clear();
-          ififo_stream.get(buffer, 80, '\n');
-
-          if( ififo_stream.fail() )
+          ififo_stream.peek();
+          while( !ififo_stream.eof() )
             {
-              cerr << "Reading ififo failed. Reopen!" << endl;
-              sleep(3);
+              ififo_stream.get(buffer, 80, '\n');
+
+              if( ififo_stream.fail() )
+                {
+                  cerr << "Reading ififo failed. Reopen!" << endl;
+                  sleep(3);
+                }
+
+//                gettimeofday(&current_time, NULL);
+//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//                cout << "server <<<f: " << buffer << endl;
+
+              out_socket << buffer << endl;
+
+//                gettimeofday(&current_time, NULL);
+//                cout << current_time.tv_sec << "." << current_time.tv_usec << ": ";
+//                cout << "server >>>s: " << buffer << endl;
+              
+              if( out_socket.fail() )
+                {
+                  cerr << "Writing to out_socket failed!" << endl;
+                  exit_cleanly( SIGALRM );
+                }
+
+
+              ififo_stream >> ws;
+              ififo_stream.clear();
+              ififo_stream.peek();
             }
-
-          cout << buffer << endl;      
-          out_socket << buffer << endl;
-          
-          if( out_socket.fail() )
-            {
-              cerr << "Writing to out_socket failed!" << endl;
-              exit_cleanly( SIGALRM );
-            }
-
-
-          //          cout << "%" << flush;   
         }
       
       //      cout << "." << flush;      
