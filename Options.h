@@ -93,6 +93,8 @@ struct option_info_t
   GtkWidget * entry;
 };
 
+void options_window_requested(GtkWidget *widget, gpointer data);
+
 class Options
 {
 public:
