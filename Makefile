@@ -1,4 +1,5 @@
 ROBOTDIR = Robots
+DOCSDIR = Documentation
 
 export CC = gcc
 export CXX = g++
@@ -51,6 +52,10 @@ StartTournament.o: StartTournament.cc Vector2D.h gui.h Various.h Options.h Arena
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
 
+Documentation:
+	cd $(DOCSDIR) && $(MAKE)
+
+
 #$(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 #	cd $(ROBOTDIR); \
 #	gcc $(coptions) -o empty empty.o; \
@@ -62,7 +67,8 @@ robots:
 #	cd ..
 
 clean:
-	rm -f *~ *.o core* $(ROBOTDIR)/*~ $(ROBOTDIR)/*.o $(ROBOTDIR)/core*
+	rm -f *~ *.o core* $(ROBOTDIR)/*~ $(ROBOTDIR)/*.o $(ROBOTDIR)/core*\
+	 $(DOCSDIR)/*~ $(DOCSDIR)/*.{aux,log,toc,latex,dvi,html,texinfo,info,ulh,ult,uli}
 
 ETAGS:
 	etags *.cc *.h
