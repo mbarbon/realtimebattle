@@ -15,7 +15,6 @@ enum entry_datatype_t
   ENTRY_DOUBLE,
   ENTRY_HEX,
   ENTRY_CHAR,
-  ENTRY_BOOL
 };
 
 struct entry_t

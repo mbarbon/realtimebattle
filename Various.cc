@@ -5,6 +5,7 @@
 #include <iostream.h>
 
 #include "Various.h"
+#include "String.h"
 #include "Error.h"
 
 int
@@ -75,15 +76,15 @@ reorder_pointer_array(void** array, int size)
 void
 entry_handler( GtkWidget * entry, entry_t * entry_info )
 {
-  gchar *entry_text;
-  entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
-  for(unsigned int i=0;i<strlen(entry_text);i++)
+  String entry_text = gtk_entry_get_text(GTK_ENTRY(entry));
+  String old_entry_text = entry_text;
+  for(int i=0;i<entry_text.get_length();i++)
     {
       switch( entry_info->datatype )
         {
         case ENTRY_INT:
-          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') || (entry_text[i] == '-' && i == 0 )) )
-            cout << entry_text[i] << endl;;
+          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') || ((entry_text[i] == '-' && i == 0 ) && entry_info->min_value < 0.0 ))  )
+            entry_text.erase(i);
           break;
         case ENTRY_DOUBLE:
           break;
@@ -91,8 +92,9 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
           break;
         case ENTRY_CHAR:
           break;
-        case ENTRY_BOOL:
-          break;
         }
     }
+
+  if(old_entry_text != entry_text)
+    gtk_entry_set_text(GTK_ENTRY(entry),entry_text.chars());
 }
