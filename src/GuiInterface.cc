@@ -29,6 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaBase.h"
 #include "ArenaController.h"
 #include "Various.h"
+#include "GuiEvent.h"
+#include "GuiEventHandler.h"
 
 extern class ArenaController the_arena_controller;
 
@@ -52,6 +54,8 @@ GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
   if(!(*func_Init)( argc, argv ))
     Error( true, "Couldn't initialize gui " + name,
              "GuiInterface::GuiInterface" );
+
+  guieventhandler_id = the_arena_controller.get_guievents()->add_reader();
 }
 
 // Loads a symbol into memory.
@@ -105,6 +109,17 @@ GuiInterface::get_game_nr()
   int res = the_arena.get_game_nr();
   pthread_mutex_unlock( mutex_p );
   return res;
+}
+
+// TODO: Make sure that the event is not deleted before the gui uses it!
+const GuiEvent*
+GuiInterface::get_event()
+{
+  pthread_mutex_lock( mutex_p );
+  const GuiEvent* event =
+    the_arena_controller.get_guievents()->get_event( guieventhandler_id );
+  pthread_mutex_unlock( mutex_p );
+  return event;
 }
 
 // PreMain function

@@ -30,6 +30,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class ArenaController;
 class Vector2D;
+class GuiEvent;
 
 // ---------------------------------------------------------------------------
 // class GuiInterface
@@ -92,7 +93,7 @@ public:
   void set_opt_l                              ( option_long_t   option, long int val );
   void set_opt_s                              ( option_string_t option, string   val );
 
-  // guievent??? pop_event                        ();
+  const GuiEvent* get_event                   ();
 
   // Functions for the server.
 
@@ -117,6 +118,7 @@ private:
   // internal variables
 
   long int unique_id;
+  int guieventhandler_id;
 
   string plain_name;
   string library_name;

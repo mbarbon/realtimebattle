@@ -26,15 +26,19 @@ GuiEventHandler::GuiEventHandler()
 {
   eventlist.resize( guieventlist_size );
   number_of_readers = 0;
+  writing_point = eventlist.begin();
 }
 
-// TODO: Check if inserting deletes an important event for a gui.
+// TODO: Check if inserting deletes unread events for a gui.
 void
 GuiEventHandler::insert_event( const GuiEvent* _event )
 {
   const GuiEvent* old_event = *writing_point;
-  delete old_event;
   *writing_point = _event;
+  delete old_event;
+  writing_point++;
+  if( writing_point == eventlist.end() )
+    writing_point = eventlist.begin();
 }
 
 // Returns NULL if reader_id not found or there are no messages to be read.
@@ -48,6 +52,8 @@ GuiEventHandler::get_event( const int reader_id )
       {
         const GuiEvent* event = *((*li).reading_point);
         ((*li).reading_point)++;
+        if( (*li).reading_point == eventlist.end() )
+          (*li).reading_point = eventlist.begin();
         return event;
       }
   return NULL;

@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 
+#include "Structs.h"
+
 class GuiEvent
 {
 public:
@@ -43,6 +45,19 @@ public:
 private:
   string sender;
   string message;
+};
+
+class GuiStateEvent : public GuiEvent
+{
+public:
+  GuiStateEvent::GuiStateEvent  ( const state_t s )
+    : state(s) {}
+  GuiStateEvent::~GuiStateEvent () {}
+
+  const state_t get_state       () const { return state; }
+
+private:
+  state_t state;
 };
 
 #endif __GUIEVENT__

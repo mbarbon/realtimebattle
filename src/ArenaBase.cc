@@ -96,6 +96,7 @@ void
 ArenaBase::set_state( const state_t st )
 {
   state = st;
+  the_arena_controller.get_guievents()->insert_event( new GuiStateEvent( state ) );
 
 //  #ifndef NO_GRAPHICS
 //    if( !no_graphics )
