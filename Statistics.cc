@@ -170,7 +170,9 @@ Gui::add_new_row( void * rp, void * sp )
                                                     get_colour_square_xpm( col_sq, robotp->get_colour() ) );
 
       gtk_clist_set_pixmap(GTK_CLIST(stat_clist), row, 0, colour_pixmap, bitmap_mask);
-      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, robotp->get_robotname());
+      char* rname = robotp->get_robot_name().copy_chars();
+      gtk_clist_set_text(GTK_CLIST(stat_clist), row, 1, rname);
+      delete [] rname;
     }
 
   if(stat_table_type == STAT_TABLE_ROBOT)
@@ -395,7 +397,9 @@ Gui::stat_make_title_button()
                 gtk_box_pack_start (GTK_BOX (stat_title_hbox), pixmap_widget, FALSE, FALSE, 0);
                 gtk_widget_show( pixmap_widget );
 
-                GtkWidget * label = gtk_label_new(robotp->get_robotname());
+                char* rname = robotp->get_robot_name().copy_chars();
+                GtkWidget * label = gtk_label_new(rname);
+                delete [] rname;
                 gtk_box_pack_start (GTK_BOX (stat_title_hbox), label, TRUE, FALSE, 0);
                 gtk_widget_show( label );
               }

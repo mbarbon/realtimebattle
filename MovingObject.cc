@@ -6,15 +6,15 @@
 #include "Arena.h"
 #include "Error.h"
 
-Robot::Robot(char* filename)
+Robot::Robot(const String& filename)
 {
   velocity = Vector2D(0.0, 0.0);
   acceleration = 0.0;
-  robot_filename = *g_string_new(filename);
-  plain_robot_name = *g_string_new("");
-  robot_name = *g_string_new("");
+  robot_filename = filename;
+  plain_robot_name = "";
+  robot_name = "";
   robot_name_uniqueness_number = 0;
-  robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
+  //  robot_dir= getenv("RTB_ROBOTDIR");
   statistics = g_list_alloc();
   extra_air_resistance = 0.0;
   process_running = false;
@@ -35,14 +35,14 @@ Robot::start_process()
   int pipe_in[2], pipe_out[2];
   if (pipe (pipe_in))
     throw Error("Couldn't setup pipe_in for robot ", 
-                robot_filename.str, "Robot::Robot");
+                robot_filename.chars(), "Robot::Robot");
   if (pipe (pipe_out))
     throw Error("Couldn't setup pipe_out for robot ", 
-                robot_filename.str, "Robot::Robot");
+                robot_filename.chars(), "Robot::Robot");
 
   if( (pid = fork()) < 0 )
     throw Error("Couldn't fork childprocess for robot ", 
-                robot_filename.str, "Robot::Robot");
+                robot_filename.chars(), "Robot::Robot");
 
   if(pid == 0)   // Child process, to be the new robot
     {
@@ -58,20 +58,20 @@ Robot::start_process()
       int pd_flags;
       if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
         throw Error("Couldn't get pd_flags for robot ", 
-                    robot_filename.str, "Robot::Robot, child");
+                    robot_filename.chars(), "Robot::Robot, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for robot ", 
-                    robot_filename.str, "Robot::Robot, child");
+                    robot_filename.chars(), "Robot::Robot, child");
 
       // TODO: Restrict resources
       // Restrict different resources
       // E.g. priority, file_access, 
 
       // Execute process. Should not return!
-      execl(robot_filename.str, robot_filename.str, NULL);
+      execl(robot_filename.chars(), robot_filename.chars(), NULL);
 
-      cerr << "Couldn't open robot " << robot_filename.str 
+      cerr << "Couldn't open robot " << robot_filename.chars() 
            << "  Error in Robot::Robot" << endl;
       cerr << "Errno: " << errno << endl;
       exit(EXIT_FAILURE);
@@ -88,16 +88,25 @@ Robot::start_process()
       int pd_flags;
       if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
         throw Error("Couldn't get pd_flags for pipe_in in robot ", 
-                    robot_filename.str, "Robot::Robot, parent");
+                    robot_filename.chars(), "Robot::Robot, parent");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for pipe_in in robot ", 
-                    robot_filename.str, "Robot::Robot, parent");
+                    robot_filename.chars(), "Robot::Robot, parent");
 
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
 
-      send_message(INITIALIZE);
+      if( g_list_next(statistics) == NULL )
+        {
+          send_message(INITIALIZE, 1);        // first sequence !
+        }
+      else
+        {
+          send_message(INITIALIZE, 0);        // not first sequence !
+          send_message(YOUR_NAME, robot_name.chars());
+          send_message(YOUR_COLOUR, gdk2hex_colour(colour));
+        } 
     }
   process_running = true;
 }
@@ -185,18 +194,18 @@ Robot::check_name_uniqueness()
   Robot* robotp;
   int first_avail = 0;
 
-  g_string_assign(&robot_name, plain_robot_name.str);
+  robot_name = plain_robot_name;
   
   GList* gl = g_list_next(the_arena.get_all_robots_in_tournament());
   for(; gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)gl->data;
-      if( robotp != this && strcmp(plain_robot_name.str, robotp->plain_robot_name.str) == 0 )
+      if( robotp != this && plain_robot_name == robotp->plain_robot_name )
         {
           if( robotp->robot_name_uniqueness_number == 0 )
             {
               robotp->robot_name_uniqueness_number = 1;
-              g_string_append(&(robotp->robot_name), "(1)");
+              robotp->robot_name += "(1)";
             }
 
           first_avail = max( robotp->robot_name_uniqueness_number + 1, first_avail );
@@ -208,13 +217,7 @@ Robot::check_name_uniqueness()
     }
 
   if( robot_name_uniqueness_number > 0 )
-    {
-      char buf[8];
-      strstream ss;
-      ss << '(' << robot_name_uniqueness_number << ')' << ends;
-      ss.getline(buf, 7, '\0');
-      g_string_append(&robot_name, buf);
-    }
+      robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
 }
 
 double
@@ -483,6 +486,9 @@ Robot::send_message(const message_to_robot_type msg_type ...)
           break;
         case STRING:
           *outstreamp << va_arg(args, char*) << " ";
+          break;   
+        case HEX:
+          *outstreamp << hex << va_arg(args, int) << " ";
           break;
         default:
           throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
@@ -523,7 +529,7 @@ Robot::get_messages()
               break;
             }
           *instreamp >> text;
-          g_string_assign(&plain_robot_name, text);
+          plain_robot_name = text;
           check_name_uniqueness();
           // TODO: Tell gui to change name
           break;
@@ -666,7 +672,7 @@ Robot::get_messages()
           break;
         case PRINT:
           instreamp->get(text, 80, '\n');
-          the_gui.print_to_message_output(robot_name.str, text, colour);
+          the_gui.print_to_message_output(robot_name, text, colour);
           break;
         case SHOOT:
           if( the_arena.get_state() != Arena::GAME_IN_PROGRESS ) break;

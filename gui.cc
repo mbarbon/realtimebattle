@@ -66,26 +66,14 @@ Gui::Gui()
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
   if(NULL != getenv("RTB_ROBOTDIR"))
-    {
-      robotdir = new char[strlen(getenv("RTB_ROBOTDIR"))+ 1];
-      strcpy(robotdir, getenv("RTB_ROBOTDIR"));
-    }
+      robotdir = getenv("RTB_ROBOTDIR");
   else
-    {
-      robotdir = new char[strlen("Robots/") + 1];
-      strcpy(robotdir, "Robots/");
-    }
+      robotdir = "Robots/";
 
   if(NULL != getenv("RTB_ARENADIR"))
-    {
-      arenadir = new char[strlen(getenv("RTB_ARENADIR")) + 1];
-      strcpy(arenadir,getenv("RTB_ARENADIR"));
-    }
+      arenadir = getenv("RTB_ARENADIR");
   else
-    {
-      arenadir = new char[strlen("Arenas/") +1 ];
-      strcpy(arenadir,"Arenas/");
-    }
+      arenadir = "Arenas/";
 }
 
 double
@@ -140,15 +128,13 @@ Gui::change_to_pixels_y(const double input)
 }
 
 void
-Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor& colour )
+Gui::print_to_message_output (const String& from_robot, const String& output_text, GdkColor& colour )
 {
-  GString * rname;
-  rname = g_string_new(from_robot);
-  g_string_prepend(rname,"\n");
-  g_string_append(rname,": ");
+  String rname = (String)'\n' + from_robot + ": ";
+  String printed_text = output_text;
   gtk_text_freeze(GTK_TEXT(message_output));
-  gtk_text_insert(GTK_TEXT(message_output), NULL, &colour, NULL, rname->str, -1);
-  gtk_text_insert(GTK_TEXT(message_output), NULL, &message_output->style->black, NULL, output_text, -1);
+  gtk_text_insert(GTK_TEXT(message_output), NULL, &colour, NULL, rname.chars(), -1);
+  gtk_text_insert(GTK_TEXT(message_output), NULL, &message_output->style->black, NULL, printed_text.chars(), -1);
   gtk_text_thaw(GTK_TEXT(message_output));
 }
 
@@ -489,7 +475,9 @@ Gui::setup_score_window()
 
       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
-      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robotname());
+      char * rname = robotp->get_robot_name().copy_chars();
+      gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, rname);
+      delete[] rname;
       robotp->display_energy();
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
       robotp->display_last();

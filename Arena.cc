@@ -696,7 +696,8 @@ Arena::start_game()
 
   broadcast(GAME_STARTS);
   broadcast(ROBOTS_LEFT, robots_left);
-  
+  the_opts.broadcast_opts();
+
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
 
@@ -847,7 +848,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
   for(gl = g_list_next(arenafilename_list); gl != NULL; gl = g_list_next(gl))
     {
       infop = (start_tournament_glist_info_t*)gl->data;
-      g_list_append(arena_filenames, g_string_new(infop->filename));
+      g_list_append(arena_filenames, g_string_new(infop->filename.chars()));
       number_of_arenas++;
     }
 

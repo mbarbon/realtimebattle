@@ -7,6 +7,7 @@
 #include <fstream.h>
 #include <stdlib.h>
 #include "Vector2D.h"
+#include "String.h"
 #include "messagetypes.h"
 #include "Options.h"
 #include "gui.h"
@@ -407,7 +408,7 @@ struct rotation_t
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
-  Robot(char* filename);
+  Robot(const String& filename);
   //Robot(const Vector2D& c, const double r, char* filename); 
   ~Robot();
   
@@ -433,7 +434,7 @@ public:
   void die();
  
   object_type get_object_type() { return ROBOT; }
-  char* get_robotname() { return robot_name.str; }
+  String get_robot_name() { return robot_name; }
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
   pid_t get_pid() { return pid; }
@@ -474,11 +475,11 @@ private:
   GList* statistics;
 
   int robot_name_uniqueness_number;
-  GString plain_robot_name;
-  GString robot_name;
+  String plain_robot_name;
+  String robot_name;
 
-  GString robot_filename;
-  GString robot_dir;
+  String robot_filename;
+  //String robot_dir;
   int points;
   int position_this_game;
 

@@ -220,17 +220,19 @@ Gui::start_tournament_add_all_selected( bool robots )
           gtk_clist_set_foreground(GTK_CLIST(clist_tourn), row, the_arena.get_foreground_colour_p());
           gtk_clist_set_background(GTK_CLIST(clist_tourn), row, the_arena.get_background_colour_p());
       
-          gtk_clist_set_text(GTK_CLIST(clist_tourn), row, 0, info_dir_p->filename);
+
+          char* fname = info_dir_p->filename.copy_chars();
+          gtk_clist_set_text(GTK_CLIST(clist_tourn), row, 0, fname);
+          delete [] fname;
       
           start_tournament_glist_info_t * info_tourn_p;
-          GString * full_filename;
-          full_filename = g_string_new(info_dir_p->filename);
+          String full_filename;
           if(robots)
-            g_string_prepend(full_filename,robotdir);
+            full_filename = robotdir + info_dir_p->filename;
           else
-            g_string_prepend(full_filename,arenadir);
+            full_filename = arenadir + info_dir_p->filename;
 
-          info_tourn_p = new start_tournament_glist_info_t(row,false,full_filename->str);
+          info_tourn_p = new start_tournament_glist_info_t(row,false,full_filename.chars());
           g_list_append(gl_tourn, info_tourn_p);                        
         }
     }
@@ -368,16 +370,14 @@ Gui::setup_start_tournament_window()
   gtk_widget_show( robots_in_directory_clist );
 
   DIR * rdir;
-  if( NULL != (rdir = opendir(robotdir)))
+  if( NULL != (rdir = opendir(robotdir.chars())))
     {
       struct dirent * entry;
       while (NULL != ( entry = readdir( rdir ) ) )
         {
-          GString * full_file_name;
-          full_file_name = g_string_new(robotdir);
-          g_string_append( full_file_name, entry->d_name );
+          String full_file_name = robotdir + entry->d_name;
           struct stat filestat;
-          if( 0 == stat( full_file_name->str, &filestat ) )
+          if( 0 == stat( full_file_name.chars(), &filestat ) )
             if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
               {     
                 char * list[] = { "" };
@@ -471,20 +471,18 @@ Gui::setup_start_tournament_window()
   gtk_widget_show( arenas_in_directory_clist );
 
   DIR * adir;
-  if( NULL != (adir = opendir(arenadir)))
+  if( NULL != (adir = opendir(arenadir.chars())))
     {
       struct dirent * entry;
       while (NULL != ( entry = readdir( adir ) ) )
         {
-          GString * full_file_name;
-          full_file_name = g_string_new(arenadir);
-          g_string_append( full_file_name, entry->d_name );
+          String full_file_name = arenadir + entry->d_name;
           struct stat filestat;
-          if( 0 == stat( full_file_name->str, &filestat ) && full_file_name->len > 6 )
+          if( 0 == stat( full_file_name.chars(), &filestat ) && full_file_name.get_length() > 6 )
             // Check if file is a regular file that is readable and ends with .arena
             if( S_ISREG( filestat.st_mode) &&
                 (filestat.st_mode & S_IROTH)  &&
-                strcmp(".arena",&(full_file_name->str[full_file_name->len - 6])) == 0 )
+                String(".arena") == get_segment(full_file_name, -6, -1) )
               {     
                 char * list[] = { "" };
           
