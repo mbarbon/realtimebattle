@@ -136,7 +136,7 @@ Robot::die()
    alive = false;
    send_message(DEAD);
    position_this_game = the_arena->get_robots_left();
-   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,the_arena->get_the_gui()->get_background_color(),true);
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,*(the_arena->get_background_colour_p()),true);
 }
 
 void
@@ -247,9 +247,11 @@ Robot::change_velocity(const double timestep)
 {
   Vector2D dir = Vector2D(cos(robot_angle),sin(robot_angle));
   double gt = the_arena->get_grav_const() * timestep;
-  velocity = -velocity* (the_arena->get_air_resistance() * timestep) +
+  double fric = the_arena->get_roll_friction() * (1.0 - break_percent) + 
+    the_arena->get_slide_friction() * break_percent;
+  velocity = -velocity* min(the_arena->get_air_resistance() * timestep, 0.5) +
     timestep*acceleration*dir + 
-    dot(velocity, dir) * max(0.0, 1.0-gt*the_arena->get_roll_friction()) * dir +
+    dot(velocity, dir) * max(0.0, 1.0-gt*fric) * dir +
     vedge(dir, velocity) * max(0.0, 1.0-gt*the_arena->get_slide_friction()) * rotate90(dir);
 }
 
@@ -384,7 +386,8 @@ Robot::get_messages()
 
             *instreamp >> hex >> home_colour >> away_colour >> dec;
   
-            set_colour(the_arena->find_free_color(home_colour, away_colour, this));
+            // TODO: check if colour is already allocated! 
+            colour = make_gdk_color(the_arena->find_free_color(home_colour, away_colour, this));
           }
           break;
         case ROTATE: 
@@ -422,12 +425,24 @@ Robot::get_messages()
           }
           break;
         case ACCELERATE:
-          double acc;
-          *instreamp >> acc;
-          if( acc < the_arena->get_min_acceleration() || acc > the_arena->get_max_acceleration() )
-            send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
-          else
-            acceleration = acc;
+          {
+            double acc;
+            *instreamp >> acc;
+            if( acc < the_arena->get_min_acceleration() || acc > the_arena->get_max_acceleration() )
+              send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
+            else
+              acceleration = acc;
+          }
+          break;
+        case BREAK:
+          {
+            double brk;
+            *instreamp >> brk;
+            if( brk < 0.0 || brk > 1.0 )
+              send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
+            else
+              break_percent = brk;
+          } 
           break;
         case LOAD_DATA:
           // TODO: Load data
@@ -578,5 +593,5 @@ void
 Shot::die()
 {
    alive = false;
-   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,the_arena->get_the_gui()->get_background_color(),true);
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,*(the_arena->get_background_colour_p()),true);
 }

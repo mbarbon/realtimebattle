@@ -25,6 +25,7 @@ enum message_from_robot_type
   UNKNOWN_MESSAGE_FROM_ROBOT = -1,
   ROTATE,
   ACCELERATE,
+  BREAK,
   SHOOT,
   NAME,
   COLOUR,
@@ -94,6 +95,7 @@ static const Message message_from_robot[20] =
   {"Rotate",       2, {INT,    DOUBLE}},     // first arg: what to rotate: 1 Robot, 2 cannon, 4 radar and apropriate sums for combinations
                                              // second arg: angular velocity (rad/s)
   {"Acceleration", 1, {DOUBLE}},             // arg: acceleration (m/s^2)  
+  {"Break",        1, {DOUBLE}},             // arg: break precentage, 0 = no break, 1 = full break 
   {"Shoot",        1, {DOUBLE}},             // arg: amount of energy
   {"Name",         1, {STRING}},             // arg: name
   {"Colour",       2, {HEX, HEX}},           // first arg: home colour, second arg: away colour
