@@ -756,7 +756,7 @@ Robot::get_messages()
         case NAME:
           if( check_state_for_message(msg_t, STARTING_ROBOTS) )
             {
-              *instreamp >> text;
+              instreamp->get(text, 80, '\n');
               plain_robot_name = text;
               check_name_uniqueness();
             }
@@ -1088,6 +1088,9 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 void
 Robot::save_data(const bool binary, const bool append)
 {
+  cerr << "Sorry, save_data is broken at the moment!" << endl;
+  return;
+
   String filename;
 
 //    if( robot_name_uniqueness_number == 0 )
@@ -1130,6 +1133,9 @@ Robot::save_data(const bool binary, const bool append)
 void
 Robot::load_data(const bool binary)
 {
+  cerr << "Sorry, load_data is broken at the moment!" << endl;
+  return;
+
   String filename;
 
   ifstream file;
