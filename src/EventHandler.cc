@@ -80,11 +80,13 @@ EventHandler::main_loop()
         {
           next_eventp = GT_event_queue.top();
           RT_event = false;
+          time_for_next_event = timer.gametime2realtime( next_eventp->get_time() );
         }
       else if( GT_event_queue.empty() )
         {
           next_eventp = RT_event_queue.top();
-          RT_event = true;         
+          RT_event = true;
+          time_for_next_event = next_eventp->get_time();
         }
       else
         {
@@ -124,8 +126,7 @@ EventHandler::main_loop()
 
       current_time = time_for_next_event;
 
-      next_eventp->eval();      
-
+      cout << "Current time: " << current_time << endl;
 
       if(RT_event)
 	{
@@ -139,6 +140,8 @@ EventHandler::main_loop()
 	  GT_event_queue.pop();
           nb_GT_event--;
 	}
+
+      next_eventp->eval();      
 
       delete next_eventp;
   
@@ -160,6 +163,7 @@ void
 EventHandler::insert_RT_event (Event* ev)
 {
   RT_event_queue.push( ev );
+  cout << "Added event to be run at " << ev->get_time() << endl;
   cout << "There are " << ++nb_RT_event << " events in the RT queue" << endl;
 }
 

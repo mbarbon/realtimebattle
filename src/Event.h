@@ -46,7 +46,8 @@ struct lt_event
 {
     bool operator()(const Event* a, const Event* b) const 
     { 
-      return a->eval_time < b->eval_time; 
+      // The smallest element should be on top in the event queue
+      return a->eval_time > b->eval_time;  
     } 
 };
 
