@@ -1,5 +1,7 @@
 #include <math.h>
 #include "gui.h"
+#include "Vector2D.h"
+#include "Arena.h"
 
 #define GDK_VARV 23040
 
@@ -9,17 +11,45 @@ delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
   ((Gui *)guip)->quit_event( widget, event );
 }
 
-Gui::Gui( int robot_number, char * robot_name_list[], int arena_width, int arena_height )
+Gui::Gui()
+{
+  width=0;
+  height=0;
+}
+
+void
+Gui::display_gui( char * robot_name_list[], int arena_width, int arena_height )
 {
   width = arena_width;
   height = arena_height;
-  setup_control_window( robot_number, robot_name_list );
+  setup_control_window( robot_name_list );
   setup_arena_window();
 }
 
 void
-Gui::draw_objects()
+Gui::draw_objects( gpointer the_arenap )
 {
+  GList** object_lists,* gl;
+  Robot* robotp;
+  double radius=50.0;
+  Vector2D center(70.0,120.0);
+
+  object_lists = ((Arena *)the_arenap)->get_object_lists();
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot*)(gl->data);
+      cout << "draw_objects(): skall kolla om robot lever" << endl;
+      if( robotp->get_object_type() == ROBOT )
+        cout << "This is a robot" << endl;
+      else
+        cout << "This is not a robot." << endl;
+      //      if( robotp->is_alive() )
+      //        {
+          cout << "draw_objects(): skall rita cirkel" << endl;
+          draw_circle(center,radius,blue_colour,true);
+          cout << "draw_objects(): har ritat cirkel" << endl;
+          //        }
+    }
 }
 
 void
@@ -36,7 +66,7 @@ Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor co
 }
 
 void
-Gui::draw_circle( int center, int radius, GdkColor colour, bool filled )
+Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
 {
   GdkGC * bkg_gc, * colour_gc;
 
@@ -48,9 +78,9 @@ Gui::draw_circle( int center, int radius, GdkColor colour, bool filled )
 
   gdk_draw_arc (drawing_area->window,
                 colour_gc,
-                TRUE,
-                350, 50,
-                50, 700,
+                filled,
+                (int)(center[0] - radius),(int)(center[1] - radius),
+                (int)(2 * radius), (int)(2 * radius),
                 0, GDK_VARV);
 
   gdk_gc_destroy( colour_gc );
@@ -106,9 +136,9 @@ Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 }
 
 void
-Gui::setup_control_window( int robot_number, char * robot_name_list[] )
+Gui::setup_control_window( char * robot_name_list[] )
 {
-  int i;
+  int robot_number=0;
 
   GtkWidget *window;
   GtkWidget *button;
@@ -119,6 +149,9 @@ Gui::setup_control_window( int robot_number, char * robot_name_list[] )
   GtkWidget *scrolled_window;
   GtkWidget * vscrollbar;
   GdkColormap *cmap;
+
+  for( int i=0; robot_name_list[i] != NULL;i++)
+    robot_number++;
 
   /* Window */
 
@@ -212,7 +245,7 @@ Gui::setup_control_window( int robot_number, char * robot_name_list[] )
 
   /* Robots */
 
-  for(i=0;i<robot_number;i++) {
+  for(int i=0;robot_name_list[i] != NULL ;i++) {
 
     hbox = gtk_hbox_new (FALSE, 10);
     gtk_table_attach_defaults (GTK_TABLE(rhtable), hbox, 0, 1, i, i + 1);
