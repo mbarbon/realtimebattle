@@ -186,6 +186,8 @@ private:
   ifstream* instreamp;
   ofstream* outstreamp;
   int pipes[2];
+  int ififo_fd;
+  int ofifo_fd;
   pid_t pid;    
 
   ListIterator<stat_t> current_game_stats;

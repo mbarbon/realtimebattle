@@ -110,8 +110,8 @@ Robot::Robot(const String& filename)
 
   instreamp = NULL;
   outstreamp = NULL;
-  pipes[0] = -1;  
-  pipes[1] = -1;
+  pipes[0] = pipes[1] = -1;
+  ofifo_fd = ififo_fd = -1;
   pid = -1;
   last_drawn_robot_center = Vector2D(infinity,infinity);
 
@@ -378,13 +378,20 @@ void
 Robot::send_signal()
 {
   if( send_usr_signal )
-    kill(pid, signal_to_send);
+    {
+      if( fifo_instead_of_process )
+        ;  // TODO: send a send_signal message to socket
+      else if( pid > 0 )
+        kill(pid, signal_to_send);
+    }
 }
 
 void
 Robot::kill_process_forcefully()
 {
-  kill(pid, SIGKILL);
+  if( !fifo_instead_of_process && pid > 0 )
+    kill(pid, SIGKILL);
+
   delete_pipes();
   process_running = false;
 }
@@ -393,8 +400,6 @@ void
 Robot::open_fifos()
 {
    // Open the fifos for read/write
-
-  int ififo_fd, ofifo_fd;
   
   ififo_fd = open( ififo_name.chars(), O_RDONLY | O_NONBLOCK);
 
@@ -428,7 +433,16 @@ Robot::delete_pipes()
       close(pipes[1]);
       pipes[1] = -1;
     }
-  
+  if( ofifo_fd != -1 )
+    {
+      close(ofifo_fd);
+      ofifo_fd = -1;
+    }
+  if( ififo_fd != -1 )
+    {
+      close(ififo_fd);
+      ififo_fd = -1;
+    }
 }
 
 void
