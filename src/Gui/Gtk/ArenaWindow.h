@@ -43,7 +43,7 @@ public:
                                         const int&           default_y_pos  = -1 );
   void destroy                        ();
 
-  void set_window_title               ();
+  void set_window_title               () {};
 
 private:
   // Graphics

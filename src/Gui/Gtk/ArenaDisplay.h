@@ -106,19 +106,19 @@ private:
 inline int
 ArenaDisplay::boundary2pixel_x( const double& x )
 {
-  return (int)( ( x - the_gui.get_arena_boundary()[0][0] ) * 
+  return (int)( ( x - gui_p->get_arena_boundary()[0][0] ) * 
                 ( drawing_area->allocation.width * zoom_level ) /
-                ( the_gui.get_arena_boundary()[1][0] - 
-                  the_gui.get_arena_boundary()[0][0] ) + 0.5 );
+                ( gui_p->get_arena_boundary()[1][0] - 
+                  gui_p->get_arena_boundary()[0][0] ) + 0.5 );
 }
 
 inline int
 ArenaDisplay::boundary2pixel_y( const double& y )
 {
-  return (int)( ( y - the_gui.get_arena_boundary()[1][1] ) * 
+  return (int)( ( y - gui_p->get_arena_boundary()[1][1] ) * 
                 ( drawing_area->allocation.height * zoom_level ) /
-                ( the_gui.get_arena_boundary()[1][1] - 
-                  the_gui.get_arena_boundary()[0][1] ) + 0.5 );
+                ( gui_p->get_arena_boundary()[1][1] - 
+                  gui_p->get_arena_boundary()[0][1] ) + 0.5 );
 }
 
 #endif // RTB_GUIGTK__ARENADISPLAY_H__

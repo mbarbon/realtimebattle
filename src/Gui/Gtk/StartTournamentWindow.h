@@ -25,6 +25,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <list>
+#include "Structs.h"
+#include "TournamentAgreementPackets.h"
 
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
@@ -34,8 +36,6 @@ struct _GdkEventButton;
 typedef struct _GdkEventButton GdkEventButton;
 typedef int gint;
 typedef void* gpointer;
-
-struct start_tournament_info_t;
 
 class StartTournamentWindow
 {
@@ -47,17 +47,19 @@ public:
     START_TORUNAMENT_REMOVE = 0,
     START_TORUNAMENT_SELECT_ALL_TOURNAMENT = 1,
     START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT = 2,
-    START_TORUNAMENT_ADD = 3,
-    START_TORUNAMENT_SELECT_ALL_DIRECTORY = 4,
-    START_TORUNAMENT_UNSELECT_ALL_DIRECTORY = 5
+    START_TORUNAMENT_NEXT_TEAM = 3,
+    START_TORUNAMENT_THE_TEAM = 4,
+    START_TORUNAMENT_PREV_TEAM = 5,
+    START_TORUNAMENT_ADD = 6,
+    START_TORUNAMENT_SELECT_ALL_DIRECTORY = 7,
+    START_TORUNAMENT_UNSELECT_ALL_DIRECTORY = 8
   };
 
   struct select_buttons_t
   {
-    select_buttons_t                   ( bool r, int b,
+    select_buttons_t                   ( int b,
                                          class StartTournamentWindow* s ) :
-      robot(r), button_nr(b), stw_p(s) {}
-    bool robot;
+      button_nr(b), stw_p(s) {}
     int button_nr;
     StartTournamentWindow* stw_p;
   };
@@ -107,6 +109,13 @@ public:
                                          GdkEventButton *event,
                                          class StartTournamentWindow* stw_p );
 
+  static void match_selection          ( GtkWidget* widget,
+					 struct select_buttons_t* button );
+
+  static void arena_selection          ( GtkWidget* clist, gint row,
+					 gint column, GdkEventButton *event,
+					 class StartTournamentWindow* stw_p);
+
   static void new_tournament_from_tournament_file
   ( list<start_tournament_info_t>& robotfilename_list, 
     list<start_tournament_info_t>& arenafilename_list, 
@@ -125,14 +134,21 @@ public:
 
   static void dummy_result             ( int result ) {}
 
+  void update_clists();
+
+  static void switch_robot_set_const   ( GtkWidget* widget,
+					 class StartTournamentWindow* stw_p );
+
+  int handle_packet(TournamentCommitChangePacket * p);
+
+
 private:
 
-  void add_clist                       ( GtkWidget* clist, GtkWidget* box );
-  void change_all_selection            ( const bool robots,
-                                         const bool dir,
+  void add_clist                       ( GtkWidget* clist, GtkWidget* box, bool );
+  void change_all_selection            ( const bool dir,
                                          const bool all );
-  void add_all_selected                ( const bool robots );
-  void remove_all_selected             ( const bool robots );
+  void add_all_selected                (  );
+  void remove_all_selected             (  );
   start_tournament_info_t* find_row_in_clist
                                        ( const int row,
                                          list<start_tournament_info_t>* info_list );
@@ -147,12 +163,18 @@ private:
   
   GtkWidget** get_entries              () { return entries; }
 
-  list<start_tournament_info_t>* get_selected_robot_tournament()
-    { return &selected_robot_tournament; };
+  tourn_info_t* get_tournament_info    () { return &my_tournament_info; }
+
+  list<robot_info_t>* get_selected_robot_tournament()
+    {
+      if(my_tournament_info.keep_same_robot_set)
+	return &(my_tournament_info.matches.begin()->robots);
+      else
+	return &(my_tournament_info.current_match->robots);
+    }
+
   list<start_tournament_info_t>* get_selected_robot_directory ()
     { return &selected_robot_directory; };
-  list<start_tournament_info_t>* get_selected_arena_tournament()
-    { return &selected_arena_tournament; };
   list<start_tournament_info_t>* get_selected_arena_directory ()
     { return &selected_arena_directory; };
 
@@ -160,8 +182,6 @@ private:
     { return robots_in_tournament_clist; }
   GtkWidget* get_robots_in_directory_clist ()
     { return robots_in_directory_clist; }
-  GtkWidget* get_arenas_in_tournament_clist()
-    { return arenas_in_tournament_clist; }
   GtkWidget* get_arenas_in_directory_clist ()
     { return arenas_in_directory_clist; }
 
@@ -170,14 +190,15 @@ private:
   GtkWidget* entries[3];
   GtkWidget* filesel;
 
+  GtkWidget* the_team_button;       //Is it necessary ?
+
   GtkWidget* robots_in_tournament_clist;
   GtkWidget* robots_in_directory_clist;
-  GtkWidget* arenas_in_tournament_clist;
   GtkWidget* arenas_in_directory_clist;
 
-  list<start_tournament_info_t> selected_robot_tournament;
+  tourn_info_t my_tournament_info;
+
   list<start_tournament_info_t> selected_robot_directory;
-  list<start_tournament_info_t> selected_arena_tournament;
   list<start_tournament_info_t> selected_arena_directory;
 
   bool tournament_started_flag;

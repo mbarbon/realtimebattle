@@ -94,7 +94,7 @@ ArenaDisplay::ArenaDisplay( GtkWidget* parent )
                     5, 5 );
 
   gdk_window_set_background( drawing_area->window,
-                             the_gui.get_bg_gdk_colour_p() );
+                             gui_p->get_bg_gdk_colour_p() );
 
   gtk_widget_show( drawing_area );
 
@@ -144,8 +144,8 @@ ArenaDisplay::recreate_non_changeable_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  int actual_width  = width * zoom_level;
-  int actual_height = height * zoom_level;
+  //  int actual_width  = width * zoom_level;
+  //int actual_height = height * zoom_level;
 
   // Create a new pixmap
   non_changeable_display = gdk_pixmap_new( drawing_area->window,
@@ -159,7 +159,7 @@ ArenaDisplay::recreate_non_changeable_display()
                       width, height );
 
   // TODO: Use new object_lists (when they are finished).
-  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  list<DrawingShape*>* object_lists = gui_p->get_drawing_objects_lists();
   for_each( object_lists[WALL].begin(), object_lists[WALL].end(),
             bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
 }
@@ -173,8 +173,8 @@ ArenaDisplay::recreate_semi_changeable_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  int actual_width  = width * zoom_level;
-  int actual_height = height * zoom_level;
+  //int actual_width  = width * zoom_level;
+  //int actual_height = height * zoom_level;
 
   // Create a new pixmap
   semi_changeable_display = gdk_pixmap_new( drawing_area->window,
@@ -189,7 +189,7 @@ ArenaDisplay::recreate_semi_changeable_display()
                    width, height );
 
   // TODO: Use new object_lists (when they are finished).
-  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  list<DrawingShape*>* object_lists = gui_p->get_drawing_objects_lists();
   for_each( object_lists[COOKIE].begin(), object_lists[COOKIE].end(),
             bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
   for_each( object_lists[MINE].begin(), object_lists[MINE].end(),
@@ -205,8 +205,8 @@ ArenaDisplay::recreate_current_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  int actual_width  = width * zoom_level;
-  int actual_height = height * zoom_level;
+  //int actual_width  = width * zoom_level;
+  //int actual_height = height * zoom_level;
 
   // Create a new pixmap
   current_display = gdk_pixmap_new( drawing_area->window,
@@ -221,7 +221,7 @@ ArenaDisplay::recreate_current_display()
                    width, height );
 
   // TODO: Use new object_lists (when they are finished).
-  list<DrawingShape*>* object_lists = the_gui.get_drawing_objects_lists();
+  list<DrawingShape*>* object_lists = gui_p->get_drawing_objects_lists();
   for_each( object_lists[SHOT].begin(), object_lists[SHOT].end(),
             bind2nd( mem_fun1( &DrawingShape::draw_shape ), this ) );
   for_each( object_lists[ROBOT].begin(), object_lists[ROBOT].end(),
@@ -413,8 +413,8 @@ ArenaDisplay::draw_circle( const Vector2D&  center,
 
   double r;
   if( ( r = radius * ( drawing_area->allocation.height * zoom_level ) /
-        ( the_gui.get_arena_boundary()[1][1] - 
-          the_gui.get_arena_boundary()[0][1] ) ) > 1.0 )
+        ( gui_p->get_arena_boundary()[1][1] - 
+          gui_p->get_arena_boundary()[0][1] ) ) > 1.0 )
     {
       gdk_draw_arc( drawing_area->window,
                     colour_gc,
@@ -459,8 +459,8 @@ ArenaDisplay::draw_arc( const Vector2D&  center,
 
   int line_width = (int)((outer_radius - inner_radius) *
                          ( drawing_area->allocation.height * zoom_level ) /
-                         ( the_gui.get_arena_boundary()[1][1] - 
-                           the_gui.get_arena_boundary()[0][1] ) + 0.5);
+                         ( gui_p->get_arena_boundary()[1][1] - 
+                           gui_p->get_arena_boundary()[0][1] ) + 0.5);
   gdk_gc_set_line_attributes (colour_gc,
                               line_width,
                               GDK_LINE_SOLID,
@@ -469,8 +469,8 @@ ArenaDisplay::draw_arc( const Vector2D&  center,
 
   double r = 0.5 * ( outer_radius + inner_radius );
   int box_size = (int)( r * 2.0 * ( drawing_area->allocation.height * zoom_level ) /
-                        ( the_gui.get_arena_boundary()[1][1] - 
-                          the_gui.get_arena_boundary()[0][1] ) + 0.5 );
+                        ( gui_p->get_arena_boundary()[1][1] - 
+                          gui_p->get_arena_boundary()[0][1] ) + 0.5 );
   if( box_size >= 2.0 )
     {
       gdk_draw_arc( drawing_area->window,

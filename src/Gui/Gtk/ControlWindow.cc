@@ -49,7 +49,7 @@ ControlWindow::ControlWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Control" );
   gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
-  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle" );
+  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle v2 (devel)" );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 0 );
 
@@ -97,6 +97,8 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("File") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("File") "/" N_("New tournament"), "<control>n",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
+    { "/" N_("File") "/" N_("Join tournament"), "<control>j",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_JOIN_TOURNAMENT, ""},
     { "/" N_("File") "/" N_("Replay tournament"), "<control>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_REPLAY_TOURNAMENT, "" },
@@ -265,7 +267,7 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_show( debug_level_label );
 
   GtkAdjustment* adj =
-    (GtkAdjustment*) gtk_adjustment_new( the_gui.get_debug_level(), 0,
+    (GtkAdjustment*) gtk_adjustment_new( gui_p->get_debug_level(), 0,
                                          max_debug_level, 1, 1, 0 );
 
   debug_level = gtk_spin_button_new( adj, 0, 0 );
@@ -430,7 +432,7 @@ ControlWindow::menu_set_sensitive( const char* pathstr_p, bool sensitive )
     gtk_item_factory_get_widget( item_factory, translate_menu_path( pathstr_p ) );
   if( !menu_item )
     {
-      the_gui.error( false, (string)"Menu with path " + pathstr_p + " doesn't exist.",
+      gui_p->error( false, (string)"Menu with path " + pathstr_p + " doesn't exist.",
                      "ControlWindow::menus_set_sensitive" );
       return;
     }
@@ -473,7 +475,7 @@ ControlWindow::get_status_string( const state_t& state ) const
       break;
 
     default:
-      the_gui.error(true, "Unknown state", "ArenaBase::set_state");
+      gui_p->error(true, "Unknown state", "ArenaBase::set_state");
     }
   return infotext;
 }
@@ -624,20 +626,23 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
   switch( (menu_t)callback_action )
     {
     case MENU_QUIT:
-      the_gui.quit( true );
+      gui_p->quit( true );
       break;
     case MENU_LOGFILE:
       break;
     case MENU_MESSAGEFILE:
       break;
     case MENU_NEW_TOURNAMENT:
-      the_gui.open_starttournamentwindow();
+      gui_p->open_starttournamentwindow (true);
+      break;
+    case MENU_JOIN_TOURNAMENT:
+      gui_p->open_starttournamentwindow(false);
       break;
     case MENU_REPLAY_TOURNAMENT:
       if( //the_arena_controller.is_started() &&
-          ( the_gui.get_state() != NO_STATE &&
-            the_gui.get_state() != NOT_STARTED &&
-            the_gui.get_state() != FINISHED ) )
+          ( gui_p->get_state() != NO_STATE &&
+            gui_p->get_state() != NOT_STARTED &&
+            gui_p->get_state() != FINISHED ) )
         {
           string info_text = _("This action will kill the current tournament.\n"
                                "Do you want to do that?");
@@ -651,7 +656,7 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
         cw_p->open_replay_filesel();
       break;
     case MENU_PAUSE:
-      the_gui.apply_request( new TogglePauseGameRequest );
+      gui_p->apply_request( new TogglePauseGameRequest );
       break;
     case MENU_STEP:
 //    if( the_arena_controller.is_started() )
@@ -674,25 +679,25 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
 //      the_arena.interrupt_tournament();
       break;
     case MENU_OPTIONS:
-      the_gui.open_optionswindow();
+      gui_p->open_optionswindow();
       break;
     case MENU_STATISTICS:
-      the_gui.open_statisticswindow();
+      gui_p->open_statisticswindow();
       break;
     case MENU_SHOW_ARENA:
       {
 //          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-//          if( the_gui.is_arenawindow_up() )
+//          if( gui_p->is_arenawindow_up() )
 //            {
 //              if( active )
-//                the_gui.get_arenawindow_p()->
-//                  show_window( the_gui.get_arenawindow_p()->get_window_p(),
-//                               the_gui.get_arenawindow_p() );
+//                gui_p->get_arenawindow_p()->
+//                  show_window( gui_p->get_arenawindow_p()->get_window_p(),
+//                               gui_p->get_arenawindow_p() );
 //              else
-//                the_gui.get_arenawindow_p()->
-//                  hide_window( the_gui.get_arenawindow_p()->get_window_p(),
-//                               NULL, the_gui.get_arenawindow_p() );
+//                gui_p->get_arenawindow_p()->
+//                  hide_window( gui_p->get_arenawindow_p()->get_window_p(),
+//                               NULL, gui_p->get_arenawindow_p() );
 //            }
       }
       break;
@@ -700,16 +705,16 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
       {
 //          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-//          if( the_gui.is_messagewindow_up() )
+//          if( gui_p->is_messagewindow_up() )
 //            {
 //              if( active )
-//                the_gui.get_messagewindow_p()->
-//                  show_window( the_gui.get_messagewindow_p()->get_window_p(),
-//                               the_gui.get_messagewindow_p() );
+//                gui_p->get_messagewindow_p()->
+//                  show_window( gui_p->get_messagewindow_p()->get_window_p(),
+//                               gui_p->get_messagewindow_p() );
 //              else
-//                the_gui.get_messagewindow_p()->
-//                  hide_window( the_gui.get_messagewindow_p()->get_window_p(),
-//                               NULL, the_gui.get_messagewindow_p() );
+//                gui_p->get_messagewindow_p()->
+//                  hide_window( gui_p->get_messagewindow_p()->get_window_p(),
+//                               NULL, gui_p->get_messagewindow_p() );
 //            }
       }
       break;
@@ -717,16 +722,16 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
       {
 //          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-//          if( the_gui.is_scorewindow_up() )
+//          if( gui_p->is_scorewindow_up() )
 //            {
 //              if( active )
-//                the_gui.get_scorewindow_p()->
-//                  show_window( the_gui.get_scorewindow_p()->get_window_p(),
-//                               the_gui.get_scorewindow_p() );
+//                gui_p->get_scorewindow_p()->
+//                  show_window( gui_p->get_scorewindow_p()->get_window_p(),
+//                               gui_p->get_scorewindow_p() );
 //              else
-//                the_gui.get_scorewindow_p()->
-//                  hide_window( the_gui.get_scorewindow_p()->get_window_p(),
-//                               NULL, the_gui.get_scorewindow_p() );
+//                gui_p->get_scorewindow_p()->
+//                  hide_window( gui_p->get_scorewindow_p()->get_window_p(),
+//                               NULL, gui_p->get_scorewindow_p() );
 //            }
       }
       break;
@@ -741,7 +746,7 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
 //      if(the_arena.get_state() == GAME_IN_PROGRESS || 
 //         the_arena.get_state() == PAUSED )
 //        {
-//          Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
+//          Robot* robotp = gui_p->get_scorewindow_p()->get_selected_robot();
 //          if( robotp != NULL )
 //            robotp->die();
 //        }
@@ -776,14 +781,14 @@ void
 ControlWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* cw_p )
 {
-  the_gui.quit( true );
+  gui_p->quit( true );
 }
 
 void
 ControlWindow::quit_rtb( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
-  the_gui.quit( true );
+  gui_p->quit( true );
 }
 
 void

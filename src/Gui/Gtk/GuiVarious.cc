@@ -41,7 +41,7 @@ make_gdk_colour(const long col)
   colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
   colour.blue =  (col & 0x0000ff) * 0x101;
   if( !gdk_color_alloc (cmap, &colour) )
-    the_gui.error(true, "Couldn't allocate colour", "Various:make_gdk_color");
+    gui_p->error(true, "Couldn't allocate colour", "Various:make_gdk_color");
 
   return colour;
 }

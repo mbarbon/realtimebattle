@@ -51,7 +51,7 @@ pixmap_t::set_pixmap(GdkColor& col, GdkWindow* win)
     0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f};
 
   pixmap = gdk_pixmap_create_from_data( win, square_bits, 16, 16, -1, &col, 
-                                        the_gui.get_bg_gdk_colour_p() );
+                                        gui_p->get_bg_gdk_colour_p() );
 
   bitmap = gdk_bitmap_create_from_data( win, square_bits, 16, 16 );
 }

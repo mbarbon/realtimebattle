@@ -277,10 +277,10 @@ StatisticsWindow::StatisticsWindow( const int default_width,
     clist_style = gtk_style_new();
   else
     clist_style = gtk_style_copy(clist_style);
-  clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
+  clist_style->base[GTK_STATE_NORMAL] = *(gui_p->get_bg_gdk_colour_p());
   clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
   clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
-  clist_style->fg[GTK_STATE_SELECTED] = *(the_gui.get_fg_gdk_colour_p());
+  clist_style->fg[GTK_STATE_SELECTED] = *(gui_p->get_fg_gdk_colour_p());
   gtk_widget_set_style( clist, clist_style );
 #else
   gtk_clist_set_border( GTK_CLIST( clist ), GTK_SHADOW_IN );
@@ -303,13 +303,13 @@ void
 StatisticsWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                         class StatisticsWindow* sw_p )
 {
-  the_gui.close_statisticswindow();
+  gui_p->close_statisticswindow();
 }
 
 void
 StatisticsWindow::exit( GtkWidget* widget, class StatisticsWindow* sw_p )
 {
-  the_gui.close_statisticswindow();
+  gui_p->close_statisticswindow();
 }
 
 void
@@ -508,8 +508,8 @@ StatisticsWindow::make_title_button()
 //        {
 //          int i=0;
 //          list<DrawingRobot>::iterator li;
-//          for( li = the_gui.get_robots_in_tournament()->begin();
-//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//          for( li = gui_p->get_robots_in_tournament()->begin();
+//               li != gui_p->get_robots_in_tournament()->end(); li++ )
 //            {
 //              i++;
 //              if( looking_at_nr == i )
@@ -540,9 +540,9 @@ StatisticsWindow::add_new_row( DrawingRobot* drobot_p,
   char* empty_list[] = { "", "", "", "", "", "", "", "" };
   int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
   gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                            the_gui.get_fg_gdk_colour_p() );
+                            gui_p->get_fg_gdk_colour_p() );
   gtk_clist_set_background( GTK_CLIST( clist ), row,
-                            the_gui.get_bg_gdk_colour_p() );
+                            gui_p->get_bg_gdk_colour_p() );
 
   if( type == STAT_TYPE_GAME ||
       type == STAT_TYPE_SEQUENCE ||
@@ -630,8 +630,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 
 //          int robot_nr = -1;
 
-//          for( li = the_gui.get_robots_in_tournament()->begin();
-//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//          for( li = gui_p->get_robots_in_tournament()->begin();
+//               li != gui_p->get_robots_in_tournament()->end(); li++ )
 //            {
 //              robot_nr++;
 //              robot_p = (*li).get_robot_p();
@@ -656,8 +656,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 //            }
 
 //          robot_nr = -1;
-//          for( li = the_gui.get_robots_in_tournament()->begin();
-//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//          for( li = gui_p->get_robots_in_tournament()->begin();
+//               li != gui_p->get_robots_in_tournament()->end(); li++ )
 //            {
 //              robot_nr++;
 //              robot_p = (*li).get_robot_p();
@@ -699,8 +699,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 //              sequence--;
 //            }
 
-//          for( li = the_gui.get_robots_in_tournament()->begin();
-//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//          for( li = gui_p->get_robots_in_tournament()->begin();
+//               li != gui_p->get_robots_in_tournament()->end(); li++ )
 //            {
 //              robot_p = (*li).get_robot_p();
             
@@ -718,8 +718,8 @@ StatisticsWindow::add_the_statistics_to_clist( GtkWidget* widget,
 //        {
 //          int i=0;
 
-//          for( li = the_gui.get_robots_in_tournament()->begin();
-//               li != the_gui.get_robots_in_tournament()->end(); li++ )
+//          for( li = gui_p->get_robots_in_tournament()->begin();
+//               li != gui_p->get_robots_in_tournament()->end(); li++ )
 //            {
 //              i++;
 //              robot_p = (*li).get_robot_p();

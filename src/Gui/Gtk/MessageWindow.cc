@@ -185,7 +185,7 @@ MessageWindow::set_styles()
     style_rtb_message = gtk_style_copy( style_rtb_message );
 
   GdkColor colour_rtb_message =
-    make_gdk_colour( the_gui.get_gtk_opts()->get_l( "RTB message colour" ) );
+    make_gdk_colour( gui_p->get_gtk_opts()->get_l( "RTB message colour" ) );
 
   style_rtb_message->fg[GTK_STATE_NORMAL] = colour_rtb_message;
   style_rtb_message->fg[GTK_STATE_SELECTED] = colour_rtb_message;
@@ -212,7 +212,7 @@ MessageWindow::add_messages( const list<message_t>& message_list )
         viewed_robot_new_messages++;
 
       if( string_list_p->size() >
-          (unsigned long)the_gui.get_gtk_opts()->get_l( "Message history length" ) )
+          (unsigned long)gui_p->get_gtk_opts()->get_l( "Message history length" ) )
         {
           string_list_p->pop_back();
           if( viewed_is_sender )
@@ -246,7 +246,7 @@ MessageWindow::add_messages_to_clist( const int&  n_o_new_messages,
 
   for( int i = 0; i < n_o_removed_messages; i++ )
     gtk_clist_remove( GTK_CLIST( message_view ),
-                      the_gui.get_gtk_opts()->get_l( "Message history length" ) );
+                      gui_p->get_gtk_opts()->get_l( "Message history length" ) );
 
   gtk_clist_thaw( GTK_CLIST( message_view ) );
 }

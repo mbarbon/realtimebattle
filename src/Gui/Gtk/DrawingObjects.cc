@@ -236,13 +236,13 @@ void
 DrawingWeaponGadget::draw_shape( ArenaDisplay* display_p, const Vector2D& center,
                                  const double radius, const double robot_angle )
 {
-//    double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
+//    double scale = gui_p->get_arenawindow_p()->get_drawing_area_scale();
 
   display_p->draw_line( center,
                         angle2vec( angle + robot_angle ),
-                        radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0,// / scale,
-                        the_opts.get_d(OPTION_SHOT_RADIUS),
-                        *(the_gui.get_fg_gdk_colour_p()) );
+                        radius - the_gtk_opts.get_d(OPTION_SHOT_RADIUS) - 1.0,// / scale,
+                        the_gtk_opts.get_d(OPTION_SHOT_RADIUS),
+                        *(gui_p->get_fg_gdk_colour_p()) );
 }
 
 // --------- DrawingSensorGadget -----------
@@ -269,12 +269,12 @@ DrawingSensorGadget::draw_shape( ArenaDisplay* display_p, const Vector2D& center
                         rotate( radar_dir, M_PI / 4.0 ),
                         radius / 1.5,
                         radius / 20.0,
-                        *(the_gui.get_fg_gdk_colour_p()) );
+                        *(gui_p->get_fg_gdk_colour_p()) );
   display_p->draw_line( center - radius * 0.25 * radar_dir,
                         rotate( radar_dir, - (M_PI / 4.0) ),
                         radius / 1.5,
                         radius / 20.0,
-                        *(the_gui.get_fg_gdk_colour_p()) );
+                        *(gui_p->get_fg_gdk_colour_p()) );
 }
 
 // --------- DrawingRobot -----------
@@ -298,7 +298,7 @@ DrawingRobot::draw_shape( ArenaDisplay* display_p )
   DrawingCircle::draw_shape( display_p );
   // Draw radar and cannon
 
-//    double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
+//    double scale = gui_p->get_arenawindow_p()->get_drawing_area_scale();
 
 //    if( radius*scale < 2.5 ) return;
 
@@ -314,7 +314,7 @@ DrawingRobot::draw_shape( ArenaDisplay* display_p )
   display_p->draw_line( center,
                         angle2vec( robot_angle ),
                         radius * 0.9 - 2.0, // / scale,
-                        *(the_gui.get_fg_gdk_colour_p()) );
+                        *(gui_p->get_fg_gdk_colour_p()) );
 }
 
 void

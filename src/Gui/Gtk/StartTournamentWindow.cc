@@ -446,6 +446,12 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                         tmp_tournament_file, false );
 
   gtk_widget_show( window_p );
+  
+  //Create a first match for the tournament
+  match_info_t m;
+  my_tournament_info.matches.push_back( m );
+  my_tournament_info.current_match = my_tournament_info.matches.begin();
+
 }
 
 StartTournamentWindow::~StartTournamentWindow()
@@ -1217,14 +1223,19 @@ StartTournamentWindow::arena_selection( GtkWidget* clist, gint row,
   if( event == NULL )
     return;
 
+  cout<<"Get the right directory\n";
   list<start_tournament_info_t>* info_list 
     = stw_p->get_selected_arena_directory();
 
+  cout<<"Find the right information\n";
   start_tournament_info_t* info_p = stw_p->find_row_in_clist( row, info_list );
 
+  cout<<"Change the value of the selection\n";
   info_p->selected = !( info_p->selected );
 
+  cout<<"Update the tournament_info"<<info_p->filename<<"\n";
   stw_p->get_tournament_info()->current_match->match_arena.filename = info_p->filename;
+  cout<<"Done\n";
 }
 
 void

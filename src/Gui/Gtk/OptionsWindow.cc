@@ -255,8 +255,8 @@ OptionsWindow::create( const int&  default_width,
   change_current_option( 0 );
 
   // TODO: Add all options available.
-  add_new_options( the_gui.get_gtk_opts() );
-  add_new_options( the_gui.get_main_opts() );
+  add_new_options( gui_p->get_gtk_opts() );
+  add_new_options( gui_p->get_main_opts() );
 
   gtk_widget_show( window_p );
 }
@@ -383,16 +383,16 @@ OptionsWindow::set_node_to_default( GtkCTreeNode*  node,
 void
 OptionsWindow::set_all_options()
 {
-  if( !(( the_gui.get_game_mode() == COMPETITION_MODE &&
-          ( the_gui.get_state() == NO_STATE ||
-            the_gui.get_state() == NOT_STARTED ||
-            the_gui.get_state() == FINISHED ) ) ||
-        ( the_gui.get_game_mode() != COMPETITION_MODE )) )
+  if( !(( gui_p->get_game_mode() == COMPETITION_MODE &&
+          ( gui_p->get_state() == NO_STATE ||
+            gui_p->get_state() == NOT_STARTED ||
+            gui_p->get_state() == FINISHED ) ) ||
+        ( gui_p->get_game_mode() != COMPETITION_MODE )) )
     return;
 
   process_all_options( &OptionsWindow::set_option );
 
-  the_gui.set_colours();
+  gui_p->set_colours();
 }
 
 void
@@ -574,7 +574,7 @@ OptionsWindow::save_as_default( GtkWidget*      widget,
                                 OptionsWindow*  object_p )
 {
   // TODO
-  //    the_opts.save_all_options_to_file("",true);
+  //    the_gtk_opts.save_all_options_to_file("",true);
 }
 
 void
