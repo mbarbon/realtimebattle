@@ -78,9 +78,13 @@ public:
                                      class ControlWindow* cw_p );
   static void replay               ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
-  static void rewind               ( GtkWidget* widget,
+  static void rewind_pressed       ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
-  static void fast_forward         ( GtkWidget* widget,
+  static void rewind_released      ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void fast_forward_pressed ( GtkWidget* widget,
+                                     class ControlWindow* cw_p );
+  static void fast_forward_released( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void step_forward         ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
@@ -94,6 +98,8 @@ public:
                                      class ControlWindow* cw_p );
   static void prev_seq             ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
+  static void dummy                ( GtkWidget* widget,
+                                     class ControlWindow* cw_p ) {}
   static void change_current_replay_time( GtkAdjustment *adj,
                                           class ControlWindow* cw_p );
   static void destroy_filesel      ( GtkWidget* widget,
