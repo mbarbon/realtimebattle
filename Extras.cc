@@ -6,6 +6,7 @@ Cookie::Cookie(const Vector2D& c, const double r, const double e)
 {
   energy = e;
   alive = true;
+  draw_shape( false );
 }
 
 void
@@ -20,6 +21,7 @@ Mine::Mine(const Vector2D& c, const double r, const double e)
 {
   energy = e;
   alive = true;
+  draw_shape( false );
 }
 
 void
