@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>
-<title>RealTimeBattle User Manual, version 1.0.3 rev 1
+<title>RealTimeBattle User Manual, version 1.0.3 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="rtb@users.sourceforge.net" url="mailto:rtb@users.sourceforge.net">
-<date> 27 February 2000
+<date> 24 April 2000
 
 <!-- <abstract> -->
 
@@ -710,7 +710,7 @@ cout << "RobotOption " << USE_NON_BLOCKING << " " << 1 << endl;
 Note that this is strictly c++ code.
 
 <tag>Signals:</tag> If you want, you can tell RealTimeBattle to send the
-robot a signal whenever a new message is sent. This method makes it
+robot a signal whenever a new set of messages is sent. This method makes it
 possible for the robot to be continuously updated with information from
 the server program also when the robot is busy doing calculations. If you
 feel you don't know how to use signals, look in the Unix documentation to
