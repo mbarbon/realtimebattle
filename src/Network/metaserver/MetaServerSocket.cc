@@ -11,7 +11,7 @@
 #include <signal.h>
 
 #include "Console.h"
-#include "Packets.h"
+#include "MetaServerPackets.h"
 #include "MetaServerSocket.h"
 #include "MetaServerNetConnection.h"
 
@@ -158,26 +158,31 @@ MetaServerSocket::check_socket()
   for( li = connected_servers.begin(); li != connected_servers.end(); li++ )
     if( (**li).connected && FD_ISSET( (**li).the_socket, &readfs ) )
       {
-	if( (**li).read_data() < 0 )
+	int read = (**li).read_data();
+	Packet *P;
+	while( ! ((**li).read_buffers).empty() )
+	  {
+	    //Extract the string for the queue and make a packet with it
+	    string data = (**li).read_buffers.front();
+	    
+	    P = make_packet( data );
+	    (**li).read_buffers.pop_front();
+	    
+	    if( !P ) continue; //Jump to the next Packet
+	    
+	    P->get_string_from_netstring( data );
+	    
+	    P->handle_packet( *li );
+	    //Delete this old packet...
+	    delete P;
+	  }
+
+	if( read < 0 )
 	  {
 	    my_cons.write(C_REJECTED, string("I have to close it..."));
 	    (**li).close_socket();
 	  }
-	else
-	  {
-	    Packet *P;
-	    while( P = make_packet((**li).read_buffer) )
-	      {
-		(**li).read_buffer = 
-		  P->get_string_from_netstring( (**li).read_buffer );
-
-		P->handle_packet( *li );
-		//Delete this old packet...
-		delete P;
-	      }
-	  }
       }
-  //go_through_read_buffers();
   remove_unconnected_sockets();
   my_cons.prompt_on();
 }
@@ -225,9 +230,6 @@ MetaServerSocket::accept_connection()
 void
 MetaServerSocket::go_through_read_buffers()
 {
-  list<MetaServerNetConnection*>::iterator li;
-  for( li = connected_servers.begin(); li != connected_servers.end(); li++ )
-    cout << (**li).read_buffer << endl; // Very temporary
 }
 
 

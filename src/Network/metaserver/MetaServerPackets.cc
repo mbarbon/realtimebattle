@@ -5,7 +5,7 @@
 
 #include "MetaServerSocket.h"
 #include "MetaServerNetConnection.h"
-#include "Packets.h"
+#include "MetaServerPackets.h"
 #include "String.h"
 
 extern MetaServerSocket* my_metaserversocket;
@@ -39,34 +39,6 @@ make_packet( string& netstr )
   return 0;
 }
 
-
-/* 
- * THE FOLLOWING PACKETS ARE NOT USED AT ALL BY THE METASERVER
- */
-
-int InitializationPacket::handle_packet(void* p_void) { return 0; }
-string InitializationPacket::make_netstring() const { return ""; }
-
-string ChatMessagePacket::make_netstring() const { return ""; }
-int ChatMessagePacket::handle_packet( void* p_void){ return 0; }
-
-string ServerMessagePacket::make_netstring() const { return ""; }
-int ServerMessagePacket::handle_packet( void* p_void ) { return 0; }
-
-SubmitPacket::SubmitPacket( int T , const vector<string>& FN) {}
-SubmitPacket::SubmitPacket( int T , unsigned n, ... ) {}
-string SubmitPacket::make_netstring() const { return ""; }
-int SubmitPacket::handle_packet( void* ){ return 0; }
-
-
-/*
- * THE FOLLOWING FUNCTIONS ARE NOT USED AT ALL BY THE METASERVER
- */
-string MetaServerInitializationPacket::make_netstring() const { return ""; }
-int CommandPacket::handle_packet(void* p_void){ return 0; }
-string MetaServerAskInfoPacket::make_netstring() const { return ""; }
-
-
 /*
  * THIS ARE THE PACKETS THAT METASERVER SEND
  */
@@ -98,9 +70,7 @@ CommandPacket::make_netstring() const
   */
 
   string n_str;
-  // add_uint8_to_netstring( PACKET_COMMAND, n_str );
   n_str = "@C";
-  add_uint16_to_netstring( datastring.length() + 3, n_str );
   n_str += datastring;
   
   return n_str;
@@ -114,16 +84,8 @@ MetaServerDataPacket::make_netstring() const
   datastring = name + " " + version + " " + address + " " + Port_num 
     + " " + Nb_Conn + "  " + language;
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "MD"; 
-
-  add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str; 
@@ -136,7 +98,9 @@ MetaServerDataPacket::make_netstring() const
 int 
 MetaServerInitializationPacket::handle_packet( void* ) 
 {
+  return 0;
   /* Make sure this is a RTB_V2 Net Protocol */
+  /* Maybe just ask the protocol the server use... */
   //cout<<data<<endl;
 }
 
@@ -161,6 +125,7 @@ MetaServerDataPacket::handle_packet ( void* p_void)
 	    //cout<<"There is a new server in the server list\n"; //In fact not in all cases
 	}
     }
+
   return 0;
 }
 
@@ -177,7 +142,8 @@ MetaServerAskInfoPacket::handle_packet( void* nc )
     {
       if((*i)->is_server)
 	{
-	  /*string temp = MetaServerDataPacket( (*i)->name, (*i)->version, 
+	  /*
+	    string temp = MetaServerDataPacket( (*i)->name, (*i)->version, 
 	    (*i)->address, (*i)->port_number, 
 	    (*i)->nb_conn, (*i)->language ).make_netstring();
 	    cout<<temp.substr(4, temp.length() - 4)<<endl;

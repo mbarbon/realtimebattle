@@ -1,4 +1,4 @@
-#include "Packets.h"
+#include "ChatPackets.h"
 
 #include <netinet/in.h>
 #include <string>
@@ -45,12 +45,6 @@ make_packet( string& netstr )
   return 0;
 }
 
-int 
-InitializationPacket::handle_packet(void* p_void)
-{
-  return 1;
-}
-
 string 
 InitializationPacket::make_netstring() const
 {
@@ -77,16 +71,8 @@ InitializationPacket::make_netstring() const
 
   datastring += " " + name + " ";
 
-
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "@I";
-  add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;
@@ -122,7 +108,7 @@ CommandPacket::make_netstring() const
   string n_str;
   // add_uint8_to_netstring( PACKET_COMMAND, n_str );
   n_str = "@C";
-  add_uint16_to_netstring( datastring.length(), n_str );
+  //add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;
@@ -155,23 +141,10 @@ ChatMessagePacket::make_netstring() const
   string n_str;
   // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "@M";
-  add_uint16_to_netstring( datastring.length(), n_str );
+  //add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str; 
-}
-
-int 
-ChatMessagePacket::handle_packet( void* p_void)
-{
-  return 1;
-}
-
-
-string 
-ServerMessagePacket::make_netstring() const
-{
-  return ""; 
 }
 
 int 
@@ -246,19 +219,12 @@ SubmitPacket::make_netstring() const
       datastring += "<" + file_name[i]  + ">";
     }
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "S";
   if( type == Add_Arena)
     n_str += "A";
   else if (type == Add_Robot)
     n_str += "R";
-  add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str; 
@@ -298,30 +264,11 @@ MetaServerInitializationPacket::make_netstring() const
       datastring = "RTBNetUnknown";
     }
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "MI";
-  add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;
-}
-
-int 
-MetaServerInitializationPacket::handle_packet( void* ) 
-{
-  return 0;
-}
-
-string
-MetaServerDataPacket::make_netstring() const
-{
-  return "";
 }
 
 int MetaServerDataPacket::handle_packet ( void* )
@@ -336,16 +283,10 @@ MetaServerAskInfoPacket::make_netstring() const
 {
   string datastring;
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
+
   n_str = "MA";
-  add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;   
 }
 
-int 
-MetaServerAskInfoPacket::handle_packet ( void* )
-{
-  return 0;
-}

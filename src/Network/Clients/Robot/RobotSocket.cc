@@ -7,63 +7,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "Packets.h"
+#include "RobotPackets.h"
 #include "ClientSocket.h"
-
-void
-SocketClient::connect_to_server( string hostname, int port )
-{
-  struct sockaddr_in src;
-  struct hostent* hostinfo;
-  long address;
-  int the_socket;
-
-  if( port == 0 )
-    port = default_server_port;
-
-  if( hostname.empty() )
-    hostname = "localhost";
-
-  if( isdigit( hostname[0] ) )
-    {
-      if( (address = inet_addr( hostname.c_str() )) == (long)INADDR_NONE )
-        {
-          my_cons.write(C_FAIL,  "Invalid hostname" );
-          return;
-        }
-      src.sin_addr.s_addr = address;
-      src.sin_family = AF_INET;
-    }
-  else if( (hostinfo = gethostbyname( hostname.c_str() )) == NULL )
-    {
-      my_cons.write(C_FAIL,  "Failed looking up host" );
-      return;
-    }
-  else
-    {
-      src.sin_family = hostinfo->h_addrtype;
-      src.sin_addr = *((struct in_addr*) hostinfo->h_addr);
-    }
-
-  src.sin_port = htons( port );
-
-  if( (the_socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 )
-    {
-      my_cons.write(C_FAIL,  "Socket failed" );
-      return;
-    }
-
-  if( connect( the_socket, (struct sockaddr*) &src, sizeof(src) ) < 0 )
-    {
-      my_cons.write(C_FAIL,  "Connect failed" );
-      return;
-    }
-
-  nc.the_socket = the_socket;
-  nc.make_nonblocking();
-  nc.connected = true;
-  nc.address = hostname;
-}
 
 void
 SocketClient::check_connection()
@@ -106,75 +51,40 @@ SocketClient::check_connection()
 	  nc.send_data( CommandPacket("Quit").make_netstring() );
 	  exit( 0 );
 	}
-      else if( buf.substr(0,3) == "say")
-	{
-	  nc.send_data( ChatMessagePacket("all", 
-					  buf.substr(4,buf.length()-5)
-					  ).make_netstring() 
-			);
-	}      
-      else if( buf.substr(0, 3) == "add")
-	{
-	  vector<string> filename;
-	  if ( buf.substr(3, 5) == "arena" )
-	    {
-	      string arenaname;
-	      my_cons.write(C_OK, "arena name (0 to finish) : ");
-	      cin>>arenaname;
-	      while ( arenaname != "0" )
-		{
-		  filename.push_back(arenaname);
-		  my_cons.write(C_OK, "arena name (0 to finish) : ");
-		  cin>>arenaname;
-		}
-	      my_cons.prompt_enter();
-	      nc.send_data ( SubmitPacket(Add_Arena, filename).make_netstring() );
-	    }
-	}
-      //read(0, buffer, MAX_BUFFER_SIZE-1);
-
-      
     }
 
   if( (nc).connected && FD_ISSET( (nc).the_socket, &readfs ) )
     {
-      if( (nc).read_data() < 0 )
+      int read = nc.read_data();
+
+      Packet *P;
+      while( ! (nc.read_buffers).empty() )
+	{
+	  //Extract the string for the queue and make a packet with it
+	  string data = nc.read_buffers.front();
+	  
+	  P = make_packet( data );
+	  nc.read_buffers.pop_front();
+	  
+	  if( !P ) continue; //Jump to the next Packet
+	  
+	  P->get_string_from_netstring( data );
+	  
+	  switch(P->packet_type()) 
+	    {
+	    case PACKET_COMMAND :
+	    case PACKET_SERVER_COMMAND :
+	    case PACKET_SERVER_MESSAGE :
+	      P->handle_packet( &nc );
+	      break;
+	    default : break;
+	    }
+	  delete P;
+	}
+    
+      if( read < 0 )
 	{
 	  (nc).close_socket();
-	}
-      else
-	{
-	  Packet *P;
-	  //cout<< "Read succesfully\n";
-	  while( ! (nc.read_buffers).empty() )
-	    {
-	      //Extract the string for the queue and make a packet with it
-	      string data = nc.read_buffers.front();
-	      //cout<<" >> "<< data <<endl;
-	      P = make_packet( data );
-	      nc.read_buffers.pop();
-	      
-	      if( !P ) continue; //Jump to the next Packet
-	      
-	      P->get_string_from_netstring( data );
-
-	      switch(P->packet_type()) 
-		{
-		case PACKET_COMMAND :
-		case PACKET_SERVER_COMMAND :
-		case PACKET_SERVER_MESSAGE :
-		  P->handle_packet( &nc );
-		  break;
-
-		case PACKET_META_DATA:
-		  //send him all the informations
-		  P->handle_packet( &nc ); 
-		  break;
-
-		default : break;
-		}
-	      delete P;
-	    }
 	}
     }
   my_cons.prompt_on();
@@ -183,7 +93,7 @@ SocketClient::check_connection()
 void 
 SocketClient::ask_for_info_to_metaserver()
 {
-  nc.send_data ( MetaServerAskInfoPacket().make_netstring() );
+
 }
 
 

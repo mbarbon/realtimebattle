@@ -6,11 +6,6 @@
 #include "NetConnection.h"
 #include "Console.h"
 
-static const int default_server_port = 4147;
-static const int meta_server_port = 4146;
-static const string meta_server_host = "localhost";
-
-
 class SocketClient
 {
 public:

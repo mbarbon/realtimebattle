@@ -1,0 +1,13 @@
+#ifndef __ROBOT_PACKETS_H__
+#define __ROBOT_PACKETS_H__
+
+#define USE_INITIALIZATION_PACKET 
+#define SEND_INITIALIZATION_PACKET 
+
+#define USE_COMMAND_PACKET
+#  define RECV_COMMAND_PACKET
+#  define SEND_COMMAND_PACKET
+
+#include "Packets.h"
+
+#endif
