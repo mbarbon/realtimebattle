@@ -1,6 +1,7 @@
 # List of source files containing translatable strings.
 
 Arenas/Original.arena
+Arenas/StdGeometries.include
 src/ArenaController.cc
 src/OptionHandler.cc
 src/RealTimeBattle.cc
