@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Event.h"
 
 
+class EventHandler;
 class Arena;
 
 
@@ -30,9 +31,9 @@ class QuitEvent : public Event
 {
  public:
   QuitEvent( const double time, EventHandler* ev) 
-    : Event(time), my_event_handler(ev) {}
+    : Event(time, ev) {}
   
-  void eval() const { my_event_handler->finish(); }
+  void eval() { my_event_handler->finish(); }
 };
 
 //All the 'recursive' update event should have the same 'face'
@@ -50,18 +51,18 @@ class RobotsUpDateEvent : public Event
   
   void eval() const 
     {
-      my_arena->update_robots();
+      //      my_arena->update_robots();
       NextEvent();
     }
 
  protected:
   void NextEvent() const
     {
-      if((NoMoreThan != 0)&&((time+refresh < NoMoreThan)))
+      if((NoMoreThan != 0)&&((eval_time+refresh < NoMoreThan)))
 	{//Add the next event if the game isn't finished...
 	  
-	  Event * NextUpDate = new RobotsUpDate(time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
-	  ev->insert_event(NextUpDate);
+	  Event * NextUpDate = new RobotsUpDateEvent(eval_time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
+	  my_event_handler->insert_event(NextUpDate);
 	}
     }
   
@@ -76,25 +77,25 @@ public:
   ShotsUpdateEvent( const double time, Arena* ar, EventHandler * ev) 
     : Event(time, ev), my_arena(ar), NoMoreThan(0) {}
 
-  ShotsUpDateEvent(const double time, const double StopAt, Arena* ar, EventHandler* ev)
+  ShotsUpdateEvent(const double time, const double StopAt, Arena* ar, EventHandler* ev)
     : Event(time, ev), my_arena(ar), refresh(time), NoMoreThan(StopAt) {}
 
-  ShotsUpDateEvent(const double time, const double StopAt, const double UpDateDelay, Arena* ar, EventHandler* ev)
+  ShotsUpdateEvent(const double time, const double StopAt, const double UpDateDelay, Arena* ar, EventHandler* ev)
     : Event(time, ev), my_arena(ar), refresh(UpDateDelay), NoMoreThan(StopAt) {}
 
   void eval() const 
     { 
-      my_arena->update_shots();
+      //      my_arena->update_shots();
       NextEvent();
     }
 
 protected:
   void NextEvent() const
     {   
-      if((NoMoreThan != 0)&&((time+refresh < NoMoreThan)))
+      if((NoMoreThan != 0)&&((eval_time+refresh < NoMoreThan)))
 	{ //Add the next event if the game isn't finished...
-	  Event * NextUpDate = new ShotsUpDateEvent(time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
-	  ev->insert_event(NextUpDate);
+	  Event * NextUpDate = new ShotsUpdateEvent(eval_time + refresh, refresh, NoMoreThan, my_arena, my_event_handler);
+	  my_event_handler->insert_event(NextUpDate);
 	}
     }
 

@@ -78,34 +78,33 @@ class QuitEvent : public GTEvent;
 #include <queue>
 
 #include "Event.h"
-#include "EventRT.h"
-#include "EventGT.h"
 #include "Timer.h"
 
 class EventHandler
 {
 
-public:
+ public:
 
   EventHandler();
   ~EventHandler();
-
+  
   void main_loop();
-
+  
   void insert_event( Event* ev );    //same as GT, but still here for compatibility
   void insert_RT_event (Event* ev);
   void insert_GT_event (Event* ev);
-
-  double get_time() { return current_time; }
+  
+  double get_time();
   void pauseGame() ;  //Pause/unPause the game
   void quit();
-
-private:
   
-  friend class QuitEvent;
-
-  void finish() { finished = true; }
-
+  //private:
+  
+  //friend class QuitEvent;
+  
+  void finish() { finished = true; };
+  
+ private:
   priority_queue<const Event*> RT_event_queue;
   priority_queue<const Event*> GT_event_queue;
 
@@ -120,7 +119,13 @@ private:
   bool finished;
 };
 
+
+#include "EventRT.h"
+#include "EventGT.h"
+
 #endif __EVENT_HANDLER__
+
+
 
 
 

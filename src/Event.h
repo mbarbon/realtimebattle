@@ -36,7 +36,7 @@ public:
 
   friend bool operator<(const Event& a, const Event& b) { return a.eval_time < b.eval_time; } 
 
-protected:
+ protected:
 
   double eval_time;
   EventHandler * my_event_handler;

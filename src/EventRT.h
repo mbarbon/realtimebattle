@@ -22,16 +22,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Event.h"
 
-class CheckGUIEvent : public Event()
+
+class CheckGUIEvent : public Event
 {
-  CheckGUIEvent();
+  CheckGUIEvent() 
+    : Event(0, NULL)  {}
   //This is your go Ragnar :)
 };
 
 
 
 
-class PrepareForNewMatchEvent : public Event
+/*class PrepareForNewMatchEvent : public Event
 {
  public:
   PrepareForNewMatchEvent( const double time, Tournament* t) 
@@ -50,7 +52,7 @@ class EndMatchEvent : public Event
 public:
   EndMatchEvent( const double time, Match* m) 
     : Event(time), my_match(m) {}
-};
+};*/
 
 
 

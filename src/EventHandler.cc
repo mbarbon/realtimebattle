@@ -31,6 +31,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 EventHandler::EventHandler()
 {
+  current_time = 0;
   finished = false;
   pausedTime = 0;
   paused = false;
@@ -46,8 +47,6 @@ EventHandler::~EventHandler()
 void
 EventHandler::main_loop()
 {
-  double time_for_next_GT_event;
-  double time_for_next_RT_event;
   double time_for_next_event;
   struct timeval time_to_wait;
   const Event* next_RTeventp;   //Next Event that is in realtime queue
@@ -66,7 +65,7 @@ EventHandler::main_loop()
       if(!paused)
 	{//Select the one to execute...
 	  next_GTeventp = GT_event_queue.top();
-	  if((next_GTeventp->get_time() - pausedTime) < (next_RTeventp->gettime()))
+	  if((next_GTeventp->get_time() - pausedTime) < (next_RTeventp->get_time()))
 	    {
 	      RTEvent = false;
 	      next_eventp = next_GTeventp;
@@ -120,7 +119,7 @@ EventHandler::main_loop()
 void 
 EventHandler::insert_event( Event* ev )
 {
-  event_queue.push( ev );
+  RT_event_queue.push( ev );
 }
 
 
@@ -157,3 +156,18 @@ EventHandler::quit()
 {
   insert_event( new QuitEvent( get_time(), this ) );
 }
+
+
+double 
+EventHandler::get_time() 
+{ 
+  return current_time; 
+}
+
+
+
+
+
+
+
+
