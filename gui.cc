@@ -9,15 +9,6 @@
 #define GDK_VARV 23040     // 64 * 360 degrees
 
 void
-statistics_button_callback(GtkWidget *widget, gpointer guip)
-{
-  if(((Gui *)guip)->get_statistics_up() == false)
-    ((Gui *)guip)->setup_statistics_window();
-  else
-    ((Gui *)guip)->close_statistics_window();
-}
-
-void
 no_zoom_callback(GtkWidget *widget, gpointer guip)
 {
   ((Gui *)guip)->change_zoom( NO_ZOOM );
@@ -602,142 +593,6 @@ Gui::setup_arena_window( const Vector2D bound[] )
 }
 
 void
-Gui::setup_statistics_window()
-{
-  GtkWidget * vbox;
-  GtkWidget * button_table;
-  GtkWidget * button;
-
-  statistics_window = gtk_window_new (GTK_WINDOW_DIALOG);
-  gtk_window_set_title (GTK_WINDOW (statistics_window), "RealTimeBattle Statistics");
-  gtk_signal_connect (GTK_OBJECT (statistics_window), "delete_event",
-                      (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(statistics_window));
-  gtk_container_border_width (GTK_CONTAINER (statistics_window), 12);  
-
-  vbox = gtk_vbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (statistics_window), vbox);
-  gtk_widget_show (vbox);
-
-  button_table = gtk_table_new (1, 6, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), button_table, FALSE, FALSE, 0);
-
-  // Buttons for displaying different statistics
-
-  button = gtk_button_new_with_label ("Close");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 0, 1, 0, 1);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label ("Total");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 1, 2, 0, 1);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label ("First");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 2, 3, 0, 1);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label ("Next");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 3, 4, 0, 1);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label ("Prev");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 4, 5, 0, 1);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label ("Last");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (statistics_button_callback), (gpointer) this);
-  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 5, 6, 0, 1);
-  gtk_widget_show (button);
-
-  gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
-  gtk_widget_show (button_table);
-
-  GtkWidget * clist;
-  char * titles[5] = { "Name", "Position", "Points", "Survival Time", "Total Points" };
-
-  GList* gl, * stat_gl;
-  Robot* robotp;
-  int robot_number = 0;
-
-  for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-    robot_number++;
-
-  clist = gtk_clist_new_with_titles( 5, titles);
-  gtk_clist_set_selection_mode (GTK_CLIST(clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_border(GTK_CLIST(clist), GTK_SHADOW_NONE);
-  gtk_clist_set_column_width (GTK_CLIST(clist), 0, 80);
-  gtk_clist_set_column_width (GTK_CLIST(clist), 1, 45);
-  gtk_clist_set_column_width (GTK_CLIST(clist), 2, 35);
-  gtk_clist_set_column_width (GTK_CLIST(clist), 3, 75);
-  gtk_clist_set_column_width (GTK_CLIST(clist), 4, 65);
-  gtk_clist_set_column_justification(GTK_CLIST(clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_column_justification(GTK_CLIST(clist), 1, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(clist), 2, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(clist), 3, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_column_justification(GTK_CLIST(clist), 4, GTK_JUSTIFY_RIGHT);
-  gtk_clist_set_policy(GTK_CLIST(clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(clist, 340,400);
-  gtk_box_pack_start (GTK_BOX (vbox), clist, TRUE, TRUE, 0);
-  gtk_widget_show(clist);
-
-  int i=0;
-  for(gl = g_list_next(the_arena->get_all_robots_in_tournament()); gl != NULL; gl = g_list_next(gl))
-    {
-      robotp = (Robot *)gl->data;
-      stat_t * statp = NULL;
-
-      for(stat_gl = g_list_next(robotp->get_statistics()); stat_gl != NULL; stat_gl = g_list_next(stat_gl))
-        statp = (stat_t*)(stat_gl->data);
-
-      if( statp != NULL )
-        {
-          strstream ss0,ss1,ss2,ss3,ss4;
-
-          char * list[5];
-
-          ss0 << robotp->get_robotname();
-          list[0] = new char[30];
-          ss0 >> list[0];
-
-          ss1 << statp->position;
-          list[1] = new char[30];
-          ss1 >> list[1];
-
-          ss2 << statp->points;
-          list[2] = new char[30];
-          ss2 >> list[2];
-
-          ss3 << setiosflags(ios::fixed) << setprecision(2) << statp->time_survived;
-          list[3] = new char[30];
-          ss3 >> list[3];
-
-          ss4 << statp->total_points;
-          list[4] = new char[30];
-          ss4 >> list[4];
-
-          int row = gtk_clist_append(GTK_CLIST(clist), list);
-          gtk_clist_set_foreground(GTK_CLIST(clist), row, the_arena->get_foreground_colour_p());
-          gtk_clist_set_background(GTK_CLIST(clist), row, the_arena->get_background_colour_p());
-        }
-      i++;
-    }  
-
-  gtk_widget_show(statistics_window);
-  statistics_up = true;
-}
-
-void
 Gui::close_control_window()
 {
   gtk_widget_destroy ( control_window );
@@ -759,11 +614,4 @@ void
 Gui::close_arena_window()
 {
   gtk_widget_destroy ( arena_window );
-}
-
-void
-Gui::close_statistics_window()
-{
-  statistics_up = false;
-  gtk_widget_destroy ( statistics_window );
 }
