@@ -5,6 +5,24 @@
 Change log
 <itemize>
 
+
+<item> <bf>1.0.5</bf>
+<p>
+
+Added possibility to send the robots its position. This is done by a new
+message: <tt>Coordinates</tt>, and is enabled by a new option: <tt>Send
+robot coordinates</tt>. Look in the documentation for more info.
+
+New translation: Spanish by Mr_Tt
+
+Bugfix: CPU limits should work better now.
+
+Launching child processes is no longer strictly forbidden, since this gave
+rise to problems for some programming languages. Tournament organizers can,
+of course, still forbid this by a statement in the tournament rules.
+
+Bugfix: Robots which are executable by owner or group are also listed.
+
 <item> <bf>1.0.4</bf>
 <p>
 
