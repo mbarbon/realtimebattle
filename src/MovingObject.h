@@ -63,7 +63,7 @@ enum rotation_mode_t { NORMAL_ROT, SWEEP_LEFT, SWEEP_RIGHT, ROTATE_TO_RIGHT, ROT
 
 struct rotation_t
 {
-  rotation_t() {}
+  rotation_t() : pos(0), vel(0), left(0), right(0), mode(NORMAL_ROT) {}
   rotation_t(const double p, const double v, const double l, const double r, const rotation_mode_t m) :
     pos(p), vel(v), left(l), right(r), mode(m) {}
   void set(const double p, const double v, const double l, const double r, const rotation_mode_t m) 
