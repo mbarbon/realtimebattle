@@ -26,11 +26,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Option.h"
 
-class ArenaController;
-
-extern ArenaController the_arena_controller;
-#define the_opts (*( the_arena_controller.get_main_opts() ))
-
 enum optiontype_t
 {
   OPTIONTYPE_LONG,
@@ -47,6 +42,13 @@ struct option_return_t
   optiontype_t datatype;
   int option_number;
 };
+
+// ---------------------------------------------------------------------------
+// class OptionHandler
+// ---------------------------------------------------------------------------
+// Optionarrays supplied to Optionhandler are deleted when OptionHandler
+// is destructed.
+// ---------------------------------------------------------------------------
 
 class OptionHandler
 {

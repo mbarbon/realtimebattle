@@ -150,7 +150,7 @@ OptionHandler::read_options_from_rtbrc()
 
   //TODO: this should be .rtbrc in the released version
   // It is like this to not overwrite the old .rtbrc
-  string resource_file = string(home_dir) + "/.rtbrc";
+  string resource_file = string(home_dir) + "/.rtbrc_v2";
   read_options_file(resource_file,true);
 }
 
