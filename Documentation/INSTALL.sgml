@@ -45,7 +45,9 @@ by setting two environmental variables, <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENAD
 export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
 export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
 </verb>
-You have to enter 
+The directories <tt>/usr/games/RealTimeBattle/Robots</tt> and
+<tt>/usr/games/RealTimeBattle/Arenas</tt> are always searched, regardless of the environmental
+variables. You have to enter 
 <verb>
 % source ~/.bashrc</verb> for 
 the change to take effect.

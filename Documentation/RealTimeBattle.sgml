@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.1 rev 1
+<title>RealTimeBattle User Manual, version 0.9.1 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date>12 December 1998
+<date>19 December 1998
 
 <!-- <abstract> -->
 
@@ -254,6 +254,32 @@ large.
 
 You have to select at least two robots and one arena to be able to
 start.
+
+<sect1>Robots and arena directories<label id="robot_and_arena_directories">
+<p>
+In order for the program to find the robots and arenas you have set two environmental variables,
+<tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENADIR</tt>. 
+The directories <tt>/usr/games/RealTimeBattle/Robots</tt> and
+<tt>/usr/games/RealTimeBattle/Arenas</tt> are always searched, regardless of the environmental
+variables, but if you create a new directory, or if you installed RealTimeBattle in some other
+directory, you need to set these variables.
+
+If you use <tt>bash</tt> you can e.g. add the following lines to your <tt>.bashrc</tt> file. 
+<verb>
+export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
+export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
+</verb>
+In <tt>tcsh</tt>, add e.g.
+<verb>
+setenv RTB_ROBOTDIR "$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
+setenv RTB_ARENADIR "$HOME/RealTimeBattle/Arenas/"
+</verb>
+to the <tt>.cshrc</tt> file.
+
+Type
+<verb>% source ~/.bashrc</verb> or
+<verb>% source ~/.cshrc</verb> for for 
+the change to take effect.
 
 <sect1>Arena window<label id="Arena_window">
 <p>
