@@ -288,6 +288,7 @@ Robot::get_total_points()
 //      }
 
 //    return total_pnts;
+  return 0.0;
 } 
 
 
@@ -319,7 +320,7 @@ Robot::get_last_position()
 //    if( (*li).sequence_nr == the_arena.get_sequence_nr() )
 //      return (*li).position;
 
-//    return 0;
+  return 0;
 }
 
 list<stat_t>::const_iterator
@@ -343,6 +344,8 @@ Robot::get_current_game_stats()
 //      }
 
 //    return current_game_stats;
+  list<stat_t>::const_iterator li;
+  return li;
 }
 
 
@@ -1114,7 +1117,7 @@ Robot::check_state_for_message(const message_from_robot_type msg_t, const state_
 //        return false;
 //      }
   
-//    return true;
+  return true;
 }
 
 //  bool
