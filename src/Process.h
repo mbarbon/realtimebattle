@@ -37,6 +37,7 @@ class RobotIO {
   virtual void start( const enum game_mode_t mode) = 0;
   virtual bool is_process_running() = 0; //NOTE : Can this one be implemented ?
   virtual void end()                = 0;
+  virtual bool process_failed() {return false;};
 
   virtual string get_robot_filename() = 0;  //NOTE : do we really need this one ?
   virtual ofstream* get_outstreamp()  = 0;
