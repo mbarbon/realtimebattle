@@ -35,6 +35,24 @@ static char * colour_square[] =
 };
 
 void
+pause_button_callback(GtkWidget * widget, gpointer data)
+{
+  the_arena.paus_game_toggle();
+}
+
+void
+step_button_callback(GtkWidget * widget, gpointer data)
+{
+  the_arena.step_paused_game();
+}
+
+void
+end_button_callback(GtkWidget * widget, gpointer data)
+{
+  the_arena.interrupt_tournament();
+}
+
+void
 no_zoom_callback(GtkWidget *widget, gpointer data)
 {
   the_gui.change_zoomfactor( NO_ZOOM );
@@ -208,6 +226,8 @@ Gui::draw_all_walls()
   for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
     if( ((Cookie*)gl->data)->is_alive() )
       ((Cookie*)gl->data)->draw_shape( false );
+
+  draw_objects();
 }
 
 void
@@ -353,16 +373,29 @@ Gui::setup_control_window()
   gtk_table_attach_defaults (GTK_TABLE(toptable), button, 0, 4, 0, 1);
   gtk_widget_show (button);
 
-  button = gtk_button_new_with_label ("New Game");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (callback), (gpointer) "Game");
-  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 4, 7, 0, 1);
+  int pos_add = 0;
+  if(the_arena.get_game_mode() != Arena::DEBUG_MODE)
+    pos_add = 1;
+
+  button = gtk_button_new_with_label ("Pause");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (pause_button_callback), (gpointer) NULL);
+  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 4, 6 + pos_add, 0, 1);
   gtk_widget_show (button);
 
+  if(the_arena.get_game_mode() == Arena::DEBUG_MODE)
+    {
+      button = gtk_button_new_with_label ("Step");
+      gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                          GTK_SIGNAL_FUNC (step_button_callback), (gpointer) NULL);
+      gtk_table_attach_defaults (GTK_TABLE(toptable), button, 6, 8, 0, 1);
+      gtk_widget_show (button);
+    }
+
   button = gtk_button_new_with_label ("End");
-  //  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-  //                      GTK_SIGNAL_FUNC (callback), (gpointer) "End");
-  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 7, 10, 0, 1);
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (end_button_callback), (gpointer) "End");
+  gtk_table_attach_defaults (GTK_TABLE(toptable), button, 8 - pos_add, 10, 0, 1);
   gtk_widget_show (button);
 
   button = gtk_button_new_with_label ("Options");
@@ -628,6 +661,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   clear_area();
   change_zoom();
+  //  draw_all_walls();
 }
 
 void

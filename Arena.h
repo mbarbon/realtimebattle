@@ -26,12 +26,14 @@ class Arena
 public:
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
-  
+
+  enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
   Arena();
   ~Arena();
 
   void clear();
+  void interrupt_tournament();
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, enum object_type& closest_shape, 
@@ -50,7 +52,8 @@ public:
   void set_colours();
   long find_free_colour(const long home_colour, const long away_colour, const class Robot*);
   void quit_ordered();
-  void delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list);
+  void delete_lists(const bool kill_robots, const bool del_seq_list, 
+                    const bool del_tourn_list, const bool del_arena_filename_list);
 
   Vector2D get_random_position();
 
@@ -70,7 +73,11 @@ public:
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
   Vector2D * get_boundary() { return boundary; }
-  
+  enum game_mode_t get_game_mode() { return game_mode; }
+  void set_game_mode( const enum game_mode_t gm) { game_mode = gm; } 
+  void paus_game_toggle();
+  void step_paused_game();
+
 private:
   void parse_file(istream&);
   void check_initialization();
@@ -110,7 +117,6 @@ private:
   gdouble timestep;
   gdouble total_time;
   gdouble current_timer;
-  gdouble timescale;
 
   GTimer* timer;
   
@@ -133,6 +139,9 @@ private:
 
   Vector2D boundary[2];   // {top-left, bottom-right}
   state_t state;
+  game_mode_t game_mode;
+  bool halted;
+  bool halt_next;
 };
 
 // ---------------------  ArenaObject ---------------------

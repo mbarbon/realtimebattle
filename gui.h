@@ -49,6 +49,9 @@ struct start_tournament_glist_info_t
   String filename;
 };
 
+void pause_button_callback(GtkWidget * widget, gpointer data);
+void step_button_callback(GtkWidget * widget, gpointer data);
+void end_button_callback(GtkWidget * widget, gpointer data);
 void statistics_button_callback(GtkWidget *widget, gpointer data);
 void start_tournament_button_callback(GtkWidget *widget, gpointer data);
 void delete_event( GtkWidget * widget, gpointer data );

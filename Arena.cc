@@ -14,9 +14,11 @@
 Arena::Arena()
 {
   state = NOT_STARTED;
+  game_mode = NORMAL_MODE;
+  halted = false;
+  halt_next = false;
   timer = g_timer_new();
   reset_timer();
-  timescale = 1.0;
   
   all_robots_in_sequence = g_list_alloc();
   all_robots_in_tournament = g_list_alloc();
@@ -33,7 +35,7 @@ Arena::~Arena()
   state=EXITING;
   sleep(1);
   g_timer_destroy(timer);
-  delete_lists(true, true, true);
+  delete_lists(true, true, true, true);
   g_list_free(all_robots_in_sequence);
   g_list_free(all_robots_in_tournament);
   g_list_free(arena_filenames);
@@ -48,14 +50,30 @@ Arena::~Arena()
 void
 Arena::clear()
 {
-  delete_lists(true, true, true);
+  delete_lists(true, true, true, true);
 
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
     delete [] robots_in_sequence[i];
+
+  sequence_nr = 0;
+  sequences_remaining = 0;
   
   state = NOT_STARTED;
+}
 
-  timescale = 1.0;
+void 
+Arena::interrupt_tournament()
+{
+  if( state == GAME_IN_PROGRESS )
+    {
+      the_gui.close_score_window();
+      the_gui.close_arena_window();
+      the_gui.close_message_window();
+
+      delete_lists(true, true, false, true);
+      
+      state = FINISHED;
+    }
 }
 
 void
@@ -381,6 +399,7 @@ Arena::quit_ordered()
 gint
 Arena::timeout_function()
 {
+  if( halted ) return true;
   int old_total = (int)total_time;
   update_timer ();
 
@@ -427,7 +446,7 @@ Arena::timeout_function()
             end_game();
           }
 
-        if( total_time > next_check_time ) check_robots();
+        if( COMPETITION_MODE && total_time > next_check_time ) check_robots();
 
         // Place mines and cookies
         if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
@@ -442,6 +461,11 @@ Arena::timeout_function()
       return false;
     }
 
+  if( halt_next )
+    {
+      halted = true;
+      halt_next = false;
+    }
   return true;
 }
 
@@ -460,7 +484,7 @@ Arena::update_timer()
   gdouble last_timer = current_timer;
   gulong microsecs;
   current_timer = g_timer_elapsed(timer, &microsecs);
-  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_d(OPTION_MAX_TIMESTEP) );
+  timestep = min( (current_timer - last_timer) * the_opts.get_d(OPTION_TIMESCALE), the_opts.get_d(OPTION_MAX_TIMESTEP) );
   total_time += timestep;
 }
 
@@ -657,7 +681,28 @@ Arena::find_free_colour(const long home_colour, const long away_colour, const Ro
 }
 
 void
-Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
+Arena::paus_game_toggle()
+{
+  if( game_mode != COMPETITION_MODE )
+    {
+      halted = !halted; 
+      halt_next = false; 
+    }
+}
+
+void
+Arena::step_paused_game()
+{
+  if( game_mode == DEBUG_MODE && halted )
+    {
+      halt_next = true; 
+      halted = false;
+    }
+}
+
+void
+Arena::delete_lists(const bool kill_robots, const bool del_seq_list, 
+                    const bool del_tourn_list, const bool del_arena_filename_list)
 {
   GList* gl;
   // clear the lists;
@@ -705,6 +750,7 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
     {
       vecp = (Vector2D*)gl->data;
       gl=g_list_next(gl);
+      delete vecp;
       g_list_remove(exclusion_points, vecp);
     }
   if( del_seq_list )
@@ -712,6 +758,7 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
       {
         robotp = (Robot*)gl->data;
         gl=g_list_next(gl);
+        if( kill_robots ) robotp->kill_process_forcefully();
         g_list_remove(all_robots_in_sequence, robotp);
       }
   if( del_tourn_list )
@@ -719,10 +766,22 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
       {
         robotp = (Robot*)gl->data;
         gl=g_list_next(gl);
-        if( kill_robots ) delete robotp;
+        delete robotp;
         g_list_remove(all_robots_in_tournament, robotp);
       }
+  if( del_arena_filename_list )
+    {
+      String* stringp;
+      for(gl=g_list_next(arena_filenames); gl != NULL; )
+        {
+          stringp = (String*)gl->data;
+          gl=g_list_next(gl);
+          delete stringp;
+          g_list_remove(arena_filenames, stringp);
+        }
+    }
 }
+
 void
 Arena::start_game()
 {
@@ -791,7 +850,7 @@ Arena::end_game()
 
   broadcast(GAME_FINISHES);
 
-  delete_lists(false, false, false);
+  delete_lists(false, false, false, false);
   
   if(games_remaining_in_sequence == 0) 
     end_sequence();
