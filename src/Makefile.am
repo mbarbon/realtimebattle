@@ -61,7 +61,7 @@ RealTimeBattle_SOURCES = \
 	String.cc String.h \
 	Structs.h \
 	Timer.cc Timer.h \
-	Tournament.h \
+	Tournament.h Tournament.cc \
 	Various.cc Various.h \
 	Vector2D.cc Vector2D.h \
 	Wall.h
