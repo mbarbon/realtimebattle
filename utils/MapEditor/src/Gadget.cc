@@ -10,6 +10,7 @@ void Wall::Print()
 {
   cout<<"\nHello, I'm a wall\n";
   cout<<"My name is "<<myName<<endl;
+  cout<<info_string<<endl;
   cout<<"My size is "<<mySize<<endl;
   cout<<"Good Bye"<<endl;
 }
