@@ -348,6 +348,19 @@ different columns by clicking on the corresponding title box.
 
 <sect1>Running without graphics<label id="no_graphics">
 <p>
+If you want, you can run RealTimeBattle without any graphics at all. This can
+especially useful when currying out a long series of tests or running a competition. To
+use this option you have two choices: Either you add the flag <tt>-g</tt> when lounging
+the program, or you disable the graphics at compile time (see the <tt>INSTALL</tt> file
+for more information). The latter alternative is useful as the executable gets
+smaller and therefore faster on low memory machines. Note that <tt>gtk+</tt> is still
+needed since it is used to call the program at given times to update the arena.
+
+When running without graphics you have to give a tournament file, otherwise nothing at
+all will happen. It is also a good idea to create a log file and/or a statistics file
+if you want to know the result.
+
+
 <sect1>Tournament files<label id ="tournament_files">
 <p>
 
@@ -393,7 +406,7 @@ Example: <tt>Arena: /usr/Games/RealTimeBattle/Arenas/Circle.arena</tt>
 
 Example: <tt>Arena: *</tt>
 
-<tag>One specific directory:<tag> This searches the specified directory and takes all files found. 
+<tag>One specific directory:</tag> This searches the specified directory and takes all files found. 
 
 Example: <tt>Robot: /usr/Games/RealTimeBattle/Robots/*</tt>
 
@@ -410,11 +423,42 @@ R: * Arenas: Circle.arena Square.arena G/S: 2 r/s: 3 Sequences: *
 
 <sect1>Log files<label id ="log_files">
 <p>
+Sometimes it can be useful to analyze a game in detail or just to store for future
+reference, in this case log files can be useful. Add the flag <tt>-l</tt>, when starting
+RealTimeBattle, with the
+filename as argument to enable this feature and with argument <tt>'-'</tt>, the log is
+printed to stdout.  Note that if you do not use a
+<ref id="tournament_files" name="tournament file"> the log file will be overwritten
+for each tournament you start. To avoid this you have rename it before the start of the
+next tournament. 
+
+The format of the log file is as follows: Each line consist of a letter, determining
+the type of information, followed by a whitespace separated list of arguments. The
+following information is given:
+<descrip>
+<tag>Robot position info:</tag> R [robot id] [x] [y] [cannon angle] [radar angle] [energy]
+<tag>Time:</tag> T [time elapsed]
+<tag>Print message:</tag> P [robot id] [message to print]
+<tag>Cookie:</tag> C [cookie id] [x] [y]
+<tag>Mine:</tag> M [mine id] [x] [y]
+<tag>Shot:</tag> S [shot id] [x] [y] [dx/dt] [dy/dt]
+<tag>Die:</tag> D [type of object killed] [object id] [if robot: points received]
+<tag>Game start:</tag> G [sequence number] [game number]
+<tag>Header:</tag> H [games/sequence] [robots/sequence] [n o sequences] [n o robots]
+<tag>List of robot properties:</tag> L [robot id] [robot colour] [robot name]
+<tag>Arena info:</tag> A [line from the arena file]
+<tag>Option:</tag> O [option] [value]
+</descrip>
+
+
+
+
 <sect1>Statistics files<label id ="statistics_files">
 <p>
-
-The statistics file is a file used only when a <ref id="tournament_files" name="tournament file"> is
-specified. The statistics will be saved to this file when the tournament ends.
+The statistics file is a file used only when a 
+<ref id="tournament_files" name="tournament file"> is specified. The statistics will be
+saved to this file when the tournament ends. Otherwise you can save it by hand using
+the <tt>save</tt> button in the <ref name="statistics window" id="Statistics window">.
 
 
 <!--   ################       Structure        ##################   -->
