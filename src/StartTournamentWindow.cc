@@ -24,6 +24,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #if HAVE_DIRENT_H
+# if HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+# endif
 # include <dirent.h>
 # define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
@@ -441,7 +444,7 @@ StartTournamentWindow::add_clist( GtkWidget* clist, GtkWidget* box )
   gtk_container_add( GTK_CONTAINER( scrolled_win ),
                      clist );
 
-  GtkStyle* clist_style = gtk_style_new();
+  GtkStyle* clist_style = gtk_style_copy(gtk_rc_get_style(window_p));
   clist_style->base[GTK_STATE_NORMAL] = *(the_gui.get_bg_gdk_colour_p());
   clist_style->base[GTK_STATE_ACTIVE] = make_gdk_colour( 0xffffff );
   clist_style->bg[GTK_STATE_SELECTED] = make_gdk_colour( 0xf0d2b4 );
