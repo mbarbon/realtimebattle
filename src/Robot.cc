@@ -1050,9 +1050,9 @@ Robot::get_messages()
             realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
             if( !no_graphics && !realtime_arena.get_use_message_file() )
-                the_gui.get_messagewindow_p()->add_message( this, text );
+                the_gui.get_messagewindow_p()->add_message( robot_name, text );
 #endif
-            realtime_arena.print_to_messagefile( this, text );
+            realtime_arena.print_to_messagefile( robot_name, text );
           }
           break;
 
@@ -1063,9 +1063,9 @@ Robot::get_messages()
 #ifndef NO_GRAPHICS
             if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE &&
                 !no_graphics && !realtime_arena.get_use_message_file() )
-              the_gui.get_messagewindow_p()->add_message( this, text );
+              the_gui.get_messagewindow_p()->add_message( robot_name, text );
 #endif
-            realtime_arena.print_to_messagefile( this, text );
+            realtime_arena.print_to_messagefile( robot_name, text );
           }
           break;
 

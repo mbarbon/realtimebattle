@@ -30,7 +30,6 @@ union _GdkEvent;
 typedef union _GdkEvent GdkEvent;
 
 class String;
-class Robot;
 
 class MessageWindow
 {
@@ -42,7 +41,7 @@ public:
   ~MessageWindow                 ();
 
   void set_window_title          ();
-  void add_message               ( Robot* robot_p, String output_text );
+  void add_message               ( String name_of_messager, String message );
 
   static void hide_window        ( GtkWidget* widget, GdkEvent* event,
                                    class MessageWindow* messagewindow_p );
