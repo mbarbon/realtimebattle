@@ -1,4 +1,4 @@
-SUBDIRS = Gui
+SUBDIRS = Gui Network
 
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
