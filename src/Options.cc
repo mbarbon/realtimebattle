@@ -341,7 +341,7 @@ Options::log_all_options()
 {
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
     if( all_double_options[i].log_option )
-      realtime_arena.print_to_logfile( 'O', 'D', 
+      realtime_arena.print_to_logfile( 'O', (int)'D', 
                                   (all_double_options[i].label + ":").chars(),
                                   all_double_options[i].value );
                         
@@ -349,17 +349,17 @@ Options::log_all_options()
     if( all_long_options[i].log_option )
       {
         if( all_long_options[i].datatype == ENTRY_INT )
-          realtime_arena.print_to_logfile( 'O', 'L',
+          realtime_arena.print_to_logfile( 'O', (int)'L',
                                       (all_long_options[i].label + ":").chars(),
                                       all_long_options[i].value );
         if( all_long_options[i].datatype == ENTRY_HEX )
-          realtime_arena.print_to_logfile( 'O', 'H',
+          realtime_arena.print_to_logfile( 'O', (int)'H',
                                       (all_long_options[i].label + ":").chars(),
                                       all_long_options[i].value );
       }
   for(int i=0;i<LAST_STRING_OPTION;i++)
     if( all_string_options[i].log_option )
-      realtime_arena.print_to_logfile( 'O', 'S',
+      realtime_arena.print_to_logfile( 'O', (int)'S',
                                   (all_string_options[i].label + ":").chars(),
                                   all_string_options[i].value.chars() );
 }

@@ -67,5 +67,5 @@ Extras::die()
 #endif
 
    if( the_arena_controller.is_realtime() )
-     realtime_arena.print_to_logfile( 'D', log_file_char, id );
+     realtime_arena.print_to_logfile( 'D', (int)log_file_char, id );
 }

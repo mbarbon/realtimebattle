@@ -402,7 +402,7 @@ Robot::set_stats(int robots_killed_same_time)
       send_message(DEAD);
       send_signal();
 
-      realtime_arena.print_to_logfile('D', 'R', id, points_this_game);
+      realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game);
     }
 
   stat_t* statp = new stat_t

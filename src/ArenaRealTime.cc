@@ -449,8 +449,8 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
       
     case 'D': // Die
       {
-        char obj_type = va_arg(args, char  );
-        LOG_FILE << obj_type          << " ";  // object type to kill
+        int obj_type = va_arg(args, int  );
+        LOG_FILE << (char)obj_type    << " ";  // object type to kill
         LOG_FILE << va_arg(args, int) << " ";  // object id
         if( obj_type == 'R' )
           LOG_FILE << va_arg(args, double);    // robot points received
@@ -483,7 +483,7 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
 
     case 'O':
       {
-        char option_type = va_arg(args, char);
+        char option_type = (char)va_arg(args, int);
         LOG_FILE << va_arg(args, char*);                        // Option label
         switch( option_type )
           {
@@ -509,6 +509,7 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
     }
 
   LOG_FILE << endl;
+  va_end(args);
 }
 
 void
