@@ -28,6 +28,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Extras.h"
 #include "Shot.h"
 #include "MessageWindow.h"
+#include "ArenaWindow.h"
+#include "Robot.h"
 
 extern class String global_replay_fname;
 extern int global_game_mode;
@@ -40,8 +42,6 @@ ArenaReplay::ArenaReplay()
 
   game_mode = (ArenaBase::game_mode_t)global_game_mode;
   set_filenames( global_replay_fname );
-
-  start_tournament();
 }
 
 ArenaReplay::~ArenaReplay()
@@ -51,17 +51,49 @@ ArenaReplay::~ArenaReplay()
 bool
 ArenaReplay::timeout_function()
 {
-  update_timer();
+  if( state == GAME_IN_PROGRESS || state == BEFORE_GAME_START )
+    update_timer();
 
+  switch( state )
+    {
+    case NOT_STARTED:
+      start_tournament();
+      break;
+    case GAME_IN_PROGRESS:
+      parse_this_interval();
+      break;
+
+    case BEFORE_GAME_START:
+      parse_this_interval();
+      the_gui.get_arenawindow_p()->draw_everything();      
+      set_state( GAME_IN_PROGRESS );
+      break;
+
+    case FINISHED:
+      return false;
+      break;
+
+    default:
+      break;
+    }
+  return true;
+}
+
+bool
+ArenaReplay::parse_this_interval()
+{
   while( !log_file.eof() && total_time >= next_check_time )
     {
       if( next_check_time > last_replay_time )
-        move_shots_no_check( next_check_time - last_replay_time );
+        {
+          move_shots_no_check( next_check_time - last_replay_time );
+          the_gui.get_arenawindow_p()->draw_moving_objects( true );
+        }
 
       last_replay_time = next_check_time;
-      parse_log_line( log_file );
+      parse_log_line();
     }
-
+  
   return true;
 }
   
@@ -80,6 +112,8 @@ ArenaReplay::start_tournament()
       if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
     }
 #endif
+
+  set_state( BEFORE_GAME_START );
 }
   
 void 
@@ -113,12 +147,12 @@ ArenaReplay::end_tournament()
 }
 
 char
-ArenaReplay::parse_log_line( ifstream& file )
+ArenaReplay::parse_log_line()
 {
   char first_letter = '?';
 
-  file >> ws;
-  file.get( first_letter );
+  log_file >> ws;
+  log_file.get( first_letter );
 
   cerr << "first letter: " << first_letter << endl;
   //  bool get_the_rest_of_the_line = true;
@@ -128,13 +162,20 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         int robot_id;
         double x, y, cannon_angle, radar_angle, energy;
-        file >> robot_id >> x >> y >> cannon_angle >> radar_angle >> energy;
-        // change_robot_position( robot_id, x, y, cannon_angle, radar_angle, energy );
+        log_file >> robot_id >> x >> y >> cannon_angle >> radar_angle >> energy;
+        ListIterator<Shape> li;
+        find_object_by_id( object_lists[ROBOT], li, robot_id );
+        Robot* robotp = (Robot*)li();
+
+        if( robotp == (Robot*)NULL )
+          Error( true, "Robot not in list", "ArenaReplay::parse_log_line" );
+        robotp->change_position( x, y, 0.0, cannon_angle, radar_angle, energy );
+        robotp->live();
       }
       break;
     case 'T': // Time
       {
-        file >> next_check_time;
+        log_file >> next_check_time;
         cerr << next_check_time << "  " << total_time << endl;
       }
       break;
@@ -142,8 +183,8 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         int robot_id;
         char message[200];
-        file >> robot_id;
-        file.get( message, 200, '\n' );
+        log_file >> robot_id;
+        log_file.get( message, 200, '\n' );
         // add_message( robot_id, message );
         //        get_the_rest_of_the_line = false;
       }
@@ -152,7 +193,7 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         int cookie_id;
         double x, y;
-        file >> cookie_id >> x >> y;
+        log_file >> cookie_id >> x >> y;
         Cookie* cookiep = new Cookie( Vector2D(x,y), 0.0, cookie_id);
         object_lists[COOKIE].insert_last( cookiep );
       }
@@ -161,7 +202,7 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         int mine_id;
         double x, y;
-        file >> mine_id >> x >> y;
+        log_file >> mine_id >> x >> y;
         Mine* minep = new Mine( Vector2D(x,y), 0.0, mine_id);
         object_lists[MINE].insert_last( minep );
       }
@@ -170,7 +211,7 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         int shot_id;
         double x, y, dx, dy;
-        file >> shot_id >> x >> y >> dx >> dy;
+        log_file >> shot_id >> x >> y >> dx >> dy;
         Shot* shotp = new Shot( Vector2D(x,y), Vector2D(dx,dy), 0, shot_id );
         object_lists[SHOT].insert_last( shotp );
       }
@@ -179,25 +220,43 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         char object_type = '?';
         int object_id;
-        file.get( object_type );
-        file >> object_id;
+        log_file.get( object_type );
+        log_file >> object_id;
         switch( object_type )
           {
           case 'R':
             {
               double points_received;
-              file >> points_received;
+              log_file >> points_received;
               // robot_die( object_id, points_received );
+              ListIterator<Shape> li;             
+              find_object_by_id( object_lists[ROBOT], li, object_id );
+              ((Robot*)li())->die();
             }
             break;
           case 'C':
-            // cookie_die( object_id );
+            {
+              ListIterator<Shape> li;             
+              find_object_by_id( object_lists[COOKIE], li, object_id );
+              ((Cookie*)li())->die();
+              object_lists[COOKIE].remove(li);
+            }
             break;
           case 'M':
-            // mine_die( object_id );
+            {
+              ListIterator<Shape> li;
+              find_object_by_id( object_lists[MINE], li, object_id );
+              ((Mine*)li())->die();
+              object_lists[MINE].remove(li);
+            }
             break;
           case 'S':
-            // shot_die( object_id );
+            {
+              ListIterator<Shape> li;
+              find_object_by_id( object_lists[SHOT], li, object_id );
+              ((Shot*)li())->die();
+              object_lists[SHOT].remove(li);
+            }
             break;
           case '?':
           default:
@@ -208,15 +267,20 @@ ArenaReplay::parse_log_line( ifstream& file )
       break;
     case 'G': // Game begins
       {
+        delete_lists(false, false, false, false, false);
+        reset_timer();
+        next_check_time = 0.0;
         int sequence, game;
-        file >> sequence >> game;
+        log_file >> sequence >> game;
         // game_starts( sequence, game );
+        arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
+        arena_succession = 1;
       }
       break;
     case 'H': // Header
       {
         int gps, rps, seq, robots;
-        file >> gps >> rps >> seq >> robots;
+        log_file >> gps >> rps >> seq >> robots;
         // init( gps, rps, seq, robots );
       }
       break;
@@ -225,27 +289,26 @@ ArenaReplay::parse_log_line( ifstream& file )
         int robot_id;
         char robot_colour[7];
         char name[200];
-        file >> robot_id;
-        file.get( robot_colour, 6, ' ');
-        file.get( name, 200, '\n' );
-        // Robot* robotp = new Robot( robot_id, robot_colour, name );
-        // object_lists[ROBOT].insert_last(robotp); // array bättre?
+        log_file >> robot_id >> ws;
+        log_file.get( robot_colour, 7, ' ');
+        long int col = str2hex( (String)robot_colour );
+        log_file.get( name, 200, '\n' );
+        Robot* robotp = new Robot( robot_id, col, (String)name );
+        object_lists[ROBOT].insert_last(robotp); // array bättre?
         //        get_the_rest_of_the_line = false;
       }
       break;
     case 'A': // Arena file line
       {
-        char arena_line[400];
-        file.get( arena_line, 400, '\n' );
-        // parse_arena_line( arena_line );
+        parse_arena_line( log_file, arena_scale, arena_succession );
       }
       break;
     case 'O': // Option
       {
         char temp;
         char label[200];
-        file.get( label, 200, ':');
-        file.get( temp );
+        log_file.get( label, 200, ':');
+        log_file.get( temp );
         option_return_t opt = the_opts.get_option_from_string( String( label ) );
         switch( opt.datatype )
           {
@@ -253,7 +316,7 @@ ArenaReplay::parse_log_line( ifstream& file )
           case ENTRY_HEX:
             {
               long val;
-              file >> val;
+              log_file >> val;
               cerr << label << ": " << val << endl;
               the_opts.get_all_long_options()[opt.option_number].value = val;
             }
@@ -261,7 +324,7 @@ ArenaReplay::parse_log_line( ifstream& file )
           case ENTRY_DOUBLE:
             {
               double val;
-              file >> val;
+              log_file >> val;
               cerr << label << ": " << val << endl;
               the_opts.get_all_double_options()[opt.option_number].value = val;
             }
@@ -269,7 +332,7 @@ ArenaReplay::parse_log_line( ifstream& file )
           case ENTRY_CHAR:
             {
               char val[400];
-              file.get( val, 400, '\n' );
+              log_file.get( val, 400, '\n' );
               cerr << label << ": " << val << endl;
               the_opts.get_all_string_options()[opt.option_number].value = val;
             }
@@ -293,7 +356,7 @@ ArenaReplay::parse_log_line( ifstream& file )
   //  if( get_the_rest_of_the_line )
   //    {
   //      char buffer[200];
-  //      file.get( buffer, 200, '\n' ); // Ignore the rest of the line
+  //      log_file.get( buffer, 200, '\n' ); // Ignore the rest of the line
   //    }
 
   return first_letter;

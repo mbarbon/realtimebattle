@@ -42,12 +42,17 @@ private:
   void end_sequence            ();
   void end_tournament          ();
 
-  char parse_log_line          ( ifstream& file );
+  char parse_log_line          ();
+  bool parse_this_interval     ();
 
   ifstream log_file;
 
   double last_replay_time;
   double next_check_time;
+
+  // These two vars are used when creating the arena
+  double arena_scale;
+  int arena_succession;
 };
 
 
