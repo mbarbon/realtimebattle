@@ -18,6 +18,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <math.h>
+
+#include "Gui.h"
 #include "Shape.h"
 #include "Various.h"
 

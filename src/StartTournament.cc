@@ -214,19 +214,19 @@ Gui::start_tournament_find_row_in_clist(const int row, GList * list)
 void
 Gui::start_tournament_change_one_selection(const int row, const GtkWidget * clist)
 {
-  GList * list;
+  GList * gl = NULL;
 
   if(clist == robots_in_tournament_clist)
-    list = selected_items_in_robot_tournament;
+    gl = selected_items_in_robot_tournament;
   else if(clist == robots_in_directory_clist)
-    list = selected_items_in_robot_directory;
+    gl = selected_items_in_robot_directory;
   else if(clist == arenas_in_tournament_clist)
-    list = selected_items_in_arena_tournament;
+    gl = selected_items_in_arena_tournament;
   else if(clist == arenas_in_directory_clist)
-    list = selected_items_in_arena_directory;
+    gl = selected_items_in_arena_directory;
 
   start_tournament_glist_info_t * info_p;
-  info_p = start_tournament_find_row_in_clist( row, list );
+  info_p = start_tournament_find_row_in_clist( row, gl );
   if( info_p->selected )
     info_p->selected = false;
   else 
@@ -236,32 +236,31 @@ Gui::start_tournament_change_one_selection(const int row, const GtkWidget * clis
 void
 Gui::start_tournament_change_all_selection(bool robots, bool dir, bool all)
 {
-  GList * gl;
-  GList * list;
-  GtkWidget * clist;
+  GList * gl2 = NULL;
+  GtkWidget * clist = NULL;
 
 
   if( robots && dir )
     {
-      list = selected_items_in_robot_directory;
+      gl2 = selected_items_in_robot_directory;
       clist = robots_in_directory_clist;
     }
   else if(robots && !dir)
     {
-      list = selected_items_in_robot_tournament;
+      gl2 = selected_items_in_robot_tournament;
       clist = robots_in_tournament_clist;
     }
   else if(!robots && dir)
     {
-      list = selected_items_in_arena_directory;
+      gl2 = selected_items_in_arena_directory;
       clist = arenas_in_directory_clist;
     }
   else if(!robots && !dir)
     {
-      list = selected_items_in_arena_tournament;
+      gl2 = selected_items_in_arena_tournament;
       clist = arenas_in_tournament_clist;
     }
-  for(gl = g_list_next(list); gl != NULL; gl = g_list_next(gl))
+  for(GList* gl = g_list_next(gl2); gl != NULL; gl = g_list_next(gl))
     {
       start_tournament_glist_info_t * info_p = (start_tournament_glist_info_t *)gl->data;
       if( all )

@@ -23,11 +23,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
-#include "Arena.h"
+#include "Gui.h"
+#include "MovingObject.h"
 #include "Options.h"
 #include "Error.h"
 #include "Vector2D.h"
-#include "Gui.h"
+
 
 #include "../VERSION"
 
@@ -54,7 +55,7 @@ print_help_message()
 gint
 update_function(gpointer data)
 {  
-  gint res;
+  gint res = 0;
   try
     {
       res = the_arena.timeout_function();

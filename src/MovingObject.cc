@@ -31,13 +31,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdarg.h>
 #endif
 
+#include "Gui.h"
 #include "MovingObject.h"
 #include "Arena.h"
 #include "Extras.h"
 #include "Error.h"
 #include "Options.h"
 #include "Messagetypes.h"
-#include "Gui.h"
 
 Robot::Robot(const String& filename)
 {

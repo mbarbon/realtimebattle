@@ -132,7 +132,7 @@ struct option_info_t
   option_info_t& operator=(const option_info_t& old) { 
     datatype=old.datatype; page=old.page; value=old.value; 
     default_value=old.default_value; min_value=old.min_value; max_value=old.max_value; 
-    max_letters_in_entry=old.max_letters_in_entry; label=old.label;entry=old.entry; }
+    max_letters_in_entry=old.max_letters_in_entry; label=old.label;entry=old.entry; return *this;}
 
 
   entry_datatype_t datatype;

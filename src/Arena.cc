@@ -26,12 +26,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdarg.h>
 #endif
 
-#include "Arena.h"
-#include "MovingObject.h"
-#include "Shape.h"
+#include "Gui.h"
+//#include "Arena.h"
+//#include "MovingObject.h"
+//#include "Shape.h"
 #include "Extras.h"
 #include "Error.h"
-#include "Gui.h"
 #include "Various.h"
 #include "String.h"
 

@@ -24,8 +24,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gdk/gdk.h>
 #include "Vector2D.h"
 #include "Messagetypes.h"
-#include "Options.h"
 #include "Gui.h"
+#include "Shape.h"
+#include "Options.h"
+
 
 
 //This fixes a problem with glib, which can give warning messages about converting NULL 
