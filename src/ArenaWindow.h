@@ -33,6 +33,7 @@ typedef struct _GtkWidget GtkWidget;
 typedef void* gpointer;
 typedef int gint;
 
+
 class ArenaWindow
 {
 public:
@@ -58,7 +59,8 @@ public:
                                      GdkEventExpose* event,
                                      class ArenaWindow* arenawindow_p );
 
-  int boundary2pixel               ( const double in, const int x_or_y );
+  inline int boundary2pixel        ( const double in, const int x_or_y );
+
   void clear_area                  ();
   void draw_everything             ();
   void draw_moving_objects         ( const bool clear_objects_first );
@@ -96,6 +98,16 @@ private:
 
   bool window_shown;
 };
+
+#include "ArenaController.h"
+
+// x_or_y set to 0 means x and x_or_y set to 1 means y
+inline int
+ArenaWindow::boundary2pixel( const double in, const int x_or_y )
+{
+  return (int)( ( in - the_arena.get_boundary()[0][x_or_y] ) *
+                drawing_area_scale + 0.5 );
+}
 
 #endif NO_GRAPHICS
 

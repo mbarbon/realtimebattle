@@ -143,14 +143,6 @@ ArenaWindow::set_window_title()
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }
 
-// x_or_y set to 0 means x and x_or_y set 1 means y
-int
-ArenaWindow::boundary2pixel( const double in, const int x_or_y )
-{
-  return (int)( ( in - the_arena.get_boundary()[0][x_or_y] ) *
-                drawing_area_scale + 0.5 );
-}
-
 void
 ArenaWindow::clear_area()
 {
