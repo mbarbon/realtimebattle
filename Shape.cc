@@ -4,10 +4,13 @@
 void
 Shape::set_colour( int red, int green, int blue )
 {
+  GdkColormap *cmap;
+
+  cmap = gdk_colormap_get_system();
   colour.red = red;
   colour.green = green;
   colour.blue = blue;
-  //  gdk_color_alloc (colormap, &colour);
+  gdk_color_alloc (cmap, &colour);
 }
 
 Line::Line()
@@ -59,6 +62,12 @@ Line::within_distance(const Vector2D& pos, const double size)
           (-dot(y,direction) >= 0 && -dot(y,direction) <= length));
 }
 
+void
+Line::draw_shape(Gui& the_gui)
+{
+  the_gui.draw_line(start_point,direction,length,thickness,colour);
+}
+
 Circle::Circle()
 {
   center = Vector2D(0.0, 0.0);
@@ -94,4 +103,10 @@ Vector2D
 Circle::get_normal(const Vector2D& pos, const Vector2D& vel, const double size)
 {
   return Vector2D(0.0, 0.0);
+}
+
+void
+Circle::draw_shape(Gui& the_gui)
+{
+  the_gui.draw_circle(center,radius,colour,true);
 }

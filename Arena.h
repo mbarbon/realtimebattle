@@ -95,7 +95,7 @@ private:
   double air_resistance;
   double roll_friction;
   double slide_friction;
-  double boundary[4];   // {left, top, rigth, bottom}
+  Vector2D boundary[2];   // {top-left, bottom-right}
 
   Gui* the_gui;
 };
@@ -139,6 +139,7 @@ public:
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, 
                               const double size) = 0;
+  virtual void draw_shape(Gui& the_gui) = 0;
   //virtual void get_args(istream&) = 0;
 
   void set_colour( int red, int green, int blue );
@@ -163,6 +164,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, const double size);
+  void draw_shape(Gui& the_gui);
 
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
@@ -188,6 +190,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
+  void draw_shape(Gui& the_gui);
   
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
