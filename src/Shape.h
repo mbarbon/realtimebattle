@@ -79,8 +79,8 @@ public:
   int get_id() { return id; }
   long int get_rgb_colour() { return rgb_colour; }
 
-  double get_bounce_coeff() { return bounce_coeff; }
-  double get_hardness_coeff() { return hardness_coeff; }
+  double get_bounce_coeff( const double angle=0 ) { return bounce_coeff; }
+  double get_hardness_coeff( const double angle=0 ) { return hardness_coeff; }
 
   //  virtual arenaobject_t get_arenaobject_t() = 0;
 
