@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../messagetypes.h"
 
 static const number_of_object_types = 6;
@@ -30,6 +31,14 @@ check_messages(int sig)
   char text[81];
   message_to_robot_type msg_t;
 
+  srand(time(0));
+
+  if(rand() < (RAND_MAX/40))
+    {
+      robot_rotate = - robot_rotate;
+      cout << "Rotate 1 " << robot_rotate << endl;
+    }
+
   cin.clear();
   while( !cin.eof() )
     {
@@ -43,7 +52,6 @@ check_messages(int sig)
           break;
         case GAME_STARTS:
           cout << "Print I am ready" << endl;
-          robot_rotate = 0.53;
           cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Rotate 6 1.5" << endl;
           acceleration = 0.54;
@@ -70,12 +78,7 @@ check_messages(int sig)
                     acceleration = 1.0;
 
                   if( old_acc != acceleration )
-                    {
-                      cout << "Acceleration " << acceleration << endl;
-                      if( acceleration == 0.0 )
-                        robot_rotate = -robot_rotate;
-                      cout << "Rotate 1 " << robot_rotate << endl;
-                    }
+                    cout << "Acceleration " << acceleration << endl;
                 }
                 break;
               case SHOT:
@@ -134,6 +137,7 @@ main(int argc, char * argv[])
 {
   signal (SIGUSR1, check_messages);
 
+  robot_rotate = 0.53;
 
   for(;;sleep(1))
     {
