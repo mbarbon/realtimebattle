@@ -108,7 +108,7 @@ Robot::is_process_running()
 void
 Robot::end_process()
 {
-  send_message(EXIT_ROBOT);
+  send_message(SAVE_DATA);
   send_signal();
 }
 
@@ -380,60 +380,11 @@ Robot::get_messages()
         case COLOUR:
           if( the_arena->get_state() != Arena::STARTING_ROBOTS ) break;
           {
-            bool got_colour=false;
-            long colour,robot_colour[2];
-            GdkColor tmp_colour;
+            long home_colour, away_colour;
 
-            *instreamp >> hex >> robot_colour[0] >> robot_colour[1] >> dec;
-            GList* all_robots_in_sequence;
-            GList* gl;
-
-            all_robots_in_sequence = the_arena->get_all_robots_in_sequence();
-            while( !got_colour )
-              {
-                bool not_colour[2] = { false, false };
-                for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl))
-                  {
-                    if((Robot *)gl->data != this)
-                      {
-                        for(int i=0; i<2; i++)
-                          {
-                            bool red=false, green=false, blue=false;
-
-                            tmp_colour = ((Robot*)gl->data)->get_colour();
-                            if((tmp_colour.red + 0x5000 >= ((robot_colour[i] & 0xff0000) >> 16 ) * 0x101) &&
-                               (tmp_colour.red - 0x5000 <= ((robot_colour[i] & 0xff0000) >> 16 ) * 0x101))
-                              red=true;
-                            if((tmp_colour.green + 0x5000 >= ((robot_colour[i] & 0x00ff00) >> 8 ) * 0x101) &&
-                               (tmp_colour.green - 0x5000 <= ((robot_colour[i] & 0x00ff00) >> 8 ) * 0x101))
-                              green=true;
-                            if((tmp_colour.blue + 0x5000 >= (robot_colour[i] & 0x0000ff) * 0x101) &&
-                               (tmp_colour.blue - 0x5000 <= (robot_colour[i] & 0x0000ff) * 0x101))
-                              blue=true;
-                            if(red && green && blue)
-                              not_colour[i] = true;
-                          }
-                      }
-                  }
-                if(!not_colour[0])
-                  {
-                    colour = robot_colour[0];
-                    got_colour = true;
-                  }
-                else if(!not_colour[1])
-                  {
-                    colour = robot_colour[1];
-                    got_colour = true;
-                  }
-                else
-                  {
-                    robot_colour[0] = rand();
-                    robot_colour[1] = rand();
-                    got_colour = false;
-                  }
-              }
-
-            set_colour( colour );
+            *instreamp >> hex >> home_colour >> away_colour >> dec;
+  
+            set_colour(the_arena->find_free_color(home_colour, away_colour, this));
           }
           break;
         case ROTATE: 
@@ -477,6 +428,16 @@ Robot::get_messages()
             send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
           else
             acceleration = acc;
+          break;
+        case LOAD_DATA:
+          // TODO: Load data
+          break;
+        case SAVE_DATA_FINISHED:
+          send_message(EXIT_ROBOT);
+          send_signal();
+          break;
+        case BIN_DATA_FROM:
+          // TODO: Receive data
           break;
         default:
           throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
