@@ -388,6 +388,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
 #endif
           gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
           gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Name") );
+          gtk_clist_column_title_passive( GTK_CLIST( clist ), 0 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 5 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 120 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
@@ -406,6 +407,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
 #endif
           gtk_clist_set_column_title( GTK_CLIST( clist ), 0, _("Seq") );
           gtk_clist_set_column_title( GTK_CLIST( clist ), 1, _("Game") );
+          gtk_clist_column_title_active( GTK_CLIST( clist ), 0 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 40 );
           gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 45 );
           gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
