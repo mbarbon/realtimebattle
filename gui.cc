@@ -37,24 +37,25 @@ static char * colour_square[] =
 void
 no_zoom_callback(GtkWidget *widget, gpointer data)
 {
-  the_gui.change_zoom( NO_ZOOM );
+  the_gui.change_zoomfactor( NO_ZOOM );
 }
 
 void
 zoom_in_callback(GtkWidget *widget, gpointer data)
 {
-  the_gui.change_zoom( ZOOM_IN );
+  the_gui.change_zoomfactor( ZOOM_IN );
 }
 
 void
 zoom_out_callback(GtkWidget *widget, gpointer data)
 {
-  the_gui.change_zoom( ZOOM_OUT );
+  the_gui.change_zoomfactor( ZOOM_OUT );
 }
 
 gint
 redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
+  the_gui.change_zoom();
   the_gui.draw_all_walls();
   return FALSE;
 }
@@ -76,27 +77,33 @@ Gui::Gui()
   else
       robotdir = "Robots/";
 
+  if(robotdir[robotdir.get_length() - 1] == '/')
+    robotdir += '/';
+
   if(NULL != getenv("RTB_ARENADIR"))
       arenadir = getenv("RTB_ARENADIR");
   else
       arenadir = "Arenas/";
+
+  if(arenadir[arenadir.get_length() - 1] == '/')
+    arenadir += '/';
 }
 
-double
-Gui::get_zoom()
+void
+Gui::change_zoom()
 {
   double w = (double)(drawing_area->allocation.width);
   double h = (double)(drawing_area->allocation.height);
   double bw = boundary[1][0] - boundary[0][0];
   double bh = boundary[1][1] - boundary[0][1];
   if( w / bw >= h / bh )
-    return( h / bh );
+    zoom = h / bh;
   else
-    return( w / bw );
+    zoom = w / bw;
 }
 
 void
-Gui::change_zoom( const zoom_t type )
+Gui::change_zoomfactor( const zoom_t type )
 {
   switch( type )
     {
@@ -114,14 +121,13 @@ Gui::change_zoom( const zoom_t type )
   gtk_widget_set_usize(drawing_area,
                        ( da_scrolled_window->allocation.width - 50 ) * zoomfactor,
                        ( da_scrolled_window->allocation.height - 50 ) * zoomfactor);
-  draw_all_walls();
 }
 
 int
 Gui::change_to_pixels_x(const double input)
 {
   double res;
-  res = (input-boundary[0][0])*get_zoom() + 0.5;
+  res = (input-boundary[0][0])*zoom + 0.5;
   return (int)res;
 }
 
@@ -129,7 +135,7 @@ int
 Gui::change_to_pixels_y(const double input)
 {
   double res;
-  res = (input-boundary[0][1])*get_zoom() + 0.5;
+  res = (input-boundary[0][1])*zoom + 0.5;
   return (int)res;
 }
 
@@ -183,14 +189,6 @@ Gui::draw_objects()
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
       ((Shot*)gl->data)->draw_shape( true );
-
-  for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
-    if( ((Mine*)gl->data)->is_alive() )
-      ((Mine*)gl->data)->draw_shape( true );
-
-  for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
-    if( ((Cookie*)gl->data)->is_alive() )
-      ((Cookie*)gl->data)->draw_shape( true );
 }
 
 void
@@ -202,6 +200,14 @@ Gui::draw_all_walls()
   object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
     ((Shape*)(WallCircle*)gl->data)->draw_shape( false ); // Strange, but it works!
+
+  for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
+    if( ((Mine*)gl->data)->is_alive() )
+      ((Mine*)gl->data)->draw_shape( false );
+
+  for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
+    if( ((Cookie*)gl->data)->is_alive() )
+      ((Cookie*)gl->data)->draw_shape( false );
 }
 
 void
@@ -213,7 +219,7 @@ Gui::draw_circle( const Vector2D& center, const double radius, GdkColor& colour,
   gdk_gc_set_foreground( colour_gc, &colour );
 
   double r;
-  if( (r = radius*get_zoom()) > 1.0 )
+  if( (r = radius*zoom) > 1.0 )
     {
       gdk_draw_arc (drawing_area->window,
                     colour_gc,
@@ -621,6 +627,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
   gdk_window_clear (drawing_area->window);
 
   clear_area();
+  change_zoom();
 }
 
 void
