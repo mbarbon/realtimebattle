@@ -24,10 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/stat.h>
 #include <iostream.h>
 #include <iomanip.h>
-
-#ifdef USE_STDARG_H
 #include <stdarg.h>
-#endif
 
 #include "Gui.h"
 //#include "Arena.h"
