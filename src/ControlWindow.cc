@@ -703,12 +703,16 @@ void
 ControlWindow::step_forward( GtkWidget* widget,
                              class ControlWindow* cw_p )
 {
+  cout << "Stepping forward" << endl;
+  replay_arena.step_forward( 1 );  
 }
 
 void
 ControlWindow::step_backward( GtkWidget* widget,
                               class ControlWindow* cw_p )
 {
+  cout << "Stepping backward" << endl;
+  replay_arena.step_forward( -1 );  
 }
 
 void
@@ -743,6 +747,9 @@ void
 ControlWindow::change_current_replay_time( GtkAdjustment *adj,
                                            class ControlWindow* cw_p )
 {
+  //  cout << "Changing replay time" << endl;
+  //  replay_arena.change_replay_time( 10.5 );  // How get the correct value?  
+
 }
 
 void
