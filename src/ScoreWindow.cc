@@ -213,9 +213,9 @@ ScoreWindow::add_robots()
       int row = gtk_clist_append( GTK_CLIST( clist ), empty_list );
 
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
-                                the_arena.get_foreground_colour_p() );
+                                the_arena.get_fg_gdk_colour_p() );
       gtk_clist_set_background( GTK_CLIST( clist ), row,
-                                the_arena.get_background_colour_p() );
+                                the_arena.get_bg_gdk_colour_p() );
 
       robot_p->set_row_in_score_clist( row );
 

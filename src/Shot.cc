@@ -104,7 +104,7 @@ Shot::die()
    alive = false;
 #ifndef NO_GRAPHICS
    if (!no_graphics )
-     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
+     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_bg_gdk_colour_p()),true);
 #endif
 
   if( the_arena_controller.is_realtime() )
