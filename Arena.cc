@@ -11,7 +11,9 @@ Arena::Arena()
   all_robots_in_tournament = g_list_alloc();
   solid_objects = g_list_alloc();
   arena_filenames = g_list_alloc();
-  robot_size = 1.0;
+  robot_radius = 0.5;
+  shot_radius = 0.05;
+  shot_speed = 1.0;
   for(int i=ROBOT; i<EXPLOSION; i++)
     object_lists[i] = g_list_alloc();
   the_gui = new Gui;
@@ -115,7 +117,8 @@ Arena::remove_from_solid_object_list(class Shape& obj)
 
 
 double
-Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, object_type& closest_shape)
+Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, 
+                             object_type& closest_shape, void* colliding_object)
 {
   double dist = infinity;
   double d;
@@ -130,6 +133,7 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
       if( d < dist)
         {
           closest_shape = ((ArenaObject*)(WallCircle*)gl->data)->get_object_type();   // Strange, but it works !!
+          colliding_object = (void*)objp;
           dist = d;
         }
     }
@@ -197,7 +201,7 @@ void
 Arena::update()
 {
   //update_explosions();
-  //move_shots();
+  move_shots();
   update_robots();
   the_gui->draw_objects( this );
 }
@@ -209,6 +213,26 @@ Arena::update_timer()
   gulong microsecs;
   total_time = g_timer_elapsed(timer, &microsecs);
   timestep = total_time - last_time;
+}
+
+void
+Arena::move_shots()
+{
+  GList* gl;
+  Shot* shotp;
+
+  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      shotp = (Shot*)gl->data;
+
+      if( shotp->is_alive() ) shotp->move(timestep);
+
+      if( !shotp->is_alive() ) 
+        {
+          remove_from_solid_object_list(*shotp);
+          remove_from_list(*shotp);
+        }
+    }
 }
 
 void
@@ -256,13 +280,13 @@ Arena::start_game()
       for( int i=0; i<100 && !found_space; i++)
         {
           pos = get_random_position();
-          found_space = space_available(pos, robot_size);
+          found_space = space_available(pos, robot_radius);
         }
 
       if( !found_space )
         throw Error("Couldn't find space for all robots", "Arena::start_game");
       angle = (double)rand()*2.0*M_PI;
-      robotp->set_initial_position_and_direction(pos, angle, robot_size);
+      robotp->set_initial_position_and_direction(pos, angle, robot_radius);
     }
 
   // Make list of living robots and tell them to get ready

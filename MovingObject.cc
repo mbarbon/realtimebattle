@@ -137,8 +137,21 @@ Robot::update_radar_and_cannon(const double timestep)
   cannon_angle += timestep*cannon_speed;
   robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
-  double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape);
+  Shape* col_obj;
+  double dist = the_arena->get_shortest_distance(center, velocity, 0.0, closest_shape, col_obj);
   send_message(RADAR, dist, closest_shape);
+}
+
+void
+Robot::bounce_on_wall(Wall* colliding_object)
+{
+  velocity = -velocity;  // TODO: bounce on wall
+}
+
+void
+Robot::bounce_on_robot(Robot* colliding_object)
+{
+  velocity = -velocity;  // TODO: bounce on robot
 }
 
 void
@@ -146,6 +159,8 @@ Robot::set_initial_position_and_direction(const Vector2D& pos, double angle, dou
 {
   center = pos;
   robot_angle = angle;
+  cannon_angle = angle;
+  radar_angle = angle;
   radius = size;
   velocity = Vector2D(0.7, 0.0); // Just for testing! 
 }
@@ -155,14 +170,36 @@ Robot::move(const double timestep)
 {
   velocity = 0.99*velocity + timestep*acceleration*Vector2D(cos(robot_angle),sin(robot_angle));  // TODO: acceleration update
   object_type closest_shape;
-  double dist = the_arena->get_shortest_distance(center, velocity, radius, closest_shape);
-  if( dist > timestep )
+  void* colliding_object;
+  double time_to_collision = the_arena->get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
+  if( time_to_collision > timestep )
     {
       center += timestep*velocity;
     }
   else
     {
-      alive = false; // TODO: Bouncing et al
+      double time_remaining = timestep - time_to_collision; 
+      center += (time_to_collision - 0.00001)*velocity;
+
+      switch( closest_shape )
+        {
+        case WALL:
+          bounce_on_wall((Wall*)colliding_object);
+          break;
+        case ROBOT:
+          bounce_on_robot((Robot*)colliding_object);
+          break;
+        case SHOT:
+          break;
+        case COOKIE:
+          break;
+        case MINE:
+          break;
+        default:
+          throw Error("Collided with unknown object", "Robot::move");
+          break;
+        }
+      if( alive ) move( time_remaining );
     }
 }
 
@@ -244,11 +281,26 @@ Robot::get_messages()
           the_arena->get_the_gui()->print_to_message_output(robot_name.str, text, colour);
           break;
         case SHOOT:
-          // pang!
-          // TODO: Shooting
+          {
+            double energy;
+            *instreamp >> energy;
+            Vector2D dir = Vector2D(cos(cannon_angle),sin(cannon_angle));
+            double shot_radius = the_arena->get_shot_radius();
+            Shot* shotp = new Shot( center + (radius+1.5*shot_radius)*dir, 
+                                    shot_radius,
+                                    dir * the_arena->get_shot_speed(),
+                                    energy );
+            the_arena->add_to_list(*shotp);
+            the_arena->add_to_solid_object_list(*shotp);
+          }
           break;
         case ACCELERATE:
-          // TODO: acceleration
+          double acc;
+          *instreamp >> acc;
+          if( acc < 0.0 || acc > the_arena->get_max_acceleration() )
+            send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
+          else
+            acceleration = acc;
           break;
         default:
           throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
@@ -275,4 +327,56 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy += energy_diff;
+  if( energy <= 0.0 ) die();
+}
+
+Shot::Shot(const Vector2D& c, const double r, 
+           const Vector2D& vel, const double en) 
+  : MovingObject(vel), Circle(c, r)
+{
+  alive = true;
+  energy = en;
+}
+
+void
+Shot::move(const double timestep)
+{
+  object_type closest_shape;
+  void* colliding_object;
+  double time_to_collision = the_arena->get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
+  if( time_to_collision > timestep )
+    {
+      center += timestep*velocity;
+    }
+  else
+    {
+      switch( closest_shape )
+        {
+        case WALL:
+          // TODO: shot explode on wall ?
+          die();
+          break;
+        case ROBOT:
+          ((Robot*)colliding_object)->change_energy(-energy);
+          break;
+        case SHOT:
+          // TODO: shot explode on shot ?
+          ((Shot*)colliding_object)->die();
+          die();
+          break;
+        case COOKIE:
+          break;
+        case MINE:
+          break;
+        default:
+          throw Error("Collided with unknown object", "Robot::move");
+          break;
+        }
+    }
+}
+
+void
+Shot::die()
+{
+   alive = false;
 }

@@ -28,7 +28,8 @@ public:
   ~Arena();
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
-                               const double size, object_type& closest_shape);
+                               const double size, object_type& closest_shape, 
+                               void* colliding_object );
 
   bool space_available(const Vector2D& pos, const double margin);
 
@@ -41,7 +42,16 @@ public:
   Vector2D get_random_position();
   GList** get_object_lists() { return object_lists; }
   Gui* get_the_gui() { return the_gui; }
-  
+  double get_max_acceleration() { return max_acceleration; }
+  double get_shot_radius() { return shot_radius; }
+  double get_shot_speed() { return shot_speed; }
+  double get_robot_radius() { return robot_radius; }
+
+  void add_to_list(class ArenaObject&);
+  void remove_from_list(class ArenaObject&);
+  void add_to_solid_object_list(class Shape&);
+  void remove_from_solid_object_list(class Shape&);
+
   enum state_t { NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, 
                  SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
   
@@ -71,12 +81,6 @@ private:
 
   void end_tournament();
 
-
-  void add_to_list(class ArenaObject&);
-  void remove_from_list(class ArenaObject&);
-  void add_to_solid_object_list(class Shape&);
-  void remove_from_solid_object_list(class Shape&);
-
   GList* object_lists[number_of_object_types];
   
   GList* all_robots_in_tournament;
@@ -90,12 +94,15 @@ private:
   int current_arena_nr;
   int robots_left;
   int robots_per_game;
-  double robot_size;
+  double robot_radius;
+  double shot_radius;
+  double shot_speed;
   state_t state;
   
   double air_resistance;
   double roll_friction;
   double slide_friction;
+  double max_acceleration;
   Vector2D boundary[2];   // {top-left, bottom-right}
 
   Gui* the_gui;
@@ -273,8 +280,9 @@ private:
 class MovingObject : public virtual ArenaObject
 {
 public:
-  //MovingObject(const Vector2D& c, const double r); 
-  //~MovingObject() {}
+  MovingObject::MovingObject() {}
+  MovingObject(const Vector2D& vel) : velocity(vel) {}
+  ~MovingObject() {}
 
   virtual void move(const double timestep) = 0;
 
@@ -294,6 +302,8 @@ public:
   
   void move(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
+  void bounce_on_wall(Wall* colliding_object);
+  void bounce_on_robot(Robot* colliding_object);
   void change_energy(const double energy_diff);
   void get_messages();
   void send_message(enum message_to_robot_type ...);
@@ -343,9 +353,14 @@ public:
   ~Shot() {}
 
   void move(const double timestep);
-  object_type get_object_type() { return SHOT; }
-private:
+  void die();
+  bool is_alive() { return alive; }
 
+  object_type get_object_type() { return SHOT; }
+
+private:
+  bool alive;
+  double energy;
 };
 
 class Error
