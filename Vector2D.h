@@ -34,6 +34,8 @@ public:
   Vector2D& normalize();  
   friend Vector2D unit(const Vector2D&);  
   friend double vedge(const Vector2D&, const Vector2D&);  
+  friend Vector2D rotate(const Vector2D&, const double angle);  
+  friend Vector2D rotate90(const Vector2D&);  
   friend double dot(const Vector2D&, const Vector2D&);  
 
 private:

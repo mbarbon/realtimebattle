@@ -70,6 +70,19 @@ vedge(const Vector2D& vec1, const Vector2D& vec2)
 }
 
 Vector2D
+rotate(const Vector2D& vec, const double angle)
+{
+  return( Vector2D(cos(angle)*vec[0]-sin(angle)*vec[1], 
+                   sin(angle)*vec[0]+cos(angle)*vec[1]) ); 
+}
+
+Vector2D
+rotate90(const Vector2D& vec)
+{
+  return( Vector2D(-vec[1], vec[0]) );
+}
+
+Vector2D
 operator*(const Vector2D& vec, const double factor)
 {
   Vector2D prod(vec);
