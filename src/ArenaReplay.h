@@ -53,6 +53,8 @@ private:
   double last_replay_time;
   double current_replay_time;
 
+  bool log_from_stdin;
+
   // These two vars are used when creating the arena
   double arena_scale;
   int arena_succession;
