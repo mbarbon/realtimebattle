@@ -70,7 +70,7 @@ private:
 
   ifstream log_file;
 
-  double last_replay_time;
+  //  double last_replay_time;
   double current_replay_time;
 
   bool log_from_stdin;
@@ -84,6 +84,15 @@ private:
   {
     streampos pos;
     float time;
+  };
+
+  struct object_pos_info_t
+  {
+    object_type obj;
+    streampos pos;
+    float start_time;
+    float end_time;
+    Vector2D vel; // For shots
   };
 
   time_pos_info_t* time_position_in_log;

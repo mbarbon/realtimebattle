@@ -142,13 +142,13 @@ ArenaReplay::parse_this_interval()
   if( fast_forward_factor > 0.0 )
     while( !log_file.eof() && total_time >= current_replay_time )
       {
-        parse_log_line();
+        parse_this_time_index();
       }
   else
     {
-    while( !log_file.eof() && total_time <= current_replay_time )
+    while( !log_file.eof() && total_time <= current_replay_time && 
+           step_forward(-1, false) )
       {
-        step_forward(-1, false);
         parse_this_time_index();
       }
     }
@@ -169,23 +169,60 @@ ArenaReplay::parse_this_interval()
 void
 ArenaReplay::parse_this_time_index()
 {
+  double last_replay_time = current_replay_time;
+
   if( log_file.peek() == 'T' )
     parse_log_line();
+  else
+    {
+      cout << "'T' not first in log_file for parse_this_time_index()" << endl;
+      cout << "log_file.peek(): " << log_file.peek() << endl;
+      cout << "current_replay_time: " << current_replay_time << endl;
+    }
 
-  double last_replay_time = current_replay_time;
+  double next_replay_time = current_replay_time;
   streampos strpos = log_file.tellg();
 
-  while( current_replay_time == last_replay_time )
+  while( current_replay_time == next_replay_time )
     {
       strpos = log_file.tellg();
       parse_log_line();
+      if ( current_replay_time == 0.0 ) next_replay_time = 0.0; // A new game has started
     }
 
   // We have read the next 'T'-line, which we shouldn't: Step back!
 
   log_file.seekg(strpos);
   log_file.clear();
-  current_replay_time = last_replay_time;
+
+  current_replay_time = next_replay_time;
+  move_shots_no_check( current_replay_time - last_replay_time );
+
+#ifndef NO_GRAPHICS
+        if( !no_graphics )
+          the_gui.get_arenawindow_p()->draw_moving_objects( true );
+#endif NO_GRAPHICS
+
+  // check if robots have died and set their points
+  if( robots_killed_this_round > 0 )
+    {
+      ListIterator<Shape> li;
+      Robot* robotp;
+      for( object_lists[ROBOT].first(li); li.ok(); li++ )
+        {                
+          robotp = (Robot*)li();
+          if( robotp->is_alive() )
+            {
+              robotp->add_points(robots_killed_this_round);
+#ifndef NO_GRAPHICS
+              if( robots_left < 15 && !no_graphics ) 
+                robotp->display_score();
+#endif
+            }
+        }
+      robots_left -= robots_killed_this_round; 
+      robots_killed_this_round = 0;
+    }
 }
   
 void 
@@ -270,37 +307,7 @@ ArenaReplay::parse_log_line()
       break;
     case 'T': // Time
       {
-        last_replay_time = current_replay_time;
         log_file >> current_replay_time;
-        //        cerr << current_replay_time << "  " << total_time << endl;
-
-        move_shots_no_check( current_replay_time - last_replay_time );
-
-#ifndef NO_GRAPHICS
-        if( !no_graphics )
-          the_gui.get_arenawindow_p()->draw_moving_objects( true );
-#endif NO_GRAPHICS
-
-        // check if robots have died and set their points
-        if( robots_killed_this_round > 0 )
-          {
-            ListIterator<Shape> li;
-            Robot* robotp;
-            for( object_lists[ROBOT].first(li); li.ok(); li++ )
-              {                
-                robotp = (Robot*)li();
-                if( robotp->is_alive() )
-                  {
-                    robotp->add_points(robots_killed_this_round);
-#ifndef NO_GRAPHICS
-                    if( robots_left < 15 && !no_graphics ) 
-                      robotp->display_score();
-#endif
-                  }
-              }
-            robots_left -= robots_killed_this_round; 
-            robots_killed_this_round = 0;
-          }
       }
       break;
     case 'P': // Print a robot message
@@ -530,6 +537,8 @@ ArenaReplay::parse_log_line()
       break;
     }
 
+  log_file >> ws;
+
   return first_letter;
 }
 
@@ -634,6 +643,8 @@ ArenaReplay::change_game( const int inc_game, const int inc_seq )
   cout << log_file.tellg() << " " << (char)log_file.peek() << endl;
 }
 
+
+// returns true if the step forward succeded
 bool   
 ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
 {
@@ -647,6 +658,7 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
       
       if( index >= 0 && index <= max_time_infos && time_position_in_log[index].pos > 0 )
         {
+          double last_replay_time = current_replay_time;
           current_replay_time = time_position_in_log[index].time;
           log_file.seekg( time_position_in_log[index].pos );
 
@@ -655,7 +667,14 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
               total_time = time_position_in_log[index].time + 0.00001;
               update_timer(0.0);  
               parse_this_time_index();
-            }
+            }  
+          move_shots_no_check( current_replay_time - last_replay_time );
+
+#ifndef NO_GRAPHICS
+          if( !no_graphics )
+            the_gui.get_arenawindow_p()->draw_moving_objects( true );
+#endif NO_GRAPHICS
+
           return true;
         }
       else
@@ -938,8 +957,8 @@ ArenaReplay::get_time_positions_in_game()
       switch( letter )
         {
         case 'T':
+          time_position_in_log[time_pos_index].pos = log_file.tellg() - 1;
           log_file >> cur_time;
-          time_position_in_log[time_pos_index].pos = log_file.tellg();
           time_position_in_log[time_pos_index].time = cur_time;
               
           time_pos_index++;
