@@ -27,9 +27,9 @@ endif
 
 #Note the gui-lib should be taken via configure
 RealTimeBattle_LDFLAGS = -export-dynamic
-RealTimeBattle_LDADD = $(top_srcdir)/src/Gadgets/libRTB_Gadgets.a \
+RealTimeBattle_LDADD = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
 	$(GETOPT_O) $(INTLLIBS) $(CCMALLOC_O) $(STDCXX_LIBS) $(THREAD_LIBS)
-RealTimeBattle_DEPENDENCIES = $(top_srcdir)/src/Gadgets/libRTB_Gadgets.a \
+RealTimeBattle_DEPENDENCIES = $(top_builddir)/src/Gadgets/libRTB_Gadgets.a \
 	$(GETOPT_O) $(INTLDEPS) $(GUI_OBJS)
 RealTimeBattle_SOURCES = \
 	Arena.cc Arena.h \
