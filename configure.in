@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
 # Process this file with autoconf to produce a configure script.
 # ---------------------------------------------------------------------------
-AC_INIT(src/RealTimeBattle.cc)
+AC_INIT(src/Core/RealTimeBattle.cc)
 
 # ---------------------------------------------------------------------------
 # Check for host type
@@ -736,6 +736,8 @@ AC_OUTPUT([
    Robots/rotate_and_fire/Makefile
    Robots/empty/Makefile
    src/Makefile
+   src/Core/Makefile
+   src/Common/Makefile
    src/Network/Makefile
    src/Gadgets/Makefile
    src/Gui/Makefile
