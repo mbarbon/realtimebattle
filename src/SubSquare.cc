@@ -23,14 +23,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <set>
-
+#include <math.h>
 
 #include "SubSquare.h"
 #include "Shape.h"
 
 
+
 void
-SubSquare::add(const Shape* s)
+SubSquare::add(Shape* s)
 {
   shapes.insert(s);
 }
@@ -39,10 +40,42 @@ SubSquare::add(const Shape* s)
 void
 SubSquare::clean()
 {
-  set<const Shape*>::iterator li;
+  set<Shape*>::iterator li;
   for( li = shapes.begin(); li != shapes.end(); li++ )
     {
       if( ! (*li)->is_still_inside_subsquare(*this) )
         shapes.erase(li);
     }
+}
+
+
+double
+SubSquare::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
+                                  const double size, object_type& closest_shape, 
+                                  Shape*& colliding_object, const Shape* from_shape)
+{
+  double dist = DBL_MAX;
+  double d;
+  closest_shape = NOOBJECT;
+
+  set<Shape*>::iterator li;
+
+  for( li = shapes.begin(); li != shapes.end() ; li++)
+    {
+      if( (*li) != from_shape )
+        {
+          d = (*li)->get_distance(pos, dir, size);
+          if( d < dist)
+            {
+
+              // How should the object type be found ?
+              //              closest_shape = (object_type)obj_type;
+              colliding_object = (*li);
+              dist = d;
+            }
+        }
+    }
+
+
+  return dist;
 }

@@ -38,12 +38,12 @@ public:
 
   void clean();  // removes shapes which are no longer inside the subsquare
 
-  void add(const Shape* s);
+  void add(Shape* s);
 
-  inline double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
-                                      const double size, enum object_type& closest_shape, 
-                                      Shape*& colliding_object, 
-                                      const class Robot* the_robot = NULL ) {return 0.0; }
+  double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
+                               const double size, enum object_type& closest_shape, 
+                               Shape*& colliding_object, 
+                               const class Shape* from_shape = NULL );
 
   friend class Arena;  // the arena needs to access the shapes smoothly
 
@@ -55,7 +55,7 @@ protected:
 
   // This set contains _at least_ the shapes which are inside the subsquare.
   // It should be cleaned up once in a while to get rid of garbage.
-  set<const Shape*> shapes;  
+  set<Shape*> shapes;  
   
 
   Vector2D top_left;
