@@ -282,6 +282,9 @@ should send. The range is between 0 and 5, where 0 means no debugging and 5 is t
 debugging, i.e. all debug-messages should be send.
 </descrip>
 
+When you are replaying a logfile (not from stdout) there are a number of widgets to
+control the replaying. See further in the chapter about <ref id="replaying" name="replaying">.
+
 <sect1>Start new tournament window<label id="Start new tournament window">
 <p>
 To select robots and arenas for the tournament, mark the files to the
@@ -686,7 +689,8 @@ as the program is started</em>:
 <verb>
 cout << "RobotOption " << USE_NON_BLOCKING << " " << 0 << endl;
 </verb>
-
+Note that this is strictly c++ code. If you don't use c++ just print the given
+information to stdout. endl is equal to 'end of line'.
 
 <tag>Select:</tag> Using the Unix libc function <tt>select</tt> makes it
 possible for the robot to have better control over when to look for new
@@ -700,6 +704,7 @@ as the program is started</em>:
 <verb>
 cout << "RobotOption " << USE_NON_BLOCKING << " " << 1 << endl;
 </verb>
+Note that this is strictly c++ code.
 
 <tag>Signals:</tag> If you want, you can tell RealTimeBattle to send the
 robot a signal whenever a new message is sent. This method makes it
@@ -714,6 +719,7 @@ as the program is started</em>:
 cout << "RobotOption " << USE_NON_BLOCKING << " " << 1 << endl;
 cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
 </verb>
+Note that this is strictly c++ code.
 
 You can of course choose any signal you want instead of <tt>SIGUSR1</tt>.
 
