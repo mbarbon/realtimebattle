@@ -16,10 +16,11 @@ using the radar to examine the environment and the cannon to shoot.
 %setup -n RealTimeBattle
 
 %build
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
+./configure --enable-rpm="$RPM_OPT_FLAGS"
+make
 
 %install
-make rpm-install
+make install
 %post
 install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 %preun
