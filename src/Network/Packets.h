@@ -10,6 +10,29 @@
 
 class SocketServer;
 
+
+/* TODO : Continue the definition and put the preprocesor conditions 
+ *        on to use only the class we need for each app 
+ */
+
+#ifdef METASERVER_APP
+#  define USE_METASERVER_INITIALIZATION_PACKET
+#  define USE_METASERVER_ASKINFO_PACKET
+#endif
+
+#ifdef SERVER_APP
+#  define USE_METASERVER_INITIALIZATION_PACKET
+#  define USE_METASERVER_ASKINFO_PACKET
+#  define USE_INITIALIZATION_PACKET 
+#endif
+
+#ifdef CLIENT_APP
+#  ifdef CHAT_APP
+#  endif
+#  ifdef ROBOT_APP
+#  endif
+#endif
+
 enum packet_t
 {
   PACKET_INIT = 1, //Otherwise we gonna have problems with eof '\0'
