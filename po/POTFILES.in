@@ -16,4 +16,5 @@ src/Gui/Gtk/OptionsWindow.cc
 src/Gui/Gtk/ScoreWindow.cc
 src/Gui/Gtk/StatisticsWindow.cc
 src/Gui/Gtk/StartTournamentWindow.cc
+src/Gui/none/Gui.cc
 Robots/rotate_and_fire/rotate_and_fire.cc
