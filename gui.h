@@ -114,7 +114,7 @@ public:
 
   void change_stat_type( stat_table_t type );
   void change_statistics( int change, bool absoult_change );
-  void add_new_row( void * rp, void * sp );
+  void add_new_row( void * rp, void * sp, int games_played );
   void add_the_statistics_to_clist();
   void stat_make_title_button();
   void save_statistics_to_file();
