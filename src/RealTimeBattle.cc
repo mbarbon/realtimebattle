@@ -342,12 +342,14 @@ main ( int argc, char* argv[] )
 
 
   gint timeout_tag;      
-  timeout_tag = gtk_timeout_add( 40, GtkFunction(update_function), (gpointer) NULL);
+  double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
+  timeout_tag = gtk_timeout_add( (unsigned int) interval,
+                                 GtkFunction(update_function), (gpointer) NULL );
 
   gtk_main();
 #else !NO_GRAPHICS
   
-  update_function( 50 * 1000 );
+  update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
   
 #endif !NO_GRAPHICS
 
