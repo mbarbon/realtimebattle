@@ -144,7 +144,8 @@ class RotateAndFire raf_obj;
 // The constructor. Initialize standard values of robot_rotate,
 // acceleration and brake_value.
 // Robot options is also sent here.
-// We wnat the SIGUSR1 signal to be sent to us.
+// We want the SIGUSR1 signal to be sent to us.
+// We want a message when RotateTo or RotateAmount is finished
 RotateAndFire::RotateAndFire()
 {
   robot_rotate = 0.53;
@@ -152,6 +153,7 @@ RotateAndFire::RotateAndFire()
   brake_value = 0.0;
 
   robot_option( SIGNAL, SIGUSR1 );
+  robot_option( SEND_ROTATION_REACHED, 1 );
 }
 
 // Function for sending messages from robot. 
@@ -340,7 +342,7 @@ RotateAndFire::game_starts()
 
   rotate_allowed = true;
   shots_hit = 0;
-  last_shot_hit_time = 0;
+  last_shot_hit_time = -2.0;
   current_time = 0;
 
   rotate( 1, robot_rotate );
@@ -435,7 +437,7 @@ RotateAndFire::info( const double time, const double speed,
 {
   current_time = time;
 
-  if( current_time - last_shot_hit_time < 2.0 )
+  if( current_time - last_shot_hit_time > 2.0 )
     shots_hit = 0;
 }
 
@@ -508,6 +510,7 @@ RotateAndFire::collision_shot( const double angle )
       accelerate( acceleration );
       acceleration_change_allowed = false;
       shots_hit = 0;
+      print( "Hit too many times! Flee!" );
     }
 }
 
