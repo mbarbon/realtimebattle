@@ -158,8 +158,13 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           String fname = st_li()->filename;
           fname = get_segment( fname, fname.find( '/', 0, true ) + 1, -1 );
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
           gtk_clist_set_text( GTK_CLIST( tour_clist ),
                               row, 0, fname.chars() );
+#else
+          gtk_clist_set_text( GTK_CLIST( tour_clist ),
+                              row, 0, fname.non_const_chars() );
+#endif
           st_li()->selected = false;
           st_li()->row = row;
         }
