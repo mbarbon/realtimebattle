@@ -186,13 +186,6 @@ private:
 class MessageInfo : public InfoBase
 {
 public:
-  struct message_t
-  {
-    message_t( const string& s, const string& m )
-      : sender(s), message(m) {}
-    string sender;
-    string message;
-  };
   MessageInfo                       ( const string& s, const string& m )
     : InfoBase(INFO_MESSAGE) { message_list.push_back( message_t( s, m ) ); }
   MessageInfo                       ( const list<message_t>& ml )

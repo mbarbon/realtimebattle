@@ -56,6 +56,16 @@ struct start_tournament_info_t
   string directory;
 };
 
+struct message_t
+{
+  message_t( const message_t& m )
+    : sender(m.sender), message(m.message) {}
+  message_t( const string& s, const string& m )
+    : sender(s), message(m) {}
+  string sender;
+  string message;
+};
+
 // ---------- Environment ----------
 
 #define OPTION_GRAV_CONST     "Gravity"
