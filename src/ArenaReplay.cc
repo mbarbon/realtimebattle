@@ -88,6 +88,7 @@ ArenaReplay::parse_this_interval()
       if( next_check_time > last_replay_time )
         {
           move_shots_no_check( next_check_time - last_replay_time );
+          // check if robots have died and set thier points
           the_gui.get_arenawindow_p()->draw_moving_objects( true );
         }
 
