@@ -15,6 +15,8 @@ Arena::Arena()
 {
   state = NOT_STARTED;
   game_mode = NORMAL_MODE;
+  use_proc = true;
+
   halted = false;
   halt_next = false;
   paus_after_next_game = false;
@@ -416,10 +418,7 @@ Arena::timeout_function()
       
     case STARTING_ROBOTS:
       {
-        GList* gl;
-        
-        for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
-          ((Robot*)gl->data)->get_messages();
+        read_robot_messages();
 
         if( total_time > next_check_time ) start_sequence_follow_up();
       }
@@ -487,6 +486,7 @@ Arena::update()
 {
   //update_explosions();
   move_shots();
+  read_robot_messages();
   update_robots();
   if( state == GAME_IN_PROGRESS )
     the_gui.draw_objects();
@@ -591,6 +591,20 @@ Arena::move_shots()
           g_list_remove(object_lists[SHOT], shotp);
           delete shotp;
         }
+    }
+}
+
+void
+Arena::read_robot_messages()
+{
+  GList* gl;
+  Robot* robotp;
+
+  for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
+    {
+      robotp = (Robot*)gl->data;
+      if( robotp->is_alive() || state != GAME_IN_PROGRESS )  
+        robotp->get_messages();
     }
 }
 

@@ -81,6 +81,8 @@ public:
   void paus_game_toggle();
   void step_paused_game();
   bool is_game_halted();
+  bool get_use_proc() { return use_proc; }
+  void set_use_proc(const bool v) { use_proc = v; }
 
 private:
   void parse_file(istream&);
@@ -90,6 +92,7 @@ private:
   void update_timer();
   void reset_timer();
   void update_robots();
+  void read_robot_messages();
   void move_shots();
   void update_explosions();
 
@@ -142,8 +145,12 @@ private:
   GdkColor foreground_colour;
 
   Vector2D boundary[2];   // {top-left, bottom-right}
+  
   state_t state;
   game_mode_t game_mode;
+  
+  bool use_proc;
+
   bool halted;
   bool halt_next;
   bool paus_after_next_game;
