@@ -426,6 +426,11 @@ Gui::setup_start_tournament_window()
 {
   GtkWidget * vbox, * hbox;
 
+  int all_clists_width=150;
+  int all_clists_height=150;
+
+  read_dirs_from_system();
+
   selected_items_in_robot_tournament = g_list_alloc();
   selected_items_in_robot_directory = g_list_alloc();
   selected_items_in_arena_tournament = g_list_alloc();
@@ -436,8 +441,6 @@ Gui::setup_start_tournament_window()
   gtk_signal_connect (GTK_OBJECT (start_tournament_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(start_tournament_window));
   gtk_container_border_width (GTK_CONTAINER (start_tournament_window), 12);
-  gtk_widget_set_usize(start_tournament_window, (int)start_tournament_window_size[0],
-                       (int)start_tournament_window_size[1]);
 
   vbox = gtk_vbox_new (FALSE, 5);
   gtk_container_add (GTK_CONTAINER (start_tournament_window), vbox);
@@ -449,32 +452,46 @@ Gui::setup_start_tournament_window()
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                                     GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_box_pack_start ( GTK_BOX (hbox),scrolled_win,TRUE,TRUE, 5 );
+  gtk_widget_show ( scrolled_win );
+#endif
+
   char * rob_tour_title[1] = { "Robots in Tournament" };
   robots_in_tournament_clist = gtk_clist_new_with_titles(1, rob_tour_title);
   gtk_clist_set_selection_mode (GTK_CLIST(robots_in_tournament_clist), GTK_SELECTION_MULTIPLE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
-#else
-  gtk_clist_set_border(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width(GTK_CLIST(robots_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
-  //  gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(robots_in_tournament_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(robots_in_tournament_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_signal_connect(GTK_OBJECT(robots_in_tournament_clist), "unselect_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
+
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
+  gtk_widget_set_usize(robots_in_tournament_clist, all_clists_width, all_clists_height);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), robots_in_tournament_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(robots_in_tournament_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(robots_in_tournament_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(robots_in_tournament_clist, all_clists_width + 20, all_clists_height + 20);
   gtk_box_pack_start (GTK_BOX (hbox), robots_in_tournament_clist, TRUE, TRUE, 0);
+#endif
   gtk_widget_show( robots_in_tournament_clist );
 
   GtkWidget * vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox), vbox2, TRUE, TRUE, 0);
+  gtk_box_pack_start( GTK_BOX(hbox), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { "Remove", "Select All", "Unselect All" };
+    char * button_labels[] = { " Remove ", " Select All ", " Unselect All " };
     for(int i=START_TORUNAMENT_REMOVE;i<=START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
@@ -488,11 +505,11 @@ Gui::setup_start_tournament_window()
   }
 
   vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox), vbox2, TRUE, TRUE, 0);
+  gtk_box_pack_start( GTK_BOX(hbox), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { "Add", "Select All", "Unselect All" };
+    char * button_labels[] = { " Add ", " Select All ", " Unselect All " };
     for(int i=START_TORUNAMENT_ADD;i<=START_TORUNAMENT_UNSELECT_ALL_DIRECTORY;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i-START_TORUNAMENT_ADD] );
@@ -505,24 +522,37 @@ Gui::setup_start_tournament_window()
       }
   }
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                          GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_box_pack_start ( GTK_BOX (hbox),scrolled_win,TRUE,TRUE, 5 );
+  gtk_widget_show ( scrolled_win );
+#endif
+
   char * rob_dir_title[1] = { "Robots in Directory" };
   robots_in_directory_clist = gtk_clist_new_with_titles(1, rob_dir_title);
   gtk_clist_set_selection_mode (GTK_CLIST(robots_in_directory_clist), GTK_SELECTION_MULTIPLE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
-#else
-    gtk_clist_set_border(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width(GTK_CLIST(robots_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(robots_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
-  //  gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(robots_in_directory_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(robots_in_directory_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_signal_connect(GTK_OBJECT(robots_in_directory_clist), "unselect_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
+  gtk_widget_set_usize(robots_in_directory_clist, all_clists_width, all_clists_height);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), robots_in_directory_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(robots_in_directory_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(robots_in_directory_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(robots_in_directory_clist, all_clists_width + 20, all_clists_height + 20);
   gtk_box_pack_start (GTK_BOX (hbox), robots_in_directory_clist, TRUE, TRUE, 0);
+#endif
   gtk_widget_show( robots_in_directory_clist );
 
   GList* gl;
@@ -563,32 +593,45 @@ Gui::setup_start_tournament_window()
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
   gtk_widget_show (hbox);
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                          GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_box_pack_start ( GTK_BOX (hbox),scrolled_win,TRUE,TRUE, 5 );
+  gtk_widget_show ( scrolled_win );
+#endif
+
   char * arena_tour_title[1] = { "Arenas in Tournament" };
   arenas_in_tournament_clist = gtk_clist_new_with_titles(1, arena_tour_title);
   gtk_clist_set_selection_mode (GTK_CLIST(arenas_in_tournament_clist), GTK_SELECTION_MULTIPLE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
-#else
-    gtk_clist_set_border(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_tournament_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_tournament_clist), 0, GTK_JUSTIFY_LEFT);
-  //  gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(arenas_in_tournament_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(arenas_in_tournament_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_signal_connect(GTK_OBJECT(arenas_in_tournament_clist), "unselect_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
+  gtk_widget_set_usize(arenas_in_tournament_clist, all_clists_width, all_clists_height);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), arenas_in_tournament_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(arenas_in_tournament_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(arenas_in_tournament_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(arenas_in_tournament_clist, all_clists_width + 20, all_clists_height + 20);
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_tournament_clist, TRUE, TRUE, 0);
+#endif
   gtk_widget_show( arenas_in_tournament_clist );
 
   vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox), vbox2, TRUE, TRUE, 0);
+  gtk_box_pack_start( GTK_BOX(hbox), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { "Remove", "Select All", "Unselect All" };
+    char * button_labels[] = { " Remove ", " Select All ", " Unselect All " };
     for(int i=START_TORUNAMENT_REMOVE;i<=START_TORUNAMENT_UNSELECT_ALL_TOURNAMENT;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );
@@ -602,11 +645,11 @@ Gui::setup_start_tournament_window()
   }
 
   vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox), vbox2, TRUE, TRUE, 0);
+  gtk_box_pack_start( GTK_BOX(hbox), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { "Add", "Select All", "Unselect All" };
+    char * button_labels[] = { " Add ", " Select All ", " Unselect All " };
     for(int i=START_TORUNAMENT_ADD;i<=START_TORUNAMENT_UNSELECT_ALL_DIRECTORY;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i-START_TORUNAMENT_ADD] );
@@ -619,24 +662,37 @@ Gui::setup_start_tournament_window()
       }
   }
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                          GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_box_pack_start ( GTK_BOX (hbox),scrolled_win,TRUE,TRUE, 5 );
+  gtk_widget_show ( scrolled_win );
+#endif
+
   char * arena_dir_title[1] = { "Arenas in Directory" };
   arenas_in_directory_clist = gtk_clist_new_with_titles(1, arena_dir_title);
   gtk_clist_set_selection_mode (GTK_CLIST(arenas_in_directory_clist), GTK_SELECTION_MULTIPLE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
-#else
-    gtk_clist_set_border(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width(GTK_CLIST(arenas_in_directory_clist), 0, 90);
   gtk_clist_set_column_justification(GTK_CLIST(arenas_in_directory_clist), 0, GTK_JUSTIFY_LEFT);
-  //  gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(arenas_in_directory_clist, 150, 150);
   gtk_signal_connect(GTK_OBJECT(arenas_in_directory_clist), "select_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
   gtk_signal_connect(GTK_OBJECT(arenas_in_directory_clist), "unselect_row",
                      GTK_SIGNAL_FUNC(start_tournament_selection_made), NULL);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
+  gtk_widget_set_usize(arenas_in_directory_clist, all_clists_width, all_clists_height);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), arenas_in_directory_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(arenas_in_directory_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(arenas_in_directory_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_usize(arenas_in_directory_clist, all_clists_width + 20, all_clists_height + 20);
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_directory_clist, TRUE, TRUE, 0);
+#endif
   gtk_widget_show( arenas_in_directory_clist );
 
   for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
@@ -719,7 +775,7 @@ Gui::setup_start_tournament_window()
       int add = 0;
       if( i == 1 ) add = 3;
 
-      button = gtk_button_new_with_label ("Min");
+      button = gtk_button_new_with_label (" Min ");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (start_tournament_min_callback), (gpointer) label_titles[i] );
       gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 0, 3 + add, i, i + 1 );
@@ -727,7 +783,7 @@ Gui::setup_start_tournament_window()
 
       if( i == 0 )
         {
-          button = gtk_button_new_with_label ("All Arenas");
+          button = gtk_button_new_with_label (" All Arenas ");
           gtk_signal_connect (GTK_OBJECT (button), "clicked",
                               GTK_SIGNAL_FUNC (start_tournament_all_arenas_callback), (gpointer) NULL );
           gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 3, 9, i, i + 1 );
@@ -736,14 +792,14 @@ Gui::setup_start_tournament_window()
 
       if( i == 2 )
         {
-          button = gtk_button_new_with_label ("Full Round");
+          button = gtk_button_new_with_label (" Full Round ");
           gtk_signal_connect (GTK_OBJECT (button), "clicked",
                               GTK_SIGNAL_FUNC (start_tournament_full_round_callback), (gpointer) NULL );
           gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 3, 9, i, i + 1 );
           gtk_widget_show (button);
         }
 
-      button = gtk_button_new_with_label ("Max");
+      button = gtk_button_new_with_label (" Max ");
       gtk_signal_connect (GTK_OBJECT (button), "clicked",
                           GTK_SIGNAL_FUNC (start_tournament_max_callback), (gpointer) label_titles[i] );
       gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 9 - add, 12, i, i + 1 );
@@ -761,11 +817,11 @@ Gui::setup_start_tournament_window()
   gtk_widget_show( button_table );
 
   vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start( GTK_BOX(hbox2), vbox2, TRUE, TRUE, 0);
+  gtk_box_pack_end( GTK_BOX(hbox2), vbox2, FALSE, FALSE, 0);
   gtk_widget_show (vbox2);
 
   {
-    char * button_labels[] = { "Start", "Cancel" };
+    char * button_labels[] = { " Start ", " Cancel " };
     for(int i=0;i<2;i++)
       {
         GtkWidget * button = gtk_button_new_with_label( button_labels[i] );

@@ -155,9 +155,6 @@ Gui::Gui()
   arenadirs = g_list_alloc();
   read_dirs_from_system();
 
-  control_window_size = Vector2D(294,110);
-  start_tournament_window_size = Vector2D(485,410);
-
   da_scrolled_window_size = Vector2D(0.0,0.0);
 }
 
@@ -215,8 +212,24 @@ void
 Gui::read_dirs_from_system()
 {
   String dirs;
-  if(NULL != getenv("RTB_ROBOTDIR"))
-      dirs = getenv("RTB_ROBOTDIR");
+
+  GList* gl;
+  for(gl=g_list_next(robotdirs);gl != NULL; )
+    {
+      String* str = (String*)gl->data;
+      delete str;
+      gl=g_list_next(gl);
+      g_list_remove(robotdirs,str);
+    }
+  for(gl=g_list_next(arenadirs);gl != NULL; )
+    {
+      String* str = (String*)gl->data;
+      delete str;
+      gl=g_list_next(gl);
+      g_list_remove(arenadirs,str);
+    }
+
+  dirs = the_opts.get_s(OPTION_ROBOT_SEARCH_PATH);
   split_colonseparated_dirs(dirs,robotdirs);
 
 #ifdef INSTALLDIR
@@ -224,10 +237,7 @@ Gui::read_dirs_from_system()
   g_list_append(robotdirs,str);
 #endif
 
-  if(NULL != getenv("RTB_ARENADIR"))
-      dirs = getenv("RTB_ARENADIR");
-  else
-      dirs = "Arenas/";
+  dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
   split_colonseparated_dirs(dirs,arenadirs);
 
 #ifdef INSTALLDIR
@@ -484,7 +494,6 @@ Gui::setup_control_window()
   gtk_signal_connect (GTK_OBJECT (control_window), "delete_event",
                       GTK_SIGNAL_FUNC (delete_event), (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (control_window), 12);
-  //  gtk_widget_set_usize(control_window, (int)control_window_size[0],(int)control_window_size[1]);
 
   hbox = gtk_hbox_new (FALSE, 10);
   gtk_container_add (GTK_CONTAINER (control_window), hbox);
@@ -715,13 +724,19 @@ Gui::setup_score_window()
   gtk_widget_set_usize(score_window,
                        (int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_SCORE_WINDOW_SIZE_Y));
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                                     GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_container_add (GTK_CONTAINER (score_window), scrolled_win);
+  gtk_widget_show ( scrolled_win );
+#endif
+
   score_clist = gtk_clist_new_with_titles( 6, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(score_clist), GTK_SHADOW_IN);
-#else
-  gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
@@ -734,12 +749,17 @@ Gui::setup_score_window()
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 3, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 4, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
-  //  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
   gtk_signal_connect(GTK_OBJECT(score_clist), "select_row",
                      GTK_SIGNAL_FUNC(new_robot_selected), NULL);
-  gtk_widget_set_usize(score_clist, 335, 350);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(score_clist), GTK_SHADOW_IN);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), score_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (score_window), score_clist);
+#endif
   gtk_widget_show(score_clist);
 
   gtk_widget_show (score_window);

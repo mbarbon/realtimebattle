@@ -665,14 +665,20 @@ Gui::setup_statistics_window()
         }
     }
 
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
+  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
+                                                     GTK_ADJUSTMENT ( vadj ) );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  gtk_box_pack_start (GTK_BOX (vbox), scrolled_win, TRUE, TRUE, 0);
+  gtk_widget_show ( scrolled_win );
+#endif
+
   char * titles[7] = { "","  Name", "Position", "Points", "Games ", "Survival Time", "Total Points" };
   stat_clist = gtk_clist_new_with_titles(7, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(stat_clist), GTK_SELECTION_BROWSE);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
-#else
-  gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
-#endif
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 0, 20);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(stat_clist), 2, 45);
@@ -687,10 +693,15 @@ Gui::setup_statistics_window()
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 4, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 5, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_column_justification(GTK_CLIST(stat_clist), 6, GTK_JUSTIFY_RIGHT);
-  //  gtk_clist_set_policy(GTK_CLIST(stat_clist), GTK_POLICY_AUTOMATIC,
-  //                       GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(stat_clist, 475,350);
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_clist_set_shadow_type(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
+  gtk_container_add(GTK_CONTAINER(scrolled_win), stat_clist);
+#else
+  gtk_clist_set_border(GTK_CLIST(stat_clist), GTK_SHADOW_IN);
+  gtk_clist_set_policy(GTK_CLIST(stat_clist), GTK_POLICY_AUTOMATIC,
+                       GTK_POLICY_AUTOMATIC);
   gtk_box_pack_start (GTK_BOX (vbox), stat_clist, TRUE, TRUE, 0);
+#endif
   gtk_widget_show(stat_clist);
 
   add_the_statistics_to_clist();
