@@ -187,12 +187,6 @@ check_messages(int sig)
                 
                 if (enemy>0)
                   {
-                    if (abs(radar_angle)>M_PI/6.0)
-                      {
-                        broms=1.0;
-                        acceleration=0.0;
-                      }
-
                     enemy--;
                     sweepleft=sweepleft-M_PI/20.0;
                     sweepright=sweepright+M_PI/20.0;
@@ -201,12 +195,6 @@ check_messages(int sig)
                   {
                     if (cookie>0)
                       {
-                        if (abs(radar_angle)>M_PI/6.0)
-                          {
-                            broms=1.0;
-                            acceleration=0.0;
-                          }
-                        
                         cookie--;
                         sweepleft=sweepleft-M_PI/20.0;
                         sweepright=sweepright+M_PI/20.0;
@@ -216,15 +204,17 @@ check_messages(int sig)
                         x1=abs(prev_dist * sin(prev_radar_angle));
                         x2=abs(dist * sin(radar_angle));
 
-                        if (wallcoll > 0)
-                          if (speed < 2.0)
-                            {
-                              if (dist > 2.0)
-                                rot = sgn(radar_angle)*robotmaxrotate;
-                            }
-                          else
-                            wallcoll = 0;
-                        else
+//                         if (wallcoll > 0)
+//                           if (speed < 2.0)
+//                             {
+//                               if (dist > 2.0)
+//                                 rot = sgn(radar_angle)*robotmaxrotate;
+//                               else
+//                                 rot = robotmaxrotate;
+//                             }
+//                           else
+//                             wallcoll = 0;
+//                         else
                           {
                             if (x1<=x2) 
                               rot = 0;
