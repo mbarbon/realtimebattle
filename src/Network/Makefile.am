@@ -25,4 +25,5 @@ Server_SOURCES = \
 Client_DEPENDENCIES = $(INTLOBJS)
 Client_SOURCES = \
 	Client.cc \
+	SimpleProcess.cc SimpleProcess.h \
 	Socklib.c Socklib.h

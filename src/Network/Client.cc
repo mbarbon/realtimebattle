@@ -22,6 +22,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
 
 #include <unistd.h>
 #include <fstream.h>
@@ -30,7 +40,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdio.h>
 #include <sys/socket.h>
 #include <string.h>
+
 #include "Socklib.h"
+#include "SimpleProcess.h"
 
 void usage(int err_code)
 {
@@ -58,34 +70,83 @@ main ( int argc, char* argv[] )
 
   int socket_fd = connectto( server, port, dbug );
 
+  if( socket_fd == -1 )
+    exit(EXIT_FAILURE);
+
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
 
-  out_socket << argv[1] << endl; // send robot name;
+
+  string robotname = string(argv[1]);
+
+  out_socket << robotname << endl; // send robot name;
 
 
   // Start robot process
+
+  
+
+  SimpleProcess robot_process( robotname );
+
+  robot_process.start();
+
+
+
 
 
 
 
   // Main loop
 
-  do
+  fd_set pipe_and_socket;
+
+  struct timeval time_to_wait;
+
+  while( true )
     {
-      cin >> buffer;
+      time_to_wait.tv_sec = 0;
+      time_to_wait.tv_usec = 300000;
+
+      FD_ZERO( &pipe_and_socket );
+      FD_SET( socket_fd, &pipe_and_socket );
+      FD_SET( robot_process.in_pipe, &pipe_and_socket );
+
+      select(FD_SETSIZE, &pipe_and_socket, NULL, NULL, &time_to_wait);
+
+
+      if( FD_ISSET( socket_fd, &pipe_and_socket) )
+        {      
+          in_socket >> ws;
+          in_socket.clear();
+          in_socket.get(buffer, 80, '\n');
+
+          cout << buffer;      
+          *robot_process.opipe_streamp << buffer << endl;      
+          cout << "!" << flush;   
+        }
+
+      if( FD_ISSET( robot_process.in_pipe, &pipe_and_socket) )
+        {      
+          *robot_process.ipipe_streamp >> ws;
+          robot_process.ipipe_streamp->clear();
+          robot_process.ipipe_streamp->get(buffer, 80, '\n');
+
+          if( robot_process.ipipe_streamp->fail() )
+            {
+              cerr << "Reading ipipe failed!" << endl;
+              sleep(3);
+            }
+
+          cout << buffer;      
+          out_socket << buffer << endl;
+          cout << "%" << flush;   
+        }
       
-      out_socket << buffer << endl;;
-      cout << buffer << endl;
+      cout << "." << flush;      
+      
+      //      out_socket << "Message_from_client_" << robotname << endl;
+      //      sleep(1);
 
-//        in_socket >> ws;
-//        in_socket.clear();
-//        in_socket.get(buffer, 80, '\n');
-//        cout << buffer << endl;
-
-      sleep(1);
-
-    }  while( true );
-
+    }
 }
 
