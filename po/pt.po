@@ -670,7 +670,7 @@ msgstr ""
 "    --replay [ficheiro]          -r   um ficheiro de relatório para\n"
 "                                      repetir.\n"
 "                                      se '-' for especificado como\n"
-"                                      ficheiro, o input vem de STDIN\n"
+"                                      ficheiro, o input vem de STDIN"
 
 #: src/RealTimeBattle.cc:119
 msgid "    --help,                      -h   prints this message"
