@@ -6,8 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-30 14:55+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -58,19 +57,15 @@ msgstr " Zooma ut "
 msgid "Arena"
 msgstr "Arena"
 
-#: src/ArenaRealTime.cc:743 src/ArenaReplay.cc:120 src/ScoreWindow.cc:150
-#: src/StatisticsWindow.cc:91 src/StatisticsWindow.cc:408
-#: src/StatisticsWindow.cc:519
-msgid "Game"
-msgstr "Spel"
+#: src/ArenaRealTime.cc:743
+#, c-format
+msgid "Game %d of sequence %d begins on arena"
+msgstr "Spel %d i sekvens %d börjar på arena"
 
-#: src/ArenaRealTime.cc:744 src/ArenaReplay.cc:121
-msgid " of sequence "
-msgstr " i sekvens "
-
-#: src/ArenaRealTime.cc:744
-msgid " begins on arena "
-msgstr " börjar på arena "
+#: src/ArenaReplay.cc:121
+#, c-format
+msgid "Game %d of sequence %d"
+msgstr "Spel %d i sekvens %d"
 
 #: src/ControlWindow.cc:78
 msgid " New Tournament "
@@ -161,12 +156,12 @@ msgid "No"
 msgstr "Nej"
 
 #: src/ControlWindow.cc:517 src/ControlWindow.cc:666 src/Gui.cc:155
-msgid "This action will kill the current tournament.\n"
-msgstr "Detta kommer avbryta pågående turningen.\n"
-
-#: src/ControlWindow.cc:518 src/ControlWindow.cc:667 src/Gui.cc:156
-msgid "Do you want do that?"
-msgstr "Vill du göra det?"
+msgid ""
+"This action will kill the current tournament.\n"
+"Do you want do that?"
+msgstr ""
+"Detta kommer avbryta pågående turningen.\n"
+"Vill du göra det?"
 
 #: src/ControlWindow.cc:531
 msgid "Choose a log file to replay"
@@ -554,6 +549,7 @@ msgstr " Spara som default "
 msgid " Apply "
 msgstr " Verkställ "
 
+
 #: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
 #: src/StartTournamentWindow.cc:712 src/StartTournamentWindow.cc:847
 msgid " Ok "
@@ -585,7 +581,7 @@ msgstr "    --debug_mode,                -d   debugläge"
 
 #: src/RealTimeBattle.cc:94
 msgid ""
-"    --debug_level [0-5],         -D   sets the initial debug level. implies "
+"    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
 msgstr "    --debug_level [0-5],         -D   sätt debug-nivå. Implicerar -d"
 
@@ -610,60 +606,49 @@ msgstr ""
 "$HOME/.rtbrc)"
 
 #: src/RealTimeBattle.cc:101
-msgid "    --log_file [file],           -l   make log file, if 'file' is '-'"
+msgid ""
+"    --log_file [file],           -l   make log file, if 'file' is '-'\n"
+"                                      the log is sent to STDOUT"
 msgstr "    --log_file [fil],            -l   skapa log-file, om 'fil' är '-'"
-
-#: src/RealTimeBattle.cc:102
-msgid "                                      the log is sent to STDOUT"
-msgstr "                                      så skickas loggen till STDOUT"
+"                                      så skickas loggen till STDOUT"
 
 #: src/RealTimeBattle.cc:104
-msgid "    --tournament_file [file],    -t   specify a tournament file to"
+msgid ""
+"    --tournament_file [file],    -t   specify a tournament file to\n"
+"                                      autostart a tournament"
 msgstr ""
-"    --tournament_file [fil],     -t   välj turneringsfil för automatisk"
-
-#: src/RealTimeBattle.cc:105
-msgid "                                      autostart a tournament"
-msgstr "                                      start av turneringen"
+"    --tournament_file [fil],     -t   välj turneringsfil för automatisk\n"
+"                                      start av turneringen"
 
 #: src/RealTimeBattle.cc:107
-msgid "    --statistics_file [file],    -s   file to print the statistics to"
-msgstr "    --statistics_file [fil],     -s   skriv statistik till fil vid"
-
-#: src/RealTimeBattle.cc:108
-msgid "                                       when autostarting"
-msgstr "                                      automatisk turneringsstart"
+msgid ""
+"    --statistics_file [file],    -s   file to print the statistics to\n"
+"                                       when autostarting"
+msgstr ""
+"    --statistics_file [fil],     -s   skriv statistik till fil vid\n"
+"                                      automatisk turneringsstart"
 
 #: src/RealTimeBattle.cc:110
-msgid "    --message_file [file],       -m   redirect messages to 'file'."
-msgstr "    --message_file [fil],        -m   skicka meddelanden till 'fil'"
-
-#: src/RealTimeBattle.cc:111
 msgid ""
-"                                      '-' as 'file' is equivalent to STDOUT."
-msgstr "                                      Om 'fil' är '-' används STDOUT."
-
-#: src/RealTimeBattle.cc:112
-msgid "                                      If both log and messages are send"
+"    --message_file [file],       -m   redirect messages to 'file'.\n"
+"                                      With '-' as 'file', STDOUT is used.\n"
+"                                      If both log and messages are sent\n"
+"                                      to STDOUT, '-m' will be ignored"
 msgstr ""
-"                                      Om både loggen och meddelanden skickas"
-
-#: src/RealTimeBattle.cc:113
-msgid "                                      to STDOUT, '-m' will be ignored"
-msgstr ""
+"    --message_file [fil],        -m   skicka meddelanden till 'fil'.\n"
+"                                      Om 'fil' är '-' används STDOUT.\n"
+"                                      Om både loggen och meddelanden skickas\n"
 "                                      till STDOUT kommer '-m' att ignoreras"
 
 #: src/RealTimeBattle.cc:115
-msgid "    --replay [file]              -r   a log file to replay."
-msgstr "    --replay [fil]               -r   visa spel sparat i 'fil'."
-
-#: src/RealTimeBattle.cc:116
-msgid "                                      if '-' is specified as file,"
-msgstr "                                      om filen är '-' kommer"
-
-#: src/RealTimeBattle.cc:117
-msgid "                                      input is taken from STDIN"
-msgstr "                                      STDIN användas"
+msgid ""
+"    --replay [file]              -r   a log file to replay.\n"
+"                                      if '-' is specified as file,\n"
+"                                      input is taken from STDIN"
+msgstr ""
+"    --replay [fil]               -r   visa spel sparat i 'fil'.\n"
+"                                      om filen är '-' kommer\n"
+"                                      STDIN användas"
 
 #: src/RealTimeBattle.cc:119
 msgid "    --help,                      -h   prints this message"
@@ -697,6 +682,11 @@ msgstr "Poäng"
 #: src/ScoreWindow.cc:147
 msgid " Seq: "
 msgstr " Sekv: "
+
+#: src/ScoreWindow.cc:145 src/StatisticsWindow.cc:91
+#: src/StatisticsWindow.cc:497
+msgid "Game"
+msgstr "Spel"
 
 #: src/StatisticsWindow.cc:46
 msgid "Statistics"
@@ -810,7 +800,7 @@ msgstr "Antal sekvenser"
 
 #: src/StartTournamentWindow.cc:307
 msgid " All Arenas "
-msgstr " alla arenor "
+msgstr " Alla arenor "
 
 #: src/StartTournamentWindow.cc:319
 msgid " Full Round "
@@ -837,52 +827,32 @@ msgid "Choose file to save tournament into"
 msgstr "Välj turneringsfil att spara till"
 
 #: src/StartTournamentWindow.cc:563
-msgid ""
-"\n"
-"Couldn't parse specified tournament file."
-msgstr ""
-"\n"
-"Kunde inte tolka innehållet i turneringsfilen."
+msgid "Couldn't parse specified tournament file."
+msgstr "Kunde inte tolka innehållet i turneringsfilen."
 
 #: src/StartTournamentWindow.cc:566
 msgid "Tournament could not be loaded."
 msgstr "Turneringen kunde inte hämtas."
 
+#: src/StartTournamentWindow.cc:691
+msgid "There are too few robots in the tournament."
+msgstr "För få robotar i turneringen."
+
+#: src/StartTournamentWindow.cc:693 src/StartTournamentWindow.cc:831
+msgid "There are no arenas in the tournament."
+msgstr "Ingen arena har valts."
+
+#: src/StartTournamentWindow.cc:696
+msgid "Could not open file."
+msgstr "Kunde inte öppna fil."
+
 #: src/StartTournamentWindow.cc:702
-msgid ""
-"\n"
-"There are too few robots in the tournament."
-msgstr ""
-"\n"
-"För få robotar i turneringen."
-
-#: src/StartTournamentWindow.cc:704 src/StartTournamentWindow.cc:842
-msgid ""
-"\n"
-"There are no arenas in the tournament."
-msgstr ""
-"\n"
-"Ingen arena har valts."
-
-#: src/StartTournamentWindow.cc:707
-msgid ""
-"\n"
-"Could not open file."
-msgstr ""
-"\n"
-"Kunde inte öppna fil."
-
-#: src/StartTournamentWindow.cc:713
 msgid "Tournament could not be saved."
 msgstr "Turneringen kunde inte sparas."
 
-#: src/StartTournamentWindow.cc:840
-msgid ""
-"\n"
-"There must be at least two robots in the tournament."
-msgstr ""
-"\n"
-"Det måste vara minst två robtar i en turnering."
+#: src/StartTournamentWindow.cc:829
+msgid "There must be at least two robots in the tournament."
+msgstr "Det måste vara minst två robtar i en turnering."
 
 #: src/StartTournamentWindow.cc:848
 msgid "Tournament could not be started."
@@ -963,12 +933,3 @@ msgstr "Okänt objekt siktat!"
 #: Robots/rotate_and_fire/rotate_and_fire.cc:703
 msgid "Collided with Unknown Object!"
 msgstr "Kolliderade med okänt object!"
-
-#~ msgid "Score  "
-#~ msgstr "Poäng  "
-
-#~ msgid "  Name"
-#~ msgstr "  Namn"
-
-#~ msgid "Game  "
-#~ msgstr "Spel  "
