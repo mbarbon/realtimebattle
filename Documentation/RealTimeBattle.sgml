@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.6 rev 1
+<title>RealTimeBattle User Manual, version 0.9.6 rev 2
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 17 January 1999
+<date> 20 January 1999
 
 <!-- <abstract> -->
 
@@ -148,7 +148,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 If you find anything in this package which doesn't work, appear strange, is missing, is spellt wrong
 or is just confusing, don't hesitate to send in a bug report to the 
 <url name="authors" url="mailto: realtimebattle@telia.com">. But please check first the include bug
-list and the <url name="bug list in the homepage" url="http://realtimebattle.netpedia.net/BUGS.html">.
+list and the <url name="bug list in the homepage" url="http://realtimebattle.netpedia.net/Documentation/BUGS.html">.
 
 
 <!--   ################         Usage          ##################   -->
@@ -354,7 +354,8 @@ use this option you have two choices: Either you add the flag <tt>-g</tt> when l
 the program, or you disable the graphics at compile time (see the <tt>INSTALL</tt> file
 for more information). The latter alternative is useful as the executable gets
 smaller and therefore faster on low memory machines. Note that <tt>gtk+</tt> is still
-needed since it is used to call the program at given times to update the arena.
+needed in both cases, since it is used to call the program at given times to update the
+arena. 
 
 When running without graphics you have to give a tournament file, otherwise nothing at
 all will happen. It is also a good idea to create a log file and/or a statistics file
