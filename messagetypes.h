@@ -46,7 +46,7 @@ enum message_from_robot_type
   UNKNOWN = -1,
   ROTATE,
   NAME,
-  OUTPUT,
+  PRINT,
 };
 
 enum argument_type
