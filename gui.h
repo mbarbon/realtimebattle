@@ -17,6 +17,7 @@ void delete_event( GtkWidget * widget, gpointer guip );
 void no_zoom_callback(GtkWidget *widget, gpointer guip);
 void zoom_in_callback(GtkWidget *widget, gpointer guip);
 void zoom_out_callback(GtkWidget *widget, gpointer guip);
+gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer guip);
 
 class Gui
 {
@@ -40,6 +41,7 @@ public:
 
   void print_to_message_output( char * from_robot, char * text, GdkColor& colour);
   void draw_objects();
+  void draw_all_walls();
 
   double get_zoom();
   void change_zoom( const zoom_t type );

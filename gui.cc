@@ -34,6 +34,13 @@ zoom_out_callback(GtkWidget *widget, gpointer guip)
   ((Gui *)guip)->change_zoom( ZOOM_OUT );
 }
 
+gint
+redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer guip)
+{
+  ((Gui *)guip)->draw_all_walls();
+  return FALSE;
+}
+
 void
 delete_event(GtkWidget *widget, gpointer guip)
 {
@@ -81,6 +88,7 @@ Gui::change_zoom( const zoom_t type )
   gtk_widget_set_usize(drawing_area,
                        ( da_scrolled_window->allocation.width - 50 ) * zoomfactor,
                        ( da_scrolled_window->allocation.height - 50 ) * zoomfactor);
+  draw_all_walls();
 }
 
 int
@@ -131,12 +139,20 @@ Gui::draw_objects()
           }
     }
 
-  for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-    ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
-
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
       ((Shot*)gl->data)->draw_shape( *this , true ); // Strange, but it works!
+}
+
+void
+Gui::draw_all_walls()
+{
+  GList** object_lists;
+  GList* gl;
+
+  object_lists = the_arena->get_object_lists();
+  for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
+    ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
 }
 
 void
@@ -231,7 +247,7 @@ Gui::draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colou
                       colour_gc,
                       filled,
                       change_to_pixels_x(start[0]), change_to_pixels_y(start[1]),
-                      change_to_pixels_x(end[0]), change_to_pixels_y(start[1]));
+                      change_to_pixels_x(end[0] - start[0]), change_to_pixels_y(end[1] - start[1]));
 
   gdk_gc_destroy( colour_gc );
 }
@@ -384,7 +400,7 @@ Gui::setup_score_window()
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 5, GTK_JUSTIFY_RIGHT);
   gtk_clist_set_policy(GTK_CLIST(score_clist), GTK_POLICY_AUTOMATIC,
                        GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_usize(score_clist, 335, 300);
+  gtk_widget_set_usize(score_clist, 335, 350);
   gtk_container_add (GTK_CONTAINER (score_window), score_clist);
   gtk_widget_show(score_clist);
 
@@ -392,16 +408,58 @@ Gui::setup_score_window()
     {
       robotp = (Robot*)(gl->data);
 
-      char * list[5];
+      char * list[6];
 
-      for(int j=0;j<5;j++)
-        list[j] = new char[30];
+      for(int j=0;j<6;j++)
+        {
+          list[j] = new char[30];
+          strcpy(list[j],"");
+        }
 
       int row = gtk_clist_append(GTK_CLIST(score_clist), list);
       gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena->get_foreground_colour_p());
       gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena->get_background_colour_p());
 
-      //      gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, colour_bitmap
+//       GdkPixmap * colour_pixmap = NULL;
+//       GdkBitmap * colour_bitmap = NULL;
+//       GdkGC * colour_gc;
+
+//       colour_gc = gdk_gc_new( drawing_area->window );
+//       colour_pixmap = gdk_pixmap_create_from_data(score_clist->window,
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111"
+//                                                   "11111111111111",
+//                                                   13, 13, 1,
+//                                                   &robotp->get_colour(), the_arena->get_background_colour_p());
+//       gdk_gc_destroy( colour_gc );
+//       gdk_bitmap_create_from_data( score_clist->window,
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111"
+//                                    "11111111111111",
+//                                    13, 13 );
+//       cout << colour_pixmap << " " << colour_bitmap << endl;
+//       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, colour_bitmap);
+
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robotname());
       robotp->display_energy();
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 3, "");
@@ -525,6 +583,9 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   drawing_area = gtk_drawing_area_new ();
   gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),400,400);
+  gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
+                      (GtkSignalFunc) redraw_arena, (gpointer) this);
+  gtk_widget_set_events (drawing_area, GDK_EXPOSURE_MASK);
   gtk_container_add (GTK_CONTAINER (da_scrolled_window),drawing_area);
   gtk_widget_show (drawing_area);
 
