@@ -77,6 +77,7 @@ public:
   void set_game_mode( const enum game_mode_t gm) { game_mode = gm; } 
   void paus_game_toggle();
   void step_paused_game();
+  bool is_game_halted();
 
 private:
   void parse_file(istream&);

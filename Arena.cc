@@ -710,6 +710,13 @@ Arena::step_paused_game()
     }
 }
 
+bool
+Arena::is_game_halted()
+{
+  return( state == PAUSING_BETWEEN_GAMES || 
+          ( game_mode != COMPETITION_MODE && halted ) );
+}
+
 void
 Arena::delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list)
