@@ -681,19 +681,19 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
       break;
     case MENU_SHOW_ARENA:
       {
-        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+//          bool active = GTK_CHECK_MENU_ITEM( widget )->active;
 
-        if( the_gui.is_arenawindow_up() )
-          {
-            if( active )
-              the_gui.get_arenawindow_p()->
-                show_window( the_gui.get_arenawindow_p()->get_window_p(),
-                             the_gui.get_arenawindow_p() );
-            else
-              the_gui.get_arenawindow_p()->
-                hide_window( the_gui.get_arenawindow_p()->get_window_p(),
-                             NULL, the_gui.get_arenawindow_p() );
-          }
+//          if( the_gui.is_arenawindow_up() )
+//            {
+//              if( active )
+//                the_gui.get_arenawindow_p()->
+//                  show_window( the_gui.get_arenawindow_p()->get_window_p(),
+//                               the_gui.get_arenawindow_p() );
+//              else
+//                the_gui.get_arenawindow_p()->
+//                  hide_window( the_gui.get_arenawindow_p()->get_window_p(),
+//                               NULL, the_gui.get_arenawindow_p() );
+//            }
       }
       break;
     case MENU_SHOW_MESSAGES:
