@@ -50,13 +50,16 @@ public:
                                          const char* t ) :
     group(g), broadcast_option(br), log_option(lo), rc_label(r),
     description(t) {}
-  Option::~Option                      () {}
+  virtual Option::~Option              () {}
 
+  virtual const string get_string_val  () const = 0;
   const option_group_t get_group       () const { return group; }
   const bool broadcast                 () const { return broadcast_option; }
   const bool log                       () const { return log_option; }
   const string& get_rc_label           () const { return rc_label; }
-  const string& get_description   () const { return description; }
+  const string& get_description        () const { return description; }
+
+  virtual const bool change_value      ( const string&, const bool def = false ) = 0;
   
 private:
 
@@ -90,9 +93,11 @@ public:
   LongOption::~LongOption              () {}
 
   const int operator()                 () const { return value; }
+  const string get_string_val          () const;
   void reset_value                     ();
   const bool is_value_accepted         ( const long int ) const;
   const bool change_value              ( const long int, const bool def = false );
+  const bool change_value              ( const string&, const bool def = false );
   const bool is_value_hexadecimal      () const { return hexadecimal; }
   const long int get_min_value         () const { return min_value; }
   const long int get_max_value         () const { return max_value; }
@@ -124,9 +129,11 @@ public:
   DoubleOption::~DoubleOption          () {}
 
   const double& operator()             () const { return value; }
+  const string get_string_val          () const;
   void reset_value                     ();
   const bool is_value_accepted         ( const double ) const;
   const bool change_value              ( const double, const bool def = false );
+  const bool change_value              ( const string&, const bool def = false );
   const double get_min_value           () const { return min_value; }
   const double get_max_value           () const { return max_value; }
 
@@ -155,8 +162,9 @@ public:
   StringOption::~StringOption          () {}
 
   const string& operator()             () const { return value; }
+  const string get_string_val          () const { return value; }
   void reset_value                     ();
-  void change_value                    ( const string&, const bool def = false );
+  const bool change_value              ( const string&, const bool def = false );
 
 private:
   string value;

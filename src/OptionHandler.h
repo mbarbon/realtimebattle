@@ -90,17 +90,9 @@ private:
   bool locate_option_in_file             ( const string&, const string::size_type,
                                            const string&, string::size_type& ) const;
   void read_option_from_file             ( string& strfile, string::size_type&,
-                                           DoubleOption, const bool );
-  void read_option_from_file             ( string& strfile, string::size_type&,
-                                           LongOption, const bool );
-  void read_option_from_file             ( string& strfile, string::size_type&,
-                                           StringOption, const bool );
+                                           Option&, const bool );
   void save_option_to_file               ( string& strfile, string::size_type&,
-                                           const DoubleOption ) const;
-  void save_option_to_file               ( string& strfile, string::size_type&,
-                                           const LongOption ) const;
-  void save_option_to_file               ( string& strfile, string::size_type&,
-                                           const StringOption ) const;
+                                           const Option& ) const;
 
   string section_name;
 

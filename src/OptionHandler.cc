@@ -336,7 +336,7 @@ OptionHandler::locate_option_in_file( const string& strfile,
 
 void
 OptionHandler::read_option_from_file( string& strfile, string::size_type& section_pos,
-                                      DoubleOption option, const bool as_default )
+                                      Option& option, const bool as_default )
 {
   string::size_type pos = 0;
   if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
@@ -344,92 +344,22 @@ OptionHandler::read_option_from_file( string& strfile, string::size_type& sectio
       string tempstr = strfile.substr( pos, strfile.find_first_of( '\n', pos ) - pos );
       while( tempstr.length() > 0 && isspace( tempstr[0] ) )
         tempstr = tempstr.substr( 1, string::npos );
-      if( tempstr.length() > 0 )
-        option.change_value( string2double( tempstr ), as_default );
-    }
-}
-
-void
-OptionHandler::read_option_from_file( string& strfile, string::size_type& section_pos,
-                                      LongOption option, const bool as_default )
-{
-  string::size_type pos = 0;
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
-    {
-      string tempstr = strfile.substr( pos, strfile.find_first_of( '\n', pos ) - pos );
-      while( tempstr.length() > 0 && isspace( tempstr[0] ) )
-        tempstr = tempstr.substr( 1, string::npos );
-      if( tempstr.length() > 0 )
-        {
-          if( option.is_value_hexadecimal() )
-            option.change_value( string2hex( tempstr ), as_default );
-          else
-            option.change_value( string2lint( tempstr ), as_default );
-        }
-    }
-}
-
-void
-OptionHandler::read_option_from_file( string& strfile, string::size_type& section_pos,
-                                      StringOption option, const bool as_default )
-{
-  string::size_type pos = 0;
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
-    {
-      string tempstr = strfile.substr( pos, strfile.find_first_of( '\n', pos ) - pos );
-      while( tempstr.length() > 0 && isspace( tempstr[0] ) )
-        tempstr = tempstr.substr( 1, string::npos );
-      if( tempstr.length() > 0 )
-        option.change_value( tempstr, as_default );
+      option.change_value( tempstr, as_default );
     }
 }
 
 void
 OptionHandler::save_option_to_file( string& strfile, string::size_type& section_pos,
-                                    const DoubleOption option ) const
+                                    const Option& option ) const
 {
   string::size_type pos = 0;
   if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
     strfile.replace( pos, strfile.find_first_of( '\n', pos ) - pos,
-                     ' ' + double2string(option()) );
+                     " " + option.get_string_val() );
   else
     {
       strfile += "\n;" + option.get_description() + "\n"
-        + option.get_rc_label() + " = " + double2string(option()) + "\n";
-    }
-}
-
-void
-OptionHandler::save_option_to_file( string& strfile, string::size_type& section_pos,
-                                    const LongOption option ) const
-{
-  string::size_type pos = 0;
-  string optstr;
-  if( option.is_value_hexadecimal() )
-    optstr = hex2string( option() );
-  else
-    optstr = lint2string( option() );
-
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
-    strfile.replace( pos, strfile.find_first_of( '\n', pos ) - pos, ' ' + optstr );
-  else
-    {
-      strfile += "\n;" + option.get_description() + "\n"
-        + option.get_rc_label() + " = " + optstr + "\n";
-    }
-}
-
-void
-OptionHandler::save_option_to_file( string& strfile, string::size_type& section_pos,
-                                    const StringOption option ) const
-{
-  string::size_type pos = 0;
-  if( locate_option_in_file( strfile, section_pos, option.get_rc_label(), pos ) )
-    strfile.replace( pos, strfile.find_first_of( '\n', pos ) - pos, ' ' + option() );
-  else
-    {
-      strfile += "\n;" + option.get_description() + "\n"
-        + option.get_rc_label() + " = " + option() + "\n";
+        + option.get_rc_label() + " = " + option.get_string_val() + "\n";
     }
 }
 

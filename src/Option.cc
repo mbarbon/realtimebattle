@@ -25,6 +25,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream>
 
 #include "Option.h"
+#include "String.h"
+
+const string
+LongOption::get_string_val() const
+{
+  if( !hexadecimal )
+    return lint2string( value );
+  else
+    return hex2string( value );
+  return string("");
+}
 
 void
 LongOption::reset_value()
@@ -49,6 +60,25 @@ LongOption::change_value( const long int newval, const bool def )
       return true;
     }
   return false;
+}
+
+const bool
+LongOption::change_value( const string& newval_string, const bool def )
+{
+  if( !newval_string.empty() )
+    {
+      if( !hexadecimal )
+        return change_value( string2lint( newval_string ), def );
+      else
+        return change_value( string2hex( newval_string ), def );
+    }
+  return false;
+}
+
+const string
+DoubleOption::get_string_val() const
+{
+  return double2string( value );
 }
 
 void
@@ -76,16 +106,25 @@ DoubleOption::change_value( const double newval, const bool def )
   return false;
 }
 
+const bool
+DoubleOption::change_value( const string& newval_string, const bool def )
+{
+  if( !newval_string.empty() )
+    return change_value( string2double( newval_string ), def );
+  return false;
+}
+
 void
 StringOption::reset_value()
 {
   value = default_value;
 }
 
-void
+const bool
 StringOption::change_value( const string& newval, const bool def )
 {
   value = newval;
   if( def )
     default_value = newval;
+  return true;
 }
