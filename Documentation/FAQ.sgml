@@ -3,7 +3,7 @@
 <notes>
 <title>FAQ
 <descrip>
-<item> <bf>The program doesn't compile on my computer</bf> 
+<tag>The program doesn't compile on my computer</tag> 
 <p>
 Well, it is not stable yet, so there may be problems around. Please read the <tt>INSTALL</tt> file
 carefully, and study the 
