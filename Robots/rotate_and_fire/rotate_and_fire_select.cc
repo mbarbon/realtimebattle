@@ -3,12 +3,21 @@
 #include <config.h>
 #endif
 
-#include "rotate_and_fire.h"
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#ifdef TIME_WITH_SYS_TIME 
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
 
+#include "rotate_and_fire.h"
 
 // This version of rotate_and_fire uses 'select' to check 
 // for new messages. 
