@@ -17,7 +17,7 @@ print_help_message()
 gint
 update_function(gpointer the_arenap)
 {  
-  return ((Arena*)the_arenap)->update();
+  return ((Arena*)the_arenap)->timeout_function();
 }
 
 
