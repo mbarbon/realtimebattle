@@ -125,8 +125,8 @@ AM_CONDITIONAL(ENABLE_RPM, test x$use_rpm = xyes)
 
 AC_ARG_WITH(rtb_dir, 
 [  --with-rtb-dir=[path]   directory for rtb installation 
-                          [PREFIX/games/RealTimeBattle]],,
-   with_rtb_dir=['${prefix}/games/RealTimeBattle'])
+                          [EPREFIX/games/RealTimeBattle]],,
+   with_rtb_dir=['${exec_prefix}/games/RealTimeBattle'])
 
 RTB_DIR=$with_rtb_dir
 

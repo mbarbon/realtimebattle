@@ -7,6 +7,10 @@
 <p>
 Some bugs in the new 'Rotate and Fire' code is fixed.
 
+The default RealTimeBattle installation-directory is now
+<tt>EPREFIX/games/RealTimeBattle</tt> instead of
+<tt>PREFIX/games/RealTimeBattle</tt>.
+
 <item> <bf>0.9.7:</bf>
 <p>
 Lots of internal changes, the class hierarchy is completely
