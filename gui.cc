@@ -38,6 +38,7 @@ void
 pause_button_callback(GtkWidget * widget, gpointer data)
 {
   the_arena.paus_game_toggle();
+  the_gui.set_control_window_title( the_arena.is_game_halted() );
 }
 
 void
@@ -437,6 +438,14 @@ Gui::setup_control_window()
   gtk_widget_show (bottomtable);
 
   gtk_widget_show (control_window);
+}
+
+void
+Gui::set_control_window_title( const bool halted )
+{
+  String title("RealTimeBattle Control");
+  if( halted ) title += "  *PAUSED*";
+  gtk_window_set_title (GTK_WINDOW (control_window), title.chars());  
 }
 
 void
