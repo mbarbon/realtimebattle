@@ -185,7 +185,10 @@ Robot::update_radar_and_cannon(const double timestep)
   robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
   void* col_obj;
-  double dist = the_arena->get_shortest_distance(center, Vector2D(cos(radar_angle), sin(radar_angle)), 0.0, closest_shape, col_obj);
+  double dist = the_arena->
+    get_shortest_distance(center, Vector2D(cos(radar_angle+robot_angle), 
+                                           sin(radar_angle+robot_angle)), 
+                          0.0, closest_shape, col_obj);
   send_message(RADAR, dist, closest_shape, radar_angle);
   send_message(INFO, the_arena->get_total_time(), length(velocity), cannon_angle); 
 }
@@ -193,12 +196,27 @@ Robot::update_radar_and_cannon(const double timestep)
 void
 bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 {
-  double e = robot.bounce_coeff * wall.bounce_coeff;
+  double h, p, b;
+  
+  if( -dot(normal, Vector2D(cos(robot.robot_angle), sin(robot.robot_angle))) > opts.get_robot_cos_frontsize() )
+    {
+      h = opts.get_robot_front_hardness();
+      b = opts.get_robot_front_bounce_coeff();
+      p = opts.get_robot_front_protection();
+    }
+  else
+    {
+      h = robot.hardness_coeff;
+      b = robot.bounce_coeff;
+      p = robot.protection_coeff;
+    }  
+
+  double e = b * wall.bounce_coeff;
   Vector2D start_vel = robot.velocity;
   robot.velocity -= (1.0 + e) * dot(normal, robot.velocity) * normal;
 
   double en_diff = 0.5 * robot.mass * lengthsqr(start_vel - robot.velocity);
-  double injury = en_diff * 0.5 * (robot.hardness_coeff + wall.hardness_coeff ) * (1.0-e) * (1.0-robot.protection_coeff);
+  double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
   robot.change_energy(-injury);
 
   robot.send_message(COLLISION, WALL, -injury);
@@ -207,21 +225,51 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 void
 bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
 {
-  double e = robot1.bounce_coeff * robot2.bounce_coeff;  
+  double h1, h2, p1, p2, b1, b2;
+  Vector2D dir1_2 = unit(robot2.center - robot1.center);
+  
+  if( dot(dir1_2, Vector2D(cos(robot1.robot_angle), sin(robot1.robot_angle))) > opts.get_robot_cos_frontsize() )
+    {
+      h1 = opts.get_robot_front_hardness();
+      b1 = opts.get_robot_front_bounce_coeff();
+      p1 = opts.get_robot_front_protection();
+    }
+  else
+    {
+      h1 = robot1.hardness_coeff;
+      b1 = robot1.bounce_coeff;
+      p1 = robot1.protection_coeff;
+    }
+
+  if( -dot(dir1_2, Vector2D(cos(robot2.robot_angle), sin(robot2.robot_angle))) > opts.get_robot_cos_frontsize() )
+    {
+      h2 = opts.get_robot_front_hardness();
+      b2 = opts.get_robot_front_bounce_coeff();
+      p2 = opts.get_robot_front_protection();
+    }
+  else
+    {
+      h2 = robot2.hardness_coeff;
+      b2 = robot2.bounce_coeff;
+      p2 = robot2.protection_coeff;
+    }
+
+  double e = b1*b2;
   Vector2D start_vel1 = robot1.velocity;
   Vector2D start_vel2 = robot2.velocity;
   double mass_quotient = robot1.mass / robot2.mass;
   Vector2D tmp = ((1.0 + e) / ( 1 + mass_quotient )) * dot(robot2.velocity - robot1.velocity, normal) * normal;
   robot1.velocity += tmp;
   robot2.velocity -= mass_quotient * tmp;
+
   
   double en_diff = 0.5 * robot1.mass * lengthsqr(start_vel1 - robot1.velocity);
-  double injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot1.protection_coeff);
+  double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
   robot1.send_message(COLLISION, ROBOT, -injury);
 
   en_diff = 0.5 * robot2.mass * lengthsqr(start_vel2 - robot2.velocity);
-  injury = en_diff * 0.5 * (robot1.hardness_coeff + robot2.hardness_coeff ) * (1.0-e) * (1.0-robot2.protection_coeff);
+  injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
   robot2.send_message(COLLISION, ROBOT, -injury);
 }
@@ -231,8 +279,8 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
 {
   center = pos;
   robot_angle = angle;
-  cannon_angle = angle;
-  radar_angle = angle;
+  cannon_angle = 0.0;
+  radar_angle = 0.0;
   radius = opts.get_robot_radius();
   protection_coeff = opts.get_robot_protection();
   hardness_coeff = opts.get_robot_hardness();
@@ -430,7 +478,7 @@ Robot::get_messages()
           {
             double en;
             *instreamp >> en;
-            Vector2D dir = Vector2D(cos(cannon_angle),sin(cannon_angle));
+            Vector2D dir = Vector2D(cos(cannon_angle+robot_angle),sin(cannon_angle+robot_angle));
             double shot_radius = opts.get_shot_radius();
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
             if( the_arena->space_available( shot_center, shot_radius + eps ) )
@@ -569,13 +617,13 @@ Robot::draw_radar_and_cannon( Gui& the_gui )
 {
   // Draw Cannon
   the_gui.draw_line( center,
-                     Vector2D(cos(cannon_angle),sin(cannon_angle)),
+                     Vector2D(cos(cannon_angle+robot_angle),sin(cannon_angle+robot_angle)),
                      opts.get_robot_radius() - opts.get_shot_radius(),
                      opts.get_shot_radius(),
                      *(the_arena->get_foreground_colour_p()) );
 
   // Draw radar lines
-  Vector2D radar_dir( cos(radar_angle),sin(radar_angle) );
+  Vector2D radar_dir( cos(radar_angle+robot_angle),sin(radar_angle+robot_angle) );
   the_gui.draw_line( center - opts.get_robot_radius() * 0.25 * radar_dir,
                      rotate( radar_dir, M_PI / 4.0 ),
                      opts.get_robot_radius() / 1.5,
