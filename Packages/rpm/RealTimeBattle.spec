@@ -1,5 +1,5 @@
 #
-# spec file for package RealTimeBattle (Version 0.9.11)
+# spec file for package RealTimeBattle (for version see below)
 # 
 # Author: CW Zuckschwerdt <zany@triq.net>, Nov 1999 
 #
