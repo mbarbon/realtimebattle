@@ -23,8 +23,8 @@ CFLAGS = $(RPM_OPT_FLAGS)
 CXXFLAGS += $(RPM_OPT_FLAGS)
 endif
 
-gtkincludedirs = `gtk-config --cflags`
-libs = `gtk-config --libs`
+gtkincludedirs = `$(gtk_dir)gtk-config --cflags`
+libs = `$(gtk_dir)gtk-config --libs`
 
 objects = Vector2D.o Gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
 stdincludes = Vector2D.h Gui.h Various.h Options.h Arena.h Messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
