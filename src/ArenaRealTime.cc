@@ -1107,7 +1107,8 @@ ArenaRealTime::start_sequence_follow_up()
           robots_left--;
         }
       if( !robotp->set_and_get_has_competed() )
-        print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), robotp->get_robot_name().chars());
+        print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), 
+                         robotp->get_robot_name().chars());
     }
   start_game();
 }
