@@ -13,6 +13,26 @@ are more information on how to use CVS. It is also possible to browse the
 source there.
 
 <descrip>
+<tag>Checking out:</tag>
+<p>
+To check out simply do as follows:
+
+First set the environmental variable CVSROOT to
+<verb>:pserver:anonymous@cvs.RealTimeBattle.SourceForge.net:/cvsroot/RealTimeBattle</verb>
+by using
+<tt>%export CVSROOT=</tt> if you are using <tt>bash</tt> or similar shells.
+or <tt>%setenv CVSROOT=</tt> if you are using <tt>tcsh</tt> or similar shells.
+
+Then go on and and login to the server and checkout:
+<verb>
+%cvs login
+%cvs co RealTimeBattle</verb>
+or if you want to check out the stable branch of the RealTimeBattle tree
+you have to do this:
+<verb>
+%cvs login
+%cvs co -r release-1-0-0-patches RealTimeBattle</verb>
+
 <tag>Requirements:</tag> 
 <p>
 
