@@ -52,6 +52,16 @@ extern bool no_graphics;
 enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
+struct start_tournament_glist_info_t
+{
+  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
+    row(r), selected(s), filename(fn), directory(dir) {}
+  int row;
+  bool selected;
+  String filename;
+  String directory;
+};
+
 
 // --------------------------  Arena --------------------------
 class Arena 
@@ -85,7 +95,7 @@ public:
   void quit_ordered();
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
-
+  void parse_tournament_file( String& fname );
   void set_filenames(String& log_fname, const String& statistics_fname, 
                      const String& tournament_fname, const String& option_fname);
 
