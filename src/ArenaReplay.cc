@@ -527,12 +527,19 @@ ArenaReplay::search_forward( const String& search_letters )
     {
       log_file.get( buffer, 400, '\n' );
       log_file >> ws;
-      log_file >> letter;
+      letter = log_file.peek();
     }
-  log_file.get( buffer, 400, '\n' );
-  beginning_of_current_line();
 
-  return (String) buffer;
+  if( log_file.eof() )
+    return "";
+  else
+    {
+      log_file.get( buffer, 400, '\n' );
+      beginning_of_current_line();
+      return (String) buffer;
+    }
+
+  return "";
 }
 
 String
@@ -547,11 +554,18 @@ ArenaReplay::search_backwards( const String& search_letters )
       beginning_of_prev_line();
       letter = log_file.peek();
     }
-  char buffer[400];
-  log_file.get( buffer, 400, '\n' );
-  beginning_of_current_line();
 
-  return (String) buffer;
+  if( log_file.tellg() == 0 )
+    return "";
+  else
+    {
+      char buffer[400];
+      log_file.get( buffer, 400, '\n' );
+      beginning_of_current_line();
+      return (String) buffer;
+    }
+
+  return "";
 }
 
 void
