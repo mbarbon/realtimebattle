@@ -126,7 +126,7 @@ Arena::interrupt_tournament()
         {
           the_gui.close_score_window();
           the_gui.close_arena_window();
-          the_gui.close_message_window();
+          the_gui.close_messagewindow();
         }
 #endif
 
@@ -1623,7 +1623,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      the_gui.setup_message_window();
+      the_gui.open_messagewindow();
       the_gui.setup_arena_window();
       the_gui.setup_score_window();
     }
@@ -1760,7 +1760,7 @@ Arena::end_tournament()
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      the_gui.close_message_window();
+      the_gui.close_messagewindow();
       the_gui.close_score_window();
       the_gui.close_arena_window();
       //  the_gui.close_control_window();

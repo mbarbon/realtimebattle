@@ -65,24 +65,6 @@ new_robot_selected( GtkWidget * clist, gint row, gint column,
 }
 
 void
-clear_message_clist_callback( GtkWidget* widget, gpointer data )
-{
-  the_gui.clear_message_clist();
-}
-
-void
-show_one_robots_messages_callback( GtkWidget* widget, gpointer data )
-{
-  the_gui.set_show_messages_for_robot( the_gui.get_selected_robot() );
-}
-
-void
-show_all_messages_callback( GtkWidget* widget, gpointer data )
-{
-  the_gui.set_show_messages_for_robot( NULL );
-}
-
-void
 no_zoom_callback(GtkWidget *widget, gpointer data)
 {
   the_gui.change_zoomfactor( NO_ZOOM );
@@ -117,6 +99,8 @@ delete_event(GtkWidget *widget, gpointer data)
 Gui::Gui()
 {
   statistics_up = false;
+
+  messagewindow_p = NULL;
 
   da_scrolled_window_size = Vector2D(0.0,0.0);
 }
@@ -180,43 +164,6 @@ Gui::change_to_pixels_y(const double input)
   double res;
   res = (input-the_arena.get_boundary()[0][1])*zoom + 0.5;
   return (int)res;
-}
-
-void
-Gui::clear_message_clist()
-{
-  gtk_clist_clear(GTK_CLIST(message_clist));
-}
-
-void
-Gui::set_show_messages_for_robot( Robot* robotp )
-{
-  show_messages_for_robot = robotp;
-}
-
-void
-Gui::print_to_message_output (String from_robot, String output_text)
-{
-  if( show_messages_for_robot == NULL || show_messages_for_robot->get_robot_name() == from_robot  )
-    {
-      char * lst[2];
-  
-      for(int j=0;j<2;j++)
-        {
-          lst[j] = new char[30];
-          strcpy(lst[j],"");
-        }
-
-      int row = 0;
-      gtk_clist_insert(GTK_CLIST(message_clist), row, lst);
-      gtk_clist_set_foreground(GTK_CLIST(message_clist), row, the_arena.get_foreground_colour_p());
-      gtk_clist_set_background(GTK_CLIST(message_clist), row, the_arena.get_background_colour_p());
-      
-      gtk_clist_set_text(GTK_CLIST(message_clist), row, 0, from_robot.non_const_chars());
-      gtk_clist_set_text(GTK_CLIST(message_clist), row, 1, output_text.non_const_chars());
-      
-      for(int i=0; i<2; i++) delete [] lst[i];
-    }
 }
 
 void
@@ -521,80 +468,6 @@ Gui::add_robots_to_score_list()
   change_selected_robot( 0 );
 }
 
-void
-Gui::setup_message_window()
-{
-  show_messages_for_robot = NULL;
-
-  message_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (message_window), "RealTimeBattle Messages");
-  gtk_widget_set_name (message_window, "RTB Message");
-  gtk_signal_connect (GTK_OBJECT (message_window), "delete_event",
-                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(message_window));
-  gtk_container_border_width (GTK_CONTAINER (message_window), 12);
-  gtk_widget_set_usize(message_window,
-                       (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_SIZE_Y));
-  gtk_widget_set_uposition(message_window,
-                           (int)the_opts.get_l(OPTION_MESSAGE_WINDOW_POS_X),(int)the_opts.get_l(OPTION_MESSAGE_WINDOW_POS_Y));
-
-  GtkWidget* vbox = gtk_vbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (message_window), vbox);
-  gtk_widget_show (vbox);
-
-  GtkWidget* hbox = gtk_hbox_new (FALSE, 5);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  gtk_widget_show (hbox);
-
-  GtkWidget* button = gtk_button_new_with_label( " Clear all messages " );
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      (GtkSignalFunc)clear_message_clist_callback, NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
-  gtk_widget_show(button);
-
-  button = gtk_button_new_with_label( " Show only marked robot " );
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      (GtkSignalFunc)show_one_robots_messages_callback, NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
-  gtk_widget_show(button);
-
-  button = gtk_button_new_with_label( " Show all " );
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      (GtkSignalFunc)show_all_messages_callback, NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
-  gtk_widget_show(button);
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  GtkObject* hadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkObject* vadj = gtk_adjustment_new ( 0.0, 0.0, 100.0, 1.0, 1.0, 1.0 );
-  GtkWidget* scrolled_win = gtk_scrolled_window_new (GTK_ADJUSTMENT ( hadj ),
-                                                     GTK_ADJUSTMENT ( vadj ) );
-  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW ( scrolled_win ),
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  gtk_box_pack_start (GTK_BOX (vbox), scrolled_win, TRUE, TRUE, 0);
-  gtk_widget_show ( scrolled_win );
-#endif
-
-  char* titles[2] = { "Robot", "Message" };
-  message_clist = gtk_clist_new_with_titles(2,titles);
-  gtk_clist_set_selection_mode (GTK_CLIST(message_clist), GTK_SELECTION_EXTENDED);
-  gtk_clist_set_column_width (GTK_CLIST(message_clist), 0, 130);
-  gtk_clist_set_column_width (GTK_CLIST(message_clist), 1, 1000);
-  gtk_clist_set_column_justification(GTK_CLIST(message_clist), 0, GTK_JUSTIFY_LEFT);
-  gtk_clist_set_column_justification(GTK_CLIST(message_clist), 1, GTK_JUSTIFY_LEFT);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-  gtk_clist_set_shadow_type(GTK_CLIST(message_clist), GTK_SHADOW_IN);
-  gtk_container_add(GTK_CONTAINER(scrolled_win), message_clist);
-#else
-  gtk_clist_set_border(GTK_CLIST(message_clist), GTK_SHADOW_IN);
-  gtk_clist_set_policy(GTK_CLIST(message_clist), GTK_POLICY_AUTOMATIC,
-                       GTK_POLICY_AUTOMATIC);
-  gtk_box_pack_start (GTK_BOX (vbox), message_clist, TRUE, TRUE, 0);
-#endif
-  gtk_widget_show(message_clist);
-
-  gtk_widget_show (message_window);
-}
-
 // This function sets the title of the arena window
 void
 Gui::set_arena_window_title()
@@ -727,15 +600,30 @@ Gui::ask_user(String question, QuestionFunction function_name)
 }
 
 void
-Gui::close_score_window()
+Gui::open_messagewindow()
 {
-  gtk_widget_destroy ( score_window );
+  if( NULL == messagewindow_p )
+    messagewindow_p = 
+      new MessageWindow( the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_X ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_SIZE_Y ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_X ),
+                         the_opts.get_l( OPTION_MESSAGE_WINDOW_POS_Y ) );
 }
 
 void
-Gui::close_message_window()
+Gui::close_messagewindow()
 {
-  gtk_widget_destroy ( message_window );
+  if( NULL != messagewindow_p )
+    {
+      delete messagewindow_p;
+      messagewindow_p = NULL;
+    }
+}
+
+void
+Gui::close_score_window()
+{
+  gtk_widget_destroy ( score_window );
 }
 
 void

@@ -163,7 +163,7 @@ MessageWindow::add_message( Robot* robot_p, String output_text )
 
   gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
                       robot_p->get_robot_name().non_const_chars() );
-  gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
+  gtk_clist_set_text( GTK_CLIST( clist ), row, 1,
                       output_text.non_const_chars() );
 
   for(int i=0; i<2; i++) delete [] lst[i];

@@ -1053,7 +1053,7 @@ Robot::get_messages()
             the_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
             if( !no_graphics )
-                the_gui.print_to_message_output(robot_name, text);
+                the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
           }
           break;
@@ -1063,7 +1063,7 @@ Robot::get_messages()
             the_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
             if( the_arena.get_game_mode() == Arena::DEBUG_MODE && !no_graphics)
-              the_gui.print_to_message_output(robot_name, text);
+              the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
           }
           break;

@@ -77,10 +77,6 @@ void question_no_callback                             ( GtkWidget* widget, Quest
 void new_robot_selected                               ( GtkWidget* clist, gint row, gint column,
                                                         GdkEventButton* event, gpointer data );
 
-void clear_message_clist_callback                     ( GtkWidget* widget, gpointer data );
-void show_one_robots_messages_callback                ( GtkWidget* widget, gpointer data );
-void show_all_messages_callback                       ( GtkWidget* widget, gpointer data );
-
 void statistics_button_callback                       ( GtkWidget* widget, gpointer data );
 void save_statistics_callback                         ( GtkWidget* widget, gpointer data);
 void save_stats_filesel_ok_selected                   ( GtkWidget* widget, GtkFileSelection* fs);
@@ -115,13 +111,11 @@ public:
   ~Gui() {}
 
   void setup_score_window();
-  void setup_message_window();
   void setup_arena_window();
   void setup_start_tournament_window();
   void setup_statistics_window();
 
   void close_score_window();
-  void close_message_window();
   void close_arena_window();
   void close_start_tournament_window();
   void close_statistics_window();
@@ -129,9 +123,6 @@ public:
 
   void quit_event();
 
-  void clear_message_clist();
-  void set_show_messages_for_robot( Robot* robotp );
-  void print_to_message_output(String from_robot, String text);
   void draw_objects(const bool clear_objects_first);
   void draw_all_walls();
 
@@ -178,14 +169,15 @@ public:
   GtkWidget* get_filesel_widget() { return filesel_widget; }
   void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
 
+  MessageWindow* get_messagewindow_p  () { return messagewindow_p; }
+  void open_messagewindow             ();
+  void close_messagewindow            ();
+
 private:
 
   bool statistics_up;
   bool start_tournament_up;
 
-  Robot* show_messages_for_robot;
-
-  GtkWidget* message_clist;
   GtkWidget* drawing_area;
   GtkWidget* da_scrolled_window;
 
@@ -206,7 +198,6 @@ private:
   GtkWidget* start_tournament_entries[3];
 
   GtkWidget* score_window;
-  GtkWidget* message_window;
   GtkWidget* arena_window;
   GtkWidget* start_tournament_window;
   GtkWidget* statistics_window;
@@ -229,6 +220,8 @@ private:
 
   stat_table_t stat_table_type;
   int stat_looking_at_nr;
+
+  MessageWindow* messagewindow_p;
 };
 
 #endif NO_GRAPHICS
