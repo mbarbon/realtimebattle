@@ -29,10 +29,5 @@ The sort feature is missing in gtk+ 1.0, so this will probably never work.
 We have still not found a solution to this, but it now works in gtk+ >= 1.1.x.
 If you can't resize in gtk+ >= 1.1.x either, you have to upgrade to RTB 0.9.7.
 
-<tag>Load and Save doesn't work</tag> 
-<p> 
-It will probable be permissible for robots to load and save for themselves, so these messages will
-be removed altogether soon.
-
 </descrip>
 </notes>
