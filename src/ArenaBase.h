@@ -156,6 +156,7 @@ protected:
   void reset_timer();
 
   void move_shots(const double time_period); 
+  void move_shots_no_check(const double time_period); 
 
   void parse_arena_line(ifstream& file, double& scale, int& succession);
 

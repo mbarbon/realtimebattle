@@ -524,6 +524,16 @@ ArenaBase::move_shots(const double time_period)
     }
 }
 
+void
+ArenaBase::move_shots_no_check(const double time_period)
+{
+  ListIterator<Shape> li;
+
+  for( object_lists[SHOT].first(li); li.ok(); li++)
+    {
+      ((Shot*)li())->move_no_check(time_period);
+    }
+}
 
 void 
 ArenaBase::set_game_mode( const enum game_mode_t gm)
