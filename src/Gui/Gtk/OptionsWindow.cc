@@ -79,11 +79,13 @@ OptionsWindow::OptionsWindow( const int default_width,
 
   vector<page_t> page_list;
   const vector<string> group_names =
-    the_gui.get_main_opts()->get_group_names();
+    the_gui.get_gtk_opts()->get_group_names();
 
   int number_of_options[group_names.size()];
-  // TODO: Use all options (not just main_opts)
-  const map<string,Option*>& all_options = the_gui.get_main_opts()->get_options();
+  for( unsigned int i = 0; i < group_names.size(); i++ )
+    number_of_options[i] = 0;
+  // TODO: Use all options (not just gtk_opts)
+  const map<string,Option*>& all_options = the_gui.get_gtk_opts()->get_options();
   map<string,Option*>::const_iterator mci;
   for( mci = all_options.begin(); mci != all_options.end(); mci++ )
     {
