@@ -21,9 +21,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <gtk/gtkclist.h>
+
 #include <typeinfo>
 #include <math.h>
 #include <list>
+#include <string>
 
 #include "DrawingObjects.h"
 #include "Vector2D.h"
@@ -294,14 +297,13 @@ DrawingRobot::reset_last_displayed()
 }
 
 void
-DrawingRobot::display_score()
+DrawingRobot::display_score( GtkCList* clist )
 {
   if( last_displayed_energy != energy )
     {
       last_displayed_energy = energy;
       char* energy_str = int2chars( energy );
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist, 2, energy_str);
+      gtk_clist_set_text( clist, row_in_score_clist, 2, energy_str );
       delete [] energy_str;
     }
 
@@ -316,8 +318,7 @@ DrawingRobot::display_score()
           str[0] = 0;
         }
       last_displayed_place = position_this_game;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist, 3, str );
+      gtk_clist_set_text( clist, row_in_score_clist, 3, str );
       delete [] str;
     }
 
@@ -325,8 +326,7 @@ DrawingRobot::display_score()
     {
       last_displayed_last_place = last_place;
       char* str = int2chars( last_place );
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist, 4, str);
+      gtk_clist_set_text( clist, row_in_score_clist, 4, str );
       delete [] str;
     }
 
@@ -334,8 +334,7 @@ DrawingRobot::display_score()
     {
       last_displayed_score = score;
       char* str = double2chars( score );
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist, 5, str);
+      gtk_clist_set_text( clist, row_in_score_clist, 5, str );
       delete [] str;
     }
 }
