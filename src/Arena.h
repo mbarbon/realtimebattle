@@ -30,6 +30,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "SubSquare.h"
 
+class Arena;
+extern Arena* the_arenap;
+#define the_arena (*the_arenap)
+
 class Vector2D;
 class Shape;
 class Circle;
