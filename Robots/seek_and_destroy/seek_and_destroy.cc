@@ -133,7 +133,7 @@ check_messages(int sig)
                         {
                           acceleration = 0.0;
                           robot_rotate = 0.0;
-                          cout << "Break 1" << endl;
+                          cout << "Brake 1" << endl;
                         }
                       else
                         {
@@ -149,7 +149,7 @@ check_messages(int sig)
                             {
                               acceleration = 0.0 ;
                               robot_rotate = 2.0*slumprotate ;
-                              cout << "Break 0.7" << endl;
+                              cout << "Brake 0.7" << endl;
                             }
                           else
                             {
@@ -203,7 +203,7 @@ check_messages(int sig)
                     acceleration = 0.0;
                     robot_rotate = 2.0*slumprotate;
                     if (speed > 0.4)
-                      cout << "Break 1" << endl;
+                      cout << "Brake 1" << endl;
                     cout << "Shoot 0.5" << endl;
                     cout << "Accelerate " << acceleration << endl;
                     cout << "Rotate 1 " << robot_rotate << endl;
@@ -296,7 +296,7 @@ main(int argc, char * argv[])
   sigprocmask(SIG_UNBLOCK, &usr1set, NULL);
   
 
-  cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
+  cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
 
   for(;;sleep(1))
     {

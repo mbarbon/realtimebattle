@@ -146,7 +146,7 @@ main(int argc, char * argv[])
   sigaddset(&usr1set, SIGUSR1);
   sigprocmask(SIG_UNBLOCK, &usr1set, NULL);
 
-  cout << "RobotOption " << SEND_SIGNAL << " " << true << endl;
+  cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
 
   srand(time(0));
 
