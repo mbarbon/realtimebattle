@@ -37,7 +37,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #  include <time.h>
 # endif
 #endif
-//#include <sys/wait.h>
+#ifdef HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
 
 #include <errno.h>
 #ifdef HAVE_GETOPT_H
