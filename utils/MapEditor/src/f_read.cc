@@ -221,7 +221,7 @@ int  WeaponGadget::Read(FILE *fp)
 	      if(type[0] == '$')
 		{
 		  cout<<"Create a Shot of type "<<&type[1]<<endl;
-		  GadgetDef = findGadgetDefinitionFor(&type[1], this);
+		  //GadgetDef = findGadgetDefinitionFor(&type[1], this);
 		  //shot = copy(GadgetDef->theGadget);
 		  //TODO : Make a copy of the definition in the Shot gadget of the weapon...
 		}
