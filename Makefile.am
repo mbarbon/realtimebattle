@@ -1,5 +1,4 @@
-# SUBDIRS = intl po Arenas Robots Documentation Packages src 
-SUBDIRS = src
+SUBDIRS = intl po Arenas Robots Documentation Packages src 
 
 rtbstddocsdir = $(DOCS_DIR)
 rtbstddocs_DATA = ABOUT-NLS BUGS FAQ TODO README INSTALL ChangeLog CVS-Help
