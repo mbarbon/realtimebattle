@@ -143,6 +143,8 @@ Arena::parse_file(istream& file)
           file >> bounce_c;
           file >> hardn;
 
+          if( length(vec2-vec1) == 0.0 ) throw Error("Zero length line", "Arena::parsefile");
+
           wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                     scale*number2, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wall_linep);
@@ -163,6 +165,8 @@ Arena::parse_file(istream& file)
             {
               vec2 = vec1;
               file >> vec1;      // next point
+
+              if( length(vec2-vec1) == 0.0 ) throw Error("Zero length line in polygon", "Arena::parsefile");
 
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
@@ -189,12 +193,16 @@ Arena::parse_file(istream& file)
               vec2 = vec1;
               file >> vec1;      // next point
 
+              if( length(vec2-vec1) == 0.0 ) throw Error("Line in closed_polygon of zero length", "Arena::parsefile");
+          
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
               g_list_append(object_lists[WALL], wall_linep);
               wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
               g_list_append(object_lists[WALL], wall_circlep);
             }
+
+          if( length(vec0-vec1) == 0.0 ) throw Error("Last line in closed_polygon of zero length", "Arena::parsefile");
           wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                     scale*thickness, bounce_c , hardn);      
           g_list_append(object_lists[WALL], wall_linep);
