@@ -47,8 +47,9 @@ RealTimeBattle_SOURCES = \
 	ArenaRealTime.cc ArenaRealTime.h \
 	ArenaReplay.h ArenaReplay.cc \
 	Extras.cc Extras.h \
-	List.cc List.h \
+	IntlDefs.h \
 	GeometricalObjects.cc GeometricalObjects.h \
+	List.cc List.h \
 	Messagetypes.h \
 	MovingObject.h \
 	Options.cc Options.h \
