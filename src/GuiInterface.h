@@ -57,10 +57,6 @@ public:
 
   // Functions that supplies information to the Gui.
 
-  // The lists shouldn't be supplied directly 
-  List<Shape>* get_object_lists               (); 
-  List<Robot>* get_all_robots_in_sequence     ();
-  List<Robot>* get_all_robots_in_tournament   ();
   String get_current_arena_filename           ();
   int get_game_nr                             ();
   int get_games_per_sequence                  ();
@@ -115,7 +111,12 @@ private:
   list<message_t> messages;
 
   pthread_t thread;
-  pthread_mutex_t gi_mutex;
+
+  // Mutexes
+  pthread_mutex_t* gi_mutex;
+  // There should be many mutexes so server and gui isn't unnecessarily stopped.
+  // Mutexes should not be a part of the GuiInterface, so all guis and the server
+  // have good access to the mutexes.
 };
 
 // ---------------------------------------------------------------------------
