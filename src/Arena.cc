@@ -248,6 +248,35 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 void
 Arena::garbage_collector()
 {
-  
-  
+  // The killed objects must be removed from all subsquares first
+
+  // clean subsquares
+
+  for( int i=0; i < number_of_subsquares_x; i++ )
+    for( int j=0; j < number_of_subsquares_y; j++ )
+      {
+        subsquares[i][j].clean();
+      }
+
+
+  //clean lists
+
+  for( set<Shot*>::iterator li = shots.begin(); li != shots.end(); li++ )
+    if( (*li)->is_killed() )  { shots.erase(li); delete (*li); }
+
+  for( set<Robot*>::iterator li = robots.begin(); li != robots.end(); li++ )
+    if( (*li)->is_killed() )  robots.erase(li);
+
+  for( set<MovingObject*>::iterator 
+         li = moving_objects.begin(); li != moving_objects.end(); li++ )
+    if( (*li)->is_killed() ) { moving_objects.erase(li);  delete (*li); }
+
+  for( set<Shape*>::iterator
+         li = updatable_objects.begin(); li != updatable_objects.end(); li++ )
+    if( (*li)->is_killed() ) { updatable_objects.erase(li);  delete (*li); }
+
+  for( set<Shape*>::iterator
+         li = static_objects.begin(); li != static_objects.end(); li++ )
+    if( (*li)->is_killed() ) { static_objects.erase(li);  delete (*li); }
+
 }
