@@ -800,7 +800,7 @@ ArenaReplay::get_time_positions_in_game()
         }
 
       strpos = log_file.tellg();
-      buffer = search_forward( letter_list );
+      buffer = search_forward( letter_list,strpos );
       log_file.clear();
     }
 
