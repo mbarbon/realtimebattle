@@ -65,7 +65,9 @@ GIUsageMessage()
 bool
 GIInit( int argc, char** argv )
 {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
   gtk_set_locale();
+#endif
 
   gtk_init (&argc, &argv);
 
