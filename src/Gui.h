@@ -28,16 +28,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Structs.h"
 #include "Vector2D.h"
 
+class ArenaWindow;
 class MessageWindow;
 class ScoreWindow;
 class StatisticsWindow;
 class StartTournamentWindow;
-
-//#include "MovingObject.h"
-//#include "Arena.h"
-//#include "Robot.h"
-//#include "String.h"
-
 class Robot;
 class String;
 
@@ -79,49 +74,24 @@ enum start_tournament_button_t
 void question_yes_callback                            ( GtkWidget* widget, QuestionFunction function_name );
 void question_no_callback                             ( GtkWidget* widget, QuestionFunction function_name );
 
-void delete_event                                     ( GtkWidget* widget, gpointer data );
-
-void no_zoom_callback                                 ( GtkWidget* widget, gpointer data );
-void zoom_in_callback                                 ( GtkWidget* widget, gpointer data );
-void zoom_out_callback                                ( GtkWidget* widget, gpointer data );
-
-gint redraw_arena                                     ( GtkWidget* widget, GdkEventExpose* event, gpointer data );
-
 class Gui
 {
 public:
   Gui();
   ~Gui() {}
 
-  void setup_arena_window();
-  void setup_statistics_window();
-
-  void close_arena_window();
-  void close_statistics_window();
   void close_question_window();
 
   void quit_event();
 
-  void draw_objects(const bool clear_objects_first);
-  void draw_all_walls();
-
-  void change_zoom();
-  void change_zoomfactor( const zoom_t type );
-  int change_to_pixels_x(const double input);
-  int change_to_pixels_y(const double input);
-
-  void clear_area();
-  void draw_circle( const Vector2D& center, const double radius, GdkColor& colour, const bool filled );
-  void draw_line( const Vector2D& start, const Vector2D& end, GdkColor& colour );
-  void draw_line( const Vector2D& start, const Vector2D& end, const double length, 
-                  const double thickness, GdkColor& colour );
-  void draw_rectangle( const Vector2D& start, const Vector2D& end, GdkColor& colour, const bool filled );
-
-  void set_arena_window_title();
-
   void ask_user(String question, QuestionFunction function_name);
 
-  double get_zoom() { return zoom; }
+  bool is_arenawindow_up                       ()
+    { return ( arenawindow_p != NULL ); }
+  ArenaWindow* get_arenawindow_p               ()
+    { return arenawindow_p; }
+  void open_arenawindow                        ();
+  void close_arenawindow                       ();
 
   bool is_messagewindow_up                     ()
     { return ( messagewindow_p != NULL ); }
@@ -156,20 +126,9 @@ private:
 
   //  bool statistics_up;
 
-  GtkWidget* drawing_area;
-  GtkWidget* da_scrolled_window;
-
-  GtkWidget* arena_window;
   GtkWidget* question_window;
 
-  Vector2D da_scrolled_window_size;
-
-  GdkColormap* colormap;
-
-  int zoomfactor;
-  double zoom;
-  Vector2D boundary[2];
-
+  ArenaWindow* arenawindow_p;
   MessageWindow* messagewindow_p;
   ScoreWindow* scorewindow_p;
   StatisticsWindow* statisticswindow_p;

@@ -17,7 +17,8 @@ GRAPHICS_O =
 CXXFLAGS += -DNO_GRAPHICS 
 else
 GRAPHICS_O = \
-	Gui.o ControlWindow.o MessageWindow.o \
+	Gui.o ArenaWindow.o \
+	ControlWindow.o MessageWindow.o \
 	OptionsWindow.o \
 	ScoreWindow.o StatisticsWindow.o \
 	StartTournamentWindow.o Structs.o
@@ -49,6 +50,7 @@ RealTimeBattle_SOURCES = \
 
 
 EXTRA_RealTimeBattle_SOURCES = \
+	ArenaWindow.cc ArenaWindow.h \
 	ControlWindow.cc ControlWindow.h \
 	getopt.c getopt.h \
 	Gui.cc Gui.h \

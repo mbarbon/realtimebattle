@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 
 #include "GeometricalObjects.h"
+#include "ArenaWindow.h"
 #include "Various.h"
 #include "Gui.h"
 #include "Arena_Controller.h"
@@ -111,16 +112,21 @@ Line::within_distance(const Vector2D& pos, const double size)
 
 #ifndef NO_GRAPHICS
 void
-Line::draw_shape(bool erase)
+Line::draw_shape( bool erase )
 {
   if( erase )
-    the_gui.draw_line(last_drawn_start_point, last_drawn_direction, last_drawn_length, 
-                      last_drawn_thickness, *(the_arena.get_bg_gdk_colour_p()));
+    the_gui.get_arenawindow_p()->draw_line( last_drawn_start_point,
+                                            last_drawn_direction,
+                                            last_drawn_length,
+                                            last_drawn_thickness,
+                                            *(the_arena.get_bg_gdk_colour_p()) );
   last_drawn_start_point = start_point;
   last_drawn_direction = direction;
   last_drawn_length = length;
   last_drawn_thickness = thickness;
-  the_gui.draw_line(start_point,direction,length,thickness,gdk_colour);
+  the_gui.get_arenawindow_p()->draw_line( start_point, direction,
+                                          length, thickness,
+                                          gdk_colour );
 }
 
 #endif
@@ -184,11 +190,13 @@ void
 Circle::draw_shape(bool erase)
 {
   if( erase )
-    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
-                        *(the_arena.get_bg_gdk_colour_p()), true);
+    the_gui.get_arenawindow_p()->draw_circle( last_drawn_center,
+                                              last_drawn_radius,
+                                              *(the_arena.get_bg_gdk_colour_p()),
+                                              true );
   last_drawn_center = center;
   last_drawn_radius = radius;
-  the_gui.draw_circle(center,radius,gdk_colour,true);
+  the_gui.get_arenawindow_p()->draw_circle( center, radius, gdk_colour, true );
 }
 
 #endif
@@ -244,14 +252,21 @@ void
 InnerCircle::draw_shape(bool erase)
 {
   if( erase )
-    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
-                        *(the_arena.get_bg_gdk_colour_p()), true);
+    the_gui.get_arenawindow_p()->
+      draw_circle( last_drawn_center,
+                   last_drawn_radius,
+                   *(the_arena.get_bg_gdk_colour_p()),
+                   true );
   last_drawn_center = center;
   last_drawn_radius = radius;
-  the_gui.draw_rectangle(the_arena.get_boundary()[0],
-                         the_arena.get_boundary()[1],
-                         gdk_colour, true);
-  the_gui.draw_circle(center,radius,*(the_arena.get_bg_gdk_colour_p()),true);
+  the_gui.get_arenawindow_p()->
+    draw_rectangle( the_arena.get_boundary()[0],
+                    the_arena.get_boundary()[1],
+                    gdk_colour, true );
+  the_gui.get_arenawindow_p()->
+    draw_circle( center, radius,
+                 *(the_arena.get_bg_gdk_colour_p()),
+                 true );
 }
 
 #endif

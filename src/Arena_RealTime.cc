@@ -49,6 +49,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //#include "Gui.h"
 #include "Arena_RealTime.h"
+#include "ArenaWindow.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
@@ -620,7 +621,7 @@ Arena_RealTime::update()
 
 #ifndef NO_GRAPHICS
   if( state == GAME_IN_PROGRESS && !no_graphics)
-    the_gui.draw_objects(true);
+    the_gui.get_arenawindow_p()->draw_moving_objects( true );
 #endif
 }
 
@@ -922,13 +923,13 @@ Arena_RealTime::start_game()
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      the_gui.clear_area();
-      the_gui.change_zoom();
+      the_gui.get_arenawindow_p()->clear_area();
+      the_gui.get_arenawindow_p()->drawing_area_scale_changed();
       the_gui.get_scorewindow_p()->add_robots();
 
       reset_timer();  // Time should be zero in score window
       the_gui.get_scorewindow_p()->set_window_title();
-      the_gui.set_arena_window_title();
+      the_gui.get_arenawindow_p()->set_window_title();
     }
 #endif
 
@@ -1072,7 +1073,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
   if( !no_graphics )
     {
       the_gui.open_messagewindow();
-      the_gui.setup_arena_window();
+      the_gui.open_arenawindow();
       the_gui.open_scorewindow();
     }
 #endif
@@ -1209,8 +1210,7 @@ Arena_RealTime::end_tournament()
     {
       the_gui.close_messagewindow();
       the_gui.close_scorewindow();
-      the_gui.close_arena_window();
-      //  the_gui.close_control_window();
+      the_gui.close_arenawindow();
     }
 #endif
 }

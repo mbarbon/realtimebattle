@@ -117,7 +117,7 @@ Arena_Base::interrupt_tournament()
       if( !no_graphics )
         {
           the_gui.close_scorewindow();
-          the_gui.close_arena_window();
+          the_gui.close_arenawindow();
           the_gui.close_messagewindow();
         }
 #endif
