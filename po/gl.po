@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 1.0.2\n"
-"POT-Creation-Date: 2000-05-14 12:38+0200\n"
+"POT-Creation-Date: 2000-10-01 13:10+0200\n"
 "PO-Revision-Date: 2000-02-09 22:17+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <gpul-traduccion@ceu.fi.udc.es>\n"
@@ -62,12 +62,12 @@ msgstr " Alonxar "
 msgid "Arena"
 msgstr "Area"
 
-#: src/ArenaRealTime.cc:762
+#: src/ArenaRealTime.cc:767
 #, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "Xogo %d da secuencia %d comeza na area"
 
-#: src/ArenaRealTime.cc:940
+#: src/ArenaRealTime.cc:944
 #, c-format
 msgid "Robot with filename %s has not given any name"
 msgstr "O robot co nome de ficheiro %s non deu ningún nome"
@@ -117,47 +117,47 @@ msgstr "Amosa-la fiestra das mensaxes"
 msgid "Show score window"
 msgstr "Amosa-la fiestra das puntuacións"
 
-#: src/ControlWindow.cc:202
+#: src/ControlWindow.cc:203
 msgid " Step "
 msgstr " Paso a Paso "
 
-#: src/ControlWindow.cc:204
+#: src/ControlWindow.cc:205
 msgid " End Game "
 msgstr " Acaba-lo Xogo "
 
-#: src/ControlWindow.cc:206
+#: src/ControlWindow.cc:207
 msgid " Kill Marked Robot "
 msgstr " Mata-lo Robot Seleccionado "
 
-#: src/ControlWindow.cc:234
+#: src/ControlWindow.cc:235
 msgid " Debug Level: "
 msgstr " Nivel de debug: "
 
-#: src/ControlWindow.cc:335
+#: src/ControlWindow.cc:336
 msgid " Step forward "
 msgstr " Paso para adiante "
 
-#: src/ControlWindow.cc:339
+#: src/ControlWindow.cc:340
 msgid " Step backward "
 msgstr " Paso para atrás "
 
-#: src/ControlWindow.cc:343
+#: src/ControlWindow.cc:344
 msgid " Next Game "
 msgstr " Seguinte Xogo "
 
-#: src/ControlWindow.cc:347
+#: src/ControlWindow.cc:348
 msgid " Prev Game "
 msgstr " Xogo Anterior"
 
-#: src/ControlWindow.cc:351
+#: src/ControlWindow.cc:352
 msgid " Next Seq "
 msgstr " Seguinte Sec "
 
-#: src/ControlWindow.cc:355
+#: src/ControlWindow.cc:356
 msgid " Prev Seq "
 msgstr " Sec Anterior "
 
-#: src/ControlWindow.cc:514 src/ControlWindow.cc:663 src/Gui.cc:153
+#: src/ControlWindow.cc:515 src/ControlWindow.cc:664 src/Gui.cc:153
 msgid ""
 "This action will kill the current tournament.\n"
 "Do you want to do that?"
@@ -165,15 +165,15 @@ msgstr ""
 "Esta acción rematará o torneo actual.\n"
 "¿Quere facer iso?"
 
-#: src/ControlWindow.cc:517 src/ControlWindow.cc:666
+#: src/ControlWindow.cc:518 src/ControlWindow.cc:667
 msgid "Yes"
 msgstr "Si"
 
-#: src/ControlWindow.cc:518 src/ControlWindow.cc:667
+#: src/ControlWindow.cc:519 src/ControlWindow.cc:668
 msgid "No"
 msgstr "Non"
 
-#: src/ControlWindow.cc:531
+#: src/ControlWindow.cc:532
 msgid "Choose a log file to replay"
 msgstr "Escolla un ficheiro de rexistro para reproducir"
 
@@ -222,278 +222,282 @@ msgid "Slide/brake friction"
 msgstr "Fricción de derrapaxe/freo"
 
 #: src/Options.cc:85
+msgid "Send robot coordinates"
+msgstr ""
+
+#: src/Options.cc:90
 msgid "Robot max acceleration"
 msgstr "Máxima aceleración do robot"
 
-#: src/Options.cc:90
+#: src/Options.cc:95
 msgid "Robot min acceleration"
 msgstr "Mínima aceleración do robot"
 
-#: src/Options.cc:94
+#: src/Options.cc:99
 msgid "Robot radius"
 msgstr "Radio do robot"
 
-#: src/Options.cc:98
+#: src/Options.cc:103
 msgid "Robot mass"
 msgstr "Masa do robot"
 
-#: src/Options.cc:103
+#: src/Options.cc:108
 msgid "Robot bounce coefficient"
 msgstr "Coeficiente de rebote do robot"
 
-#: src/Options.cc:108
+#: src/Options.cc:113
 msgid "Robot hardness coefficient"
 msgstr "Coeficiente de dureza do robot"
 
-#: src/Options.cc:113
+#: src/Options.cc:118
 msgid "Robot protection coefficient"
 msgstr "Coeficiente de protección do robot"
 
-#: src/Options.cc:118
+#: src/Options.cc:123
 msgid "Robot frontsize [radians]"
 msgstr "Tamaño da fronte do robot [radiáns]"
 
-#: src/Options.cc:123
+#: src/Options.cc:128
 msgid "Robot front bounce coefficient"
 msgstr "Coeficiente de rebote da fronte do robot"
 
-#: src/Options.cc:128
+#: src/Options.cc:133
 msgid "Robot front hardness coefficient"
 msgstr "Coeficiente de dureza da fronte do robot"
 
-#: src/Options.cc:133
+#: src/Options.cc:138
 msgid "Robot front protection coefficient"
 msgstr "Coeficiente de protección da fronte do robot"
 
-#: src/Options.cc:138
+#: src/Options.cc:143
 msgid "Robot start energy"
 msgstr "Enerxía de inicio do robot"
 
-#: src/Options.cc:143
+#: src/Options.cc:148
 msgid "Robot max energy"
 msgstr "Máxima enerxía do robot"
 
-#: src/Options.cc:149
+#: src/Options.cc:154
 msgid "Robot max rotate speed [rad/s]"
 msgstr "Máxima velocidade de rotación do robot [rad/s]"
 
-#: src/Options.cc:155
+#: src/Options.cc:160
 msgid "Robot cannon max rotate speed [rad/s]"
 msgstr "Máxima velocidade de rotación do cañón do robot [rad/s]"
 
-#: src/Options.cc:161
+#: src/Options.cc:166
 msgid "Robot radar max rotate speed [rad/s]"
 msgstr "Máxima velocidade de rotación do radar do robot [rad/s]"
 
-#: src/Options.cc:166
+#: src/Options.cc:171
 msgid "Process check interval"
 msgstr "Intervalo de verificación dos procesos"
 
-#: src/Options.cc:170
+#: src/Options.cc:175
 msgid "Robot energy levels"
 msgstr "Niveis de enerxía dos robots"
 
-#: src/Options.cc:174
+#: src/Options.cc:179
 msgid "Shot radius"
 msgstr "Radio do tiro"
 
-#: src/Options.cc:178
+#: src/Options.cc:183
 msgid "Shot speed"
 msgstr "Velocidade do tiro"
 
-#: src/Options.cc:183
+#: src/Options.cc:188
 msgid "Shooting penalty (times shot energy)"
 msgstr "Penalización por disparar (veces a enerxía do tiro)"
 
-#: src/Options.cc:187
+#: src/Options.cc:192
 msgid "Shot min energy"
 msgstr "Mínima enerxía do tiro"
 
-#: src/Options.cc:191
+#: src/Options.cc:196
 msgid "Shot max energy"
 msgstr "Máxima enerxía do tiro"
 
-#: src/Options.cc:196
+#: src/Options.cc:201
 msgid "Shot energy increase speed [energy/s]"
 msgstr "Velocidade de incremento da enerxía do tiro [enerxía/s]"
 
-#: src/Options.cc:200
+#: src/Options.cc:205
 msgid "Background colour"
 msgstr "Cor do fondo"
 
-#: src/Options.cc:204
+#: src/Options.cc:209
 msgid "Foreground colour"
 msgstr "Cor do primeiro plano"
 
-#: src/Options.cc:209
+#: src/Options.cc:214
 msgid "Colour for RTB messages"
 msgstr "Cor para as mensaxes do RTB"
 
-#: src/Options.cc:213
+#: src/Options.cc:218
 msgid "Cookie max energy"
 msgstr "Máxima enerxía das galletas"
 
-#: src/Options.cc:217
+#: src/Options.cc:222
 msgid "Cookie min energy"
 msgstr "Mínima enerxía das galletas"
 
-#: src/Options.cc:222
+#: src/Options.cc:227
 msgid "Cookie frequency [cookies per second]"
 msgstr "Frecuencia das galletas [galletas por segundo]"
 
-#: src/Options.cc:226
+#: src/Options.cc:231
 msgid "Cookie radius"
 msgstr "Radio das galletas"
 
-#: src/Options.cc:230
+#: src/Options.cc:235
 msgid "Cookie colour"
 msgstr "Cor das galletas"
 
-#: src/Options.cc:234
+#: src/Options.cc:239
 msgid "Mine max energy"
 msgstr "Máxima enerxía das minas"
 
-#: src/Options.cc:238
+#: src/Options.cc:243
 msgid "Mine min energy"
 msgstr "Mínima enerxía das minas"
 
-#: src/Options.cc:243
+#: src/Options.cc:248
 msgid "Mine frequency [mines per second]"
 msgstr "Frecuencia das minas [minas por segundo]"
 
-#: src/Options.cc:247
+#: src/Options.cc:252
 msgid "Mine radius"
 msgstr "Radio das minas"
 
-#: src/Options.cc:251
+#: src/Options.cc:256
 msgid "Mine colour"
 msgstr "Cor das minas"
 
-#: src/Options.cc:255
+#: src/Options.cc:260
 msgid "Arena scale"
 msgstr "Escala da area"
 
-#: src/Options.cc:260
+#: src/Options.cc:265
 msgid "Fast forward factor"
 msgstr "Factor de avance rápido"
 
-#: src/Options.cc:264
+#: src/Options.cc:269
 msgid "Timeout [s]"
 msgstr "Tempo máximo [s]"
 
-#: src/Options.cc:268
+#: src/Options.cc:273
 msgid "Max timestep"
 msgstr "Máximo intervalo entre actualizacións"
 
-#: src/Options.cc:272
+#: src/Options.cc:277
 msgid "Timescale"
 msgstr "Escala de tempo"
 
-#: src/Options.cc:277
+#: src/Options.cc:282
 msgid "Update interval [s]"
 msgstr "Intervalo de actualización [s]"
 
-#: src/Options.cc:282
+#: src/Options.cc:287
 msgid "Robot startup time [s]"
 msgstr "Tempo de inicialización dos robots [s]"
 
-#: src/Options.cc:286
+#: src/Options.cc:291
 msgid "Start CPU time [s]"
 msgstr "Tempo de CPU inicial [s]"
 
-#: src/Options.cc:290
+#: src/Options.cc:295
 msgid "Extra CPU time [s]"
 msgstr "Tempo de CPU extra [s]"
 
-#: src/Options.cc:295
+#: src/Options.cc:300
 msgid "Extra CPU period [s]"
 msgstr "Período de CPU extra [s]"
 
-#: src/Options.cc:300
+#: src/Options.cc:305
 msgid "CPU time warning percentage"
 msgstr "Percentaxe de tempo de CPU para aviso"
 
-#: src/Options.cc:305
+#: src/Options.cc:310
 msgid "Logging frequency [Each n:th update interval]"
 msgstr "Frecuencia de rexistro [Cada n intervalos de actualización]"
 
-#: src/Options.cc:310
+#: src/Options.cc:315
 msgid "Max robots allowed simultaneously"
 msgstr "Máximo nº de robots permitidos ó mesmo tempo"
 
-#: src/Options.cc:314
+#: src/Options.cc:319
 msgid "Robot search path"
 msgstr "Camiño de búsqueda dos robots"
 
-#: src/Options.cc:318
+#: src/Options.cc:323
 msgid "Arena search path"
 msgstr "Camiño de búsqueda das areas"
 
-#: src/Options.cc:323
+#: src/Options.cc:328
 msgid "Directory for temporary files"
 msgstr "Directorio para os ficheiros temporais"
 
-#: src/Options.cc:328
+#: src/Options.cc:333
 msgid "Initial Arena window width"
 msgstr "Largura inicial da fiestra da area"
 
-#: src/Options.cc:333
+#: src/Options.cc:338
 msgid "Initial Arena window height"
 msgstr "Altura inicial da fiestra da area"
 
-#: src/Options.cc:338
+#: src/Options.cc:343
 msgid "Initial Arena window x position"
 msgstr "Posición x inicial da fiestra da area"
 
-#: src/Options.cc:343
+#: src/Options.cc:348
 msgid "Initial Arena window y position"
 msgstr "Posición y inicial da fiestra da area"
 
-#: src/Options.cc:348
+#: src/Options.cc:353
 msgid "Initial Control window x position"
 msgstr "Posición x inicial da fiestra de control"
 
-#: src/Options.cc:353
+#: src/Options.cc:358
 msgid "Initial Control window y position"
 msgstr "Posición y inicial da fiestra de control"
 
-#: src/Options.cc:358
+#: src/Options.cc:363
 msgid "Initial Message window width"
 msgstr "Largura inicial da fiestra de mensaxes"
 
-#: src/Options.cc:363
+#: src/Options.cc:368
 msgid "Initial Message window height"
 msgstr "Altura inicial da fiestra de mensaxes"
 
-#: src/Options.cc:368
+#: src/Options.cc:373
 msgid "Initial Message window x position"
 msgstr "Posición x inicial da fiestra de mensaxes"
 
-#: src/Options.cc:373
+#: src/Options.cc:378
 msgid "Initial Message window y position"
 msgstr "Posición y inicial da fiestra de mensaxes"
 
-#: src/Options.cc:378
+#: src/Options.cc:383
 msgid "Initial Score window width"
 msgstr "Largura inicial da fiestra de puntuacións"
 
-#: src/Options.cc:383
+#: src/Options.cc:388
 msgid "Initial Score window height"
 msgstr "Altura inicial da fiestra de puntuacións"
 
-#: src/Options.cc:388
+#: src/Options.cc:393
 msgid "Initial Score window x position"
 msgstr "Posición x inicial da fiestra de puntuacións"
 
-#: src/Options.cc:393
+#: src/Options.cc:398
 msgid "Initial Score window y position"
 msgstr "Posición y inicial da fiestra de puntuacións"
 
-#: src/Options.cc:398
+#: src/Options.cc:403
 msgid "Initial Statistics window width"
 msgstr "Largura inicial da fiestra de estatísticas"
 
-#: src/Options.cc:403
+#: src/Options.cc:408
 msgid "Initial Statistics window height"
 msgstr "Altura inicial da fiestra de estatísticas"
 
@@ -584,19 +588,19 @@ msgstr "Escolla un ficheiro de opcións para cargar"
 msgid "Choose an options file to save"
 msgstr "Escolla un ficheiro de opcións para gardar"
 
-#: src/RealTimeBattle.cc:91
+#: src/RealTimeBattle.cc:97
 msgid " Usage: RealTimeBattle [options] "
 msgstr " Uso: RealTimeBattle [opcións] "
 
-#: src/RealTimeBattle.cc:92
+#: src/RealTimeBattle.cc:98
 msgid " Options:"
 msgstr " Opcións:"
 
-#: src/RealTimeBattle.cc:93
+#: src/RealTimeBattle.cc:99
 msgid "    --debug_mode,                -d   debug mode"
 msgstr "    --debug_mode,                 -d   modo de debug"
 
-#: src/RealTimeBattle.cc:94
+#: src/RealTimeBattle.cc:100
 msgid ""
 "    --debug_level [0-5],         -D   sets the initial debug level. Implies "
 "-d"
@@ -604,19 +608,19 @@ msgstr ""
 "    --debug_level [0-5],          -D   establece-lo nivel inicial de debug.\n"
 "                                       Implica -d"
 
-#: src/RealTimeBattle.cc:95
+#: src/RealTimeBattle.cc:101
 msgid "    --normal_mode,               -n   normal mode (default)"
 msgstr "    --normal_mode,                -n   modo normal (por defecto)"
 
-#: src/RealTimeBattle.cc:96
+#: src/RealTimeBattle.cc:102
 msgid "    --competition_mode,          -c   competition mode"
 msgstr "    --competition_mode,           -c   modo de competición"
 
-#: src/RealTimeBattle.cc:98
+#: src/RealTimeBattle.cc:104
 msgid "    --no_graphics,               -g   no graphics will be displayed"
 msgstr "    --no_graphics,                -g   non amosar gráficos"
 
-#: src/RealTimeBattle.cc:99
+#: src/RealTimeBattle.cc:105
 msgid ""
 "    --option_file [file],        -o   selects option-file (default: "
 "$HOME/.rtbrc)"
@@ -624,7 +628,7 @@ msgstr ""
 "    --option_file [ficheiro],     -o   escolle-lo ficheiro de opcións\n"
 "                                       (por defecto: $HOME/.rtbrc)"
 
-#: src/RealTimeBattle.cc:101
+#: src/RealTimeBattle.cc:107
 msgid ""
 "    --log_file [file],           -l   make log file, if 'file' is '-'\n"
 "                                      the log is sent to STDOUT"
@@ -633,7 +637,7 @@ msgstr ""
 "                                       'ficheiro' é '-', o rexistro envíase\n"
 "                                       á saída estándar"
 
-#: src/RealTimeBattle.cc:104
+#: src/RealTimeBattle.cc:110
 msgid ""
 "    --tournament_file [file],    -t   specify a tournament file to\n"
 "                                      autostart a tournament"
@@ -641,7 +645,7 @@ msgstr ""
 "    --tournament_file [ficheiro], -t   indicar un ficheiro de torneo para\n"
 "                                       comezar automáticamente un torneo"
 
-#: src/RealTimeBattle.cc:107
+#: src/RealTimeBattle.cc:113
 msgid ""
 "    --statistics_file [file],    -s   file to print the statistics to\n"
 "                                       when autostarting"
@@ -650,7 +654,7 @@ msgstr ""
 "estatísticas\n"
 "                                       ó comezar automáticamente"
 
-#: src/RealTimeBattle.cc:110
+#: src/RealTimeBattle.cc:116
 msgid ""
 "    --message_file [file],       -m   redirect messages to 'file'.\n"
 "                                      With '-' as 'file', STDOUT is used.\n"
@@ -664,7 +668,7 @@ msgstr ""
 "envían\n"
 "                                       a STDOUT, '-m' ignórase"
 
-#: src/RealTimeBattle.cc:115
+#: src/RealTimeBattle.cc:121
 msgid ""
 "    --replay [file]              -r   a log file to replay.\n"
 "                                      if '-' is specified as file,\n"
@@ -675,11 +679,11 @@ msgstr ""
 "                                       se se indica '-' como ficheiro, a\n"
 "                                       entrada cóllese de STDIN"
 
-#: src/RealTimeBattle.cc:119
+#: src/RealTimeBattle.cc:125
 msgid "    --help,                      -h   prints this message"
 msgstr "    --help,                       -h   amosar esta mensaxe"
 
-#: src/RealTimeBattle.cc:120
+#: src/RealTimeBattle.cc:126
 msgid "    --version,                   -v   prints the version number"
 msgstr "    --version,                    -v   amosa-lo número de versión"
 
@@ -887,74 +891,92 @@ msgstr "Non se puido inicia-lo torneo."
 msgid "Error in"
 msgstr "Erro en"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:287
+#: Robots/rotate_and_fire/rotate_and_fire.cc:293
 msgid "Brakes locked: Robot found and at distance"
 msgstr "Freos bloqueados: Robot avistado e ó alcance"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:344
+#: Robots/rotate_and_fire/rotate_and_fire.cc:350
 msgid "Acceleration"
 msgstr "Aceleración"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:345
+#: Robots/rotate_and_fire/rotate_and_fire.cc:351
 msgid "Brake"
 msgstr "Frear"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:348
+#: Robots/rotate_and_fire/rotate_and_fire.cc:354
 msgid "Modular angle, Angle"
 msgstr "Módulo do ángulo, Ángulo"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:465
+#: Robots/rotate_and_fire/rotate_and_fire.cc:372
+msgid "Cookie found at"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:376
+#: Robots/rotate_and_fire/rotate_and_fire.cc:400
+msgid "I am at"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:378
+#: Robots/rotate_and_fire/rotate_and_fire.cc:402
+msgid "at angle"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:396
+msgid "Mine found at"
+msgstr ""
+
+#: Robots/rotate_and_fire/rotate_and_fire.cc:506
 msgid "New rotation"
 msgstr "Nova rotación"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:466
+#: Robots/rotate_and_fire/rotate_and_fire.cc:507
 msgid "New acceleration"
 msgstr "Nova aceleración"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:469
+#: Robots/rotate_and_fire/rotate_and_fire.cc:510
 msgid "Hit too many times! Flee!"
 msgstr "¡Alcanzado demasiadas veces! ¡Fuxir!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:483
+#: Robots/rotate_and_fire/rotate_and_fire.cc:524
 msgid "Cookie eaten!"
 msgstr "¡Comida unha galleta!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:490
+#: Robots/rotate_and_fire/rotate_and_fire.cc:531
 msgid "Oh no! A mine"
 msgstr "¡Oh, non, unha mina!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:503
+#: Robots/rotate_and_fire/rotate_and_fire.cc:544
 msgid "Unknown message: "
 msgstr "Mensaxe descoñecida: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:506
+#: Robots/rotate_and_fire/rotate_and_fire.cc:547
 msgid "Process time low: "
 msgstr "Tempo de proceso baixo: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:509
+#: Robots/rotate_and_fire/rotate_and_fire.cc:550
 msgid "Message sent in illegal state: "
 msgstr "Mensaxe enviada nun estado ilegal: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:512
+#: Robots/rotate_and_fire/rotate_and_fire.cc:553
 msgid "Unknown option: "
 msgstr "Opción descoñecida: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:515
+#: Robots/rotate_and_fire/rotate_and_fire.cc:556
 msgid "Obsolete Keyword: "
 msgstr "Palabra chave obsoleta: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:539
+#: Robots/rotate_and_fire/rotate_and_fire.cc:580
 msgid "Shutting down and leaving"
 msgstr "Desconectando e saíndo"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:553
+#: Robots/rotate_and_fire/rotate_and_fire.cc:594
 msgid "New"
 msgstr "Novo"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:637
+#: Robots/rotate_and_fire/rotate_and_fire.cc:679
 msgid "Unknown Object seen!"
 msgstr "¡Avistado obxecto descoñecido!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:705
+#: Robots/rotate_and_fire/rotate_and_fire.cc:754
 msgid "Collided with Unknown Object!"
 msgstr "¡Colisión cun obxecto descoñecido!"
