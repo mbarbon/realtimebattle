@@ -1145,21 +1145,22 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 {
   clear();
 
-  // Create robot classes and to into the list all_robots_in_tournament
+  // Open windows if they were closed, else clear them 
 
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      if( the_gui.is_messagewindow_up() ) the_gui.close_messagewindow();
-      if( the_gui.is_scorewindow_up() )   the_gui.close_scorewindow();
-      if( the_gui.is_arenawindow_up() )   the_gui.close_arenawindow();
-
-      if( !use_message_file )
+      if( the_gui.is_messagewindow_up() )
+        MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
+      else if( !use_message_file )
         the_gui.open_messagewindow();
-      the_gui.open_arenawindow();
-      the_gui.open_scorewindow();
+
+      if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
+      if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
     }
 #endif
+
+  // Create robot classes and put them into the list all_robots_in_tournament
 
   number_of_robots = 0;
   robot_count = 0;
