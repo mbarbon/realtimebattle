@@ -11,34 +11,54 @@ Robot::Robot(char* filename)
   robot_name = *g_string_new("");
   robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
   extra_air_resistance = 0.0;
-  
+  process_running = false;
+}
+
+Robot::~Robot()
+{
+  if( is_process_running() ) kill_process_forcefully();
+} 
+
+void
+Robot::start_process()
+{
   int pipe_in[2], pipe_out[2];
   if (pipe (pipe_in))
-    throw Error("Couldn't setup pipe_in for robot ", robot_filename.str, "Robot::Robot");
+    throw Error("Couldn't setup pipe_in for robot ", 
+                robot_filename.str, "Robot::Robot");
   if (pipe (pipe_out))
-    throw Error("Couldn't setup pipe_out for robot ", robot_filename.str, "Robot::Robot");
+    throw Error("Couldn't setup pipe_out for robot ", 
+                robot_filename.str, "Robot::Robot");
 
-  if( (robot_pid = fork()) < 0 )
-    throw Error("Couldn't fork childprocess for robot ", robot_filename.str, "Robot::Robot");
+  if( (pid = fork()) < 0 )
+    throw Error("Couldn't fork childprocess for robot ", 
+                robot_filename.str, "Robot::Robot");
 
-  if(robot_pid == 0)   // Child process, to be the new robot
+  if(pid == 0)   // Child process, to be the new robot
     {
-      dup2(pipe_out[0],STDIN_FILENO);    // Make pipe_out the standard input for the robot
+      // Make pipe_out the standard input for the robot
+      dup2(pipe_out[0],STDIN_FILENO);
       close(pipe_out[1]);
 
-      dup2(pipe_in[1],STDOUT_FILENO);   // Make pipe_in the standard output
+      // Make pipe_in the standard output
+      dup2(pipe_in[1],STDOUT_FILENO);   
       close(pipe_in[0]);
 
       // Make the pipes non-blocking
       int pd_flags;
       if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for robot ", robot_filename.str, "Robot::Robot, child");
+        throw Error("Couldn't get pd_flags for robot ", 
+                    robot_filename.str, "Robot::Robot, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for robot ", robot_filename.str, "Robot::Robot, child");
+        throw Error("Couldn't change pd_flags for robot ", 
+                    robot_filename.str, "Robot::Robot, child");
 
-      execl(robot_filename.str, robot_filename.str, NULL);  // Should not return!
-      cerr << "Couldn't open robot " << robot_filename.str << "  Error in Robot::Robot" << endl;
+      // Execute process. Should not return!
+      execl(robot_filename.str, robot_filename.str, NULL);
+
+      cerr << "Couldn't open robot " << robot_filename.str 
+           << "  Error in Robot::Robot" << endl;
       cerr << "Errno: " << errno << endl;
       exit(EXIT_FAILURE);
     }
@@ -50,19 +70,37 @@ Robot::Robot(char* filename)
       // Make the pipes non-blocking
       int pd_flags;
       if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
-        throw Error("Couldn't get pd_flags for pipe_in in robot ", robot_filename.str, "Robot::Robot, parent");
+        throw Error("Couldn't get pd_flags for pipe_in in robot ", 
+                    robot_filename.str, "Robot::Robot, parent");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
-        throw Error("Couldn't change pd_flags for pipe_in in robot ", robot_filename.str, "Robot::Robot, parent");
+        throw Error("Couldn't change pd_flags for pipe_in in robot ", 
+                    robot_filename.str, "Robot::Robot, parent");
 
       send_message(INITIALIZE);
     }
+  process_running = true;
 }
 
-Robot::~Robot()
+bool
+Robot::is_process_running()
+{
+  // Check process!
+
+  return process_running;   // temporary!
+}
+
+void
+Robot::end_process()
 {
   send_message(EXIT_ROBOT);
-} 
+}
+
+void
+Robot::kill_process_forcefully()
+{
+  // kill -9
+}
 
 void
 Robot::update_radar_and_cannon(const double timestep)
