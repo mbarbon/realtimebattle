@@ -32,6 +32,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Vector2D;
 class Shape;
+class Circle;
 class Gadget;
 class Shot;
 class Robot;
@@ -78,13 +79,20 @@ public:
   double get_heat_in_direction( const Vector2D& point, const Vector2D& direction );
 
 
+
+  void find_subsquares_for_circle( const Circle& c);
+  void find_subsquares_for_small_circle( const Circle& c);
+
+// Slow but general algorithm used by static objects
+  void find_subsquares_for_shape( const Shape& s); 
+
 protected:
 
   set<Shot> shots;  
   set<Robot*> robots;
 
 
-  SubSquare** subsquares;
+  SubSquare** subsquares;  // 2-dim array of SubSquares
 
   
   // number of subrectangles in each direction
