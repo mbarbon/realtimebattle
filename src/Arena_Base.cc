@@ -66,6 +66,9 @@ Arena_Base::Arena_Base()
   state = NOT_STARTED;
   game_mode = NORMAL_MODE;
 
+  sequence_nr = 0;
+  sequences_remaining = 0;
+  
   halted = false;
   halt_next = false;
   paus_after_next_game = false;
