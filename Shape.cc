@@ -184,10 +184,13 @@ InnerCircle::get_normal(const Vector2D& pos)
 void
 InnerCircle::draw_shape(Gui& the_gui, bool erase)
 {
-  //  if( erase )
-  //    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
-  //                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
+  if( erase )
+    the_gui.draw_circle(last_drawn_center, last_drawn_radius,
+                        *(the_gui.get_the_arena()->get_background_colour_p()), true);
   last_drawn_center = center;
   last_drawn_radius = radius;
- the_gui.draw_circle(center,radius,colour,false);
+  the_gui.draw_rectangle(the_gui.get_the_arena()->get_boundary()[0],
+                         the_gui.get_the_arena()->get_boundary()[1],
+                         colour, true);
+  the_gui.draw_circle(center,radius,*(the_gui.get_the_arena()->get_background_colour_p()),true);
 }
