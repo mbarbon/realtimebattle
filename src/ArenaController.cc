@@ -30,6 +30,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <pthread.h>
 #include <list>
+#include <map>
+#include <vector>
 #include <algorithm>
 #include <math.h>
 
@@ -103,6 +105,23 @@ void
 ArenaController::initialize_options()
 {
   map<string,Option*> all_options;
+  vector<string> group_names;
+
+  group_names.push_back( _("Environment") );
+  group_names.push_back( _("Robot") );
+  group_names.push_back( _("Shot") );
+  group_names.push_back( _("Extras") );
+  group_names.push_back( _("Time") );
+//    group_names.push_back( _("Window sizes") );
+  group_names.push_back( _("Misc") );
+
+  const int GROUP_ENVIRONMENT = 0;
+  const int GROUP_ROBOT = 1;
+  const int GROUP_SHOT = 2;
+  const int GROUP_EXTRAS = 3;
+  const int GROUP_TIME = 4;
+  const int GROUP_MISC = 5;
+
 //    DoubleOption* all_double_options =
 //      new DoubleOption[LAST_DOUBLE_OPTION];
 //    LongOption* all_long_options =
@@ -112,9 +131,9 @@ ArenaController::initialize_options()
 
   // ---------- Environment ----------
 
-//    all_double_options[OPTION_GRAV_CONST] =
-//      DoubleOption( GROUP_ENVIRONMENT, 9.82, 0.2, 20.0, false, true,
-//                    "Gravitational Constant", _("Gravitational Constant") );
+  all_options["Gravity"] = (Option*) new 
+    DoubleOption( GROUP_ENVIRONMENT, 9.82, 0.2, 20.0, false, true,
+                  _("Gravitational Constant") );
 
 //    all_double_options[OPTION_AIR_RESISTANCE] = 
 //      DoubleOption( GROUP_ENVIRONMENT, 0.005, 0.0, 1.0, false, true,
@@ -323,19 +342,18 @@ ArenaController::initialize_options()
 //                  "Logging frequency [Each nth update interval]",
 //                  _("Logging frequency [Each n:th update interval]") );
 
-//    // ---------- Misc ----------
+  all_options["Background colour"] = (Option*) new
+    LongOption( GROUP_MISC, 0xfaf0e6, 0x000000, 0xffffff, false, false,
+                _("Background colour"), true );
 
-//    all_long_options[OPTION_BACKGROUND_COLOUR] = 
-//      LongOption( GROUP_MISC, 0xfaf0e6, 0x000000, 0xffffff, false, false,
-//                  "Background colour", _("Background colour"), true );
+  all_options["Foreground colour"] = (Option*) new
+    LongOption( GROUP_MISC, 0x000000, 0x000000, 0xffffff, false, false,
+                _("Foreground colour"), true );
 
-//    all_long_options[OPTION_FOREGROUND_COLOUR] = 
-//      LongOption( GROUP_MISC, 0x000000, 0x000000, 0xffffff, false, false,
-//                  "Foreground colour", _("Foreground colour"), true );
+  all_options["RTB message colour"] = (Option*) new
+    LongOption( GROUP_MISC, 0x1111ee, 0x000000, 0xffffff, false, false,
+                _("Colour for RTB messages"), true );
 
-//    all_long_options[OPTION_RTB_MESSAGE_COLOUR] = 
-//      LongOption( GROUP_MISC, 0x1111ee, 0x000000, 0xffffff, false, false,
-//                  "Colour for RTB messages", _("Colour for RTB messages"), true );
 
 //    all_double_options[OPTION_ARENA_SCALE] = 
 //      DoubleOption( GROUP_MISC, 1.0, 0.001, 1000, false, true,
@@ -362,83 +380,8 @@ ArenaController::initialize_options()
 //      StringOption( GROUP_MISC, "/tmp/rtb", 1000, false, false,
 //                    "Directory for temporary files", _("Directory for temporary files") );
 
-//    // ---------- Size of Windows ----------
 
-//    all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 350, 185, 10000, false, false,
-//                  "Initial Arena window width", _("Initial Arena window width") );
-
-//    all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 350, 120, 10000, false, false,
-//                  "Initial Arena window height", _("Initial Arena window height") );
-
-//    all_long_options[OPTION_ARENA_WINDOW_POS_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Arena window x position",
-//                  _("Initial Arena window x position") );
-
-//    all_long_options[OPTION_ARENA_WINDOW_POS_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Arena window y position",
-//                  _("Initial Arena window y position") );
-
-//    all_long_options[OPTION_CONTROL_WINDOW_POS_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Control window x position",
-//                  _("Initial Control window x position") );
-
-//    all_long_options[OPTION_CONTROL_WINDOW_POS_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Control window y position",
-//                  _("Initial Control window y position") );
-
-//    all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 394, 300, 10000, false, false,
-//                  "Initial Message window width", _("Initial Message window width") );
-
-//    all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 210, 110, 10000, false, false,
-//                  "Initial Message window height", _("Initial Message window height") );
-
-//    all_long_options[OPTION_MESSAGE_WINDOW_POS_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Message window x position",
-//                  _("Initial Message window x position") );
-
-//    all_long_options[OPTION_MESSAGE_WINDOW_POS_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Message window y position",
-//                  _("Initial Message window y position") );
-
-//    all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 394, 175, 10000, false, false,
-//                  "Initial Score window width", _("Initial Score window width") );
-
-//    all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 374, 80, 10000, false, false,
-//                  "Initial Score window height", _("Initial Score window height") );
-
-//    all_long_options[OPTION_SCORE_WINDOW_POS_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Score window x position",
-//                  _("Initial Score window x position") );
-
-//    all_long_options[OPTION_SCORE_WINDOW_POS_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 0, 0, 10000, false, false,
-//                  "Initial Score window y position",
-//                  _("Initial Score window y position") );
-
-//    all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 499, 320, 10000, false, false,
-//                  "Initial Statistics window width",
-//                  _("Initial Statistics window width") );
-
-//    all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
-//      LongOption( GROUP_SIZE_OF_WINDOWS, 428, 130, 10000, false, false,
-//                  "Initial Statistics window height",
-//                  _("Initial Statistics window height") );
-
-  main_opts = new OptionHandler( "RealTimeBattle", all_options );
+  main_opts = new OptionHandler( "RealTimeBattle", all_options, group_names );
 //    main_opts = new OptionHandler( "RealTimeBattle",
 //                                   all_double_options, all_long_options,
 //                                   all_string_options,
