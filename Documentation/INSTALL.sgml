@@ -19,9 +19,14 @@ the file are extracted to the directory <tt>RealTimeBattle</tt>.
 
 <item> Compile
 <p>
-Change directory to <tt>RealTimeBattle</tt> and type <verb>% make</verb>
+Before you compile the program, you may want to edit the <tt>Makefile</tt> (see also the install
+section below). Only the INSTALLDIR will have effect in the compilation phase, but you can edit the
+others as well to prepare for the installation.
 
-Hopefully will everything compile fine. If not, please ensure that <tt>gtk+</tt> is correctly
+Now change directory and compile <verb>% cd RealTimeBattle
+% make</verb>
+
+Hopefully everything will compile well. If not, please ensure that <tt>gtk+</tt> is correctly
 installed. You can check this by typing <verb>% gtk-config --version</verb>. Currently only version 
 1.0.x of <tt>gtk+</tt> will work.
 
@@ -34,12 +39,16 @@ describe which system you are using.
 
 <item> Install
 <p>
-If you want, you install the program on your system, by typing <verb># make install</verb>. Before you
+If you want, you can now install the program on your system. Before you
 do that, it is a good idea to look at the main <tt>Makefile</tt> and change the install-directories
 to whatever you wish.
 
 Note that you normally have to be root to do the installation (unless you change the directories to
 be in your home directory).
+<verb>% su
+# make install
+# exit
+</verb>
 
 If you like, you can do the installation by hand, in fact, the only important file to move is the
 binary <tt>src/RealTimeBattle</tt>, which should be moved to somewhere in your <tt>PATH</tt>.
@@ -53,8 +62,8 @@ by setting two environmental variables, <tt>RTB_ROBOTDIR</tt> and <tt>RTB_ARENAD
 export RTB_ROBOTDIR="$HOME/RealTimeBattle/Robots/:$HOME/RealTimeBattle/Testrobots/"
 export RTB_ARENADIR="$HOME/RealTimeBattle/Arenas/"
 </verb>
-The directories <tt>/usr/games/RealTimeBattle/Robots</tt> and
-<tt>/usr/games/RealTimeBattle/Arenas</tt> are always searched, regardless of the environmental
+The directories <tt>INSTALLDIR/Robots</tt> and
+<tt>INSTALL/Arenas</tt> are always searched, regardless of the environmental
 variables. You have to enter 
 <verb>
 % source ~/.bashrc</verb> for 
