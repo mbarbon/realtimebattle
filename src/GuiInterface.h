@@ -34,23 +34,6 @@ class Vector2D;
 
 
 // ---------------------------------------------------------------------------
-// These functions should be defined by the gui.
-// ---------------------------------------------------------------------------
-
-// The name of the gui should be returned as a const String
-const String GIName();
-// The usage string of the gui should be returned as a const String
-const String GIUsageMessage();
-
-// Initialization of gui
-bool GIInit( int , char** );
-// The main loop of the gui
-int  GIMain( ArenaController* );
-// Exit from gui. This function is not needed to be set from gui.
-void GIExit( int );
-
-
-// ---------------------------------------------------------------------------
 // class GuiInterface
 // ---------------------------------------------------------------------------
 // All interactions between the gui and server should go through this class.
@@ -66,6 +49,11 @@ public:
     class String message;
     class String from;
   };
+
+  // Constructor & Destructor
+
+  GuiInterface();
+  ~GuiInterface();
 
   // Functions that supplies information to the Gui.
 
@@ -93,6 +81,8 @@ public:
 
   // Functions that enables the gui to have some influence over the server.
 
+  void quit                                   ();
+
   message_t get_message                       ();
   int set_debug_level                         ( const int new_level );
   void pause_game_toggle                      ();
@@ -113,7 +103,10 @@ public:
 
   // Functions for the server.
 
+  pthread_t* get_thread_p                     ();
+
   void add_message                            ( String message, String from );
+
   //TODO: Perhaps an eventlist?
 
 
@@ -122,7 +115,24 @@ private:
   list<message_t> messages;
 
   pthread_t thread;
-  // other pthread info
+  pthread_mutex_t gi_mutex;
 };
+
+// ---------------------------------------------------------------------------
+// These functions should be defined by the gui.
+// ---------------------------------------------------------------------------
+
+// The name of the gui should be returned as a const String
+const String GIName();
+// The usage string of the gui should be returned as a const String
+const String GIUsageMessage();
+
+// Initialization of gui
+bool GIInit( int , char** );
+// The main loop of the gui
+int  GIMain( GuiInterface* );
+// Exit from gui. This function is not needed to be set from gui.
+void GIExit( int );
+
 
 #endif __GUIINTERFACE__
