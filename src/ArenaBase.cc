@@ -442,6 +442,9 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
               current_pos = center + radius * angle2vec( start_angle - angle );
               end_angle = vec2angle( current_pos - center );
 
+              if( angle > 0.0 )
+                { tmp = start_angle; start_angle = end_angle; end_angle = tmp; }
+
               wall_arcp = new WallArc(scale*center, scale*(radius - thickness), 
                                       scale*(radius + thickness), 
                                       start_angle, start_angle + angle,
