@@ -39,10 +39,16 @@ public:
     : change("") {};
   TournamentCommitChangePacket( const string& c ) 
     : change(c)  {};
+  TournamentCommitChangePacket( const string& t, const string& c)
+    : type_init( t ), change( c ) {};
   string make_netstring() const;
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_TOURNAMENT_COMMIT_CHANGE; };
+
+  string& type()  {return type_init;}
+  string& value() {return change;}
 protected:
+  string type_init;
   string change;
 };
 

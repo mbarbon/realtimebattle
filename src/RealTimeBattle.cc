@@ -185,9 +185,10 @@ main( int argc, char* argv[] )
   //cout<<"Welcome on RealTimeBattle 2.0.0 server(in development)\n";
   //cout<<"Enjoy the game\n";
 
-  the_arena_controller.init(argc, argv);
+
   pthread_mutex_init( &the_mutex, NULL );
 
+  the_arena_controller.init(argc, argv);
   cout<<"Arena Controller succesfully initialized\n";
 
   the_eventhandler.main_loop();

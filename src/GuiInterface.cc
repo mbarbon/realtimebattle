@@ -53,7 +53,9 @@ GuiInterface::GuiInterface( const string& name, int _id, int argc, char** argv )
   func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
   func_Main = (int (*)( GuiClientInterface* ))load_symbol( "GIMain" );
   func_Main_pre = (void* (*)( void* ))load_symbol( "GIMain_pre" );
-  func_Command = (void (*) ( string ))load_symbol( "GICommand" );
+
+  func_handle_agreement = (int (*) (Packet*))load_symbol( "GIhandle_agreement_packet" );
+
   unique_id = (unsigned int*)load_symbol( "GI_unique_id" );
 
   char* error = dlerror();
@@ -136,3 +138,9 @@ GuiInterface::process_all_requests()
     }
 }
 
+int 
+GuiInterface::handle_agreement_packet          ( TournamentCommitChangePacket* p )
+{ 
+  //TODO : Check if I get an acknoledgement from all the other servers on the network
+  return ((*func_handle_agreement)( p )); 
+}

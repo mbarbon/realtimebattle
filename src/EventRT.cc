@@ -50,15 +50,15 @@ CheckGUIEvent::eval() const
   gui_p->process_all_requests();
 
   pthread_mutex_lock( &the_mutex );
-  list<unsigned int>::iterator li;
-  if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
-      != GI_exit_list.end() )
-    {
-      the_arena_controller.exit_gui( *li );
-      GI_exit_list.erase( li );
-      pthread_mutex_unlock( &the_mutex );
-      return;
-    }
+  //  list<unsigned int>::iterator li;
+  //if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
+  //    != GI_exit_list.end() )
+  //  {
+  //     the_arena_controller.exit_gui( *li );
+  //    GI_exit_list.erase( li );
+  //    pthread_mutex_unlock( &the_mutex );
+  //    return;
+  //  }
 
   Event* next_event = new CheckGUIEvent(refresh, refresh, gui_p);
 

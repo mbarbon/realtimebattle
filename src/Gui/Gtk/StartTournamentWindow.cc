@@ -43,6 +43,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
+#include <iostream>
 #include <string>
 
 #include "IntlDefs.h"
@@ -51,8 +52,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "OptionHandler.h"
 #include "Gui.h"
+
+//From src/
 #include "String.h"
 #include "Various.h"
+
+//From src/Network/
+#include "Packets.h"
+#include "TournamentAgreementPackets.h"
 
 const string tmp_tournament_file( "/tmp.tour" );
 
@@ -416,6 +423,36 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 StartTournamentWindow::~StartTournamentWindow()
 {
   gtk_widget_destroy( window_p );
+}
+
+//////////////////////////////
+// Handle a packet coming from the network
+//////////////////////////////
+int
+StartTournamentWindow::handle_packet(TournamentCommitChangePacket * p)
+{//If we come here, it means that the packet has been accepted : no need
+  //TODO : Not so much work actually
+
+  cout<<"Handling packet at the good level !!! \n";
+  gtk_clist_freeze(GTK_CLIST(robots_in_tournament_clist));
+  gtk_clist_clear(GTK_CLIST(robots_in_tournament_clist));
+
+  char * list[] = { "" };
+  
+  int row = gtk_clist_append( GTK_CLIST( robots_in_tournament_clist ), list );
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION > 1
+  gtk_clist_set_foreground( GTK_CLIST( robots_in_tournament_clist ), row,
+			    the_gui.get_fg_gdk_colour_p() );
+  gtk_clist_set_background( GTK_CLIST( robots_in_tournament_clist ), row,
+			    the_gui.get_bg_gdk_colour_p() );
+#endif
+
+  char* cstr = copy_to_c_string( (string)"*" + p->value() );
+  gtk_clist_set_text( GTK_CLIST( robots_in_tournament_clist ), row, 0, cstr );
+  delete [] cstr;
+
+  gtk_clist_thaw(GTK_CLIST(robots_in_tournament_clist));
+  return 0;
 }
 
 void

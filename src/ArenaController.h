@@ -56,6 +56,9 @@ public:
   //  bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
+  GuiServerInterface* the_gui() 
+    { return gui_p; }
+
 private:
   
   void initialize_options();
@@ -66,9 +69,11 @@ private:
   //  bool started;
   bool realtime;
 
-  list<GuiServerInterface*> gui_list; 
+  // REMOVE : list<GuiServerInterface*> gui_list; 
+  GuiServerInterface* gui_p;
 
-  // Mutex for locking processes.
+  // TODO : Mutex for locking processes.
+
 
   OptionHandler* main_opts;
   InformationDistributor distributor;

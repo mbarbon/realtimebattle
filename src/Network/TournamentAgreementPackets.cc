@@ -6,6 +6,7 @@
 #include <strstream>
 
 #include "ArenaController.h"
+#include "GuiInterface.h"
 
 #include "NetConnection.h"
 #include "ServerSocket.h"
@@ -38,6 +39,7 @@ TournamentAgreementPacketFactory::MakePacket( string& netstr )
 string 
 TournamentCommitChangePacket::make_netstring() const
 {
+  //TODO : split it in 2 : type_of_change and value_of_change
   ostrstream os;
   os << change << ends;
     
@@ -58,7 +60,15 @@ TournamentCommitChangePacket::handle_packet(void* p_void)
   cout<<data<<endl;
 
   is >> type_init;           ;
-
+  if(type_init == "AddRobot")
+    {
+      is >> change;
+    }
+  else
+    {
+      return 1;
+    }
+  the_arena_controller.the_gui()->handle_agreement_packet( this );
   //gui_p -> net_command ("Agreement " + data); 
 
   return 0;

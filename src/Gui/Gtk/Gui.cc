@@ -55,8 +55,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 int gui_returncode;
 class Gui* gui_p;
 
-//extern "C" {
-
 const string
 GIName()
 {
@@ -101,21 +99,14 @@ GIMain( GuiClientInterface*  _gi_p )
 int
 GICommand( string command )
 {
-  istrstream is(command);
-  cout<<command<<endl;
-  string window, action;
-  is>>window>>action;
-  if(window == "TournamentAgreement")
-    {
-      if(action == "add_robot")
-	{
-	  string robot_name;
-	  is>>robot_name;
-	}
-    }
 }
 
-//}
+int
+GIhandle_agreement_packet( TournamentCommitChangePacket* p)
+{
+  gui_p->get_starttournament_p()->handle_packet( p );
+  return 0;
+}
 
 Gui::Gui()
 {

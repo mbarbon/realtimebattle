@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __GUIFUNCTIONS_H__
 
 #include "GuiInterface.h"
+#include "TournamentAgreementPackets.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,6 +58,8 @@ int  GIMain( GuiClientInterface* );
 // ---------------------------------------------------------------------------
 void GIExit( int );
 
+
+int GIhandle_agreement_packet( TournamentCommitChangePacket* );
 
 // ---------------------------------------------------------------------------
 // Internal things not to be changed from the gui.
