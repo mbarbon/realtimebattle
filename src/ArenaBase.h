@@ -103,9 +103,9 @@ protected:
 public:
 
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
-                    const bool del_tourn_list, const bool del_arena_filename_list);
+                    const bool del_tourn_list, const bool del_arena_filename_list,
+                    const bool del_robot_obj_list=true);
   void save_statistics_to_file(String filename);
-
 
 
   List<Shape>* get_object_lists() { return object_lists; }
@@ -152,6 +152,9 @@ protected:
   void parse_arena_line(ifstream& file, double& scale, int& succession);
 
   void set_state( const state_t );
+
+  void find_object_by_id(const List<Shape>& obj_list, 
+                         ListIterator<Shape>& li, const int obj_id);
 
   List<Shape> object_lists[LAST_OBJECT_TYPE];
   

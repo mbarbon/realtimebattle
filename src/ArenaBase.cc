@@ -572,12 +572,14 @@ ArenaBase::step_paused_game()
 
 void
 ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list, 
-                    const bool del_tourn_list, const bool del_arena_filename_list)
+                        const bool del_tourn_list, const bool del_arena_filename_list, 
+                        const bool del_robot_obj_list=true)
 {
   // clear the lists;
 
-  for( int obj_type = ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )  
-    object_lists[obj_type].delete_list();
+  for( int obj_type = ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
+    if( obj_type != ROBOT || del_robot_obj_list )
+      object_lists[obj_type].delete_list();
 
   exclusion_points.delete_list();
 
@@ -594,4 +596,16 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
 
   if( del_tourn_list )  all_robots_in_tournament.delete_list();
   if( del_arena_filename_list ) arena_filenames.delete_list();
+}
+
+void
+ArenaBase::find_object_by_id( const List<Shape>& obj_list, 
+                              ListIterator<Shape>& li,
+                              const int obj_id )
+{
+  for( obj_list.first(li); li.ok(); li++)
+    {
+      if( li()->get_id() == obj_id ) 
+        return;
+    }
 }
