@@ -3,34 +3,36 @@ important to know is the messaging language, which is a set of about 35 commands
 with the server program. It is also instructive to study the example robots in the (!T)Robots/(!t)
 directory. 
 
-!subnode General information
 !label GeneralInformation
-
-#RealTimeBattle is designed to make use of the multitasking properties of unix-systems.
+!subnode General information
 
    At the beginning of each sequence the robot processes are launched by the server program and
    assigned two pipes, one for input and the other for output. These are connected to the (!T)stdin(!t)
-   and (!T)stdout(!t), so that from the robots point of view, it is communtiating with the server via
+   and (!T)stdout(!t), so that from the robots point of view, it is communicating with the server via
    the standard input and output ports.
 
    This approach mean that the robots can be written in any programming languages. However, there is
    one catch, the robot must be able to know when it has received a message. One solution is to tell
    the server to (!link [send a signal][RobotOption]) after sending the message. This requires the
    robot program to be able to handle signals. This can be done in many languages including c, c++ and
-   perl. Note that it is not a good idea to do "busy wait", i.e., to actively look for a message until
+   perl. Another method is to use the libc function (!T)select()(!t) to wait until a message has
+   arrived. 
+   
+   Note that it is not a good idea to do "busy wait", i.e., to repeatedly look for a message until
    you get one. This will slow things down considerably and, worse, in 
    (!link [(!T)competition-mode(!t)][CommandLineOptions]) the robot will rapidly run out of CPU-time
    and die.
 
-!subnode Messagetypes.h
 !label Messagetypes
+!subnode Messagetypes.h
+
 
 The file (!T)Messagetypes.h(!t) is a good source of information on the messaging language. It is a c/c++
 include file, but you can easily rewrite it to use with other languages. There you can find listing
 of messages, warning types, objects, game options and robot options.
    
-!subnode Messages to robots 
 !label MessagesToRobots
+!subnode Messages to robots 
    
 !begin_description
    !label Initialize
@@ -76,12 +78,12 @@ of messages, warning types, objects, game options and robot options.
          The (!B)Info(!b) message does always follow the (!B)Radar(!b) message. It gives more
          general information on the state of the robot. The time is the game-time elapsed since the
          start of the game. This is not necessarily the same as the real time elapsed, due to 
-         (!link [timescale][TimeScale]) and (!link [max timestep] [MaxTimestep]).
+         (!link [time scale][TimeScale]) and (!link [max timestep] [MaxTimestep]).
 
    !item [RobotInfo [energy level (double)!] [enemy? (int)!]]
          If you detect a robot with your radar, this message will follow, giving some information on
-         the robot. The opponents enery level will be given in the same manner as your own energy
-         (see below). The second argument is only interestning i team-mode (which current isn't
+         the robot. The opponents energy level will be given in the same manner as your own energy
+         (see below). The second argument is only interesting i team-mode (which current isn't
          implemented), 1 means a team-mate and 0 an enemy.
 
    !item [Energy [energy level!]]
@@ -127,9 +129,8 @@ of messages, warning types, objects, game options and robot options.
 
 !end_description
 
-
-!subnode Messages from robots
 !label MessagesFromRobots  
+!subnode Messages from robots
 
 !begin_description
 
@@ -194,7 +195,7 @@ of messages, warning types, objects, game options and robot options.
          Send data to be stored. Be sure to send the correct number of bytes!
 
    !item [AsciiData [data (string)!]]
-         Send data to be store. The string is terminated by an endline charcter.
+         Send data to be store. The string is terminated by an endline character.
 
    !label SaveDataFinished
    !item [SaveDataFinished]

@@ -4,8 +4,8 @@ is to give you full freedom to set up the game in the way you like. This does me
 that some settings of the options may give bad combination, which can cause troubles for the
 program. 
 
-!subnode Environmental options
 !label EnvironmentalOptions
+!subnode Environmental options
 
 !begin_description
    !item [Gravitational Constant:] The acceleration due to gravitation. It is about 9.8 on the
@@ -22,7 +22,9 @@ program.
 
 !end_description
 
+!label RobotOptions
 !subnode Robot options
+
 !begin_description
    !label RobotMaxAcceleration
    !item [Robot max acceleration:] Robots are not allowed to accelerate faster than this and !..
@@ -53,9 +55,8 @@ program.
          many discretation levels will be used.
 !end_description
 
-
-!subnode Shot options
 !label ShotOptions
+!subnode Shot options
 
 !begin_description
    !item [Shot radius:] Size of shots. Should be less than (!link [robot radius][RobotRadius]).
@@ -66,15 +67,15 @@ program.
          number is reduced, so that you never lose in average by shooting (if you hit).
    !item [Shot min energy:] The lowest shot energy allowed. A robot trying to shoot with less energy
          will fail to shoot.
+   !label ShotEnergy
    !item [Shot max energy:] The robots have a shot energy, which increase with time, but will never
          exceed this value.
    !item [Shot energy increase speed:] Determines how fast the robots shot energy noted above, will
          increase. Unit: energy/s .
 !end_description
 
-
-!subnode Extras options
 !label ExtrasOptions
+!subnode Extras options
 
 !begin_description
    !item [Cookie max energy:] The cookie energy is a random number between cookie max energy and cookie
@@ -92,10 +93,14 @@ program.
 !end_description
 
 
-!subnode Time options
 !label TimeOptions
+!subnode Time options
+
 
 !begin_description
+   !label Timeout
+   !item [Timeout:] This is the longest time a game will take. When the time is ut all remaining
+         robots are killed, without getting any more points.
    !label MaxTimestep
    !item [Max timestep:] If the computer is temporarily slowed down, the time between updates can be
          to long. Setting this option will make the program artificially slow down the clock in
@@ -120,9 +125,8 @@ program.
          decide how often the program will check for CPU usage.
 !end_description
 
-
-!subnode Miscellaneous options
 !label MiscellaneousOptions
+!subnode Miscellaneous options
 
 !begin_description
    !label ArenaScale
@@ -131,6 +135,7 @@ program.
    !item [Background colour:] Background colour and !..
    !item [Foreground colour:] foreground colour for the arena.
    !item [Statistics savefile:] File to store (!link [statistics][StatisticsWindow]).
+   !label OptionsSavefile
    !item [Options savefile:] File to store (!link [options][OptionsWindow]).
 !end_description
 

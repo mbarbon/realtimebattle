@@ -4,8 +4,9 @@ confusing in the user interface. It is, however, a good idea to read the short s
 (!link [command line options] [CommandLineOptions]). Note also that there is no built-in help in the
 program - here is where you should search for help.
 
-!subnode Command line options
 !label CommandLineOptions
+!subnode Command line options
+
 In the current version, RealTimeBattle has only three command line options, all of which determine
 in which competition-mode the program will run: (!T)debug(!t), (!T)normal(!t) or (!T)competition(!t) mode.
 
@@ -33,6 +34,7 @@ The differences between the three modes are shown in the following table
    !hline
 !end_table
 
+!label ControlWindow
 !subnode Control window
 
 !begin_description
@@ -55,54 +57,59 @@ The differences between the three modes are shown in the following table
          Terminates the program.
 !end_description
 
-!subnode Start new tournament window
 !label TournamentWindow
+!subnode Start new tournament window
 
 To select robots and arenas for the tournament, mark the files to the right and press the
 (!T)add(!t) button. Selected files are shown to the left and can be removed correspondingly.
 
-A tournament consists of a number of sequences of games. In each sequence the same robots are
-playing in all games.
+!label NumberOfGames
+
+A (!link [tournament][Tournament]) consists of a number of 
+(!link [sequences][Sequence]) of (!link [games][Game]). In each sequence the same robots are
+playing in all games. Here you select the number of games and sequences as well as the number of
+robots in each sequence. If you intend to play with all robots every game you are advised to choose
+only one sequence and instead increase the number of game. The reason is to avoid restarting of the
+robot processes which can take a wail, especially if the number of robots is large. 
 
 You have to select at least two robots and one arena to be able to start.
 
-!subnode Arena window
 !label ArenaWindow
+!subnode Arena window
 
 This is where the battle takes place. If you want to watch the game i more detailed, use the zoom
 buttons! 
 
-!subnode Score window
 !label ScoreWindow
+!subnode Score window
 
 In this window the robots playing in the current sequence are listed. 
 
-!subnode Message window
 !label MessageWindow
+!subnode Message window
 
 Here are messages sent by the robots using (!link [Print and Debug][Print]) displayed.
 
-
-!subnode Options window
 !label OptionsWindow
+!subnode Options window
 
 Here you can change a number of options. In the (!link [Options chapter][Options]) you can get
 detailed information on each option. The changes are not applied until the (!T)apply(!t) button is
 pressed.
 
-You can choose in which file to save your options in (!T)Misc - file to save the options(!t). 
+You can choose in to save your file in the (!link [options savefile][OptionsSavefile]).
 
-!subnode Statistics window
 !label StatisticsWindow
+!subnode Statistics window
 
 You can study the statistics of the current tournament in some different ways. You can either
 display 
 
 !begin_itemize
-   !item statistics on individual (!T)Robot(!t)s,
-   !item the result of a (!T)game(!t),
-   !item the (!T)sequence total(!t) or
-   !item the (!T)total(!t) of the tournament.
+   !item statistics on individual (!B)Robot(!b)s,
+   !item the result of a (!B)game(!b),
+   !item the (!B)sequence total(!b) or
+   !item the (!B)total(!b) of the tournament.
 !end_itemize
 
 Pressing the arrowed buttons will move you to the first, back one, forward one or to the last

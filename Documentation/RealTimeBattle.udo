@@ -16,40 +16,40 @@
    !maketitle
    !tableofcontents
 
-   !node Introduction  
    !label Introduction
+   !node Introduction  
    !include Introduction.udo
 
-   !node Usage  
    !label Usage
+   !node Usage  
    !include Usage.udo
 
-   !node Details  
-   !label Details
-#   !include Details.udo
+   !label Structure
+   !node Structure
+   !include Structure.udo
 
-   !node Robot construction
    !label RobotConstruction
+   !node Robot construction
    !include RobotConstruction.udo
 
-   !node Options
    !label Options
+   !node Options
    !include Options.udo
 
-   !node Arena construction
    !label ArenaConstruction
+   !node Arena construction
    !include ArenaConstruction.udo
 
-#!node History  
 #!label History
+#!node History  
 #!include History.udo
 
-#!node FAQ
 #!label FAQ
+#!node FAQ
 #!include FAQ.udo
 
-#!node Appendices
 #!label Appendices
+#!node Appendices
 #!include Appendices.udo
 
 #to get rid of error message in AboutUdo
