@@ -29,11 +29,22 @@
 #define MES_TO_DEAD                     "Dead"
 #define MES_TO_EXIT_ROBOT               "ExitRobot"
 
-enum message_type 
-{ 
-  INITIALIZE,              
+
+extern "C++" {
+
+enum message_to_robot_type 
+{
+  INITIALIZE = 0,              
   EXIT_ROBOT,
-  RADAR 
+  RADAR,
+  WARNING
+};
+
+enum message_from_robot_type 
+{
+  UNKNOWN = -1,
+  ROTATE,
+  NAME,
 };
 
 enum argument_type
@@ -44,6 +55,14 @@ enum argument_type
   INT
 };
 
+enum warnings
+{
+  UNKNOWN_MESSAGE,
+  PROCESS_TIME_LOW,
+  ENERGY_LOW
+};
+
+
 struct Message
 {
   char* msg;
@@ -51,11 +70,20 @@ struct Message
   argument_type arg_type[4];
 };
 
-static const Message message[20] = 
+static const Message message_to_robot[20] = 
 {
   {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
-  {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}}
+  {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}},
+  {"Warning",    2, {INT,    STRING, NONE,   NONE}}
 };
 
+static const Message message_from_robot[20] = 
+{
+  {"Rotate",     2, {INT,    DOUBLE}},
+  {"Name",       1, {STRING}},
+  {"",           0, {}}
+};
+
+} // extern "C++"
 #endif __MESSAGETYPES__
