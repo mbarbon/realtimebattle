@@ -32,12 +32,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream>
 #include <fstream>
 #include <ctype.h>
+#include <assert.h>
 
-#include "IntlDefs.h"
 #include "OptionHandler.h"
 #include "Option.h"
-#include "Arena.h"
-#include "ArenaController.h"
 #include "String.h"
 
 // Optionarrays are deleted when OptionHandler is destructed.
@@ -99,24 +97,42 @@ OptionHandler::read_options_from_rtbrc()
 }
 
 void
-OptionHandler::set_long_option( const string& option, const long int val )
+OptionHandler::set_option_from_value( const string& option, const long int val,
+                                      const bool as_default )
 {
-  if( all_options.find( option ) != all_options.end() )
-    ((LongOption*)all_options[option])->change_value( val );
+  map<string,Option*>::iterator mi;
+  mi = all_options.find( option );
+  assert( mi != all_options.end() &&
+          mi->second->get_value_type() == OPTION_VALUE_LONG );
+  ((LongOption*)mi->second)->change_value( val, as_default );
 }
 
 void
-OptionHandler::set_double_option( const string& option, const double val )
+OptionHandler::set_option_from_value( const string& option, const double val,
+                                      const bool as_default )
 {
-  if( all_options.find( option ) != all_options.end() )
-    ((DoubleOption*)all_options[option])->change_value( val );
+  map<string,Option*>::iterator mi;
+  mi = all_options.find( option );
+  assert( mi != all_options.end() &&
+          mi->second->get_value_type() == OPTION_VALUE_DOUBLE );
+  ((DoubleOption*)mi->second)->change_value( val, as_default );
 }
 
 void
-OptionHandler::set_string_option( const string& option, const string& val )
+OptionHandler::set_option_from_value( const string& option, const string& val,
+                                      const bool as_default )
 {
-  if( all_options.find( option ) != all_options.end() )
-    ((StringOption*)all_options[option])->change_value( val );
+  set_option( option, val, as_default );
+}
+
+void
+OptionHandler::set_option( const string& option, const string& val,
+                           const bool as_default )
+{
+  map<string,Option*>::iterator mi;
+  mi = all_options.find( option );
+  assert( mi != all_options.end() );
+  mi->second->change_value( val, as_default );
 }
 
 const bool
@@ -229,9 +245,8 @@ OptionHandler::locate_option_in_file( const string& strfile,
           continue_loop = false;
         }
 
-      while( isspace( tempstr[0] ) )
-        tempstr = tempstr.substr( 1, string::npos );
-
+      remove_initial_whitespace( tempstr );
+      
       if( tempstr.length() > 0 )
         switch( tempstr[0] )
           {

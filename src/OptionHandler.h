@@ -54,9 +54,16 @@ public:
   void read_options_from_rtbrc           ();
   void read_options_file                 ( const string&, const bool );
 
-  void set_long_option                   ( const string&, const long int );
-  void set_double_option                 ( const string&, const double );
-  void set_string_option                 ( const string&, const string& );
+  // set_option_from_value() uses the real value
+  void set_option_from_value             ( const string&, const long int,
+                                           const bool as_default = false );
+  void set_option_from_value             ( const string&, const double,
+                                           const bool as_default = false );
+  void set_option_from_value             ( const string&, const string&,
+                                           const bool as_default = false );
+  // set_option() uses the stringified version of the value
+  void set_option                        ( const string&, const string&,
+                                           const bool as_default = false );
 
   const map<string,Option*>& get_options () const { return all_options; }
   const vector<string>& get_group_names  () const { return group_names; }
@@ -91,8 +98,8 @@ OptionHandler::get_l( const string& option ) const
 {
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
-  assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() != OPTION_VALUE_LONG) );
+  assert( mci != all_options.end() &&
+          ((mci->second)->get_value_type() == OPTION_VALUE_LONG) );
   return (((LongOption*)mci->second)->get_value());
 }
 
@@ -101,8 +108,8 @@ OptionHandler::get_d( const string& option ) const
 {
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
-  assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() != OPTION_VALUE_DOUBLE) );
+  assert( mci != all_options.end() &&
+          ((mci->second)->get_value_type() == OPTION_VALUE_DOUBLE) );
   return (((DoubleOption*)mci->second)->get_value());
 }
 
@@ -111,8 +118,8 @@ OptionHandler::get_s( const string& option ) const
 {
   map<string,Option*>::const_iterator mci;
   mci = all_options.find( option );
-  assert( mci == all_options.end() || 
-          ((mci->second)->get_value_type() != OPTION_VALUE_STRING) );
+  assert( mci != all_options.end() &&
+          ((mci->second)->get_value_type() == OPTION_VALUE_STRING) );
   return (((StringOption*)mci->second)->get_value());
 }
 
