@@ -34,7 +34,27 @@ String::String(const char c)
 
 String::String(const int n)
 {
-  String((long)n);
+  //  *this = String((long)n);
+  buf_size = 0;
+  length = 15;
+  allocate_array(15);
+  array[15] = '\0';
+  int pos = 14;
+
+  int k = ( n>0 ? n : -n );
+
+  if( k == 0 ) 
+    array[pos--] = '0';
+  else 
+    for(; k > 0; k/=10) array[pos--] = '0' + k%10;
+
+  if( n < 0 ) 
+    {
+      array[0] = '-';
+      erase(1, pos);
+    }
+  else
+    erase(0, pos+1);
 }
 
 String::String(const long int n)
