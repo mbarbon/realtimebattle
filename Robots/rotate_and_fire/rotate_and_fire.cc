@@ -42,6 +42,8 @@ RotateAndFire::RotateAndFire(const char* name, const char* colour)
   robot_colour = new char[strlen(colour)];
   strcpy(robot_colour, colour);
 
+  quitting = false;
+
   robot_rotate = 0.53;
   acceleration = 0.54;
   brake_value = 0.0;
