@@ -86,7 +86,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_SENSOR: 
                   break;
-                case GAD_COMMUNICATION: //-
+                case GAD_COMMUNICATION:
                   break;
                 case GAD_WALL: 
                   break;
@@ -94,7 +94,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_BALL: 
                   break;
-                case GAD_EQUIPMENT: //-
+                case GAD_EQUIPMENT:
                   break;
                 case GAD_ENVIRONMENT: 
                   break;
@@ -102,7 +102,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   break;
                 case GAD_SCORING: 
                   break;
-                case GAD_ACTION: //-
+                case GAD_ACTION:
                   break;
                 case GAD_VARIABLE: 
                   {
@@ -134,19 +134,37 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                    wordlist.size() > 2 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                find_by_name( GadgetInfo( NULL, wordlist[1], 0 ) ))).gadgetp;
-              if( typeinfo(gadp) == typeinfo(Function*) )// TODO: A better way to do this.
+                find_by_name( GadgetInfo( NULL, 0, wordlist[1].c_str() ) ))).gadgetp;
+              if( typeid(gadp) == typeid(Function*) )// TODO: A better way to do this.
                 {
-                  // TODO: Set Function allowance to true, false or default
+                  if( equal_strings_nocase( wordlist[2], "default" ) )
+                    {
+                      // TODO: Set Function allowance to default
+                    }
+                  else if( equal_strings_nocase( wordlist[2], "true" ) )
+                    {
+                      // TODO: Set Function allowance to true
+                    }
+                  else if( equal_strings_nocase( wordlist[2], "false" ) )
+                    {
+                      // TODO: Set Function allowance to false
+                    }
                 }              
             }
           else
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                find_by_name( GadgetInfo( NULL, wordlist[0], 0 ) ))).gadgetp;
-              if( typeinfo(gadp) == typeinfo(Variable*) )// TODO: A better way to do this.
+                find_by_name( GadgetInfo( NULL, 0, wordlist[0].c_str() ) ))).gadgetp;
+              if( typeid(gadp) == typeid(Variable*)// TODO: A better way to do this.
+                  && wordlist.size() > 1 )
                 {
-                  // TODO: Assign variable with value in wordlist[1]
+                  if( isdigit( wordlist[0][0] ) || wordlist[0][0] == '.' )
+                    ((Variable*)gadp)->operator=( string2double(wordlist[1]) );
+                  else
+                    {
+                      // TODO: Do something when not a value
+                      //       e.g. it is another variable.
+                    }
                 }
             }
         }
