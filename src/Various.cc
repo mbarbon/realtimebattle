@@ -237,7 +237,7 @@ check_if_filename_is_robot( String& fname )
 
   // Check if file is a regular file that can be executed and ends with .robot
   if( S_ISREG( filestat.st_mode) && 
-      (filestat.st_mode & S_IXOTH) &&
+      ( filestat.st_mode & ( S_IXOTH | S_IXGRP | S_IXUSR )) &&
       ( String(".robot") == get_segment(fname, -6, -1) ) )
     return true;
 
@@ -252,8 +252,8 @@ check_if_filename_is_arena( String& fname )
   if( 0 == stat( fname.chars(), &filestat ) && fname.get_length() > 6 )
     // Check if file is a regular file that is readable and ends with .arena
     if( S_ISREG( filestat.st_mode) &&
-        (filestat.st_mode & S_IROTH)  &&
-        String(".arena") == get_segment(fname, -6, -1) )
+        ( filestat.st_mode & ( S_IROTH | S_IRGRP | S_IRUSR ) )  &&
+        ( String(".arena") == get_segment(fname, -6, -1) ) )
       return true;
 
   return false;
