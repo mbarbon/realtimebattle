@@ -2,6 +2,7 @@
 #include <iostream.h>
 #include <iomanip.h>
 #include <math.h>
+#include <string.h>
 #include "gui.h"
 #include "Vector2D.h"
 
@@ -404,6 +405,8 @@ Gui::setup_score_window()
   gtk_container_add (GTK_CONTAINER (score_window), score_clist);
   gtk_widget_show(score_clist);
 
+  gtk_widget_show (score_window);
+
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
@@ -420,45 +423,43 @@ Gui::setup_score_window()
       gtk_clist_set_foreground(GTK_CLIST(score_clist), row, the_arena->get_foreground_colour_p());
       gtk_clist_set_background(GTK_CLIST(score_clist), row, the_arena->get_background_colour_p());
 
-//       GdkPixmap * colour_pixmap = NULL;
-//       GdkBitmap * colour_bitmap = NULL;
-//       GdkGC * colour_gc;
+      char * colour_square[] =
+      {
+        "14 14 1 1",
+        ".      c #000000000000   ",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        "..............",
+        ".............."
+      };
 
-//       colour_gc = gdk_gc_new( drawing_area->window );
-//       colour_pixmap = gdk_pixmap_create_from_data(score_clist->window,
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111"
-//                                                   "11111111111111",
-//                                                   13, 13, 1,
-//                                                   &robotp->get_colour(), the_arena->get_background_colour_p());
-//       gdk_gc_destroy( colour_gc );
-//       gdk_bitmap_create_from_data( score_clist->window,
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111"
-//                                    "11111111111111",
-//                                    13, 13 );
-//       cout << colour_pixmap << " " << colour_bitmap << endl;
-//       gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, colour_bitmap);
+      GdkPixmap * colour_pixmap;
+      GdkBitmap * bitmap_mask;
+      strstream ss;
+      char str[25];
+
+      ss << ".      c #" << setw(4) << setfill('0') << hex << robotp->get_colour().red
+         << robotp->get_colour().green << robotp->get_colour().blue << ends << endl;
+      ss.getline(str,25,'\n');
+      char* newstr = new char[30];
+      strcpy(newstr, str);
+      colour_square[1] = newstr;
+
+      colour_pixmap = gdk_pixmap_create_from_xpm_d( score_window->window, &bitmap_mask,
+                                                    the_arena->get_background_colour_p(),
+                                                    (gchar **)colour_square );
+
+      gtk_clist_set_pixmap(GTK_CLIST(score_clist), row, 0, colour_pixmap, bitmap_mask);
 
       gtk_clist_set_text(GTK_CLIST(score_clist), row, 1, robotp->get_robotname());
       robotp->display_energy();
@@ -466,7 +467,6 @@ Gui::setup_score_window()
       robotp->display_last();
       robotp->display_score();
     }
-  gtk_widget_show (score_window);
 }
 
 void
