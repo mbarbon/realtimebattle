@@ -12,6 +12,10 @@ New option: <tt>Max robots allowed simultaneously</tt>. This option allows
 the user to change how many robots allowed in a sequence. Depending on how
 many file-descriptors allowed for the system.
 
+RealTimebattle has now been translated to japanese.
+
+Some bugs have been fixed so japanese translation works correct.
+
 Fixed a problem with COLLISION giving wrong angle. Thanks to Nathan D Green.
 
 Sorting by sequence in the statistics when viewing individual robots now
