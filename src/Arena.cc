@@ -24,6 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Arena.h"
 #include "Gadget.h"
 #include "WeaponGadget.h"
+#include "ShotGadget.h"
 #include "Variable.h"
 #include "Function.h"
 #include "Vector2D.h"
@@ -77,7 +78,14 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     break;
                   }
                 case GAD_SHOT: 
-                  break;
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    ShotGadget* gadget =
+                      new ShotGadget( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = (Gadget*)gadget;
+                    break;
+                  }
                 case GAD_EXPLOSION: 
                   break;
                 case GAD_DEFENSE: 
