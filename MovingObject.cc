@@ -277,7 +277,6 @@ Robot::get_messages()
           break;
         case PRINT:
           instreamp->get(text, 80, '\n');
-          cout << "Text read: " << text << endl;
           the_arena->get_the_gui()->print_to_message_output(robot_name.str, text, colour);
           break;
         case SHOOT:
