@@ -1,21 +1,19 @@
 lib_LTLIBRARIES = libGuiGtk.la
 
-INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl -I$(top_srcdir)/src
+if ENABLE_PROF
+PROFFLAGS = -pg
+endif
+
+INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl -I$(top_srcdir)/src \
+           $(PROFFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
+           -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 
 if ENABLE_CCMALLOC
 CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
-CXXFLAGS += -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
-CXXFLAGS += -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 else
 CCMALLOC_O =
-CXXFLAGS += -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
-CXXFLAGS += -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
 endif
 
-if ENABLE_PROF
-CXXFLAGS += -pg
-CFLAGS += -pg
-endif
 
 libGuiGtk_la_LIBADD = 
 libGuiGtk_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
