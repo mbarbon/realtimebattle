@@ -36,6 +36,7 @@ The following options are especially useful:
 
  --enable-debug          Compile for debugging
  --disable-graphics      Compile a version without a gui.
+ --without-gtk           Same as --disable-graphics.
 </verb>
 
 The <tt>gtk</tt> options can be useful too.
