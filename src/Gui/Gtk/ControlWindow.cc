@@ -33,6 +33,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "Structs.h"
 #include "FileSelector.h"
+#include "String.h"
+#include "GuiVarious.h"
 
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
@@ -44,10 +46,9 @@ ControlWindow::ControlWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Control" );
   gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
+  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle" );
 
-  set_window_title( NO_STATE );
-
-  gtk_container_border_width( GTK_CONTAINER( window_p ), 12 );
+  gtk_container_border_width( GTK_CONTAINER( window_p ), 0 );
 
   if( default_width != -1 && default_height != -1 )
     gtk_widget_set_usize( window_p, default_width, default_height );
@@ -68,96 +69,159 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_container_add( GTK_CONTAINER( window_hbox ), vbox );
   gtk_widget_show( vbox );
 
-  // Buttons for all modes
+  // The menu
 
-  struct button_t { string label; GtkSignalFunc func; int pack; };
+  // Comment from freeciv:
+  //  This is the GtkItemFactoryEntry structure used to generate new menus.
+  //            Item 1: The menu path. The letter after the underscore indicates an
+  //                    accelerator key once the menu is open.
+  //            Item 2: The accelerator key for the entry
+  //            Item 3: The callback function.
+  //            Item 4: The callback action.  This changes the parameters with
+  //                    which the function is called.  The default is 0.
+  //            Item 5: The item type, used to define what kind of an item it is.
+  //                    Here are the possible values:
 
-  struct button_t buttons[] = {
-    { (string)_(" New Tournament "), 
-      (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
-    { (string)_(" Replay Tournament "), 
-      (GtkSignalFunc) ControlWindow::replay_tournament , TRUE  },
-    { (string)_(" Pause "),
-      (GtkSignalFunc) ControlWindow::pause             , TRUE  },
-    { (string)_(" End "),
-      (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
-    { (string)_(" Options "),
-      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
-    { (string)_(" Statistics "),
-      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
-    { (string)_("         Quit         "),
-      (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
+  //                    NULL               -> "<Item>"
+  //                    ""                 -> "<Item>"
+  //                    "<Title>"          -> create a title item
+  //                    "<Item>"           -> create a simple item
+  //                    "<CheckItem>"      -> create a check item
+  //                    "<ToggleItem>"     -> create a toggle item
+  //                    "<RadioItem>"      -> create a radio item
+  //                    <path>             -> path of a radio item to link against
+  //                    "<Separator>"      -> create a separator
+  //                    "<Branch>"         -> create an item to hold sub items
+  //                    "<LastBranch>"     -> create a right justified branch
 
-  GtkWidget* button_hbox[3] = { NULL,NULL,NULL };
-  int hbox_index = -1;
-  for(int i = 0;i < 7; i++)
-    {
-      if( i == 0 || i == 4 || i == 6 )
-        {
-          hbox_index++;
-          button_hbox[hbox_index] = gtk_hbox_new( FALSE, 10 );
-          gtk_box_pack_start( GTK_BOX( vbox ), button_hbox[hbox_index],
-                              FALSE, FALSE, 0);
-          gtk_widget_show( button_hbox[hbox_index] );
-        }
-      GtkWidget* button =
-        gtk_button_new_with_label( buttons[i].label.c_str() );
-      gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                          (GtkSignalFunc) buttons[i].func,
-                          (gpointer) this );
-      gtk_box_pack_start( GTK_BOX( button_hbox[hbox_index] ), button,
-                          TRUE, buttons[i].pack , 0 );
-      gtk_widget_show( button );
-    }
+  static GtkItemFactoryEntry menu_items[] =
+  {
+//      { copy_to_c_string((string)"/_" + _("File")), NULL, NULL, 0, "<Branch>" },
+//      { copy_to_c_string((string)"/"  + _("File") + "/" + _("Quit")), "<control>q",
+//        (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
+//      { copy_to_c_string((string)"/_" + _("Tournament")), NULL, NULL, 0, "<Branch>" },
+//      { copy_to_c_string((string)"/"  + _("Tournament") + "/" + _("New tournament")),
+//        "<control>n", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+//        MENU_NEW_TOURNAMENT, "" },
+    { "/_File", NULL, NULL, 0, "<Branch>" },
+    { "/File/Quit", "<control>q",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_QUIT, "" },
+    { "/_Tournament", NULL, NULL, 0, "<Branch>" },
+    { "/Tournament/New tournament",
+      "<control>n", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_NEW_TOURNAMENT, "" },
+    // TODO: gettextify the rest of the items
+    { "/Tournament/Replay tournament", "<control>r",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_REPLAY_TOURNAMENT, "" },
+    { "/Tournament/Pause", "<shift>p",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PAUSE, "" },
+    { "/Tournament/End", "<control>e",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END, "" },
+    { "/_Windows", NULL, NULL, 0, "<Branch>" },
+    { "/Windows/Options", "<shift>o",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_OPTIONS, "" },
+    { "/Windows/Statistics", "<shift>s",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STATISTICS, "" },
+    { "/Windows/sep", NULL, NULL, 0, "<Separator>" },
+//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show arena window")),
+//        "<control>a", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+//        MENU_SHOW_ARENA, "<CheckItem>" },
+//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show message window")),
+//        "<control>m", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+//        MENU_SHOW_MESSAGES, "<CheckItem>" },
+//      { copy_to_c_string((string)"/"  + _("Windows") + "/" + _("Show score window")),
+//        "<control>s", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+//        MENU_SHOW_SCORE, "<CheckItem>" } 
+    { "/Windows/Show arena window",
+      "<control>a", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_SHOW_ARENA, "<CheckItem>" },
+    { "/Windows/Show message window",
+      "<control>m", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_SHOW_MESSAGES, "<CheckItem>" },
+    { "/Windows/Show score window",
+      "<control>s", (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_SHOW_SCORE, "<CheckItem>" } 
+  };
 
-  struct button_t menu_items_data[] = {
-    { (string)_("Show arena window"),
-      (GtkSignalFunc) ControlWindow::arena_window_toggle, TRUE  },
-    { (string)_("Show message window"),
-      (GtkSignalFunc) ControlWindow::message_window_toggle, TRUE  },
-    { (string)_("Show score window"),
-      (GtkSignalFunc) ControlWindow::score_window_toggle, TRUE  } };
+  const int nmenu_items = sizeof( menu_items ) / sizeof( menu_items[0] );
+  GtkAccelGroup* accel = gtk_accel_group_new();
+  GtkItemFactory* item_factory = 
+    gtk_item_factory_new( GTK_TYPE_MENU_BAR, "<main>", accel );
+  gtk_item_factory_create_items( item_factory, nmenu_items,
+                                 menu_items, (gpointer) this );
+  gtk_accel_group_attach( accel, GTK_OBJECT( window_p ) );
+
+  GtkWidget* menubar = gtk_item_factory_get_widget( item_factory, "<main>" );
+
+  gtk_box_pack_start( GTK_BOX( vbox ), menubar, FALSE, TRUE, 0 );
+  gtk_menu_bar_set_shadow_type( GTK_MENU_BAR( menubar ), GTK_SHADOW_OUT );
+  gtk_widget_show( menubar );
+
+  show_arena_menu_item = gtk_item_factory_get_widget
+    ( item_factory, "/Windows/Show arena window" );
+//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show arena window")) );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
+#else
+  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_arena_menu_item ), TRUE );
+#endif
+
+  show_message_menu_item = gtk_item_factory_get_widget
+    ( item_factory, "/Windows/Show message window" );
+//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show message window")) );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
+#else
+  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_message_menu_item ), TRUE );
+#endif
+
+  show_score_menu_item = gtk_item_factory_get_widget
+    ( item_factory, "/Windows/Show score window" );
+//        copy_to_c_string((string)"/" + _("Windows") + "/"  + _("Show score window")) );
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+  gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
+#else
+  gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( show_score_menu_item ), TRUE );
+#endif
+
+  GtkStyle* status_style = gtk_rc_get_style(window_p);
+  if( status_style == NULL )
+    status_style = gtk_style_new();
+  else
+    status_style = gtk_style_copy(status_style);
+  GdkFont* temp_font =
+    gdk_font_load( "-*-helvetica-bold-r-normal--17-*-*-*-*-*-*-*" );
+  if( temp_font )
+    status_style->font = temp_font;
+  status_style->fg[GTK_STATE_NORMAL] = make_gdk_colour( 0x1111ee );
   
 
-  GtkWidget* omenu = gtk_option_menu_new();
-  GtkWidget* menu = gtk_menu_new();
-  for( int i = 0;i < 3; i++ )
-    {
-      GtkWidget* menu_item =
-        gtk_check_menu_item_new_with_label( menu_items_data[i].label.c_str() );
-      gtk_signal_connect( GTK_OBJECT( menu_item ), "toggled",
-                          menu_items_data[i].func, (gpointer) this );
-      gtk_menu_append (GTK_MENU (menu), menu_item);
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
-#else
-      gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), TRUE );
-#endif
-      gtk_widget_show( menu_item );
+  GtkWidget* frame = gtk_frame_new("Game status");
+  gtk_container_border_width( GTK_CONTAINER( frame ), 2 );
+  gtk_frame_set_shadow_type( GTK_FRAME( frame ), GTK_SHADOW_ETCHED_IN );
+  gtk_box_pack_start( GTK_BOX( vbox ), frame, FALSE, TRUE, 0 );
+  gtk_widget_show( frame );
 
-      switch( i )
-        {
-        case 0:
-          show_arena_menu_item = menu_item;
-          break;
-        case 1:
-          show_message_menu_item = menu_item;
-          break;
-        case 2:
-          show_score_menu_item = menu_item;
-          break;
-        }
-    }
+  GtkWidget* vbox2 = gtk_vbox_new( FALSE, 0 );
+  gtk_container_border_width( GTK_CONTAINER( vbox2 ), 5 );
+  gtk_container_add( GTK_CONTAINER( frame ), vbox2 );
+  gtk_widget_show( vbox2 );
 
-  gtk_box_pack_start( GTK_BOX( button_hbox[1] ), omenu, TRUE, TRUE, 0 );
-  gtk_option_menu_set_menu( GTK_OPTION_MENU( omenu ), menu );
-  gtk_widget_show( omenu );
+  status_label = gtk_label_new("");
+  gtk_widget_set_style( status_label, status_style );
+  gtk_label_set_justify( GTK_LABEL( status_label ), GTK_JUSTIFY_CENTER );
+  gtk_box_pack_start( GTK_BOX( vbox2 ), status_label, TRUE, TRUE, 0 );
+  gtk_widget_show( status_label );
+  
+  set_status( NO_STATE );
 
   vseparator = NULL;
   extra_vbox = NULL;
   filesel = new FileSelector<ControlWindow>( this );
 
   remove_replay_widgets();
+
   gtk_widget_show( window_p );
 }
 
@@ -428,64 +492,154 @@ ControlWindow::~ControlWindow()
 }
 
 void
-ControlWindow::set_window_title( const state_t state )
+ControlWindow::set_status( const state_t state )
 {
   string infotext;
   switch( state )
     {
     case NO_STATE:
     case NOT_STARTED:
-      infotext = "RealTimeBattle";
+      infotext = (string)_("No game started");
       break;
     case STARTING_ROBOTS:
-      infotext = "RTB  " + (string)_("*Starting robots*");
+      infotext = (string)_("Starting robots");
       break;
     case SHUTTING_DOWN_ROBOTS:
-      infotext = "RTB  " + (string)_("*Shutting down robots*");
+      infotext = (string)_("Shutting down robots");
       break;
     case BEFORE_GAME_START:
     case GAME_IN_PROGRESS:
-      infotext = "RealTimeBattle  " + (string)_("*Running*");
+      infotext = (string)_("Running");
       //                  if( pause_after_next_game )
-      //                    infotext = "RTB  " + (string)_("*Pausing after game*");
+      //                    infotext = (string)_("Pausing after game");
       break;
     case PAUSING_BETWEEN_GAMES:
     case PAUSED:
-      infotext = "RealTimeBattle  " + (string)_("*Paused*");
+      infotext = (string)_("Paused");
       break;
     case EXITING:
-      infotext = "RealTimeBattle  " + (string)_("*Exiting*");
+      infotext = (string)_("Exiting");
       break;
     case FINISHED:
-      infotext = "RealTimeBattle  " + (string)_("*Finished*");
+      infotext = (string)_("Finished");
       break;
 
     default:
       Error(true, "Unknown state", "ArenaBase::set_state");
     }
 
-  gtk_window_set_title( GTK_WINDOW( window_p ), infotext.c_str() );
+  gtk_label_set_text( GTK_LABEL( status_label ), infotext.c_str() );
+}
+
+void
+ControlWindow::menu_callback( class ControlWindow* cw_p,
+                              guint callback_action, GtkWidget *widget )
+{
+  switch( (menu_t)callback_action )
+    {
+    case MENU_QUIT:
+//    Quit();
+      break;
+    case MENU_NEW_TOURNAMENT:
+      the_gui.open_starttournamentwindow();
+      break;
+    case MENU_REPLAY_TOURNAMENT:
+//    if( the_arena_controller.is_started() &&
+//        ( the_arena.get_state() != NOT_STARTED &&
+//          the_arena.get_state() != FINISHED ) )
+//      {
+//        string info_text = _("This action will kill the current tournament.\n"
+//                             "Do you want to do that?");
+//        list<string> string_list;
+//        string_list.push_back( string( _("Yes") ) );
+//        string_list.push_back( string( _("No")  ) );
+//        Dialog( info_text, string_list,
+//                (DialogFunction) ControlWindow::kill_and_open_filesel );
+//      }
+//      else
+//        cw_p->open_replay_filesel();
+      break;
+    case MENU_PAUSE:
+//    if( the_arena_controller.is_started() )
+//      the_arena.pause_game_toggle();
+      break;
+    case MENU_END:
+      break;
+    case MENU_OPTIONS:
+      break;
+    case MENU_STATISTICS:
+      break;
+    case MENU_SHOW_ARENA:
+      {
+        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+
+        if( the_gui.is_arenawindow_up() )
+          {
+            if( active )
+              the_gui.get_arenawindow_p()->
+                show_window( the_gui.get_arenawindow_p()->get_window_p(),
+                             the_gui.get_arenawindow_p() );
+            else
+              the_gui.get_arenawindow_p()->
+                hide_window( the_gui.get_arenawindow_p()->get_window_p(),
+                             NULL, the_gui.get_arenawindow_p() );
+          }
+      }
+      break;
+    case MENU_SHOW_MESSAGES:
+      {
+        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+
+        if( the_gui.is_messagewindow_up() )
+          {
+            if( active )
+              the_gui.get_messagewindow_p()->
+                show_window( the_gui.get_messagewindow_p()->get_window_p(),
+                             the_gui.get_messagewindow_p() );
+            else
+              the_gui.get_messagewindow_p()->
+                hide_window( the_gui.get_messagewindow_p()->get_window_p(),
+                             NULL, the_gui.get_messagewindow_p() );
+          }
+      }
+      break;
+    case MENU_SHOW_SCORE:
+      {
+        bool active = GTK_CHECK_MENU_ITEM( widget )->active;
+
+        if( the_gui.is_scorewindow_up() )
+          {
+            if( active )
+              the_gui.get_scorewindow_p()->
+                show_window( the_gui.get_scorewindow_p()->get_window_p(),
+                             the_gui.get_scorewindow_p() );
+            else
+              the_gui.get_scorewindow_p()->
+                hide_window( the_gui.get_scorewindow_p()->get_window_p(),
+                             NULL, the_gui.get_scorewindow_p() );
+          }
+      }
+      break;
+    }
 }
 
 void
 ControlWindow::delete_event_occured( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* cw_p )
 {
-  Quit();
+//    Quit();
 }
 
 void
 ControlWindow::quit_rtb( GtkWidget* widget,
                          class ControlWindow* cw_p )
 {
-  Quit();
+//    Quit();
 }
 
 void
 ControlWindow::pause( GtkWidget* widget, class ControlWindow* cw_p )
 {
-//    if( the_arena_controller.is_started() )
-//      the_arena.pause_game_toggle();
 }
 
 void
@@ -528,33 +682,6 @@ ControlWindow::change_debug_level( GtkAdjustment *adj,
 }
 
 void
-ControlWindow::new_tournament( GtkWidget* widget,
-                               class ControlWindow* cw_p )
-{
-  the_gui.open_starttournamentwindow();
-}
-
-void
-ControlWindow::replay_tournament( GtkWidget* widget,
-                                  class ControlWindow* cw_p )
-{
-//    if( the_arena_controller.is_started() &&
-//        ( the_arena.get_state() != NOT_STARTED &&
-//          the_arena.get_state() != FINISHED ) )
-//      {
-//        string info_text = _("This action will kill the current tournament.\n"
-//                             "Do you want to do that?");
-//        list<string> string_list;
-//        string_list.push_back( string( _("Yes") ) );
-//        string_list.push_back( string( _("No")  ) );
-//        Dialog( info_text, string_list,
-//                (DialogFunction) ControlWindow::kill_and_open_filesel );
-//      }
-//      else
-//        cw_p->open_replay_filesel();
-}
-
-void
 ControlWindow::open_replay_filesel()
 {
   filesel->bring_up( _("Choose a log file to replay"),
@@ -571,74 +698,16 @@ ControlWindow::kill_and_open_filesel( int result )
 //      }
 }
 
-
-void
-ControlWindow::arena_window_toggle( GtkWidget* widget,
-                                    class ControlWindow* cw_p )
-{
-  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
-
-  if( the_gui.is_arenawindow_up() )
-    {
-      if( active )
-        the_gui.get_arenawindow_p()->
-          show_window( the_gui.get_arenawindow_p()->get_window_p(),
-                       the_gui.get_arenawindow_p() );
-      else
-        the_gui.get_arenawindow_p()->
-          hide_window( the_gui.get_arenawindow_p()->get_window_p(),
-                       NULL, the_gui.get_arenawindow_p() );
-    }
-}
-
 bool
 ControlWindow::is_arenawindow_checked()
 {
   return GTK_CHECK_MENU_ITEM( show_arena_menu_item )->active;
 }
 
-void
-ControlWindow::message_window_toggle( GtkWidget* widget,
-                                      class ControlWindow* cw_p )
-{
-  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
-
-  if( the_gui.is_messagewindow_up() )
-    {
-      if( active )
-        the_gui.get_messagewindow_p()->
-          show_window( the_gui.get_messagewindow_p()->get_window_p(),
-                       the_gui.get_messagewindow_p() );
-      else
-        the_gui.get_messagewindow_p()->
-          hide_window( the_gui.get_messagewindow_p()->get_window_p(),
-                       NULL, the_gui.get_messagewindow_p() );
-    }
-}
-
 bool
 ControlWindow::is_messagewindow_checked()
 {
   return GTK_CHECK_MENU_ITEM( show_message_menu_item )->active;
-}
-
-void
-ControlWindow::score_window_toggle( GtkWidget* widget,
-                                    class ControlWindow* cw_p )
-{
-  bool active = GTK_CHECK_MENU_ITEM( widget )->active;
-
-  if( the_gui.is_scorewindow_up() )
-    {
-      if( active )
-        the_gui.get_scorewindow_p()->
-          show_window( the_gui.get_scorewindow_p()->get_window_p(),
-                       the_gui.get_scorewindow_p() );
-      else
-        the_gui.get_scorewindow_p()->
-          hide_window( the_gui.get_scorewindow_p()->get_window_p(),
-                       NULL, the_gui.get_scorewindow_p() );
-    }
 }
 
 bool

@@ -52,7 +52,7 @@ public:
                                      const int default_y_pos  = -1 );
   ~ControlWindow                   ();
 
-  void set_window_title            ( const state_t state );
+  void set_status                  ( const state_t state );
   void remove_replay_widgets       ();
   void clear_extra_widgets         ();
   void display_debug_widgets       ();
@@ -63,6 +63,9 @@ public:
                                      class ControlWindow* cw_p );
   static void quit_rtb             ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
+  static void menu_callback        ( class ControlWindow* cw_p,
+                                     guint callback_action, GtkWidget *widget );
+
   static void pause                ( GtkWidget* widget,
                                      class ControlWindow* cw_p );
   static void step                 ( GtkWidget* widget, gpointer data );
@@ -110,6 +113,7 @@ public:
                                      class ControlWindow* cw_p ) {}
   static void change_current_replay_time( GtkAdjustment *adj,
                                           class ControlWindow* cw_p );
+
   static void kill_and_open_filesel( int result );
   void open_replay_filesel         ();
 
@@ -128,8 +132,15 @@ public:
   void change_time_limitations     ();
 
 private:
+  enum menu_t
+  { 
+    MENU_QUIT, MENU_NEW_TOURNAMENT, MENU_REPLAY_TOURNAMENT, MENU_PAUSE,
+    MENU_END, MENU_OPTIONS, MENU_STATISTICS, MENU_SHOW_ARENA,
+    MENU_SHOW_MESSAGES, MENU_SHOW_SCORE
+  };
 
   GtkWidget* window_p;
+  GtkWidget* status_label;
   GtkWidget* debug_level;
 
   GtkWidget* window_hbox;
