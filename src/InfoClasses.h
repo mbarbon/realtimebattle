@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Structs.h"
 #include "Messagetypes.h"
 #include "Vector2D.h"
+#include "Various.h"
 
 enum infoclass_t
 {
@@ -35,6 +36,63 @@ enum infoclass_t
   INFO_GAME_STARTED,
   INFO_MESSAGE
 };
+
+// For shape positions supplied via the InfoClasses
+
+enum object_shape_t { SHAPE_LINE, SHAPE_CIRCLE, SHAPE_INNER_CIRCLE, SHAPE_ARC };
+
+struct object_pos_info
+{
+  object_pos_info( object_shape_t t ) : type(t) {}
+  object_shape_t type;
+};
+
+struct object_line_pos_info : public object_pos_info
+{
+  object_line_pos_info( const Vector2D& sp, const Vector2D& dir,
+                        const double len, const double th )
+    : object_pos_info( SHAPE_LINE ), start_point(sp), direction(dir),
+      length(len), thickness(th) {}
+  Vector2D start_point;
+  Vector2D direction;
+  double length;
+  double thickness;
+};
+
+struct object_circle_pos_info : public object_pos_info
+{
+  object_circle_pos_info( const Vector2D& c, const double r )
+    : object_pos_info( SHAPE_CIRCLE ), center(c), radius(r) {}
+  Vector2D center;
+  double radius;
+};
+
+struct object_inner_circle_pos_info : public object_pos_info
+{
+  object_inner_circle_pos_info( const Vector2D& c, const double r )
+    : object_pos_info( SHAPE_INNER_CIRCLE ), center(c), radius(r) {}
+  Vector2D center;
+  double radius;
+};
+
+struct object_arc_pos_info : public object_pos_info
+{
+  object_arc_pos_info( const Vector2D& c, const double ir, const double or,
+                       const double sa, const double ea )
+    : object_pos_info( SHAPE_ARC ), center(c),
+      inner_radius(ir), outer_radius(or), start_angle(sa), end_angle(ea) {}
+  Vector2D center;
+  double inner_radius;
+  double outer_radius;
+  double start_angle;
+  double end_angle;
+};
+
+// ---------------------------------------------------------------------------
+// class InfoBase
+// ---------------------------------------------------------------------------
+// The base class for all InfoClasses
+// ---------------------------------------------------------------------------
 
 class InfoBase
 {
@@ -49,6 +107,8 @@ private:
   infoclass_t type;
   double game_time;
 };
+
+// All other InfoClasses.
 
 class StateInfo : public InfoBase
 {
@@ -90,42 +150,50 @@ public:
 class GameStartedInfo : public InfoBase
 {
 public:
-  struct wall_pos_t
-  {
-    // Should contain some wall position info
-  };
-
-  GameStartedInfo                     ( const list<int> r, const list<wall_pos_t> w,
+  GameStartedInfo                     ( const list<int> r,
+                                        const list<object_pos_info*> w,
                                         const int g, const int m )
     : InfoBase(INFO_GAME_STARTED), list_of_participating_robots(r),
       list_of_walls(w), game(g), match(m) {}
-  ~GameStartedInfo                    () {}
+  ~GameStartedInfo                    ()
+  {
+    clear_and_delete_pointer_list( list_of_walls );
+  }
 
   const list<int>& get_list_of_participating_robots () const // list of robot_ids
     { return list_of_participating_robots; }
-  const list<wall_pos_t>& get_list_of_walls () const { return list_of_walls; }
+  const list<object_pos_info*>& get_list_of_walls () const { return list_of_walls; }
   const int get_match                 () const { return match; }
   const int get_game                  () const { return game; }
 
 private:
   list<int> list_of_participating_robots;
-  list<wall_pos_t> list_of_walls;
+  list<object_pos_info*> list_of_walls;
   int game;
   int match;
 };
 
+// MessageInfo type is most efficient when used with several messages,
+// e.g. should contain all messages since the last time MessageInfo was sent.
 class MessageInfo : public InfoBase
 {
 public:
+  struct message
+  {
+    message( const string& s, const string& m )
+      : sender(s), message(m) {}
+    string sender;
+    string message;
+  };
   MessageInfo                       ( const string& s, const string& m )
-    : InfoBase(INFO_MESSAGE), sender(s), message(m) {}
+    : InfoBase(INFO_MESSAGE) { message_list.push_back( message( s, m ) ); }
+  MessageInfo                       ( const list<message>& ml )
+    : InfoBase(INFO_MESSAGE), message_list(ml) {}
   ~MessageInfo                      () {}
-  const string& get_sender          () const { return sender; }
-  const string& get_message         () const { return message; }
+  const list<message>& get_message_list () const { return message_list; }
 
 private:
-  string sender;
-  string message;
+  list<message> message_list;
 };
 
 
