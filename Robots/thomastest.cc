@@ -58,7 +58,7 @@ check_messages(int sig)
         case GAME_STARTS:
           cout << "Print I am ready" << endl;
           //          cout << "Rotate 1 " << robot_rotate << endl;
-          cout << "Rotate 1 2" << endl;
+          cout << "Sweep 6 " << M_PI/2.0 << -M_PI/2.0 << M_PI/2.0 << endl;
           acceleration = 0.4;
           cout << "Acceleration " << acceleration << endl;
           break;
@@ -96,7 +96,7 @@ check_messages(int sig)
               case ROBOT:
                 enemy = true;
                 energy = 20.0/(dist*dist+0.2)+0.5+2.0/double(robots_left);
-                robot_rotate = 0.0;
+                robot_rotate = M_PI/3.0;
                 if (dist<3.0)
                   {
                     acceleration = 2.0;
@@ -108,7 +108,8 @@ check_messages(int sig)
                     else
                       acceleration = 0.0;
                   }
-                cout << "Rotate 1 " << robot_rotate << endl;
+                cout << "RotateAmount 1 " << robot_rotate << radar_angle << endl;
+                cout << "RotateTo 6 " << -robot_rotate << 0.0 << endl;
                 cout << "Shoot " << energy << endl;
                 cout << "Acceleration " << acceleration << endl;
 
@@ -118,11 +119,13 @@ check_messages(int sig)
                 {
                   if (enemy)
                     {
+                      cout << "Sweep 6 " << M_PI/2.0 << -M_PI/6.0 << M_PI/66.0 << endl;
                       enemy = false;
                       slumprotate = -slumprotate;
                     }
                   if( dist < 1.0 )
                     {
+                      cout << "Sweep 6 " << M_PI/2.0 << -M_PI/2.0 << M_PI/2.0 << endl;
                       if (speed > 0.1)
                         {
                           acceleration = 0.0;
