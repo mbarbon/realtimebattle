@@ -1,13 +1,6 @@
 export DEBUG_MODE = no
 export PAPER_SIZE = a4
 
-VERSION := $(shell cat VERSION | grep VERSION | cut -d '"' -f 2)
-RELEASE := $(shell cat VERSION | grep RELEASE | cut -d '"' -f 2)
-
-SOURCEDIR := $(shell rpm --showrc | grep sourcedir | cut -d ':' -f 2)
-SPECDIR   := $(shell rpm --showrc | grep specdir | cut -d ':' -f 2)
-
-
 SRCDIR=src
 ROBOTDIR=Robots
 DOCSDIR=Documentation
@@ -33,10 +26,10 @@ html_docs:
 docs:
 	cd $(DOCSDIR) && $(MAKE) all
 
-clean: root_clean rtb_clean robot_clean doc_clean
+clean: root_clean rtb_clean robot_clean doc_clean html_clean
 
 root_clean:
-	rm -f *~ $(HTMLDIR)/*~ $(ARENADIR)/*~
+	rm -f *~ $(ARENADIR)/*~
 
 rtb_clean:
 	cd $(SRCDIR) && $(MAKE) clean
@@ -46,6 +39,9 @@ robot_clean:
 
 doc_clean:
 	cd $(DOCSDIR) && $(MAKE) clean
+
+html_clean:
+	cd $(HTMLDIR) && $(MAKE) clean
 
 ETAGS:
 	cd $(SRCDIR) && $(MAKE) ETAGS
@@ -61,6 +57,7 @@ tar.gz:
 	RealTimeBattle/README \
 	RealTimeBattle/TODO \
 	RealTimeBattle/VERSION \
+	RealTimeBattle/RealTimeBattle.xpm \
 	RealTimeBattle/src/*.cc \
 	RealTimeBattle/src/*.h \
 	RealTimeBattle/src/Makefile \
@@ -84,17 +81,15 @@ install:
 	if [ $? -eq 1 ]; then echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir; fi
 
 rpm-install:
-	cp src/RealTimeBattle /usr/bin/RealTimeBattle; \
-	mkdir /usr/games/RealTimeBattle /usr/games/RealTimeBattle/Arenas /usr/games/RealTimeBattle/Robots; \
-	cp Arenas/*.arena   	/usr/games/RealTimeBattle/Arenas/; \
-	cp Robots/*.robot   	/usr/games/RealTimeBattle/Robots/; \
-	gzip Documentation/RealTimeBattle.info; \
-	cp Documentation/RealTimeBattle.info.gz    /usr/info/; \
-	grep -e "RealTimeBattle" /usr/info/dir; \
-	if [ $? -eq 1 ]; then echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir; fi
+	$(MAKE) -f Makefile.rpm rpm-install
 
 rpm: tar.gz
-	rpm --showrc > /dev/null && \
-	cp RealTimeBattle.tar.gz $(SOURCEDIR) && \
-	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
-	rpm -ba $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec;\
+	$(MAKE) -f Makefile.rpm rpm
+
+website: html_docs
+	cd $(HTMLDIR) && $(MAKE)
+
+tar-website: 
+	cd $(HTMLDIR) && $(MAKE) tar-website
+
+
