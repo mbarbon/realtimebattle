@@ -43,5 +43,6 @@ Error::print_message()
   else
     cerr << "Error in " << function_stringp->str << ": " << error_stringp->str
          << endl;         
+  perror("Errno message");
 }
 
