@@ -47,6 +47,7 @@ public:
 
   void broadcast(enum message_to_robot_type ...);
   long find_free_color(const long home_colour, const long away_colour, const class Robot*);
+  friend GdkColor make_gdk_color(const long col);
   void quit_ordered();
   void delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list);
 
@@ -78,6 +79,8 @@ public:
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
   double get_shooting_penalty() { return shooting_penalty / max(1.0, ((double)robots_left)/10.0); }
+  GdkColor* get_background_colour_p() { return &background_colour; }
+  GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }
   
 private:
@@ -130,8 +133,9 @@ private:
   double shot_speed;
   double start_energy;
   double shooting_penalty;
-  state_t state;
-  
+  GdkColor background_colour;
+  GdkColor foreground_colour;
+
   double grav_const;
   double air_resistance;
   double roll_friction;
@@ -139,6 +143,7 @@ private:
   double max_acceleration;
   double min_acceleration;
   Vector2D boundary[2];   // {top-left, bottom-right}
+  state_t state;
 
   Gui* the_gui;
 };
@@ -175,7 +180,7 @@ private:
 class Shape
 {
 public:
-  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5; set_colour( 0x000000 ); }
+  Shape() {touch_action = BOUNCE;bounce_coeff = 0.5; colour = make_gdk_color( 0x000000 ); }
   virtual ~Shape() {}
 
   virtual double get_distance(const Vector2D& pos, const Vector2D& vel, 
@@ -185,7 +190,6 @@ public:
   virtual void draw_shape(Gui& the_gui, bool erase) = 0;
   //virtual void get_args(istream&) = 0;
 
-  void set_colour(const long);
   GdkColor get_colour() { return colour; }
 
   friend void bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal);
@@ -405,6 +409,7 @@ private:
   bool process_running;
   double energy; 
   double extra_air_resistance;
+  double break_percent;
 
   double radar_angle;
   double radar_speed;

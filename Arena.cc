@@ -22,6 +22,8 @@ Arena::Arena()
   min_acceleration = -0.5;
   start_energy = 100.0;
   shooting_penalty = 0.075;
+  background_colour = make_gdk_color(0xfaf0e6);   // linen
+  foreground_colour = make_gdk_color(0x000000);   // black
   air_resistance = 0.005;
   roll_friction = 0.002;
   slide_friction = 0.098;
@@ -357,6 +359,22 @@ Arena::update_robots()
     ((Robot*)gl->data)->send_signal();
 }
 
+GdkColor
+make_gdk_color(const long col)
+{
+  GdkColormap *cmap;
+  GdkColor colour;
+
+  cmap = gdk_colormap_get_system();
+  colour.red =   ((col & 0xff0000) >> 16 ) * 0x101;
+  colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
+  colour.blue =  (col & 0x0000ff) * 0x101;
+  if( !gdk_color_alloc (cmap, &colour) )
+    throw Error("Couldn't allocate colour", "Arena::make_gdk_color");
+
+  return colour;
+}
+
 double
 Arena::colour_dist(const long col1, const GdkColor& col2)
 {
@@ -375,7 +393,9 @@ Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* 
           if( colour_dist( colour, ((Robot*)gl->data)->get_colour() ) < min_dist ) return false;
         }
     }
-  // TODO: check background color
+  
+  if( colour_dist( colour, background_colour ) < min_dist ) return false;
+
   return true;
 }
 
@@ -406,7 +426,6 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
   for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
     {
       robotp = (Robot*)gl->data;
-      if( kill_robots ) delete robotp;
       gl=g_list_next(gl);
       g_list_remove(object_lists[ROBOT], robotp);
     }
@@ -451,11 +470,20 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
       g_list_remove(object_lists[EXPLOSION], explosionp);
     }
   if( del_seq_list )
-    for(gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
-      g_list_remove(all_robots_in_sequence, (Robot*)gl->data);
+    for(gl=g_list_next(all_robots_in_sequence); gl != NULL; )
+      {
+        robotp = (Robot*)gl->data;
+        gl=g_list_next(gl);
+        g_list_remove(all_robots_in_sequence, robotp);
+      }
   if( del_tourn_list )
-    for(gl=g_list_next(all_robots_in_tournament); gl != NULL; gl=g_list_next(gl))
-      g_list_remove(all_robots_in_tournament, (Robot*)gl->data);
+    for(gl=g_list_next(all_robots_in_tournament); gl != NULL; )
+      {
+        robotp = (Robot*)gl->data;
+        gl=g_list_next(gl);
+        if( kill_robots ) delete robotp;
+        g_list_remove(all_robots_in_tournament, (Robot*)gl->data);
+      }
 }
 void
 Arena::start_game()
