@@ -4,3 +4,5 @@ libGuiGtk.a
 .deps
 TAGS
 *.lo
+.libs
+libGuiGtk.la
