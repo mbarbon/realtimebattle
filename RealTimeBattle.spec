@@ -41,7 +41,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %preun
 if [ $1 = 0 ]; then
-    /sbin/install-info --delete /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry=""* RealTimeBattle: (RealTimeBattle).             A robot programming game."
+    /sbin/install-info --delete /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry="* RealTimeBattle: (RealTimeBattle).             A robot programming game."
 fi
 
 %files
