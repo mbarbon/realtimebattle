@@ -135,5 +135,7 @@ int  GIMain( GuiInterface* );
 // Exit from gui. This function is not needed to be set from gui.
 void GIExit( int );
 
+//Internal GI functions
+void* GIMain_pre( void* arg );
 
 #endif __GUIINTERFACE__
