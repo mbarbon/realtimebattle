@@ -10,8 +10,13 @@
 
 #define ZOOMFACTOR 20
 
+enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
+
 void statistics_button_callback(GtkWidget *widget, gpointer guip);
 void delete_event( GtkWidget * widget, gpointer guip );
+void no_zoom_callback(GtkWidget *widget, gpointer guip);
+void zoom_in_callback(GtkWidget *widget, gpointer guip);
+void zoom_out_callback(GtkWidget *widget, gpointer guip);
 
 class Gui
 {
@@ -37,6 +42,7 @@ public:
   void draw_objects();
 
   double get_zoom();
+  void change_zoom( const zoom_t type );
   int change_to_pixels_x(const double input);
   int change_to_pixels_y(const double input);
 
@@ -57,6 +63,7 @@ private:
   GtkWidget * message_output;
   GtkWidget * drawing_area;
   GtkWidget * da_scrolled_window;
+  GtkWidget * da_zoom;
 
   GtkWidget * control_window;
   GtkWidget * score_window;
@@ -66,7 +73,7 @@ private:
 
   GdkColormap * colormap;
 
-  double zoomfactor;
+  int zoomfactor;
   Vector2D boundary[2];
 
   class Arena * the_arena;

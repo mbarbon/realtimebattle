@@ -17,6 +17,24 @@ statistics_button_callback(GtkWidget *widget, gpointer guip)
 }
 
 void
+no_zoom_callback(GtkWidget *widget, gpointer guip)
+{
+  ((Gui *)guip)->change_zoom( NO_ZOOM );
+}
+
+void
+zoom_in_callback(GtkWidget *widget, gpointer guip)
+{
+  ((Gui *)guip)->change_zoom( ZOOM_IN );
+}
+
+void
+zoom_out_callback(GtkWidget *widget, gpointer guip)
+{
+  ((Gui *)guip)->change_zoom( ZOOM_OUT );
+}
+
+void
 delete_event(GtkWidget *widget, gpointer guip)
 {
   ((Gui *)guip)->quit_event();
@@ -25,7 +43,7 @@ delete_event(GtkWidget *widget, gpointer guip)
 Gui::Gui(Arena * arenap)
 {
   the_arena = arenap;
-  zoomfactor = 1.0;
+  zoomfactor = 1;
   statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
@@ -39,9 +57,30 @@ Gui::get_zoom()
   double bw = boundary[1][0] - boundary[0][0];
   double bh = boundary[1][1] - boundary[0][1];
   if( w / bw >= h / bh )
-    return( zoomfactor * (h / bh) );
+    return( h / bh );
   else
-    return( zoomfactor * (w / bw) );
+    return( w / bw );
+}
+
+void
+Gui::change_zoom( const zoom_t type )
+{
+  switch( type )
+    {
+    case NO_ZOOM:
+      zoomfactor = 1;
+      break;
+    case ZOOM_IN:
+      if(zoomfactor > 1)
+        zoomfactor--;
+      break;
+    case ZOOM_OUT:
+      zoomfactor++;
+      break;
+    }
+  gtk_widget_set_usize(drawing_area,
+                       ( da_scrolled_window->allocation.width - 50 ) * zoomfactor,
+                       ( da_scrolled_window->allocation.height - 50 ) * zoomfactor);
 }
 
 int
@@ -494,6 +533,9 @@ Gui::setup_message_window()
 void
 Gui::setup_arena_window( const Vector2D bound[] )
 {
+  GtkWidget * vbox, * button_table;
+  GtkWidget * button;
+
   boundary[0] = bound[0];
   boundary[1] = bound[1];
 
@@ -505,12 +547,44 @@ Gui::setup_arena_window( const Vector2D bound[] )
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
 
+  // VBox
+
+  vbox = gtk_vbox_new (FALSE, 10);
+  gtk_container_add (GTK_CONTAINER (arena_window), vbox);
+  gtk_widget_show (vbox);
+
+  // Zoom Buttons etc.
+
+  button_table = gtk_table_new (1, 3, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), button_table, FALSE, FALSE, 0);
+
+  button = gtk_button_new_with_label ("No Zoom");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (no_zoom_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 0, 1, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Zoom In");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (zoom_in_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 1, 2, 0, 1);
+  gtk_widget_show (button);
+
+  button = gtk_button_new_with_label ("Zoom Out");
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (zoom_out_callback), (gpointer) this);
+  gtk_table_attach_defaults (GTK_TABLE(button_table), button, 2, 3, 0, 1);
+  gtk_widget_show (button);
+
+  gtk_table_set_col_spacings (GTK_TABLE(button_table), 5);
+  gtk_widget_show (button_table);
+
   // Scrolled Window 
 
   da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_container_add (GTK_CONTAINER (arena_window), da_scrolled_window);
+  gtk_container_add (GTK_CONTAINER (vbox), da_scrolled_window);
   gtk_widget_set_usize(da_scrolled_window,404,404);
   gtk_widget_show (da_scrolled_window);
 
