@@ -75,7 +75,8 @@ ArenaReplay::timeout_function()
         if((int)current_replay_time > old_total && !no_graphics)
           {
             the_gui.get_scorewindow_p()->set_window_title();
-            controlwindow_p->set_progress_time( current_replay_time );
+            if( !log_from_stdin )
+              controlwindow_p->set_progress_time( current_replay_time );
           }
 #endif
       }
@@ -86,10 +87,15 @@ ArenaReplay::timeout_function()
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
-          controlwindow_p->display_replay_widgets();
+          if( controlwindow_p->get_displayed() != ControlWindow::REPLAY_WIDGETS &&
+              !log_from_stdin )
+            controlwindow_p->display_replay_widgets();
           the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
           the_gui.get_arenawindow_p()->draw_everything();      
           the_gui.get_scorewindow_p()->add_robots();
+          print_message
+            ( "RealTimeBattle", (String)"Game " + String( game_nr )
+              + " of sequence " + String( sequence_nr ) );
         }
 #endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );
@@ -458,9 +464,15 @@ ArenaReplay::set_filenames( String& replay_fname, String& message_fname,
                             const String& option_fname )
 {
   if( replay_fname != "-" )
-    log_file.open( replay_fname.chars() );
+    {
+      log_file.open( replay_fname.chars() );
+      log_from_stdin = false;
+    }
   else
-    log_file.attach( STDIN_FILENO );
+    {
+      log_file.attach( STDIN_FILENO );
+      log_from_stdin = true;
+    }
 
   if( message_fname == "" )
     use_message_file = false;
