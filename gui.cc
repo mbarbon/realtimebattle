@@ -95,13 +95,6 @@ zoom_out_callback(GtkWidget *widget, gpointer data)
 }
 
 gint
-arena_size_changed (GtkWidget *widget, GdkEventConfigure *event, gpointer data)
-{
-  the_gui.change_zoom();
-  return TRUE;
-}
-
-gint
 redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
   the_gui.draw_all_walls();
@@ -137,29 +130,37 @@ Gui::Gui()
 
   control_window_size = Vector2D(294,110);
   start_tournament_window_size = Vector2D(485,410);
-  arena_window_size = Vector2D(400,400);
+  arena_window_size = Vector2D(50,50);
   score_window_size = Vector2D(359,374);
   message_window_size = Vector2D(294,110);
   statistics_window_size = Vector2D(499,428);
+
+  da_scrolled_window_size = Vector2D(0.0,0.0);
 }
 
 void
 Gui::change_zoom()
 {
-  int width = da_scrolled_window->allocation.width - 4;
-  int height = da_scrolled_window->allocation.height - 4;
+  int width = da_scrolled_window->allocation.width - 24;
+  int height = da_scrolled_window->allocation.height - 24;
+  da_scrolled_window_size = Vector2D((double)width,(double)height);
   double w = (double)(width * zoomfactor);
   double h = (double)(height * zoomfactor);
   double bw = boundary[1][0] - boundary[0][0];
   double bh = boundary[1][1] - boundary[0][1];
   if( w / bw >= h / bh )
-    zoom = h / bh;
+    {
+      zoom = h / bh;
+      w = zoom*bw;
+    }
   else
-    zoom = w / bw;
+    {
+      zoom = w / bw;
+      h = zoom*bh;
+    }
 
-  gtk_widget_set_usize(drawing_area,
-                       (da_scrolled_window->allocation.width - 4) * zoomfactor,
-                       (da_scrolled_window->allocation.width - 4) * zoomfactor);
+  gtk_widget_set_usize(drawing_area,(int)w,int(h));
+  draw_all_walls();
 }
 
 void
@@ -178,7 +179,6 @@ Gui::change_zoomfactor( const zoom_t type )
         zoomfactor--;
       break;
     }
-  draw_all_walls();
   change_zoom();
 }
 
@@ -232,6 +232,10 @@ Gui::draw_objects()
   GList** object_lists;
   GList* gl;
   Robot* robotp;
+
+  if((da_scrolled_window->allocation.width - 24 !=  da_scrolled_window_size[0]) ||
+     (da_scrolled_window->allocation.height - 24 !=  da_scrolled_window_size[1]))
+    change_zoom();
 
   object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
@@ -517,7 +521,6 @@ Gui::setup_score_window()
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_score_window_title();
-  gtk_window_set_policy(GTK_WINDOW (score_window), TRUE,TRUE,TRUE);
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
@@ -648,13 +651,10 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena");
-  gtk_window_set_policy(GTK_WINDOW (arena_window), TRUE,TRUE,FALSE);
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
-  gtk_signal_connect (GTK_OBJECT (arena_window), "configure_event",
-                      (GtkSignalFunc)arena_size_changed, (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
-
+ 
   // VBox
 
   vbox = gtk_vbox_new (FALSE, 10);
@@ -693,7 +693,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   da_scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
-                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+                                  GTK_POLICY_ALWAYS, GTK_POLICY_ALWAYS);
   gtk_container_add (GTK_CONTAINER (vbox), da_scrolled_window);
   gtk_widget_set_usize(da_scrolled_window,
                        (int)arena_window_size[0],(int)arena_window_size[1]);
@@ -703,7 +703,7 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   drawing_area = gtk_drawing_area_new ();
   gtk_drawing_area_size (GTK_DRAWING_AREA (drawing_area),
-                         (int)arena_window_size[0] - 4,(int)arena_window_size[1] - 4);
+                         (int)arena_window_size[0] - 24,(int)arena_window_size[1] - 24);
   gtk_signal_connect (GTK_OBJECT (drawing_area), "expose_event",
                       (GtkSignalFunc) redraw_arena, (gpointer) NULL);
   gtk_widget_set_events (drawing_area, GDK_EXPOSURE_MASK);
@@ -719,7 +719,6 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   clear_area();
   change_zoom();
-  //  draw_all_walls();
 }
 
 void
