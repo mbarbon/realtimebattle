@@ -530,13 +530,19 @@ Robot::check_name_uniqueness()
 int
 Robot::get_last_position()
 {
-  if( the_arena.get_game_nr() == 1 ) return 0; // first game
-
   ListIterator<stat_t> li;
   statistics.last(li);
 
   if( !li.ok() ) return 0;
+
+  if( li()->game_nr < the_arena.get_game_nr() )
+    return li()->position;
+
+  li--;
+  if( !li.ok() ) return 0;
+
   return li()->position;
+  
 }
 
 bool
