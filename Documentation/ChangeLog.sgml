@@ -5,6 +5,13 @@
 Change log
 <itemize>
 
+<item> <bf>1.0.3</bf>
+<p>
+
+Fixed the bug occuring with gtk+-1.0.x and different language than english.
+
+Fixed bug that caused RTB to crash sometimes when using messagefiles.
+
 <item> <bf>1.0.2</bf>
 <p>
 
