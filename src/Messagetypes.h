@@ -21,21 +21,50 @@ Boston, MA  02111-1307, USA.
 #ifndef __MESSAGETYPES__
 #define __MESSAGETYPES__
 
-// Note: Doesn't theese fit better in AllGadgets.h
+// Note: Doesn't these fit better in AllGadgets.h
 enum gadget_t
 {
-  GAD_WEAPON, GAD_SHOT, GAD_EXPLOSION, GAD_DEFENSE, GAD_ENGINE,
-  GAD_SENSOR, GAD_COMMUNICATION, GAD_WALL, GAD_BALL, GAD_EQUIPMENT,
-  GAD_ENVIRONMENT, GAD_ROBOTBODY, GAD_SCORING, GAD_VARIABLE,
-  GAD_FUNCTION, GAD_SCRIPT, LAST_GADGET
+  GAD_NONE = -1,
+
+  GAD_WEAPON,
+  GAD_SHOT,
+  GAD_EXPLOSION,
+  GAD_DEFENSE,
+  GAD_ENGINE,
+  GAD_SENSOR,
+  GAD_COMMUNICATION,
+  GAD_WALL,
+  GAD_BALL,
+  GAD_EQUIPMENT,
+  GAD_ENVIRONMENT,
+  GAD_ROBOTBODY,
+  GAD_SCORING,
+
+  GAD_VARIABLE,
+  GAD_FUNCTION,
+  GAD_SCRIPT,
+
+  LAST_GADGET
 };
 
 static const char gadget_types[][LAST_GADGET] =
 {
-  "Weapon", "Shot", "Explosion", "Defense", "Engine",
-  "Sensor", "Communication", "Wall", "Ball", "Equipment",
-  "Environment", "RobotBody", "Variable", 
-  "Function", "Script"
+  "Weapon",
+  "Shot",
+  "Explosion",
+  "Defense",
+  "Engine",
+  "Sensor",
+  "Communication",
+  "Wall",
+  "Ball",
+  "Equipment",
+  "Environment",
+  "RobotBody",
+
+  "Variable", 
+  "Function",
+  "Script"
 };
 
 enum message_to_robot_type 
