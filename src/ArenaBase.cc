@@ -149,9 +149,10 @@ ArenaBase::set_state( const state_t st )
 void 
 ArenaBase::interrupt_tournament()
 {
-  the_arena_controller.auto_start_and_end = false;
-  if( state == GAME_IN_PROGRESS )
+  if( state == GAME_IN_PROGRESS || state == PAUSED ||
+      state == PAUSING_BETWEEN_GAMES )
     {
+      the_arena_controller.auto_start_and_end = false;
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
