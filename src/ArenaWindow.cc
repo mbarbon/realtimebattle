@@ -182,7 +182,7 @@ ArenaWindow::draw_everything()
       for( object_lists[obj_type].first(li); li.ok(); li++ )
         {
           if( !( ( obj_type == MINE_T || obj_type == COOKIE_T ) &&
-                 ( (Extras*)li() )->is_alive()) )
+                 !( (Extras*)li() )->is_alive() ) )
             {
               li()->draw_shape( false );
             }

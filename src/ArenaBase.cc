@@ -80,6 +80,8 @@ ArenaBase::ArenaBase()
 
   max_debug_level = 5;
   debug_level = 0;
+
+  robots_in_sequence = NULL;
 }
 
 ArenaBase::~ArenaBase()
@@ -93,7 +95,8 @@ ArenaBase::~ArenaBase()
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
     delete [] robots_in_sequence[i];
 
-  delete robots_in_sequence;
+  if( robots_in_sequence != NULL )
+    delete robots_in_sequence;
 }
 
 void

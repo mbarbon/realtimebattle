@@ -328,71 +328,75 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
   int number = info_p->sw_p->get_looking_at_nr();
 
   gtk_clist_freeze( GTK_CLIST( clist ) );
-  if( info_p->type == STAT_TYPE_TOTAL || info_p->type == STAT_TYPE_SEQUENCE )
-    {
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      gtk_clist_set_column_visibility( GTK_CLIST( clist ),4, TRUE );
-#else
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 4, "Games " );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 45 );
-#endif
-    }
-  else
-    {
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-      gtk_clist_set_column_visibility ( GTK_CLIST( clist ),4,FALSE );
-#else
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 4, "" );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 0 );
-#endif
-    }
-  if(sw_type == STAT_TYPE_ROBOT && info_p->type != STAT_TYPE_ROBOT)
-    {
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Name" );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 20 );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 120 );
-      gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
-                                          GTK_JUSTIFY_CENTER );
-      gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
-                                          GTK_JUSTIFY_LEFT );
-    }
-  if(sw_type != STAT_TYPE_ROBOT && info_p->type == STAT_TYPE_ROBOT)
-    {
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "Seq  " );
-      gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Game  " );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 40 );
-      gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 45 );
-      gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
-                                          GTK_JUSTIFY_RIGHT );
-      gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
-                                          GTK_JUSTIFY_RIGHT );
-    }
-  info_p->sw_p->set_type( info_p->type );
 
-  switch( info_p->type )
+  if( info_p->type != sw_type )
     {
-    case STAT_TYPE_TOTAL:
-      change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
-      break;
-    case STAT_TYPE_SEQUENCE:
-      change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
-      number = the_arena.get_sequence_nr();
-      break;
-    case STAT_TYPE_GAME:
-      change_sorting_in_clist( GTK_CLIST( clist ), 3, info_p->sw_p );
-      number = ( the_arena.get_sequence_nr() - 1 ) *
-        the_arena.get_games_per_sequence() +
-        the_arena.get_games_per_sequence() -
-        the_arena.get_games_remaining_in_sequence();
-      break;
-    case STAT_TYPE_ROBOT:
-      change_sorting_in_clist( GTK_CLIST( clist ), 0, info_p->sw_p );
-      number = 1;
-      break;
+      if( info_p->type == STAT_TYPE_TOTAL || info_p->type == STAT_TYPE_SEQUENCE )
+        {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_clist_set_column_visibility( GTK_CLIST( clist ),4, TRUE );
+#else
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, "Games " );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 45 );
+#endif
+        }
+      else
+        {
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
+          gtk_clist_set_column_visibility ( GTK_CLIST( clist ),4,FALSE );
+#else
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 4, "" );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 4, 0 );
+#endif
+        }
+      if(sw_type == STAT_TYPE_ROBOT && info_p->type != STAT_TYPE_ROBOT)
+        {
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "" );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Name" );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 20 );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 120 );
+          gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
+                                              GTK_JUSTIFY_CENTER );
+          gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
+                                              GTK_JUSTIFY_LEFT );
+        }
+      if(sw_type != STAT_TYPE_ROBOT && info_p->type == STAT_TYPE_ROBOT)
+        {
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 0, "Seq  " );
+          gtk_clist_set_column_title( GTK_CLIST( clist ), 1, "Game  " );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 0, 40 );
+          gtk_clist_set_column_width( GTK_CLIST( clist ), 1, 45 );
+          gtk_clist_set_column_justification( GTK_CLIST( clist ), 0,
+                                              GTK_JUSTIFY_RIGHT );
+          gtk_clist_set_column_justification( GTK_CLIST( clist ), 1,
+                                              GTK_JUSTIFY_RIGHT );
+        }
+      info_p->sw_p->set_type( info_p->type );
+
+      switch( info_p->type )
+        {
+        case STAT_TYPE_TOTAL:
+          change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
+          break;
+        case STAT_TYPE_SEQUENCE:
+          change_sorting_in_clist( GTK_CLIST( clist ), 6, info_p->sw_p );
+          number = the_arena.get_sequence_nr();
+          break;
+        case STAT_TYPE_GAME:
+          change_sorting_in_clist( GTK_CLIST( clist ), 3, info_p->sw_p );
+          number = ( the_arena.get_sequence_nr() - 1 ) *
+            the_arena.get_games_per_sequence() +
+            the_arena.get_games_per_sequence() -
+            the_arena.get_games_remaining_in_sequence();
+          break;
+        case STAT_TYPE_ROBOT:
+          change_sorting_in_clist( GTK_CLIST( clist ), 0, info_p->sw_p );
+          number = 1;
+          break;
+        }
+      info_p->sw_p->set_looking_at_nr( number );
     }
 
-  info_p->sw_p->set_looking_at_nr( number );
   add_the_statistics_to_clist( clist, info_p->sw_p );
   gtk_clist_thaw( GTK_CLIST( clist ) );
 }
