@@ -516,21 +516,14 @@ Robot::update_radar_and_cannon(const double timestep)
   shot_energy = min( the_opts.get_d(OPTION_SHOT_MAX_ENERGY), 
                      shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
 
-  arenaobject_t closest_arenaobject;
+  object_type closest_arenaobject;
   Shape* col_obj;
   double dist = the_arena.
     get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
                           0.0, closest_arenaobject, col_obj, this);
 
-  object_type closest_shape;
-  if( closest_arenaobject == WALL_LINE_T || closest_arenaobject == WALL_CIRCLE_T ||
-      closest_arenaobject == WALL_INNERCIRCLE_T )
-    closest_shape = WALL;
-  else
-    closest_shape = (object_type)closest_arenaobject;
-
-  send_message(RADAR, dist, closest_shape, radar_angle.pos);
-  if( closest_shape == ROBOT )
+  send_message(RADAR, dist, closest_arenaobject, radar_angle.pos);
+  if( closest_arenaobject == ROBOT )
     {
       double lvls = (double)the_opts.get_l(OPTION_ROBOT_ENERGY_LEVELS);
       double en = ((Robot*)col_obj)->get_energy();
@@ -690,7 +683,7 @@ Robot::move(const double timestep)
 void
 Robot::move(const double timestep, int iterstep, const double eps)
 {
-  arenaobject_t closest_shape;
+  object_type closest_shape;
   Shape* colliding_object;
   double time_to_collision = 
     the_arena.get_shortest_distance(center, velocity, radius, 
@@ -709,9 +702,7 @@ Robot::move(const double timestep, int iterstep, const double eps)
 
       switch( closest_shape )
         {
-        case WALL_LINE_T:
-        case WALL_CIRCLE_T:
-        case WALL_INNERCIRCLE_T:
+        case WALL:
           {
             Vector2D normal = colliding_object->get_normal(center);
             bounce_on_wall(colliding_object->get_bounce_coeff(), 
@@ -719,41 +710,41 @@ Robot::move(const double timestep, int iterstep, const double eps)
             center += normal*eps;
           }
           break;
-        case ROBOT_T:
+        case ROBOT:
           {
             Vector2D normal = ((Robot*)colliding_object)->get_normal(center);
             bounce_on_robot(*this, *(Robot*)colliding_object, normal);
             time_remaining = 0.0;
           }
           break;
-        case SHOT_T:
+        case SHOT:
           {
             Shot* shotp =(Shot*)colliding_object;
             double en =  -shotp->get_energy();
             change_energy( en );
             send_message(COLLISION, SHOT, vec2angle(shotp->get_center()-center)-robot_angle.pos);
             shotp->die();
-            the_arena.get_object_lists()[SHOT_T].remove( shotp );
+            the_arena.get_object_lists()[SHOT].remove( shotp );
           }
           break;
-        case COOKIE_T:
+        case COOKIE:
           {
             Cookie* cookiep =(Cookie*)colliding_object;
             double en =  cookiep->get_energy();
             change_energy( en );
             send_message(COLLISION, COOKIE, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
             cookiep->die();
-            the_arena.get_object_lists()[COOKIE_T].remove( cookiep );
+            the_arena.get_object_lists()[COOKIE].remove( cookiep );
           }
           break;
-        case MINE_T:
+        case MINE:
           {
             Mine* minep =(Mine*)colliding_object;
             double en =  -minep->get_energy();
             change_energy( en );
             send_message(COLLISION, MINE, vec2angle(minep->get_center()-center)-robot_angle.pos);
             minep->die();
-            the_arena.get_object_lists()[MINE_T].remove( minep );
+            the_arena.get_object_lists()[MINE].remove( minep );
           }
           break;
         default:
@@ -1142,7 +1133,7 @@ Robot::get_messages()
               if( realtime_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
-                  realtime_arena.get_object_lists()[SHOT_T].insert_last( shotp );
+                  realtime_arena.get_object_lists()[SHOT].insert_last( shotp );
 
                   realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
                                    shot_vel[0], shot_vel[1]);
@@ -1150,7 +1141,7 @@ Robot::get_messages()
               else  // No space for shot, direct hit!!
                 { 
                   Shape* col_obj;
-                  arenaobject_t cl_shape;
+                  object_type cl_shape;
                   double dist;
                   if( (dist = realtime_arena.get_shortest_distance
                        ( center, dir, shot_radius*1.00001, 
@@ -1163,11 +1154,9 @@ Robot::get_messages()
                     }
                   switch(cl_shape)
                     {
-                    case WALL_LINE_T:
-                    case WALL_CIRCLE_T:
-                    case WALL_INNERCIRCLE_T:
+                    case WALL:
                       break;
-                    case ROBOT_T:
+                    case ROBOT:
                       {
                         Robot* robotp = (Robot*)col_obj;
                         robotp->change_energy(-en);
@@ -1175,21 +1164,21 @@ Robot::get_messages()
                                              vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
                       }
                       break;
-                    case SHOT_T:
+                    case SHOT:
                       shot_collision((Shot*)col_obj, shot_vel, en);
                       break;
-                    case COOKIE_T:
+                    case COOKIE:
                       {
                         Cookie* cookiep =(Cookie*)col_obj;
                         cookiep->die();
-                        the_arena.get_object_lists()[COOKIE_T].remove( cookiep );
+                        the_arena.get_object_lists()[COOKIE].remove( cookiep );
                       }
                       break;
-                    case MINE_T:
+                    case MINE:
                       {
                         Mine* minep =(Mine*)col_obj;
                         minep->die();
-                        the_arena.get_object_lists()[MINE_T].remove( minep );
+                        the_arena.get_object_lists()[MINE].remove( minep );
                       }
                       break;
                     default:

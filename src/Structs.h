@@ -27,21 +27,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 
-// Do not change order of arenaobject_t unless you
-// really know what you are doing.
-// for-loops are depending on order it
-enum arenaobject_t
-{ 
-  NOOBJECT_T = -1,
-  ROBOT_T = 0, 
-  SHOT_T = 1, 
-  WALL_LINE_T = 2,
-  COOKIE_T = 3, 
-  MINE_T = 4,
-  WALL_CIRCLE_T = 5,
-  WALL_INNERCIRCLE_T = 6,
-  LAST_ARENAOBJECT_T
-};
 
 struct stat_t
 {

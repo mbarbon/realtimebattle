@@ -81,7 +81,7 @@ ArenaBase::ArenaBase()
 
   reset_timer();
   
-  object_lists[ROBOT_T].set_deletion_responsibility(false);
+  object_lists[ROBOT].set_deletion_responsibility(false);
   all_robots_in_sequence.set_deletion_responsibility(false);
 
   max_debug_level = 5;
@@ -293,7 +293,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> radie;
       
       wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radie, bounce_c, hardn);
-      object_lists[WALL_INNERCIRCLE_T].insert_last( wall_inner_circlep );
+      object_lists[WALL].insert_first( wall_inner_circlep );
     }
   else if( strcmp(text, "circle" ) == 0 )
     {
@@ -306,7 +306,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> vec1;
       file >> radie;
       wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
-      object_lists[WALL_CIRCLE_T].insert_last(wall_circlep);
+      object_lists[WALL].insert_last(wall_circlep);
     }
   else if( strcmp(text, "line" ) == 0 )
     {
@@ -327,7 +327,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
 
       wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                 scale*thickness, bounce_c , hardn);      
-      object_lists[WALL_LINE_T].insert_last( wall_linep );
+      object_lists[WALL].insert_last( wall_linep );
     }
   else if( strcmp(text, "polygon" ) == 0 )
     {
@@ -342,7 +342,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> vertices;   // number of vertices
       file >> vec1;      // first point
       wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-      object_lists[WALL_CIRCLE_T].insert_last( wall_circlep );
+      object_lists[WALL].insert_last( wall_circlep );
 
       for(int i=1; i<vertices; i++)
         {
@@ -356,9 +356,9 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
           wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), 
                                     scale*length(vec1-vec2), 
                                     scale*thickness, bounce_c , hardn);      
-          object_lists[WALL_LINE_T].insert_last( wall_linep );
+          object_lists[WALL].insert_last( wall_linep );
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          object_lists[WALL_CIRCLE_T].insert_last( wall_circlep );
+          object_lists[WALL].insert_last( wall_circlep );
         }
     }
   else if( strcmp(text, "closed_polygon" ) == 0 )
@@ -374,7 +374,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
       file >> vertices;   // number of vertices
       file >> vec1;      // first point
       wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-      object_lists[WALL_CIRCLE_T].insert_last( wall_circlep );
+      object_lists[WALL].insert_last( wall_circlep );
       vec0 = vec1;
 
       for(int i=1; i<vertices; i++)
@@ -389,9 +389,9 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
           wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), 
                                     scale*length(vec1-vec2), 
                                     scale*thickness, bounce_c , hardn);      
-          object_lists[WALL_LINE_T].insert_last( wall_linep );
+          object_lists[WALL].insert_last( wall_linep );
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          object_lists[WALL_CIRCLE_T].insert_last( wall_circlep );
+          object_lists[WALL].insert_last( wall_circlep );
         }
 
       if( length(vec0-vec1) == 0.0 ) 
@@ -400,7 +400,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
 
       wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                 scale*thickness, bounce_c , hardn);      
-      object_lists[WALL_LINE_T].insert_last( wall_linep );
+      object_lists[WALL].insert_last( wall_linep );
     }
   else if( text[0] != '\0' )
     Error(true, "Incorrect arenafile: unknown keyword" + (String)text, 
@@ -412,25 +412,25 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
 
 double
 ArenaBase::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
-                                  const double size, arenaobject_t& closest_shape, 
+                                  const double size, object_type& closest_shape, 
                                   Shape*& colliding_object, const Robot* the_robot)
 {
   double dist = infinity;
   double d;
-  closest_shape = NOOBJECT_T;
+  closest_shape = NOOBJECT;
 
   ListIterator<Shape> li;
 
-  for( int obj_type = ROBOT_T; obj_type < LAST_ARENAOBJECT_T; obj_type++ )
+  for( int obj_type = ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
     {
       for( object_lists[obj_type].first(li); li.ok(); li++)
         {
-          if( obj_type != ROBOT_T || (Robot*)(li()) != the_robot )
+          if( obj_type != ROBOT || (Robot*)(li()) != the_robot )
             {
               d = li()->get_distance(pos, dir, size);
               if( d < dist)
                 {
-                  closest_shape = (arenaobject_t)obj_type;
+                  closest_shape = (object_type)obj_type;
                   colliding_object = li();
                   dist = d;
                 }
@@ -446,7 +446,7 @@ ArenaBase::space_available(const Vector2D& pos, const double margin)
 {
   ListIterator<Shape> li;
 
-  for( int obj_type = ROBOT_T; obj_type < LAST_ARENAOBJECT_T; obj_type++ )
+  for( int obj_type = ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )
     {
       for( object_lists[obj_type].first(li); li.ok(); li++)
         if( li()->within_distance(pos, margin) ) return false;
@@ -456,7 +456,7 @@ ArenaBase::space_available(const Vector2D& pos, const double margin)
   
   Vector2D vec;
   double dist;
-  arenaobject_t obj_t;
+  object_type obj_t;
   Shape* shapep;
 
   ListIterator<Vector2D> li_ex;
@@ -512,13 +512,13 @@ ArenaBase::move_shots()
 
   ListIterator<Shape> li;
 
-  for( object_lists[SHOT_T].first(li); li.ok(); li++)
+  for( object_lists[SHOT].first(li); li.ok(); li++)
     {
       shotp = (Shot*)li();
 
       if( shotp->is_alive() ) shotp->move(timestep);
 
-      if( !shotp->is_alive() ) object_lists[SHOT_T].remove(li);
+      if( !shotp->is_alive() ) object_lists[SHOT].remove(li);
     }
 }
 
@@ -582,7 +582,7 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
 {
   // clear the lists;
 
-  for( int obj_type = ROBOT_T; obj_type < LAST_ARENAOBJECT_T; obj_type++ )  
+  for( int obj_type = ROBOT; obj_type < LAST_OBJECT_TYPE; obj_type++ )  
     object_lists[obj_type].delete_list();
 
   exclusion_points.delete_list();

@@ -78,7 +78,7 @@ public:
   double get_shortest_distance(const Vector2D& pos, 
                                const Vector2D& vel, 
                                const double size, 
-                               enum arenaobject_t& closest_shape, 
+                               enum object_type& closest_shape, 
                                Shape*& colliding_object, 
                                const class Robot* the_robot = NULL );
 
@@ -160,7 +160,7 @@ protected:
 
   void set_state( const state_t );
 
-  List<Shape> object_lists[LAST_ARENAOBJECT_T];
+  List<Shape> object_lists[LAST_OBJECT_TYPE];
   
   List<Robot> all_robots_in_tournament;
   List<Robot> all_robots_in_sequence;

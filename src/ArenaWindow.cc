@@ -169,11 +169,11 @@ ArenaWindow::draw_everything()
   ListIterator<Shape> li;
 
   // Must begin with innercircles (they are destructive)
-  for( int obj_type=WALL_INNERCIRCLE_T; obj_type > SHOT_T; obj_type--) 
+  for( int obj_type=WALL; obj_type < LAST_OBJECT_TYPE ; obj_type++) 
     {
       for( object_lists[obj_type].first(li); li.ok(); li++ )
         {
-          if( !( ( obj_type == MINE_T || obj_type == COOKIE_T ) &&
+          if( !( ( obj_type == MINE || obj_type == COOKIE ) &&
                  !( (Extras*)li() )->is_alive() ) )
             {
               li()->draw_shape( false );
@@ -195,12 +195,12 @@ ArenaWindow::draw_moving_objects( const bool clear_objects_first )
     drawing_area_scale_changed();
 
   ListIterator<Shape> li;
-  for( object_lists[SHOT_T].first(li); li.ok(); li++ )
+  for( object_lists[SHOT].first(li); li.ok(); li++ )
     if( ((Shot*)li())->is_alive() )
       ((Shot*)li())->draw_shape( clear_objects_first );
 
   ListIterator<Shape> li2;
-  for( object_lists[ROBOT_T].first(li2); li2.ok(); li2++ )
+  for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
     {
       robotp = (Robot*)li2();
 

@@ -187,7 +187,7 @@ ScoreWindow::new_robot_selected( GtkWidget * clist, gint row, gint column,
   Robot* robotp;
   
   ListIterator<Shape> li;
-  for( the_arena.get_object_lists()[ROBOT_T].first(li); li.ok(); li++ )
+  for( the_arena.get_object_lists()[ROBOT].first(li); li.ok(); li++ )
     {
       robotp = (Robot*)li();
 
@@ -211,7 +211,7 @@ ScoreWindow::add_robots()
 
   bool found_robot = false;
 
-  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+  for( object_lists[ROBOT].first(li); li.ok(); li++ )
     {
       robot_p = (Robot*)li();
 
@@ -246,7 +246,7 @@ ScoreWindow::add_robots()
     }
 
   if( !found_robot )
-    for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+    for( object_lists[ROBOT].first(li); li.ok(); li++ )
       {
         robot_p = (Robot*)li();
         if( robot_p->get_row_in_score_clist() == 0 )

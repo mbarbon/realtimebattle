@@ -43,7 +43,7 @@ Shot::Shot(const Vector2D& c, const double r,
 void
 Shot::move(const double timestep)
 {
-  arenaobject_t closest_shape;
+  object_type closest_shape;
   Shape* colliding_object;
   double time_to_collision = the_arena.
     get_shortest_distance(center, velocity, radius, closest_shape, colliding_object);
@@ -56,12 +56,10 @@ Shot::move(const double timestep)
     {
       switch( closest_shape )
         {
-        case WALL_LINE_T:
-        case WALL_CIRCLE_T:
-        case WALL_INNERCIRCLE_T:
+        case WALL:
           die();
           break;
-        case ROBOT_T:
+        case ROBOT:
           {
             Robot* robotp = (Robot*)colliding_object;
             robotp->change_energy(-energy);
@@ -70,13 +68,13 @@ Shot::move(const double timestep)
             die();
           }
           break;
-        case SHOT_T:
+        case SHOT:
           {
             Shot* shotp = (Shot*)colliding_object;
             shot_collision(this, shotp); 
           }
           break;
-        case COOKIE_T:
+        case COOKIE:
           {
             Cookie* cookiep =(Cookie*)colliding_object;
             cookiep->die();
@@ -84,7 +82,7 @@ Shot::move(const double timestep)
             die();
           }
           break;
-        case MINE_T:
+        case MINE:
           {
             Mine* minep =(Mine*)colliding_object;
             minep->die();

@@ -560,7 +560,7 @@ ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
   str += '\n';
 
  ListIterator<Shape> li;
- for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+ for( object_lists[ROBOT].first(li); li.ok(); li++ )
     *(((Robot*)li())->get_outstreamp()) << str;
 }
 
@@ -699,7 +699,7 @@ ArenaRealTime::add_cookie()
   
   if( !found_space ) Error(false, "Couldn't find space for cookie", "ArenaRealTime::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
-  object_lists[COOKIE_T].insert_last( cookiep );
+  object_lists[COOKIE].insert_last( cookiep );
 
   print_to_logfile('C', cookiep->get_id(), pos[0], pos[1]);
 }
@@ -722,7 +722,7 @@ ArenaRealTime::add_mine()
   
   if( !found_space ) Error(false, "Couldn't find space for mine", "ArenaRealTime::timeout_function");
   Mine* minep = new Mine(pos, r, en);
-  object_lists[MINE_T].insert_last( minep );
+  object_lists[MINE].insert_last( minep );
 
   print_to_logfile('M', minep->get_id(), pos[0], pos[1]);
 }
@@ -761,7 +761,7 @@ ArenaRealTime::update_robots()
   int killed_robots = 0;
 
   ListIterator<Shape> li;
-  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+  for( object_lists[ROBOT].first(li); li.ok(); li++ )
     {
       robotp = (Robot*)li();
       if( robotp->is_alive() )
@@ -776,12 +776,12 @@ ArenaRealTime::update_robots()
 
   // Check if robots have died and send energy level
 
-  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+  for( object_lists[ROBOT].first(li); li.ok(); li++ )
     {
       robotp = (Robot*)li();
       if( !robotp->is_alive() ) 
         {
-          object_lists[ROBOT_T].remove(li);
+          object_lists[ROBOT].remove(li);
           killed_robots++;
         }
       else
@@ -793,7 +793,7 @@ ArenaRealTime::update_robots()
 
   if( killed_robots > 0 )
     {
-      for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+      for( object_lists[ROBOT].first(li); li.ok(); li++ )
         {
           robotp = (Robot*)li();
           robotp->add_points(killed_robots);
@@ -813,7 +813,7 @@ ArenaRealTime::update_robots()
     }
 
   
-  for( object_lists[ROBOT_T].first(li); li.ok(); li++ )
+  for( object_lists[ROBOT].first(li); li.ok(); li++ )
     ((Robot*)li())->send_signal();
 }
 
@@ -960,7 +960,7 @@ ArenaRealTime::start_game()
       if( !found_space ) Error(true, "Couldn't find space for all robots", "ArenaRealTime::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
-      object_lists[ROBOT_T].insert_last(robotp);
+      object_lists[ROBOT].insert_last(robotp);
       robots_left++;
       robotp->live();
     }
@@ -974,7 +974,7 @@ ArenaRealTime::start_game()
 
 
   ListIterator<Shape> li2;
-  for( object_lists[ROBOT_T].first(li2); li2.ok(); li2++ )
+  for( object_lists[ROBOT].first(li2); li2.ok(); li2++ )
     ((Robot*)li2())->send_signal();
 
   set_state( GAME_IN_PROGRESS );
