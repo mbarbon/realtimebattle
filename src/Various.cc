@@ -44,6 +44,7 @@ extern class Options the_opts;
 # include "ControlWindow.h"
 extern class ControlWindow* controlwindow_p;
 #endif NO_GRAPHICS
+extern bool no_graphics;
 
 void
 Error(const bool fatal, const String& error_msg, const String& function_name)
