@@ -160,6 +160,7 @@ Gui::change_zoom()
     }
 
   gtk_widget_set_usize(drawing_area,(int)w,int(h));
+  clear_area();
   draw_all_walls();
 }
 
