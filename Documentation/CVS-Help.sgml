@@ -17,6 +17,9 @@ source there.
 <p>
 To check out simply do as follows:
 
+Note that the main branch at the cvs is in developing stage and may not
+compile at all, so don't expect it to work.
+
 First set the environmental variable CVSROOT to
 <verb>:pserver:anonymous@cvs.RealTimeBattle.SourceForge.net:/cvsroot/RealTimeBattle</verb>
 by using
