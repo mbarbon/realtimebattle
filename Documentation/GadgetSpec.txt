@@ -93,11 +93,10 @@ Define Script name
 
    ; A script consists of a number of lines with the following syntax:
 
-   Line  INT    SCRIPTCOMMAND    ARGUMENT
+   Line          SCRIPTCOMMAND    ARGUMENT
 
-   ; The INT is the line number, ARGUMENT are dependent on the SCRIPTCOMMAND.
-   ; Question: Is the Linenumber really necessary? Isn't it better with
-   ;           labels? load_arena_file() could take care of line numbering.
+   Label         STRING
+
 
   ;SCRIPTCOMMAND  ARGUMENT
   ;------------------------
@@ -178,15 +177,9 @@ EndDefine
 Define Scoring name
 
    ; TODO: Improve!
+   ; The scoring should use scripts to calculate scores from various input
+   ; data, but we must specify how...
 
-   ;Functions:
-   Function GetPointsForPosition FUNCSPEC (default)
-   Function GetPointsForHit FUNCSPEC (true)
-
-   ;Variables:
-   PlacePointSystem         INT
-   PointPerDamageOpponent   REAL
-   PointsForTime            REAL
 
 EndDefine
 
