@@ -9,6 +9,9 @@
 
 It is now possible to redirect messages to a file or STDOUT.
 
+Pressing on a robots name in the statistics window now results in showing
+statistics for that robot.
+
 <item> <bf>0.9.6:</bf>
 <p>
 The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
