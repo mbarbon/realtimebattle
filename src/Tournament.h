@@ -66,13 +66,19 @@ public:
              const vector<Robot*>& robots,
              const vector<ArenaGadget>& arenas);
 
+  Tournament(const string& tournament_file);
+
   ~Tournament() {}
 
   void prepare_for_new_match();
 
+  bool did_load_succeed() { return load_succeeded; }
+
 private:
 
   void create_matches();
+
+  bool load_tournament_file(const string& tournament_file);
 
   int round_nr;
   int rounds_per_match;
@@ -89,6 +95,8 @@ private:
 
   vector<ArenaGadget> the_arenagadgets;
   
+  bool load_succeeded;
+
 };
 /*
 class PrepareForNewMatchEvent : public Event

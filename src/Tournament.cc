@@ -21,10 +21,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <string>
+#include <vector>
 
 #include "Tournament.h"
 #include "Gadgets/ArenaGadget.h"
-
 
 Tournament::Tournament(const int rounds_p_match,
                        const int robots_p_match,
@@ -39,6 +40,24 @@ Tournament::Tournament(const int rounds_p_match,
 {
   create_matches();
   prepare_for_new_match();
+}
+
+Tournament::Tournament(const string& tournament_file)
+{
+  load_succeeded = load_tournament_file( tournament_file );
+
+  if( load_succeeded )
+    {
+      create_matches();
+      prepare_for_new_match();
+    }
+}
+
+
+bool
+Tournament::load_tournament_file(const string& tournament_file)
+{
+  return false; // couldn't load file, since we didn't try :)
 }
 
 
