@@ -66,6 +66,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaReplay.h"
 #include "Various.h"
 #include "ArenaController.h"
+#include "EventHandler.h"
 
 #include "GuiInterface.h"
 
@@ -79,25 +80,25 @@ class ArenaController the_arena_controller;
 bool no_graphics;
 
 
-void
-update_function(const long int interval_usec)
-{
-  struct timeval timeout;
-  timeout.tv_sec = 0;
-  timeout.tv_usec = interval_usec;
-  bool res = true;
+//  void
+//  update_function(const long int interval_usec)
+//  {
+//    struct timeval timeout;
+//    timeout.tv_sec = 0;
+//    timeout.tv_usec = interval_usec;
+//    bool res = true;
 
-  do
-    {
-      timeout.tv_sec = 0;
-      timeout.tv_usec = interval_usec;
-      select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
-      if( the_arena_controller.is_started() )
-        res = the_arena.timeout_function();
-    } 
-  while( res );
+//    do
+//      {
+//        timeout.tv_sec = 0;
+//        timeout.tv_usec = interval_usec;
+//        select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
+//        if( the_arena_controller.is_started() )
+//          res = the_arena.timeout_function();
+//      } 
+//    while( res );
 
-}
+//  }
 
 RETSIGTYPE
 sig_handler (int signum)
@@ -156,7 +157,12 @@ main ( int argc, char* argv[] )
   signal(SIGPIPE, sig_handler);
   signal(SIGFPE, sigfpe_handler);
 
-  update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
+  
+  EventHandler the_eventhandler;
+  
+  the_eventhandler.main_loop();
+
+  //  update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
   
   return EXIT_SUCCESS;
 }
