@@ -45,6 +45,7 @@ enum message_from_robot_type
   UNKNOWN = -1,
   ROTATE,
   NAME,
+  OUTPUT,
 };
 
 enum argument_type
@@ -82,6 +83,7 @@ static const Message message_from_robot[20] =
 {
   {"Rotate",     2, {INT,    DOUBLE}},
   {"Name",       1, {STRING}},
+  {"Output",     1, {STRING}},
   {"",           0, {}}
 };
 
