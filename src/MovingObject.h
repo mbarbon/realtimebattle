@@ -153,6 +153,7 @@ private:
   bool have_saved;
 
   bool send_usr_signal;
+  int signal_to_send;
   int  send_rotation_reached;
 
   double energy; 

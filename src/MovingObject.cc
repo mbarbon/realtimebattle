@@ -52,7 +52,9 @@ Robot::Robot(const String& filename)
   statistics = g_list_alloc();
   extra_air_resistance = 0.0;
   process_running = false;
+
   send_usr_signal = false;
+  signal_to_send = 0;
   send_rotation_reached = 0;
   alive = false;
   total_points = 0.0;
@@ -305,7 +307,7 @@ void
 Robot::send_signal()
 {
   if( send_usr_signal )
-    kill(pid, SIGUSR1);
+    kill(pid, signal_to_send);
 }
 
 void
@@ -773,11 +775,28 @@ Robot::get_messages()
               *instreamp >> opt_nr;
               switch(opt_nr)
                 {
-                case SEND_SIGNAL:
+                case SEND_SIGNAL:   // Replaced with 'SIGNAL', used only for combatibility reasons.
                   *instreamp >> val;
                   send_usr_signal = (val == true);
+                  signal_to_send = SIGUSR1;
                   send_signal();
                   break;
+                case SIGNAL:
+                  *instreamp >> val;
+                  if( val > 0 && val < _NSIG )
+                    {
+                      signal_to_send = val;
+                      send_signal();
+                      send_usr_signal = true;
+                    }
+                  else
+                    {                      
+                      if( val >= _NSIG ) send_message(WARNING, UNKNOWN_OPTION, msg_name);
+                      signal_to_send = 0;
+                      send_usr_signal = false;
+                    }
+                  break;
+
                 case SEND_ROTATION_REACHED:
                   *instreamp >> val;
                   if( val < 0 ) val = 0;
@@ -1047,7 +1066,8 @@ Robot::get_messages()
             acceleration = acc;
           }
           break;
-        case BREAK:  // Used only for compabillity reasons
+        case BREAK:  // Included only for compatibility reasons
+          send_message(WARNING, OBSOLETE_KEYWORD, msg_name);
         case BRAKE:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
           {

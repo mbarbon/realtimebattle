@@ -79,42 +79,44 @@ enum argument_type
 
 enum warning_type
 {
-  UNKNOWN_MESSAGE,
-  PROCESS_TIME_LOW,
+  UNKNOWN_MESSAGE=0,
+  PROCESS_TIME_LOW=1,
   //  ENERGY_LOW,
   //VARIABLE_OUT_OF_RANGE,
-  MESSAGE_SENT_IN_ILLEGAL_STATE,
-  UNKNOWN_OPTION
+  MESSAGE_SENT_IN_ILLEGAL_STATE=2,
+  UNKNOWN_OPTION=3,
+  OBSOLETE_KEYWORD=4
 };
 
 enum game_option_type
 {
-  ROBOT_MAX_ROTATE,
-  ROBOT_CANNON_MAX_ROTATE,
-  ROBOT_RADAR_MAX_ROTATE,
+  ROBOT_MAX_ROTATE=0,
+  ROBOT_CANNON_MAX_ROTATE=1,
+  ROBOT_RADAR_MAX_ROTATE=2,
 
-  ROBOT_MAX_ACCELERATION,
-  ROBOT_MIN_ACCELERATION,
+  ROBOT_MAX_ACCELERATION=3,
+  ROBOT_MIN_ACCELERATION=4,
 
-  ROBOT_START_ENERGY,
-  ROBOT_MAX_ENERGY,
-  ROBOT_ENERGY_LEVELS,
+  ROBOT_START_ENERGY=5,
+  ROBOT_MAX_ENERGY=6,
+  ROBOT_ENERGY_LEVELS=7,
 
-  SHOT_SPEED,
-  SHOT_MIN_ENERGY,
-  SHOT_MAX_ENERGY,
-  SHOT_ENERGY_INCREASE_SPEED,
+  SHOT_SPEED=8,
+  SHOT_MIN_ENERGY=9,
+  SHOT_MAX_ENERGY=10,
+  SHOT_ENERGY_INCREASE_SPEED=11,
 
-  TIMEOUT,
+  TIMEOUT=12,
 
-  DEBUG_LEVEL            // 0 - no debug, 5 - highest debug level
+  DEBUG_LEVEL=13            // 0 - no debug, 5 - highest debug level
 };
 
 enum robot_option_type
 {
-  SEND_SIGNAL,              // 0 - true, 1 - false   
-  SEND_ROTATION_REACHED     // 0 - no messages, 1 - messages when RotateTo and RotateAmount finished, 
-                            // 2 - messages also when sweep direction is changed 
+  SIGNAL=2,                   // 0 - no signal, > 1 signal to send (e.g. SIGUSR1 or SIGUSR2) 
+  SEND_SIGNAL=0,              // 0 - false, 1 - true
+  SEND_ROTATION_REACHED=1     // 0 - no messages, 1 - messages when RotateTo and RotateAmount finished, 
+                              // 2 - messages also when sweep direction is changed 
 };
 
 enum object_type 
