@@ -4,7 +4,7 @@ src/ArenaBase.cc
 src/ArenaController.cc
 src/ArenaRealTime.cc
 src/ArenaReplay.cc
-src/Options.cc
+src/OptionHandler.cc
 src/RealTimeBattle.cc
 src/Various.cc
 src/Gui/Gtk/ArenaWindow.cc
