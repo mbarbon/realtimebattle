@@ -1,5 +1,6 @@
 # List of source files containing translatable strings.
 
+Arenas/Original.arena
 src/ArenaController.cc
 src/OptionHandler.cc
 src/RealTimeBattle.cc
