@@ -46,6 +46,24 @@ Tournament::Tournament(const int rounds_p_match,
   prepare_for_new_match();
 }
 
+Tournament::Tournament(const int rounds_p_match,
+                       const int robots_p_match,
+                       const int number_o_matches,
+                       const vector<string>& robot_filenames,
+                       const vector<string>& arena_filenames) : 
+  rounds_per_match(rounds_p_match), 
+  robots_per_match(robots_p_match), 
+  number_of_matches(number_o_matches)
+{
+
+  // TODO: Startup all robots and remove all robots that failed to startup.
+  //       Copy the newly started robots to the_robots.
+  // TODO: Load all arenafiles.
+
+  create_matches();
+  prepare_for_new_match();
+}
+
 Tournament::Tournament(const string& tournament_file)
 {
   load_succeeded = parse_tournament_file( tournament_file );

@@ -66,6 +66,12 @@ public:
              const vector<Robot*>& robots,
              const vector<ArenaGadget>& arenas);
 
+  Tournament(const int rounds_p_match,
+             const int robots_p_match,
+             const int number_o_matches,
+             const vector<string>& robot_filenames,
+             const vector<string>& arena_filenames);
+
   Tournament(const string& tournament_file);
 
   ~Tournament() {}
