@@ -384,7 +384,11 @@ main ( int argc, char* argv[] )
   setlocale( LC_MESSAGES, "" );
   setlocale( LC_NUMERIC, "POSIX" );
 #endif
+#ifdef RTB_LOCALEDIR
   bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
+#else
+  bindtextdomain( "RealTimeBattle", "/usr/local/share/locale" );
+#endif
   textdomain( "RealTimeBattle" );
 
   parse_command_line(argc, argv);
