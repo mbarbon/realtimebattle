@@ -21,11 +21,14 @@ Robot::Robot(const String& filename)
   extra_air_resistance = 0.0;
   process_running = false;
   send_usr_signal = false;
+  alive = false;
+  points = 0;
 
   instreamp = NULL;
   outstreamp = NULL;
   pipes[0] = -1;  
   pipes[1] = -1;
+  pid = -1;
   last_drawn_robot_center = Vector2D(infinity,infinity);
 }
 
@@ -33,6 +36,16 @@ Robot::~Robot()
 {
   if( is_process_running() ) kill_process_forcefully();
   delete_pipes();
+
+  stat_t* statp;
+  for(GList* gl=g_list_next(statistics); gl != NULL; )
+    {
+      statp = (stat_t*)(gl->data);
+      delete statp;
+      gl=g_list_next(gl);
+      g_list_remove(statistics, statp);
+    }
+  g_list_free(statistics);
 } 
 
 void
@@ -318,8 +331,8 @@ Robot::update_radar_and_cannon(const double timestep)
   update_rotation(robot_angle, timestep);
   update_rotation(cannon_angle, timestep);
   update_rotation(radar_angle, timestep);
-  shot_energy = min( the_opts.get_shot_max_energy(), 
-                     shot_energy+timestep*the_opts.get_shot_energy_increase_speed() );
+  shot_energy = min( the_opts.get_d(OPTION_SHOT_MAX_ENERGY), 
+                     shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
   object_type closest_shape;
   void* col_obj;
   double dist = the_arena.
@@ -334,11 +347,11 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
 {
   double h, p, b;
   
-  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > the_opts.get_robot_cos_frontsize() )
+  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
     {
-      h = the_opts.get_robot_front_hardness();
-      b = the_opts.get_robot_front_bounce_coeff();
-      p = the_opts.get_robot_front_protection();
+      h = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
+      b = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
+      p = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
     }
   else
     {
@@ -364,11 +377,11 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   double h1, h2, p1, p2, b1, b2;
   Vector2D dir1_2 = unit(robot2.center - robot1.center);
   
-  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > the_opts.get_robot_cos_frontsize() )
+  if( dot(dir1_2, angle2vec(robot1.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
     {
-      h1 = the_opts.get_robot_front_hardness();
-      b1 = the_opts.get_robot_front_bounce_coeff();
-      p1 = the_opts.get_robot_front_protection();
+      h1 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
+      b1 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
+      p1 = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
     }
   else
     {
@@ -377,11 +390,11 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
       p1 = robot1.protection_coeff;
     }
 
-  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > the_opts.get_robot_cos_frontsize() )
+  if( -dot(dir1_2, angle2vec(robot2.robot_angle.pos)) > the_opts.get_d(OPTION_ROBOT_COS_FRONTSIZE) )
     {
-      h2 = the_opts.get_robot_front_hardness();
-      b2 = the_opts.get_robot_front_bounce_coeff();
-      p2 = the_opts.get_robot_front_protection();
+      h2 = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
+      b2 = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
+      p2 = the_opts.get_d(OPTION_ROBOT_FRONT_PROTECTION);
     }
   else
     {
@@ -418,27 +431,29 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   cannon_angle.set(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   radar_angle.set (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   shot_energy = 0.0;
-  radius = the_opts.get_robot_radius();
-  protection_coeff = the_opts.get_robot_protection();
-  hardness_coeff = the_opts.get_robot_hardness();
-  bounce_coeff = the_opts.get_robot_bounce_coeff();
-  mass = the_opts.get_robot_mass();
-  energy = the_opts.get_robot_start_energy();
+  radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
+  protection_coeff = the_opts.get_d(OPTION_ROBOT_PROTECTION);
+  hardness_coeff = the_opts.get_d(OPTION_ROBOT_HARDNESS);
+  bounce_coeff = the_opts.get_d(OPTION_ROBOT_BOUNCE_COEFF);
+  mass = the_opts.get_d(OPTION_ROBOT_MASS);
+  energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
+  break_percent = 0.0;
+  acceleration = 0.0;
 }
 
 void
 Robot::change_velocity(const double timestep)
 {
   Vector2D dir = angle2vec(robot_angle.pos);
-  double gt = the_opts.get_grav_const() * timestep;
-  double fric = the_opts.get_roll_friction() * (1.0 - break_percent) + 
-    the_opts.get_slide_friction() * break_percent;
-  velocity = -velocity* min(the_opts.get_air_resistance() * timestep, 0.5) +
+  double gt = the_opts.get_d(OPTION_GRAV_CONST) * timestep;
+  double fric = the_opts.get_d(OPTION_ROLL_FRICTION) * (1.0 - break_percent) + 
+    the_opts.get_d(OPTION_SLIDE_FRICTION) * break_percent;
+  velocity = -velocity* min(the_opts.get_d(OPTION_AIR_RESISTANCE) * timestep, 0.5) +
     timestep*acceleration*dir + 
     dot(velocity, dir) * max(0.0, 1.0-gt*fric) * dir +
-    vedge(dir, velocity) * max(0.0, 1.0-gt*the_opts.get_slide_friction()) * rotate90(dir);
+    vedge(dir, velocity) * max(0.0, 1.0-gt*the_opts.get_d(OPTION_SLIDE_FRICTION)) * rotate90(dir);
 }
 
 void
@@ -626,18 +641,18 @@ Robot::get_messages()
             
             if( bits & 1 ) 
               robot_angle.set( robot_angle.pos,  
-                               max(min(rot_speed, the_opts.get_robot_max_rotate()),
-                                   -the_opts.get_robot_max_rotate()),  // between -max_rot and +max_rot                  
+                               max(min(rot_speed, the_opts.get_d(OPTION_ROBOT_MAX_ROTATE)),
+                                   -the_opts.get_d(OPTION_ROBOT_MAX_ROTATE)),  // between -max_rot and +max_rot                  
                                -infinity, infinity, NORMAL_ROT );
             if( bits & 2 ) 
               cannon_angle.set( cannon_angle.pos,  
-                                max(min(rot_speed, the_opts.get_robot_cannon_max_rotate()),
-                                    -the_opts.get_robot_cannon_max_rotate()),  // between -max_rot and +max_rot                  
+                                max(min(rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE)),
+                                    -the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE)),  // between -max_rot and +max_rot                  
                                 -infinity, infinity, NORMAL_ROT );
             if(bits & 4 )
               radar_angle.set( radar_angle.pos,  
-                                max(min(rot_speed, the_opts.get_robot_radar_max_rotate()),
-                                    -the_opts.get_robot_radar_max_rotate()),  // between -max_rot and +max_rot                  
+                                max(min(rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE)),
+                                    -the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE)),  // between -max_rot and +max_rot                  
                                 -infinity, infinity, NORMAL_ROT );
           }
           break;
@@ -652,11 +667,11 @@ Robot::get_messages()
                 rot_amount = rot_end_angle - cannon_angle.pos;
                 if( rot_amount > 0 )
                   cannon_angle.set( cannon_angle.pos, 
-                                     min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                     min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                      -infinity, cannon_angle.pos + rot_amount, ROTATE_TO_RIGHT );
                 else
                   cannon_angle.set( cannon_angle.pos, 
-                                    -min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                    -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                     cannon_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }
             if( bits & 4 )
@@ -665,11 +680,11 @@ Robot::get_messages()
                 rot_amount = rot_end_angle - radar_angle.pos;
                 if( rot_amount > 0 )
                   radar_angle.set( radar_angle.pos, 
-                                   min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    -infinity, radar_angle.pos + rot_amount, ROTATE_TO_RIGHT );
                 else
                   radar_angle.set( radar_angle.pos, 
-                                   -min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    radar_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }            
           }
@@ -683,33 +698,33 @@ Robot::get_messages()
               {
                 if( rot_amount > 0 )
                     robot_angle.set( robot_angle.pos, 
-                                     min( fabs(rot_speed), the_opts.get_robot_max_rotate() ),
+                                     min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_MAX_ROTATE) ),
                                      -infinity, robot_angle.pos + rot_amount, ROTATE_TO_RIGHT );
                 else
                   robot_angle.set( robot_angle.pos, 
-                                   -min( fabs(rot_speed), the_opts.get_robot_max_rotate() ),
+                                   -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_MAX_ROTATE) ),
                                    robot_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }
             if( bits & 2 )
               {
                 if( rot_amount > 0 )
                   cannon_angle.set( cannon_angle.pos, 
-                                    min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                    min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                     -infinity, cannon_angle.pos + rot_amount, ROTATE_TO_RIGHT );
                 else
                   cannon_angle.set( cannon_angle.pos, 
-                                    -min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                    -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                     cannon_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }
             if( bits & 4 )
               {
                 if( rot_amount > 0 )
                   radar_angle.set( radar_angle.pos, 
-                                   min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    -infinity, radar_angle.pos + rot_amount, ROTATE_TO_RIGHT );
                 else
                   radar_angle.set( radar_angle.pos, 
-                                   -min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    radar_angle.pos + rot_amount, infinity, ROTATE_TO_LEFT );
               }
           }
@@ -723,11 +738,11 @@ Robot::get_messages()
                 cannon_angle.pos -= rint( (cannon_angle.pos - 0.5*(sweep_left+sweep_right)) / (2.0*M_PI) ) * 2.0 * M_PI;
                 if( cannon_angle.pos < 0.5*(sweep_left+sweep_right) )
                   cannon_angle.set( cannon_angle.pos, 
-                                    min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                    min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                     sweep_left, sweep_right, SWEEP_RIGHT );
                 else
                   cannon_angle.set( cannon_angle.pos, 
-                                    -min( fabs(rot_speed), the_opts.get_robot_cannon_max_rotate() ),
+                                    -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) ),
                                     sweep_left, sweep_right, SWEEP_LEFT );
               }
             if( bits & 4 )
@@ -735,11 +750,11 @@ Robot::get_messages()
                 radar_angle.pos -= rint( (radar_angle.pos - 0.5*(sweep_left+sweep_right)) / (2.0*M_PI) ) * 2.0 * M_PI;
                 if( radar_angle.pos < 0.5*(sweep_left+sweep_right) )
                   radar_angle.set( radar_angle.pos, 
-                                   min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    sweep_left, sweep_right, SWEEP_RIGHT );
                 else
                   radar_angle.set( radar_angle.pos, 
-                                   -min( fabs(rot_speed), the_opts.get_robot_radar_max_rotate() ),
+                                   -min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) ),
                                    sweep_left, sweep_right, SWEEP_LEFT );
               }
           }
@@ -754,16 +769,16 @@ Robot::get_messages()
             double en;
             *instreamp >> en;
             en = min(en, shot_energy);
-            if( en < the_opts.get_shot_min_energy() ) break;
+            if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) ) break;
             shot_energy -= en;
 
             Vector2D dir = angle2vec(cannon_angle.pos+robot_angle.pos);
-            double shot_radius = the_opts.get_shot_radius();
+            double shot_radius = the_opts.get_d(OPTION_SHOT_RADIUS);
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
             if( the_arena.space_available( shot_center, shot_radius + eps ) )
               {
                 Shot* shotp = new Shot( shot_center, shot_radius,
-                                        velocity + dir * the_opts.get_shot_speed(), en );
+                                        velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED), en );
                 g_list_append((the_arena.get_object_lists())[SHOT], shotp);
               }
             else  // No space for shot, direct hit!!
@@ -813,14 +828,14 @@ Robot::get_messages()
                     throw Error("Shot on unknown object", "Robot::get_messages");
                   }
               }
-            change_energy(-en * the_opts.get_shooting_penalty() );
+            change_energy(-en * the_opts.get_d(OPTION_SHOOTING_PENALTY) );
           }
           break;
         case ACCELERATE:
           {
             double acc;
             *instreamp >> acc;
-            if( acc < the_opts.get_min_acceleration() || acc > the_opts.get_max_acceleration() )
+            if( acc < the_opts.get_d(OPTION_MIN_ACCELERATION) || acc > the_opts.get_d(OPTION_MAX_ACCELERATION) )
               send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
             else
               acceleration = acc;
@@ -870,7 +885,7 @@ Robot::name2msg_from_robot_type(char* msg_name)
 void
 Robot::change_energy(const double energy_diff)
 {
-  energy = min(energy+energy_diff, the_opts.get_robot_max_energy());
+  energy = min(energy+energy_diff, the_opts.get_d(OPTION_ROBOT_MAX_ENERGY));
   display_energy();
   if( energy <= 0.0 ) die();
 }
@@ -939,21 +954,21 @@ Robot::draw_radar_and_cannon()
   // Draw Cannon
   the_gui.draw_line( center,
                      angle2vec(cannon_angle.pos+robot_angle.pos),
-                     the_opts.get_robot_radius() - the_opts.get_shot_radius(),
-                     the_opts.get_shot_radius(),
+                     the_opts.get_d(OPTION_ROBOT_RADIUS) - the_opts.get_d(OPTION_SHOT_RADIUS),
+                     the_opts.get_d(OPTION_SHOT_RADIUS),
                      *(the_arena.get_foreground_colour_p()) );
 
   // Draw radar lines
   Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
-  the_gui.draw_line( center - the_opts.get_robot_radius() * 0.25 * radar_dir,
+  the_gui.draw_line( center - the_opts.get_d(OPTION_ROBOT_RADIUS) * 0.25 * radar_dir,
                      rotate( radar_dir, M_PI / 4.0 ),
-                     the_opts.get_robot_radius() / 1.5,
-                     the_opts.get_robot_radius() / 20.0,
+                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 1.5,
+                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 20.0,
                      *(the_arena.get_foreground_colour_p()) );
-  the_gui.draw_line( center - the_opts.get_robot_radius() * 0.25 * radar_dir,
+  the_gui.draw_line( center - the_opts.get_d(OPTION_ROBOT_RADIUS) * 0.25 * radar_dir,
                      rotate( radar_dir, - (M_PI / 4.0) ),
-                     the_opts.get_robot_radius() / 1.5,
-                     the_opts.get_robot_radius() / 20.0,
+                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 1.5,
+                     the_opts.get_d(OPTION_ROBOT_RADIUS) / 20.0,
                      *(the_arena.get_foreground_colour_p()) );
   
 }

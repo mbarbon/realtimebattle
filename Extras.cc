@@ -1,7 +1,7 @@
 #include "Arena.h"
 
 Cookie::Cookie(const Vector2D& c, const double r, const double e) 
-  : Circle(c, r), Shape(the_opts.get_cookie_colour())
+  : Circle(c, r), Shape(the_opts.get_l(OPTION_COOKIE_COLOUR))
 {
   energy = e;
   alive = true;
@@ -15,7 +15,7 @@ Cookie::die()
 }
 
 Mine::Mine(const Vector2D& c, const double r, const double e)
-  : Circle(c, r), Shape(the_opts.get_mine_colour())
+  : Circle(c, r), Shape(the_opts.get_l(OPTION_MINE_COLOUR))
 {
   energy = e;
   alive = true;

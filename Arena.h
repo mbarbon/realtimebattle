@@ -66,7 +66,7 @@ public:
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
-  double get_shooting_penalty() { return the_opts.get_shooting_penalty() / max(1.0, ((double)robots_left)/10.0); }
+  double get_shooting_penalty() { return the_opts.get_d(OPTION_SHOOTING_PENALTY) / max(1.0, ((double)robots_left)/10.0); }
   GdkColor* get_background_colour_p() { return &background_colour; }
   GdkColor* get_foreground_colour_p() { return &foreground_colour; }
   state_t get_state() { return state; }

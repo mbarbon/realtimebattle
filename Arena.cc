@@ -55,8 +55,8 @@ Arena::clear()
 void
 Arena::set_colours()
 {  
-  background_colour = make_gdk_colour(the_opts.get_background_colour());
-  foreground_colour = make_gdk_colour(the_opts.get_foreground_colour());
+  background_colour = make_gdk_colour(the_opts.get_l(OPTION_BACKGROUND_COLOUR));
+  foreground_colour = make_gdk_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
 }
 
 void
@@ -389,7 +389,7 @@ Arena::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
-        if( robots_left <= 1 || total_time > the_opts.get_timeout() ) 
+        if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
             for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
               if( ((Robot*)gl->data)->get_position_this_game() == 0 )
@@ -403,10 +403,10 @@ Arena::timeout_function()
       //   TODO:    if( total_time > next_check_time ) check_robots();
 
         // Place mines and cookies
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_cookie_frequency() )
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_COOKIE_FREQUENCY) )
           add_cookie();
 
-        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_mine_frequency() )
+        if( ((double)rand()) / (double)RAND_MAX <= timestep*the_opts.get_d(OPTION_MINE_FREQUENCY) )
           add_mine();
       }
       break;
@@ -433,7 +433,7 @@ Arena::update_timer()
   gdouble last_timer = current_timer;
   gulong microsecs;
   current_timer = g_timer_elapsed(timer, &microsecs);
-  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_max_timestep() );
+  timestep = min( (current_timer - last_timer) * timescale, the_opts.get_d(OPTION_MAX_TIMESTEP) );
   total_time += timestep;
 }
 
@@ -449,11 +449,11 @@ Arena::reset_timer()
 void
 Arena::add_cookie()
 {
-  double en = the_opts.get_cookie_min_energy() + 
-    (the_opts.get_cookie_max_energy() - the_opts.get_cookie_min_energy()) * 
+  double en = the_opts.get_d(OPTION_COOKIE_MIN_ENERGY) + 
+    (the_opts.get_d(OPTION_COOKIE_MAX_ENERGY) - the_opts.get_d(OPTION_COOKIE_MIN_ENERGY)) * 
     (double)rand() / (double)RAND_MAX;
   bool found_space = false;
-  double r = the_opts.get_cookie_radius();
+  double r = the_opts.get_d(OPTION_COOKIE_RADIUS);
   Vector2D pos;
 
   for( int i=0; i<100 && !found_space; i++)
@@ -470,11 +470,11 @@ Arena::add_cookie()
 void
 Arena::add_mine()
 {
-  double en = the_opts.get_mine_min_energy() + 
-    (the_opts.get_mine_max_energy() - the_opts.get_mine_min_energy()) * 
+  double en = the_opts.get_d(OPTION_MINE_MIN_ENERGY) + 
+    (the_opts.get_d(OPTION_MINE_MAX_ENERGY) - the_opts.get_d(OPTION_MINE_MIN_ENERGY)) * 
     (double)rand() / (double)RAND_MAX;
   bool found_space = false;
-  double r = the_opts.get_cookie_radius();
+  double r = the_opts.get_d(OPTION_COOKIE_RADIUS);
   Vector2D pos;
 
   for( int i=0; i<100 && !found_space; i++)
@@ -707,7 +707,7 @@ Arena::start_game()
       for( int i=0; i<100 && !found_space; i++)
         {
           pos = get_random_position();
-          found_space = space_available(pos, the_opts.get_robot_radius()*1.2);
+          found_space = space_available(pos, the_opts.get_d(OPTION_ROBOT_RADIUS)*1.2);
         }
 
       if( !found_space )
@@ -904,18 +904,23 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
   
   int current_sequence[robots_per_game];
   int current_nr = 0;
-  for(int i=0; i<robots_per_game; i++) current_sequence[i] = i+1;
+  //  for(int i=0; i<robots_per_game; i++) current_sequence[i] = i+1;
   
   // set complete rounds first
 
   for(int round_nr=0; round_nr < complete_rounds; round_nr++)
     {
       int k, i, j;
+
+      for(i=0; i<robots_per_game; i++) current_sequence[i] = i+1;
+      current_sequence[robots_per_game-1]--;   // To be increased first time
+
+      
       for(i=0; i< games_per_round; i++)
         {
           
-          k = number_of_robots - 1;
-          while( current_sequence[k] == number_of_robots - 1 - robots_per_game + k )
+          k = robots_per_game - 1;
+          while( current_sequence[k] == number_of_robots + 1 - robots_per_game + k )
             k--;
 
           if( k < 0 ) throw Error("Problem generating list of participants, k < 0", 
