@@ -271,7 +271,6 @@ Robot::set_stats(int robots_killed_same_time)
   position_this_game = the_arena.get_robots_left() - adjust;
   add_points( 1.0 + ((double)adjust) * 0.5 );
 
-  display_place();
   display_score();
 
   send_message(DEAD);
@@ -930,43 +929,55 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy = min(energy+energy_diff, the_opts.get_d(OPTION_ROBOT_MAX_ENERGY));
-  display_energy();
+  display_score();
   if( energy <= 0.0 ) die();
 }
 
 void
-Robot::display_energy()
+Robot::reset_last_displayed()
 {
-  gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
-                     the_gui.get_robot_nr( this, the_arena.get_all_robots_in_sequence()),
-                     2, String((int)energy).non_const_chars());
-}
-
-void
-Robot::display_place()
-{
-  gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
-                     the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                     3, String(position_this_game).non_const_chars());
-}
-
-void
-Robot::display_last()
-{
-  if(get_last_position() != 0)
-    {
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
-                         the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                         4, String(get_last_position()).non_const_chars());
-    }
+  last_displayed_energy = -1;
+  last_displayed_place = 0;
+  last_displayed_last_place = 0;
+  last_displayed_score = -1;
 }
 
 void
 Robot::display_score()
 {
-  gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
-                     the_gui.get_robot_nr(this, the_arena.get_all_robots_in_sequence()),
-                     5, String(get_total_points()).non_const_chars());
+  if( last_displayed_energy != (int)energy )
+    {
+      last_displayed_energy = (int)energy;
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+                         row_in_score_clist,
+                         2, String((int)energy).non_const_chars());
+    }
+
+  if( last_displayed_place != position_this_game )
+    {
+      last_displayed_place = position_this_game;
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+                         row_in_score_clist,
+                         3, String(position_this_game).non_const_chars());
+    }
+
+  if(get_last_position() != 0)
+    if( last_displayed_last_place != get_last_position() )
+      {
+        last_displayed_last_place = get_last_position();
+        gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+                           row_in_score_clist,
+                           4, String(get_last_position()).non_const_chars());
+      }
+
+  
+  if( last_displayed_score != (int)(10 * get_total_points()) )
+    {
+      last_displayed_score = (int)(10 * get_total_points());
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_score_clist()),
+                         row_in_score_clist,
+                         5, String(get_total_points()).non_const_chars());
+    }
 }
 
 void

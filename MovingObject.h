@@ -92,9 +92,9 @@ public:
   void add_points(double pts) { points_this_game += pts; total_points += pts; }
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
-  void display_energy();
-  void display_place();
-  void display_last();
+
+  void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
+  void reset_last_displayed();
   void display_score();
   void draw_radar_and_cannon();
 
@@ -138,6 +138,13 @@ private:
   ofstream* outstreamp;
   int pipes[2];
   pid_t pid;    
+
+  int row_in_score_clist;
+
+  int last_displayed_energy;
+  int last_displayed_place;
+  int last_displayed_last_place;
+  long last_displayed_score;
 };
 
 // ---------------------  Shot : MovingObject  ---------------------
