@@ -23,9 +23,7 @@ GRAPHICS_O = \
 	StartTournamentWindow.o Structs.o
 endif
 
-INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl $(PROFFLAGS) $(GRAPHFLAGS) \
- -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"' \
- -DRTB_LOCALEDIR='"$(RTB_LOCALEDIR)"'
+INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl $(PROFFLAGS) $(GRAPHFLAGS)
 
 if NO_GETOPT_LONG
 GETOPT_O = getopt.o
