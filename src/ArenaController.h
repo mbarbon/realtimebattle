@@ -25,7 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaBase.h"
 #include "OptionHandler.h"
-#include "GuiEventHandler.h"
+#include "InformationDistributor.h"
 
 class GuiInterface;
 
@@ -46,7 +46,7 @@ public:
   void start_replay_arena();
 
   OptionHandler* get_main_opts() const { return main_opts; }
-  GuiEventHandler* get_guievents() { return &guievents; }
+  InformationDistributor* get_distributor() { return &distributor; }
   ArenaBase* get_the_arena() { return my_arena; }
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
@@ -64,7 +64,7 @@ private:
   pthread_mutex_t gi_mutex;
 
   OptionHandler* main_opts;
-  GuiEventHandler guievents;
+  InformationDistributor distributor;
 
   ArenaBase* my_arena;
 

@@ -377,9 +377,7 @@ ArenaRealTime::quit_ordered()
 bool
 ArenaRealTime::timeout_function()
 {
-//  #ifndef NO_GRAPHICS
-//        int old_total = (int)total_time;
-//  #endif NO_GRAPHICS
+  int old_total = (int)total_time;
 
   if( state != PAUSED )
     {
@@ -428,10 +426,9 @@ ArenaRealTime::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
-//  #ifndef NO_GRAPHICS
-//          if((int)total_time > old_total && !no_graphics)
-//            the_gui.get_scorewindow_p()->set_window_title();
-//  #endif
+        if( (int)total_time > old_total )
+          the_arena_controller.get_distributor()->
+            insert_information( new GameTimeInfo( total_time ) );
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
             end_game();
