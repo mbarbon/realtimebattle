@@ -18,7 +18,7 @@ public:
   void setup_control_window();
   void setup_score_window( void * the_arenap );
   void setup_message_window();
-  void setup_arena_window( Vector2D bound[] , void * the_arenap );
+  void setup_arena_window( Vector2D bound[] );
 
   void close_control_window();
   void close_score_window();
@@ -32,7 +32,6 @@ public:
   int change_to_pixels_x(double input);
   int change_to_pixels_y(double input);
 
-  void draw_pixmap();
   void draw_circle( Vector2D center, double radius, GdkColor colour, bool filled );
   void draw_line( Vector2D start, Vector2D end, GdkColor colour );
   void draw_line( Vector2D start, Vector2D end, double length, double thickness, GdkColor colour );
@@ -52,10 +51,7 @@ private:
   GtkWidget * message_window;
   GtkWidget * arena_window;
 
-  GdkPixmap * arena_pixmap;
-
-  GdkColormap *colormap;
-  GdkColor blue_colour;
+  GdkColormap * colormap;
   GdkColor background_colour;
 
   Vector2D boundary[2];

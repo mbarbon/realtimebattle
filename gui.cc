@@ -71,17 +71,6 @@ Gui::draw_objects( void * the_arenap )
 }
 
 void
-Gui::draw_pixmap()
-{
-  gdk_draw_pixmap( drawing_area->window,
-                   drawing_area->style->fg_gc[GTK_WIDGET_STATE (drawing_area)],
-                   arena_pixmap,
-                   0,0,
-                   0,0,
-                   drawing_area->allocation.width,drawing_area->allocation.height);
-}
-
-void
 Gui::draw_circle( Vector2D center, double radius, GdkColor colour, bool filled )
 {
   GdkGC * colour_gc;
@@ -386,7 +375,6 @@ Gui::setup_message_window()
   GtkWidget * vbox;
   GtkWidget * messagetable;
   GtkWidget * vscrollbar;
-  GdkColormap * cmap;
 
   // Window 
 
@@ -426,11 +414,6 @@ Gui::setup_message_window()
   gtk_table_attach (GTK_TABLE (messagetable), vscrollbar, 1, 2, 0, 1,
                     GTK_FILL, GTK_EXPAND | GTK_SHRINK | GTK_FILL, 0, 0);
   gtk_widget_show (vscrollbar);
-
-  cmap = gdk_colormap_get_system();
-  blue_colour.red = 0;
-  blue_colour.green = 0;
-  blue_colour.blue = 0xaaaa;
 
   gtk_widget_realize (message_output);
   gtk_text_freeze (GTK_TEXT (message_output));
@@ -481,14 +464,6 @@ Gui::setup_arena_window( Vector2D bound[] )
   gdk_color_alloc (colormap, &background_colour);
   gdk_window_set_background (drawing_area->window, &background_colour);
   gdk_window_clear (drawing_area->window);
-
-  //  if(arena_pixmap)
-  //  gdk_pixmap_unref(arena_pixmap);
-
-  //arena_pixmap = gdk_pixmap_new(drawing_area->window,
-  //                              drawing_area->allocation.width,
-  //                              drawing_area->allocation.height,
-  //                              -1);
 
   clear_area();
 }
