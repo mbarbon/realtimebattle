@@ -7,6 +7,7 @@
 int main(int argc, char * argv[])
 {
   printf("Name Empty\n");
+  printf("Colour aaffaa 112299\n");
 
   sleep(500);
 

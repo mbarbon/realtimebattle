@@ -49,7 +49,6 @@ check_messages(int sig)
           cout << "Colour 2877ea 33ca11" << endl;
           break;
         case GAME_STARTS:
-          cout << "Print I am ready" << endl;
           cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Rotate 6 1.5" << endl;
           acceleration = 0.54;

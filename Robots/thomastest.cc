@@ -56,14 +56,12 @@ check_messages(int sig)
           cout << "Colour dede11 de5500" << endl;
           break;
         case GAME_STARTS:
-          cout << "Print I am ready" << endl;
           //          cout << "Rotate 1 " << robot_rotate << endl;
           cout << "Sweep 6 " << M_PI/2.0 << -M_PI/2.0 << M_PI/2.0 << endl;
           acceleration = 0.4;
           cout << "Acceleration " << acceleration << endl;
           break;
         case GAME_FINISHES:
-          cout << "Print The End" << endl;
           break;
 
         case SAVE_DATA:
@@ -249,7 +247,7 @@ check_messages(int sig)
                 cout << "Print Oh no! A mine!" << endl; 
                 break;
               case COOKIE: 
-                //cout << "Print Cookie eaten!" << endl; 
+                cout << "Print Cookie eaten!" << endl; 
                 break;
               case WALL:
                 acceleration = 0.0;
