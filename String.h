@@ -18,6 +18,7 @@ public:
   String& operator=(const char*);
   friend String operator+(const String&, const String&);
   friend int operator==(const String&, const String&);
+  friend int operator!=(const String&, const String&);
   String& operator+=(const String&);
 
   char operator[](int) const;

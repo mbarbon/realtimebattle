@@ -138,6 +138,12 @@ operator==(const String& str1, const String& str2)
   return strcmp(str1.array, str2.array) == 0;
 }
 
+int
+operator!=(const String& str1, const String& str2)
+{
+  return strcmp(str1.array, str2.array) != 0;
+}
+
 char
 String::operator[](int pos) const
 {
