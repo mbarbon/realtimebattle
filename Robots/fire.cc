@@ -58,9 +58,16 @@ main(int argc, char * argv[])
                     //cout << "Print kill" << endl;
                     break;
                   case WALL:
-                    //if( dist < 0.5 )
-                    //  acceleration = -0.45;
-                    //cout << "Acceleration " << acceleration << endl;
+                    {
+                      double old_acc = acceleration;
+                      if( dist < 0.6 )
+                        acceleration = 0.0;
+                      else
+                        acceleration = 0.5;
+
+                      if( old_acc != acceleration )
+                        cout << "Acceleration " << acceleration << endl;
+                    }
                     break;
                   case SHOT:
                     //cout << "Print Help me!" << endl;
@@ -94,7 +101,7 @@ main(int argc, char * argv[])
                   case COOKIE: cout << "Print Cookie eaten!" << endl; break;
                     //case WALL: cout << "Print Bounced on a wall" << endl; break;
                   }
-                if( enegry_diff != 0 ) cout << "Print energy changed by " << enegry_diff << endl;
+                //if( enegry_diff != 0 ) cout << "Print energy changed by " << enegry_diff << endl;
               }
               break;
             case WARNING:
