@@ -134,6 +134,10 @@ private:
 // These functions should be defined by the gui.
 // ---------------------------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // The name of the gui should be returned as a const String
 const String GIName();
 // The usage string of the gui should be returned as a const String
@@ -148,5 +152,9 @@ void GIExit( int );
 
 //Internal GI functions
 void* GIMain_pre( void* arg );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif __GUIINTERFACE__
