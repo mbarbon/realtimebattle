@@ -1,6 +1,22 @@
 #include <math.h>
 #include "gui.h"
 
+GtkWidget * message;
+GtkWidget *vscrollbar;
+GdkColor colour;
+
+void insert_message (char * robot_name, char * write_message)
+{
+  GString * rname;
+  rname = g_string_new(robot_name);
+  g_string_prepend(rname,"\n");
+  g_string_append(rname,": ");
+  gtk_text_freeze(GTK_TEXT(message));
+  gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, rname->str, -1);
+  gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, write_message, -1);
+  gtk_text_thaw(GTK_TEXT(message));
+}
+
 void callback (GtkWidget *widget, gpointer data)
 {
 }
@@ -9,6 +25,7 @@ void delete_event (GtkWidget *widget, GdkEvent *event, gpointer data)
 {
   gtk_main_quit ();
 }
+
 
 void control_win( int antrobotar, char * robotnames[] )
 {
@@ -20,12 +37,8 @@ void control_win( int antrobotar, char * robotnames[] )
   GtkWidget *life,*score,*place;
   GtkWidget *label;
   GtkWidget *vbox,*scr_vbox,*hbox, *robothbox;
-  GtkWidget *message;
-  GtkWidget *vscrollbar;
   GtkWidget *scrolled_window;
   GdkColormap *cmap;
-  GdkColor colour;
-
 
   /* Window */
 
@@ -206,12 +219,8 @@ void control_win( int antrobotar, char * robotnames[] )
   gtk_widget_realize (message);
   gtk_text_freeze (GTK_TEXT (message));
 
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, "Walkfire: ", -1); */
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, "Detta meddelande är ett meddelande vars text är mycket lång", -1); */
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, "\nWalkfire: ", -1); */
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, "Detta meddelande är ett meddelande vars text är mycket lång", -1); */
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, "\nWalkfire: ", -1); */
-/*   gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, "Detta meddelande är ett meddelande vars text är mycket lång", -1); */
+  //  gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, "\nWalkfire: ", -1);
+  //  gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, "Detta meddelande är ett meddelande vars text är mycket lång", -1);
 /*   gtk_text_insert(GTK_TEXT(message), NULL, &colour, NULL, "\nWalkfire: ", -1); */
 /*   gtk_text_insert(GTK_TEXT(message), NULL, &message->style->black, NULL, "Detta meddelande är ett meddelande vars text är mycket lång", -1); */
 
@@ -280,3 +289,4 @@ void arena_win( void )
   gdk_window_clear (drawing_area->window);
 
 }
+
