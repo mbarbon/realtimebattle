@@ -143,6 +143,7 @@ Robot::~Robot()
     {
       if( is_process_running() ) kill_process_forcefully();
       delete_pipes();
+      delete_fifos();
     }
 } 
 
@@ -380,7 +381,7 @@ Robot::send_signal()
   if( send_usr_signal )
     {
       if( fifo_instead_of_process )
-        ;  // TODO: send a send_signal message to socket
+        *outstreamp << "@S" << signal_to_send << endl;
       else if( pid > 0 )
         kill(pid, signal_to_send);
     }
@@ -389,7 +390,9 @@ Robot::send_signal()
 void
 Robot::kill_process_forcefully()
 {
-  if( !fifo_instead_of_process && pid > 0 )
+  if( fifo_instead_of_process )
+    *outstreamp << "@K" << endl;
+  else if( pid > 0 )
     kill(pid, SIGKILL);
 
   delete_pipes();
@@ -419,10 +422,14 @@ Robot::open_fifos()
 void
 Robot::delete_pipes()
 {
-  if( instreamp != NULL ) delete instreamp;
-  instreamp = NULL;
-  if( outstreamp != NULL ) delete outstreamp;
-  outstreamp = NULL;
+  if( ! fifo_instead_of_process )
+    {
+      if( instreamp != NULL ) delete instreamp;
+      instreamp = NULL;
+      if( outstreamp != NULL ) delete outstreamp;
+      outstreamp = NULL;
+    }
+
   if( pipes[0] != -1 ) 
     {
       close(pipes[0]);
@@ -433,6 +440,16 @@ Robot::delete_pipes()
       close(pipes[1]);
       pipes[1] = -1;
     }
+}
+
+void
+Robot::delete_fifos()
+{
+  if( instreamp != NULL ) delete instreamp;
+  instreamp = NULL;
+  if( outstreamp != NULL ) delete outstreamp;
+  outstreamp = NULL;
+
   if( ofifo_fd != -1 )
     {
       close(ofifo_fd);
@@ -444,6 +461,7 @@ Robot::delete_pipes()
       ififo_fd = -1;
     }
 }
+
 
 void
 Robot::live()
@@ -843,11 +861,15 @@ void
 Robot::set_values_at_process_start_up()
 {
   process_running = true;
-  has_saved = false;
+
+  if( !fifo_instead_of_process )
+    {
+      cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
+      cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
+      cpu_timeout = 0.0;
+    }
+
   time_survived_in_sequence = 0.0;
-  cpu_next_limit = the_opts.get_d(OPTION_CPU_START_LIMIT);
-  cpu_warning_limit = cpu_next_limit * the_opts.get_d(OPTION_CPU_WARNING_PERCENT);
-  cpu_timeout = 0.0;
 
   if( statistics.is_empty() )       // first sequence !
     {
@@ -1074,7 +1096,10 @@ Robot::get_messages()
 
                 case USE_NON_BLOCKING:
                   *instreamp >> val;
-                  set_non_blocking_state( val );                  
+                  if( fifo_instead_of_process )
+                    *outstreamp << '@' << ( val ? 'N' : 'B' ) << endl;
+                  else
+                    set_non_blocking_state( val );
                   break;
 
                 default:

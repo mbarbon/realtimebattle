@@ -71,6 +71,7 @@ public:
   void send_signal();
   void end_process();
   void delete_pipes();
+  void delete_fifos();
   void kill_process_forcefully();
   bool use_fifo_instead_of_process() { return fifo_instead_of_process; }
 
@@ -131,7 +132,6 @@ private:
 
   bool alive;
   bool process_running;
-  bool has_saved;
 
   bool send_usr_signal;
   int signal_to_send;
