@@ -41,6 +41,8 @@ struct dialog_result_t;
 class ControlWindow
 {
 public:
+  enum displayed_t { NO_WIDGETS, DEBUG_WIDGETS, REPLAY_WIDGETS };
+
   ControlWindow                    ( const int default_width  = -1,
                                      const int default_height = -1,
                                      const int default_x_pos  = -1,
@@ -99,6 +101,7 @@ public:
   static void kill_and_open_filesel( int result );
   void open_replay_filesel         ();
 
+  displayed_t get_displayed        () { return displayed; }
   GtkWidget* get_filesel           () { return filesel; }
   GtkWidget* get_window_p          () { return window_p; }
 
@@ -117,6 +120,8 @@ private:
   GtkWidget* extra_vbox;
 
   GtkAdjustment* current_replay_time_adjustment;
+
+  displayed_t displayed;
 };
 
 #endif NO_GRAPHICS

@@ -131,6 +131,8 @@ ControlWindow::clear_extra_widgets()
 
   extra_vbox = NULL;
   vseparator = NULL;
+
+  displayed = NO_WIDGETS;
 }
 
 void
@@ -194,6 +196,8 @@ ControlWindow::display_debug_widgets()
                       (gpointer) this );
   gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
   gtk_widget_show( debug_level );
+
+  displayed = DEBUG_WIDGETS;
 }
 
 void
@@ -316,6 +320,8 @@ ControlWindow::display_replay_widgets()
                           TRUE, replay_buttons[i].pack , 0);
       gtk_widget_show( button_w );
     }
+
+  displayed = REPLAY_WIDGETS;
 }
 
 ControlWindow::~ControlWindow()
