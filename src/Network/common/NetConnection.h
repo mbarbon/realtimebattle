@@ -7,6 +7,13 @@
 
 static const int max_packet_length = 512;
 
+static const int server_port = 4147;
+static const int meta_server_port = 4146;
+static const string server_host = "localhost";
+static const string meta_server_host = "localhost";
+static const int max_number_connections = 10;
+
+
 class SocketServer;
 class SocketClient;
 class MetaServerSocket;
@@ -67,10 +74,8 @@ protected:
   int the_socket;
   string address;
 
-  //string read_buffer;
-  queue<string> read_buffers; //All the read but not parsed packets
-  //string write_buffer;
-  queue<string> write_buffers;  //All the buffers to send next time
+  deque<string> read_buffers; //All the read but not parsed packets
+  deque<string> write_buffers;  //All the buffers to send next time
   bool connected;
   connection_state state;
 

@@ -10,114 +10,6 @@
 
 class SocketServer;
 
-
-/*
- * SHOULDN'T BE ANYTHINK IN THIS SECTION AS SOON AS POSSIBLE
- */
-
-#define USE_METASERVER_INITIALIZATION_PACKET
-#define SEND_METASERVER_INITIALIZATION_PACKET
-#define RECV_METASERVER_INITIALIZATION_PACKET
-
-#define USE_METASERVER_ASKINFO_PACKET
-#define SEND_METASERVER_ASKINFO_PACKET
-#define RECV_METASERVER_ASKINFO_PACKET
-
-#define USE_INITIALIZATION_PACKET 
-#define SEND_INITIALIZATION_PACKET 
-#define RECV_INITIALIZATION_PACKET 
-
-#define USE_SUBMIT_PACKET
-#define SEND_SUBMIT_PACKET
-#define RECV_SUBMIT_PACKET
-
-#define USE_METASERVER_DATA_PACKET
-#define SEND_METASERVER_DATA_PACKET
-#define RECV_METASERVER_DATA_PACKET
-
-#define USE_COMMAND_PACKET
-#define SEND_COMMAND_PACKET
-#define RECV_COMMAND_PACKET
-
-#define USE_CHAT_MESSAGE_PACKET
-#define SEND_CHAT_MESSAGE_PACKET
-#define RECV_CHAT_MESSAGE_PACKET
-
-#define USE_SERVER_MESSAGE_PACKET
-#define SEND_SERVER_MESSAGE_PACKET
-#define RECV_SERVER_MESSAGE_PACKET
-
-/*
- * END OF SECTION
- */
-
-/* TODO : Continue the definition and put the preprocesor conditions 
- *        on to use only the class we need for each app 
- */
-
-#ifdef METASERVER_APP
-#  define USE_METASERVER_INITIALIZATION_PACKET
-#  define USE_METASERVER_ASKINFO_PACKET
-#endif
-
-#ifdef SERVER_APP
-#  define USE_METASERVER_INITIALIZATION_PACKET
-#  define USE_METASERVER_ASKINFO_PACKET
-#  define USE_INITIALIZATION_PACKET 
-#endif
-
-#ifdef CLIENT_APP
-#  ifdef CHAT_APP
-#  endif
-#  ifdef ROBOT_APP
-#  endif
-#endif
-
-
-/*
- * Use mean to send and to receive
- */
-
-#ifdef USE_METASERVER_INITIALIZATION_PACKET
-#  define SEND_METASERVER_INITIALIZATION_PACKET
-#  define RECV_METASERVER_INITIALIZATION_PACKET
-#endif
-
-#ifdef USE_METASERVER_ASKINFO_PACKET
-#  define SEND_METASERVER_ASKINFO_PACKET
-#  define RECV_METASERVER_ASKINFO_PACKET
-#endif
-
-#ifdef USE_INITIALIZATION_PACKET 
-#  define SEND_INITIALIZATION_PACKET 
-#  define RECV_INITIALIZATION_PACKET 
-#endif
-
-#ifdef USE_SUBMIT_PACKET
-#  define SEND_SUBMIT_PACKET
-#  define RECV_SUBMIT_PACKET
-#endif
-
-#ifdef USE_METASERVER_DATA_PACKET
-#  define SEND_METASERVER_DATA_PACKET
-#  define RECV_METASERVER_DATA_PACKET
-#endif
-
-#ifdef USE_COMMAND_PACKET
-#  define SEND_COMMAND_PACKET
-#  define RECV_COMMAND_PACKET
-#endif
-
-#ifdef USE_CHAT_MESSAGE_PACKET
-#  define SEND_CHAT_MESSAGE_PACKET
-#  define RECV_CHAT_MESSAGE_PACKET
-#endif
-
-#ifdef USE_SERVER_MESSAGE_PACKET
-#  define SEND_SERVER_MESSAGE_PACKET
-#  define RECV_SERVER_MESSAGE_PACKET
-#endif
-
 enum packet_t
 {
   PACKET_INIT = 1, //Otherwise we gonna have problems with eof '\0'
@@ -150,11 +42,11 @@ public:
   Packet( ) : data( "" ), size(0) {};
   Packet( string& d ) : data( d ) {};
   virtual ~Packet() {};
-  virtual string make_netstring() const = 0;
+  virtual string make_netstring() const {return "";};
   string get_string_from_netstring( string& );
   void remove_from_netstring( string& );
 
-  virtual int handle_packet(void*) = 0;
+  virtual int handle_packet(void*) {return 0;};
   virtual packet_t packet_type() = 0;
 
 protected:
@@ -181,8 +73,13 @@ public:
                         const client_t& c, 
                         const string& n )
     : protocol(p), client(c), name(n) {}
+
+#ifdef SEND_INITIALIZATION_PACKET
   string make_netstring() const;
+#endif SEND_INITIALIZATION_PACKET
+#ifdef RECV_INITIALIZATION_PACKET
   int handle_packet( void* ) ; 
+#endif RECV_INITIALIZATION_PACKET
   packet_t packet_type() { return PACKET_INIT; };
 
 protected:
@@ -202,8 +99,12 @@ public:
     : Packet(d) {};
   MetaServerInitializationPacket( const network_protocol_t& p )
     : protocol(p) {}
+#ifdef SEND_METASERVER_INITIALIZATION_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_METASERVER_INITIALIZATION_PACKET
   int handle_packet( void* ) ; 
+#endif
   packet_t packet_type() { return PACKET_META_INIT; };
 protected:
   network_protocol_t protocol;
@@ -241,8 +142,12 @@ public:
     Nb_Conn = buf;
   }
 
+#ifdef SEND_METASERVER_DATA_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_METASERVER_DATA_PACKET
   int handle_packet ( void* );
+#endif
   packet_t packet_type() { return PACKET_META_DATA; };
 protected:
   string name;
@@ -258,8 +163,12 @@ protected:
 class MetaServerAskInfoPacket : public Packet
 {
 public:
+#ifdef SEND_METASERVER_ASKINFO_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_METASERVER_ASKINFO_PACKET
   int handle_packet ( void* );
+#endif
   packet_t packet_type() { return PACKET_META_INFO; };
 };
 #endif
@@ -271,14 +180,18 @@ public:
   CommandPacket()
     : comm("") {}
   CommandPacket( const string& c /* , unsigned n, ... */);
+#ifdef SEND_COMMAND_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_COMMAND_PACKET
   int handle_packet( void* );
+#endif
   packet_t packet_type() { return PACKET_COMMAND; };
 protected:
   string comm;
   vector<string> arg;
 };
-#endif
+#endif USE_COMMAND_PACKET
 
 #ifdef USE_CHAT_MESSAGE_PACKET
 class ChatMessagePacket : public Packet
@@ -290,8 +203,12 @@ public:
     : exp(""), dest( to ), message(mes) {}
   ChatMessagePacket( const string& from, const string& mes, const string& to )
     : exp(from), dest(to), message(mes) {}
+#ifdef SEND_CHAT_MESSAGE_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_CHAT_MESSAGE_PACKET
   int handle_packet( void* );
+#endif
   packet_t packet_type() { return PACKET_CHAT_MESSAGE; } 
   friend class SocketServer;
 protected:
@@ -309,8 +226,12 @@ public:
     :exp(""), message("") {}
   ServerMessagePacket( const string& from, const string& mes )
     : exp(from), message(mes) {}
+#ifdef SEND_SERVER_MESSAGE_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_SERVER_MESSAGE_PACKET
   int handle_packet( void* );
+#endif
   packet_t packet_type() { return PACKET_SERVER_MESSAGE; }
   friend class SocketServer;
 protected:
@@ -351,8 +272,12 @@ public:
   SubmitPacket( int /* type */, string&, string&, string&, string& ); // four strings
   SubmitPacket( int /* type */,
                 string&, string&, string&, string&, string& ); // five strings
+#ifdef SEND_SUBMIT_PACKET
   string make_netstring() const;
+#endif
+#ifdef RECV_SUBMIT_PACKET
   int handle_packet( void* );
+#endif
   packet_t packet_type() { return PACKET_SUBMIT; }
   friend class SocketServer;
 protected:
@@ -370,6 +295,27 @@ protected:
   
   };
 */
+
+
+#ifdef USE_CLIENT_REQUEST_PACKET
+class ClientRequestPacket : public Packet
+{
+public:
+  ClientRequestPacket()
+    :exp(""), message("") {}
+  ClientRequestPacket( const string& req )
+    : request( req ) {};
+#ifdef SEND_CLIENT_REQUEST_PACKET
+  string make_netstring() const;
+#endif
+#ifdef RECV_CLIENT_REQUEST_PACKET
+  int handle_packet( void* );
+#endif
+  packet_t packet_type() { return PACKET_CLIENT_REQUEST; }
+protected:
+  string request;
+};
+#endif
 
 Packet* 
 make_packet( string& );

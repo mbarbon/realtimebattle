@@ -42,28 +42,21 @@ NetConnection::read_data()
     {
       if( size_buf == 0 )
 	{
-	  //cout << "First I need the size of the packet\n";
 	  //Read the size of the packet
 	  bytes_read = read( the_socket, size_c, 2);
-	  //cout << "I read "<<bytes_read<<" from the socket\n";
 	  
 	  if( bytes_read > 0 )
 	    ;
 	  else if( bytes_read == 0 )
 	    {
-	      cerr << "Premature EOF on socket ! "<<endl;
 	      return -1;
 	    }
 	  else if( errno == EWOULDBLOCK || errno == EAGAIN )
-	    {
-	      //cerr << "It would block : leave\n";
-	      return 0;
-	    }
-
+	    return 0;
+	    
 	  //Now make the size become an int      
 	  memcpy(&size_buf, size_c, 2);
 	  size_buf =  ntohs(size_buf);
-	  //cout<<"I received a "<<size_buf<<" char message long\n";
 	}
       
       //Then try to read the packet
@@ -75,24 +68,19 @@ NetConnection::read_data()
 	{
 	  str_buf += string( buffer, bytes_read );
 	  size_buf -= bytes_read; //size_c chars to read until the end of the packet
-	  //cout<<"{"<<str_buf<<"} ==> "<<bytes_read<<", "<<size_buf<<"\n";
 	}
       else if( bytes_read == 0 )
 	{
-	  cerr << "Premature EOF on socket!" << endl;
+	  cerr << "Can't read the all message : Premature EOF on socket!" << endl;
 	  return -1;
 	}
       else if( errno == EWOULDBLOCK || errno == EAGAIN )
-	{
-	  //cerr << "It would block (2) : leave\n";
-	  return 0;
-	}
-
+	return 0;
+	
       //Maybe we can put this inst bloc at the begining...
       if( size_buf == 0 ) //We have read the all packet now
 	{
-	  //cerr << "New buffer in the queue\n";
-	  read_buffers.push(str_buf);
+	  read_buffers.push_back(str_buf);
 	  str_buf = string("");
 	}
     }
@@ -135,8 +123,6 @@ NetConnection::write_data()
 	  char buf[2];
 	  unsigned short x = write_buffers.front().length();
 
-	  //cerr<<"I sent a "<<x<<" char message long\n";
-
 	  x = htons(x);
 
 	  memcpy( buf, &x, 2 );
@@ -169,7 +155,7 @@ NetConnection::write_data()
 		write_buffer.erase(0, string::npos);
 	    }
 	  //We don't need it here anymore...
-	  write_buffers.pop();
+	  write_buffers.pop_front();
         }
     }
   return 0; // For now
@@ -180,7 +166,7 @@ NetConnection::send_data( const string& data )
 {
   if( connected )
     {
-      write_buffers.push(data);
+      write_buffers.push_back(data);
       write_data();
     }
 }
