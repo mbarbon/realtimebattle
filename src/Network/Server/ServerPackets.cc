@@ -1,3 +1,23 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
 #include <netinet/in.h>
 #include <string>
 #include <iostream.h>
@@ -9,6 +29,8 @@
 #include "ServerPackets.h"
 
 #include "String.h"
+
+#define SHUNT  //For everything that is temporary and that shouldn't be on the last verstion :-)
 
 Packet*
 make_packet( string& netstr )
@@ -117,14 +139,66 @@ CommandPacket::make_netstring() const
   return n_str;
 }
 
+//The robot list we will send when the tournament will start (delete it as soon as possible
+SHUNT class RobotElement {
+SHUNT public:
+SHUNT   string robot_name;
+SHUNT   Chat_Connection* cc;
+SHUNT };
+SHUNT list<RobotElement*> RobotList; 
+
+
+
+
+
 int 
 CommandPacket::handle_packet(void* p_void)
 { /* Should be used by the server */
   Chat_Connection* cc = (Chat_Connection*) p_void;
-  if( data == "Quit" && cc->is_root )
-    quit();
-  else
-    cc->close_socket();
+
+  if(cc == root_client)
+    {
+      if( data == "Quit" )
+	{
+	  quit( );
+	  return 0;
+	}
+      else if (data == "StartGame")
+	{
+	  SHUNT cout<<"Start the tournament\n";
+	  
+	  SHUNT for(list<RobotElement*>::iterator i = RobotList.begin(); i != RobotList.end(); i++)
+	    SHUNT {
+	    SHUNT ((**i).cc)->send_data( LaunchRobotPacket((**i).robot_name).make_netstring() );
+	    SHUNT cout<<"Ask to launch "<<(**i).robot_name<<endl;
+	    SHUNT }
+
+	  return 0;
+	}
+    }
+  else 
+    {
+      if( data == "Quit" )
+	{
+	  cc->close_socket();
+	  return 0;
+	}
+      else if( data == "StartGame" /* || data == "kick"... */) //Should we really do that ???
+	{
+	  (*cc).send_data(
+			  ServerMessagePacket("Server",
+					      "Only root can do that !!!"
+					      ).make_netstring() 
+			  );
+	  return 0;
+	}
+    }
+
+  //Should never come here :-)
+  (*cc).send_data( ServerMessagePacket("Server",
+				       "Unknown command"
+				       ).make_netstring()
+		   );
   return 1;
 }
 
@@ -236,21 +310,43 @@ SubmitPacket::make_netstring() const
 }
 
 int 
-SubmitPacket::handle_packet( void* )
+SubmitPacket::handle_packet( void* p_void)
 {
+  Chat_Connection* cc = (Chat_Connection*) p_void;
 
   if( type == Add_Arena )
     cout<<"Add the following arenas : ";
   else if( type == Del_Arena )
     cout<<"Delete the following arenas : ";
   else if( type == Add_Robot )
-    cout<<"Add the following robots : ";
+    {
+      cout<<"Add the following robots : ";
+      while( 1 )
+	{
+	  //Extract the robot name
+	  int begin = data.find('<');
+	  int end = data.find('>');
+	  string robot_name = data.substr(begin+1, end-begin-1);
+	  cout<<robot_name<<endl;
+
+	  //Add the robot to the list
+	  SHUNT RobotElement* R;
+	  SHUNT R = new RobotElement;
+	  SHUNT R->robot_name = robot_name; R->cc = cc;
+	  SHUNT RobotList.push_back(R);
+
+	  //Get the following robots
+	  data = data.substr(end-begin+1, data.length()-end-1);
+	  if( data == "" )
+	    break;
+	}
+    }
+
   else if( type == Del_Robot )
     cout<<"Delete the following robots : ";
   else
     return 1;
 
-  cout<<data<<endl;
   return 0;
 }
 
@@ -293,4 +389,13 @@ MetaServerAskInfoPacket::make_netstring() const
   n_str = "MA";
   
   return n_str;   
+}
+
+string
+LaunchRobotPacket::make_netstring() const
+{
+  string n_str;
+  n_str = string( "LR" ) + robot_name;
+  cout<<n_str<<endl;
+  return n_str;
 }

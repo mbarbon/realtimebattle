@@ -1,3 +1,23 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
 #include <arpa/inet.h>
 #include <algorithm>
 #include <functional>
@@ -15,7 +35,8 @@
 #include "ServerSocket.h"
 #include "ServerNetConnection.h"
 
-Root_Connection* root_client = NULL;
+Chat_Connection* root_client = NULL; //Don't really know if it is good to let it in SocketServer...
+SocketServer* my_socketserver;
 
 void
 SocketServer::open_socket( int port_nb = 0 )
@@ -135,8 +156,8 @@ SocketServer::check_socket()
 		    {
 		      if( !root_client )
 			{
-			  temp = new Chat_Connection((**li), true);
-			  root_client = temp;
+			  temp = new Chat_Connection((**li));
+			  root_client = (Chat_Connection*) temp;
 			  chat_nb ++;
 			}
 		      else //Close it as he tried to become a root
@@ -158,6 +179,12 @@ SocketServer::check_socket()
 		  if(temp)
 		    {
 		      (**li).connected = false;
+
+		      ServerMessagePacket TempMess("Server",
+						   temp->name + string(" has join the game") 
+						   );
+		      send_packet_by_name( "all", &TempMess); 
+
 		      connected_clients.push_back( temp );
 		      if( MetaServer )
 			{
@@ -177,7 +204,7 @@ SocketServer::check_socket()
 		}
 	      else //In any other case, handle it...
 		P->handle_packet( *li );
-	      
+						  
 	      //Delete this old packet...
 	      delete P;
 	    }
@@ -295,12 +322,12 @@ SocketServer::accept_connection()
   else
     nc->address = (string)inet_ntoa( fromend.sin_addr );
 
-  cout << "nc.address: " << nc->address << endl;
+  //cout << "nc.address: " << nc->address << endl;
 
   nc->connected = true;
 
   connected_clients.push_back( nc );
-  cout<<"Now we are "<<connected_clients.size()<<endl;
+  //cout<<"Now we are "<<connected_clients.size()<<endl;
 }
 
 void
@@ -312,7 +339,6 @@ SocketServer::go_through_read_buffers()
 }
 
 
-//TODO : find a better way to do it
 struct ptr_is_not_connected  //Use in the next function
 {
   bool operator()(ServerNetConnection* const p) {return p->is_not_connected();}
@@ -331,12 +357,18 @@ SocketServer::remove_unconnected_sockets()
 	robot_nb--;
       else if((*li)->type_conn() ==  CHAT_CLIENT_CONNECTION )
 	{
+	  ServerMessagePacket Temp("Server",
+				   (*li)->name + string(" has left the game") 
+				   );
+	  send_packet_by_name( "all", &Temp); 
+		
+	  if( (*li) == root_client )  //We can't play without a root
+	    quit();
 	  chat_nb--;
 	  has_deleted_chater = true;
 	}
       delete (*li);
       connected_clients.erase( li );
- 
     }
   if( has_deleted_chater && MetaServer )
     {
@@ -349,12 +381,15 @@ SocketServer::remove_unconnected_sockets()
 void
 SocketServer::send_packet_by_name(string name, ServerMessagePacket* P) //Change ServerMessagePacket to Packet when 'ready'
 {
-  cout<<"Send ["<<P->message<<"] to "<<name<<endl;
+  /* This is to send a message to specific named chatters */
+
+  //cout<<"Send ["<<P->message<<"] to "<<name<<endl;
 
   list<ServerNetConnection*>::iterator li;
   for( li = connected_clients.begin(); li != connected_clients.end(); li++ )
-    {	  
-      (**li).send_data( (*P).make_netstring() ); 
+    {
+      if( (**li).type_conn() == CHAT_CLIENT_CONNECTION )
+	(**li).send_data( (*P).make_netstring() ); 
     }
 }
 
@@ -374,8 +409,6 @@ SocketServer::~SocketServer()
       delete MetaServer;
     }
 }
-
-SocketServer* my_socketserver;
 
 void
 exit_cleanly(int Sign)
