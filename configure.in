@@ -1,6 +1,9 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(src/RealTimeBattle.cc)
 
+#Check for host type
+AC_CANONICAL_SYSTEM
+
 AC_ARG_PROGRAM
 
 # Use header file 'config.h'
@@ -67,7 +70,6 @@ AC_SUBST(INSTALL_INFO)
 # Start up automake
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
-
 
 # Checks for programs.
 AC_PROG_CXX
@@ -144,6 +146,295 @@ else
    CFLAGS=`echo "$CXXFLAGS " | sed "s/-O[0-9]* //"`
 fi
 changequote([,])dnl
+
+# Enable threads?
+
+AC_ARG_ENABLE(threads, [  --enable-threads        turn on basic thread support [default=yes]
+                          ([=no] will override --with-threads)],,enable_threads=yes)
+
+# Thread-checks (from glib: configure.in) with some minor changes
+dnl ***********************
+dnl *** thread checks ***
+dnl ***********************
+
+AC_ARG_WITH(threads, [  --with-threads=[none/posix/solaris/nspr] specify a thread implementation to use],
+	if test "x$with_threads" = x; then
+		want_threads=yes
+	else
+		want_threads=$with_threads
+	fi,
+	want_threads=yes)
+if test "x$enable_threads" = "xno"; then
+        want_threads=no
+fi
+if test "x$want_threads" = "xnone"; then
+	want_threads=no
+fi
+
+dnl error and warning message
+dnl *************************
+
+THREAD_NO_IMPLEMENTATION="You do not have any known thread system on your
+                computer."
+
+FLAG_DOES_NOT_WORK="I can't find the MACRO, that enables thread safety on your
+                platform (normaly it's "_REENTRANT"). I'll not use any flag on
+                compilation now, but then your programs might not work.
+                Please provide information on how it is done on your system."
+
+LIBS_NOT_FOUND_1="I can't find the libraries for the thread implementation
+		"
+
+LIBS_NOT_FOUND_2=". Please choose another thread implementation or
+		provide information on your thread implementation.
+		You can also run 'configure --disable-threads' 
+		to compile without thread support."
+
+FUNC_NO_GETPWUID_R="some functions will not be MT-safe during their
+		first call because there is no working 'getpwuid_r' on your system."
+
+FUNC_NO_LOCALTIME_R="some functions will not be MT-safe
+		because there is no 'localtime_r' on your system."
+
+dnl determination of thread implementation
+dnl ***************************************
+
+have_threads=none
+if test "x$want_threads" = xyes || test "x$want_threads" = xsolaris; then
+	case $host in
+			*-*-solaris*)
+		AC_CHECK_LIB(thread, cond_init, have_threads=solaris)
+		;;
+	esac
+fi
+if test "x$want_threads" = xyes || test "x$want_threads" = xposix; then
+        if test "x$have_threads" = xnone; then
+                AC_CHECK_HEADER(pthread.h, have_threads=posix)
+        fi
+fi
+if test "x$want_threads" = xyes || test "x$want_threads" = xnspr; then
+        if test "x$have_threads" = xnone; then
+		AC_CHECK_LIB(nspr21, PRP_NewNakedCondVar, have_threads=nspr)
+	fi
+fi
+
+AC_MSG_CHECKING(for thread implementation)
+
+if test "x$have_threads" = xnone && test "x$want_threads" != xno; then
+	AC_MSG_RESULT(none available)
+        AC_MSG_WARN($THREAD_NO_IMPLEMENTATION)
+else
+	AC_MSG_RESULT($have_threads)
+fi
+
+
+dnl determination of THREAD_LIBS
+dnl ******************************
+
+THREAD_LIBS=
+THREAD_CFLAGS=
+
+mutex_has_default=no
+case $have_threads in
+        posix)
+		THREAD_LIBS=error
+		AC_CHECK_LIB(pthread, pthread_attr_init,
+			     THREAD_LIBS="-lpthread")
+		if test "x$THREAD_LIBS" = xerror; then
+						AC_CHECK_LIB(pthreads, pthread_attr_init,
+			     	THREAD_LIBS="-lpthreads")
+		fi
+		if test "x$THREAD_LIBS" = xerror; then
+						AC_CHECK_LIB(c_r, pthread_attr_init,
+			     	THREAD_LIBS="-lc_r")
+		fi
+		if test "x$THREAD_LIBS" = xerror; then
+			AC_CHECK_FUNC(pthread_attr_init, THREAD_LIBS="")
+		fi
+		dnl ********** DG/UX ************
+			if test "x$THREAD_LIBS" = xerror; then
+					AC_CHECK_LIB(thread, __d10_pthread_attr_init,
+				THREAD_LIBS="-lthread"
+				THREAD_CFLAGS="-D_POSIX4A_DRAFT10_SOURCE")
+			fi
+		dnl ********* HPUX 11 ***********
+			if test "x$THREAD_LIBS" = xerror; then
+				AC_CHECK_LIB(pthread, __pthread_attr_init_system,
+				THREAD_LIBS="-lpthread")
+			fi
+                mutex_has_default=yes
+                mutex_default_type='pthread_mutex_t'
+                mutex_default_init='PTHREAD_MUTEX_INITIALIZER'
+                mutex_header_file='pthread.h'
+		threads_impl="POSIX"
+                ;;
+        solaris)
+		THREAD_LIBS=error
+                AC_CHECK_LIB(thread, cond_init, THREAD_LIBS="-lthread")
+                mutex_has_default=yes
+                mutex_default_type='mutex_t'
+		mutex_default_init="DEFAULTMUTEX"
+                mutex_header_file='thread.h'
+		threads_impl="SOLARIS"
+                ;;
+	nspr)
+		AC_CHECK_LIB(nspr21, PRP_NewNakedCondVar,
+			     THREAD_LIBS="-lnspr21")
+		threads_impl="NSPR"
+		;;
+        none)
+		threads_impl="NONE"
+                ;;
+        *)
+		threads2_impl="NONE"
+		THREAD_LIBS=error
+                ;;
+esac
+
+if test "x$THREAD_LIBS" = xerror; then
+        AC_MSG_ERROR($LIBS_NOT_FOUND_1$have_threads$LIBS_NOT_FOUND_2)
+fi
+
+AC_MSG_CHECKING(necessary linker options)
+AC_MSG_RESULT($THREAD_LIBS)
+
+dnl determination of THREAD_FLAGS
+dnl ********************************
+
+if test x"$have_threads" != xnone; then
+THREAD_FLAGS="$THREAD_FLAGS -D_REENTRANT" # good default guess
+
+    case $host in
+	*-aix*)
+		THREAD_FLAGS="$THREAD_FLAGS -D_THREAD_SAFE"
+		if test x"$GCC" = xyes; then
+	        THREAD_FLAGS="$THREAD_FLAGS -mthreads"
+		fi
+		;;
+	*-freebsd2.2*)
+		THREAD_FLAGS="$THREAD_FLAGS -D_THREAD_SAFE"
+
+      # FreeBSD 2.2.x shiped with gcc 2.7.2.x, which doesn't support
+      # -mthreads flag.
+		;;
+    esac
+
+    # if we are not finding the ctime_r function, then we probably are
+    # not using the proper multithread flag
+    # Note: Digital UNIX 4.0d #defines ctime_r to _Pctime_r for gcc.
+    old_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $THREAD_FLAGS"
+    AC_EGREP_HEADER([[^a-zA-Z_](_P)?ctime_r[^a-zA-Z_]], time.h, ,
+    THREAD_FLAGS=
+    AC_MSG_WARN($FLAG_DOES_NOT_WORK))
+    CPPFLAGS=$old_CPPFLAGS
+
+    AC_MSG_CHECKING(necessary compiler options)
+
+    AC_MSG_RESULT($THREAD_FLAGS)
+else
+    THREAD_FLAGS=
+fi
+
+# I don't know if these are necessary but they break the configure script
+# so removed until needed
+
+# dnl check for mt safe function variants
+# dnl ***********************************
+
+# if test x"$have_threads" != xnone; then
+# 	thread_save_LIBS="$LIBS"
+# 	thread_save_CFLAGS="$CFLAGS"
+#    # we are not doing the following for now, as this might require  
+#    # to always be linked with the thread libs on some platforms. 
+#    # LIBS="$LIBS $THREAD_LIBS"
+# 	CFLAGS="$CFLAGS $THREAD_FLAGS"
+# 	AC_CHECK_FUNCS(localtime_r rand_r)
+# 	if test "$ac_cv_header_pwd_h" = "yes"; then
+# 		AC_MSG_CHECKING([for getpwuid_r])
+# 	 	AC_CACHE_VAL(ac_cv_func_getpwuid_r,
+# 			[AC_TRY_RUN([#include <errno.h>
+# 				int main () { char buffer[10000], *pointer; 
+# 				char getpwuid_r (long, void*, void*,
+# 					int, void*);
+# 				int error;
+# 				errno = 0;
+# 				error = getpwuid_r (0, &buffer, &buffer, 
+# 					sizeof (buffer), &pointer);
+# 				return errno == ENOSYS || error == ENOSYS;}],
+# 				[ac_cv_func_getpwuid_r=yes],
+# 				[ac_cv_func_getpwuid_r=no])])
+# 		if test "$ac_cv_func_getpwuid_r" = yes; then
+# 			AC_MSG_RESULT(yes)
+# 			AC_DEFINE(HAVE_GETPWUID_R)
+# 		else
+# 			AC_MSG_RESULT(no)
+# 		fi
+# 		if test "$ac_cv_func_getpwuid_r" = "yes"; then
+# 			AC_MSG_CHECKING(whether getpwuid_r is posix like)
+#          # getpwuid_r(0, NULL, NULL, 0) is the signature on
+#          # solaris, if that is not found, the prog below won't 
+#          # compile, then the posix signature is assumed as 
+#          # the default.
+# 			AC_TRY_COMPILE([#include <pwd.h>],
+# 				[getpwuid_r(0, NULL, NULL, 0);],
+# 				[AC_MSG_RESULT(no)],
+# 				[AC_MSG_RESULT(yes)
+# 				AC_DEFINE(HAVE_GETPWUID_R_POSIX)])
+# 		fi
+# 	fi
+# 	if test x"$have_threads" = xposix; then
+# 		LIBS="$LIBS $THREAD_LIBS"
+# 		AC_MSG_CHECKING(whether pthread_getspecific is posix like)
+#       # PCThreads has pthread_getspecific(pthread_key_t, void **);
+# 		AC_TRY_COMPILE([#include <pthread.h>],
+# 			[pthread_getspecific(0,NULL);],
+# 			[AC_MSG_RESULT(no)],
+# 			[AC_MSG_RESULT(yes)
+# 			AC_DEFINE(HAVE_PTHREAD_GETSPECIFIC_POSIX)])
+# 		AC_MSG_CHECKING(whether pthread_mutex_trylock is posix like)
+#       # DCE Threads return 1 as success, posix 0. what a mess.
+# 		AC_TRY_RUN([#include <pthread.h>
+# 			int main () { 
+# 			pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+# 			return !pthread_mutex_trylock (&mutex); }],
+# 			[AC_MSG_RESULT(no)],
+# 			[AC_MSG_RESULT(yes)
+# 			AC_DEFINE(HAVE_PTHREAD_MUTEX_TRYLOCK_POSIX)])
+# 		AC_MSG_CHECKING(whether pthread_cond_timedwait is posix like)
+#       # DCE Threads return -1 as failure, posix ETIMEDOUT.
+# 		AC_TRY_RUN([#include <pthread.h>
+# 			int main () { 
+# 			pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+# 			pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+# 			struct timeval tval;
+# 			struct timespec tspec;
+# 			gettimeofday (&tval, NULL);
+# 			tspec.tv_sec = tval.tv_sec;
+# 			tspec.tv_nsec = 0;
+# 			return pthread_cond_timedwait (&cond,&mutex,&tspec) 
+# 				!= -1;}],
+# 			[AC_MSG_RESULT(no)],
+# 			[AC_MSG_RESULT(yes)
+# 			AC_DEFINE(HAVE_PTHREAD_COND_TIMEDWAIT_POSIX)])
+# 	fi
+# 	LIBS="$thread_save_LIBS"
+# 	CFLAGS="$thread_save_CFLAGS"
+# fi
+
+# if test "x$enable_threads" = "xyes"; then
+# 	if test "$ac_cv_func_getpwuid_r" != "yes"; then
+# 		AC_MSG_WARN($FUNC_NO_GETPWUID_R)
+# 	fi
+# 	if test "$ac_cv_func_localtime_r" != "yes"; then
+# 		AC_MSG_WARN($FUNC_NO_LOCALTIME_R)
+# 	fi
+# fi
+
+#AC_DEFINE_UNQUOTED(THREAD_SOURCE,"gthread-$have_threads.c")
+
+AC_SUBST(THREAD_FLAGS)
+AC_SUBST(THREAD_LIBS)
 
 
 #  RPM - set the correct CXXFLAGS and CFLAGS. Do not install the docs.
