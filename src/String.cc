@@ -51,6 +51,24 @@ equal_strings_nocase( const string& s, const string& t )
   return( s.length() == t.length() );
 }
 
+string
+lowercase( const string& s )
+{
+  string t = s;
+  for( unsigned int i = 0; i < t.length(); i++ )
+    t[i] = tolower( t[i] );
+  return s;
+}
+
+string
+uppercase( const string& s )
+{
+  string t = s;
+  for( unsigned int i = 0; i < t.length(); i++ )
+    t[i] = toupper( t[i] );
+  return s;
+}
+
 void
 remove_initial_whitespace( string& str )
 {

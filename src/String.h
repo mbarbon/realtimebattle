@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 enum string_double_t { STRING_NORMAL_FORM, STRING_EXP_FORM, STRING_FIXED_FORM };
 
 bool equal_strings_nocase( const string&, const string& );
+string lowercase( const string& );
+string uppercase( const string& );
 void remove_initial_whitespace( string& );
 
 vector<string>& split_string( const string& str , vector<string>& strlist,
