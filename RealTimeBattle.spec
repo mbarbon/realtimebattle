@@ -22,7 +22,7 @@ make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 make rpm-install
 %post
 install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
-%postun
+%preun
 install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 
 %files
