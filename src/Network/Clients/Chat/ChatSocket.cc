@@ -1,3 +1,23 @@
+/*
+RealTimeBattle, a robot programming game for Unix
+Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <iostream>
@@ -51,7 +71,7 @@ SocketClient::check_connection()
 	  //Use ClientRequest packet instead ...
 	  nc.send_data( CommandPacket("Quit").make_netstring() );
 	  sleep( 1 );  //Maybe a select???
-	  cout<<"Ciao \n";
+	  cout<<"Ciao\n";
 	  exit( 0 );
 	}
       else if( buf.substr(0,3) == "say")
@@ -61,22 +81,26 @@ SocketClient::check_connection()
 					  ).make_netstring() 
 			);
 	}      
+      else if( buf == "start\n")
+	{
+	  nc.send_data( CommandPacket("StartGame").make_netstring() );
+	}
       else if( buf.substr(0, 3) == "add")
 	{
 	  vector<string> filename;
-	  if ( buf.substr(3, 5) == "arena" )
+	  if ( buf.substr(4, 5) == "robot" )
 	    {
-	      string arenaname;
-	      my_cons.write(C_OK, "arena name (0 to finish) : ");
-	      cin>>arenaname;
-	      while ( arenaname != "0" )
+	      string robotname;
+	      my_cons.write(C_OK, "robot name (0 to finish) : ");
+	      cin>>robotname;
+	      while ( robotname != "0" )
 		{
-		  filename.push_back(arenaname);
-		  my_cons.write(C_OK, "arena name (0 to finish) : ");
-		  cin>>arenaname;
+		  filename.push_back(robotname);
+		  my_cons.write(C_OK, "robot name (0 to finish) : ");
+		  cin>>robotname;
 		}
 	      my_cons.prompt_enter();
-	      nc.send_data ( SubmitPacket(Add_Arena, filename).make_netstring() );
+	      nc.send_data ( SubmitPacket(Add_Robot, filename).make_netstring() );
 	    }
 	}
       //read(0, buffer, MAX_BUFFER_SIZE-1);
@@ -94,7 +118,7 @@ SocketClient::check_connection()
 	{
 	  //Extract the string for the queue and make a packet with it
 	  string data = nc.read_buffers.front();
-	  
+
 	  P = make_packet( data );
 	  nc.read_buffers.pop_front();
 	      
@@ -102,26 +126,14 @@ SocketClient::check_connection()
 	  
 	  P->get_string_from_netstring( data );
 
-	  switch(P->packet_type()) 
-	    {
-	    case PACKET_COMMAND :
-	    case PACKET_SERVER_COMMAND :
-	    case PACKET_SERVER_MESSAGE :
-	      P->handle_packet( &nc );
-	      break;
-	      
-	    case PACKET_META_DATA:
-	      //send him all the informations
-	      P->handle_packet( &nc ); 
-	      break;
-	      
-	    default : break;
-	    }
+	  P->handle_packet( &nc );
+
 	  delete P;
 	}
 
       if( read < 0 )
 	{ //We had a problem when we last read the socket...
+	  cout<<"Problem while reading\n";
 	  (nc).close_socket();
 	}
     }
