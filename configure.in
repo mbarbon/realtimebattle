@@ -737,17 +737,11 @@ AC_OUTPUT([
    Robots/empty/Makefile
    src/Makefile
    src/Network/Makefile
-   src/Network/common/Makefile
-   src/Network/metaserver/Makefile
-   src/Network/Server/Makefile
-   src/Network/Clients/Makefile
-   src/Network/Clients/common/Makefile
-   src/Network/Clients/Chat/Makefile
-   src/Network/Clients/Robot/Makefile
    src/Gadgets/Makefile
    src/Gui/Makefile
    src/Gui/Gtk/Makefile
    src/Gui/none/Makefile
+   src/Gui/curses/Makefile
    po/Makefile.in
    Packages/Makefile
    Packages/rpm/Makefile
