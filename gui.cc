@@ -560,6 +560,8 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   // Zoom Buttons etc.
 
+  zoomfactor = 1;
+
   button_table = gtk_table_new (1, 3, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), button_table, FALSE, FALSE, 0);
 
