@@ -65,6 +65,7 @@ ArenaReplay::timeout_function()
 
     case BEFORE_GAME_START:
       parse_this_interval();
+      the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
       the_gui.get_arenawindow_p()->draw_everything();      
       set_state( GAME_IN_PROGRESS );
       break;
@@ -165,10 +166,10 @@ ArenaReplay::parse_log_line()
         log_file >> robot_id >> x >> y >> cannon_angle >> radar_angle >> energy;
         ListIterator<Shape> li;
         find_object_by_id( object_lists[ROBOT], li, robot_id );
+        if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line");
+
         Robot* robotp = (Robot*)li();
 
-        if( robotp == (Robot*)NULL )
-          Error( true, "Robot not in list", "ArenaReplay::parse_log_line" );
         robotp->change_position( x, y, 0.0, cannon_angle, radar_angle, energy );
         robotp->live();
       }
@@ -231,6 +232,8 @@ ArenaReplay::parse_log_line()
               // robot_die( object_id, points_received );
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[ROBOT], li, object_id );
+              if( !li.ok() ) 
+                Error(true, "Dying robot not in list", "ArenaReplay::parse_log_line");
               ((Robot*)li())->die();
             }
             break;
@@ -238,6 +241,8 @@ ArenaReplay::parse_log_line()
             {
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[COOKIE], li, object_id );
+              if( !li.ok() ) 
+                Error(true, "cookie not in list", "ArenaReplay::parse_log_line");
               ((Cookie*)li())->die();
               object_lists[COOKIE].remove(li);
             }
@@ -246,6 +251,8 @@ ArenaReplay::parse_log_line()
             {
               ListIterator<Shape> li;
               find_object_by_id( object_lists[MINE], li, object_id );
+              if( !li.ok() ) 
+                Error(true, "Mine not in list", "ArenaReplay::parse_log_line");
               ((Mine*)li())->die();
               object_lists[MINE].remove(li);
             }
@@ -254,6 +261,8 @@ ArenaReplay::parse_log_line()
             {
               ListIterator<Shape> li;
               find_object_by_id( object_lists[SHOT], li, object_id );
+              if( !li.ok() ) 
+                Error(true, "Shot not in list", "ArenaReplay::parse_log_line");
               ((Shot*)li())->die();
               object_lists[SHOT].remove(li);
             }
@@ -275,6 +284,7 @@ ArenaReplay::parse_log_line()
         // game_starts( sequence, game );
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
+        set_state( BEFORE_GAME_START );
       }
       break;
     case 'H': // Header
