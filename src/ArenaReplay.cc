@@ -173,7 +173,7 @@ ArenaReplay::parse_this_time_index()
     parse_log_line();
 
   double last_replay_time = current_replay_time;
-  streampos strpos;
+  streampos strpos = log_file.tellg();
 
   while( current_replay_time == last_replay_time )
     {
