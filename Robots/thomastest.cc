@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <glib.h>
+#include <math.h>
 #include "../messagetypes.h"
 
 #define abs(x) ((x>0) ? (x) : (-x))
@@ -12,7 +13,8 @@ volatile double acceleration = 0.0;
 volatile double robot_rotate = 0.0;
 volatile double cannon_rotate = 0.0, radar_rotate = 0.0;
 double tid, speed, radar_angle, cannon_angle, tid0, slumprotate = 1.0 ;
-double maxspeed = 10.0;
+double maxspeed = 10.0; 
+int robots_left = 20;
 bool sweep = false, align_cro= true, align_cra = true, enemy = false;
 
 volatile sig_atomic_t exit_robot = false;
@@ -70,7 +72,7 @@ check_messages(int sig)
 
         case INFO:
           cin >> tid >> speed  >> cannon_angle;
-          if(rand() < (RAND_MAX/100))
+          if(rand() < (RAND_MAX/500))
             {
               slumprotate = 0.0;
               while (abs(slumprotate)<0.5)
@@ -79,6 +81,10 @@ check_messages(int sig)
             }
           break;
           
+        case ROBOTS_LEFT:
+          cin >> robots_left;
+          break;
+
         case RADAR:
           {
             double dist, energy;
@@ -89,20 +95,11 @@ check_messages(int sig)
               {
               case ROBOT:
                 enemy = true;
-                energy = 20.0/(dist*dist+0.2)+0.5;
+                energy = 20.0/(dist*dist+0.2)+0.5+2.0/double(robots_left);
                 robot_rotate = 0.0;
                 if (dist<3.0)
                   {
-                    if ((speed>1.0)||((dist<1.0)&&(speed>0.01)))
-                      {
-                        cout << "Break 1" << endl;
-                        acceleration = 0.0;
-                      }
-                    else
-                      if (speed<1.0)
-                        {
-                          acceleration = 0.0;
-                        }
+                    acceleration = 2.0;
                   }
                 else
                   {
@@ -119,8 +116,6 @@ check_messages(int sig)
                 break;
               case WALL:
                 {
-                  double old_acc = acceleration;
-                  double old_rot = robot_rotate;
                   if (enemy)
                     {
                       enemy = false;
@@ -197,14 +192,16 @@ check_messages(int sig)
                 break;
 
               case MINE:
-                acceleration = 0.0;
-                robot_rotate = 2.0*slumprotate;
-                if (speed > 0.4)
-                  cout << "Break 1" << endl;
-                cout << "Shoot 0.5" << endl;
-                cout << "Acceleration " << acceleration << endl;
-                cout << "Rotate 1 " << robot_rotate << endl;
-                
+                if (dist < 10)
+                  {
+                    acceleration = 0.0;
+                    robot_rotate = 2.0*slumprotate;
+                    if (speed > 0.4)
+                      cout << "Break 1" << endl;
+                    cout << "Shoot 0.5" << endl;
+                    cout << "Acceleration " << acceleration << endl;
+                    cout << "Rotate 1 " << robot_rotate << endl;
+                  }
                 //cout << "Print Avoid this mine" << endl;
                 break;
 
@@ -218,20 +215,35 @@ check_messages(int sig)
         case COLLISION:
           {
             int tmp;
-            double enegry_diff;
-            cin >> tmp >> enegry_diff;
+            double energy_diff, coll_angle;
+            cin >> tmp >> energy_diff >> coll_angle;
             switch(tmp)
               {
               case ROBOT: 
-                acceleration = -0.5;
+                if (abs(coll_angle)<M_PI/6.0 && energy_diff<5)
+                  acceleration = 2.0;
+                else
+                  {
+                    acceleration = -0.5;
+                    robot_rotate = 5.0*slumprotate;
+                  }
                 cout << "Acceleration " << acceleration << endl; 
+                cout << "Rotate 1 " << robot_rotate << endl;
                 break;
               case SHOT:
-                acceleration = 2.0;
+                if (abs(coll_angle)<M_PI/4.0)
+                  {
+                    if(speed<3.0)
+                      acceleration = 2.0;
+                    else
+                      acceleration = 0.0;
+                    robot_rotate = 5.0*slumprotate;
+                  }
+                cout << "Rotate 1 " << robot_rotate << endl;
                 cout << "Acceleration " << acceleration << endl; 
                 break;
               case MINE: 
-                //cout << "Print Oh no! A mine!" << endl; 
+                cout << "Print Oh no! A mine!" << endl; 
                 break;
               case COOKIE: 
                 //cout << "Print Cookie eaten!" << endl; 
