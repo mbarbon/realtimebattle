@@ -23,6 +23,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
+
+#ifdef __USE_BSD
+#include <floatingpoint.h>
+#endif
+
+
 #include "Gui.h"
 #include "MovingObject.h"
 #include "Options.h"
@@ -93,6 +99,12 @@ sig_handler (int signum)
 int 
 main ( int argc, char* argv[] )
 {
+
+
+#ifdef __USE_BSD
+  fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
+#endif
+
   gtk_init (&argc, &argv);
 
   int option_char;
