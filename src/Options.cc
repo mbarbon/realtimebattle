@@ -299,6 +299,11 @@ Options::Options()
                         false, false, "Logging frequency [Each n:th update interval]",
                         _("Logging frequency [Each n:th update interval]") );
 
+  all_long_options[OPTION_MAX_ROBOTS_ALLOWED] =
+    option_info_t<long>(ENTRY_INT, PAGE_MISC, 120, 1, 10000, 6, false, false,
+                        "Max robots allowed simultaneously",
+                        _("Max robots allowed simultaneously") );
+
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
                           false, false, "Robot search path", _("Robot search path") );
