@@ -128,6 +128,13 @@ struct option_info_t
   option_info_t(const entry_datatype_t d, const pages_in_options_t p,const T v,
                 const T mn, const T mx, const int l, const String& s, GtkWidget * e ) :
     datatype(d), page(p), value(v), default_value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), label(s), entry(e) {}
+
+  option_info_t& operator=(const option_info_t& old) { 
+    datatype=old.datatype; page=old.page; value=old.value; 
+    default_value=old.default_value; min_value=old.min_value; max_value=old.max_value; 
+    max_letters_in_entry=old.max_letters_in_entry; label=old.label;entry=old.entry; }
+
+
   entry_datatype_t datatype;
   pages_in_options_t page;
   T value;
