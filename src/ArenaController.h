@@ -37,7 +37,7 @@ extern ArenaController the_arena_controller;
 static const int max_debug_level = 5;
 
 
-class GuiInterface;
+class GuiServerInterface;
 
 class ArenaController
 {
@@ -48,7 +48,7 @@ public:
   int init( int, char** );
   void parse_command_line( int, char** );
 
-  void quit_gui( GuiInterface* gui_p, bool exit_program );
+  void quit_gui( GuiServerInterface* gui_p, bool exit_program );
   
   void start_arena();
   void close_arena();
@@ -70,7 +70,7 @@ private:
   bool started;
   bool realtime;
 
-  list<GuiInterface*> gui_list;
+  list<GuiServerInterface*> gui_list;
   // Mutex for locking processes.
   pthread_mutex_t gi_mutex;
 

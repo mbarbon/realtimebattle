@@ -23,18 +23,51 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <pthread.h>
 #include <list>
 #include <string>
+#include <stack>
 
+#include "GuiRequest.h"
 #include "InfoClasses.h"
-#include "InformationDistributor.h"
 
 // ---------------------------------------------------------------------------
-// class GuiInterface
+// class GuiInterface and it's associated classes
 // ---------------------------------------------------------------------------
 // All interactions between the gui and server should go through this class.
 // This class needs to be threadsafe!
 // ---------------------------------------------------------------------------
 
-class GuiInterface
+class GuiClientInterface
+{
+public:
+  GuiClientInterface                        () {}
+  virtual ~GuiClientInterface               () {}
+
+  virtual const InfoBase* check_information () const = 0;
+  virtual void apply_request                ( GuiRequest* req ) = 0;
+  virtual void quit                         ( bool exit_program = false ) = 0;
+
+private:
+};
+
+class GuiServerInterface
+{
+public:
+  GuiServerInterface                     () {}
+  virtual ~GuiServerInterface            () {}
+
+  virtual void startup                   () = 0;
+  virtual void shutdown                  () = 0;
+
+  virtual void process_all_requests      () = 0;
+  virtual const pthread_t* get_thread_p  () const = 0;
+
+  // Gui functions
+  virtual const string Name              () const = 0;
+  virtual const string UsageMessage      () const = 0;
+  virtual int Main                       ( GuiClientInterface* gi ) = 0;
+private:
+};
+
+class GuiInterface : public GuiClientInterface, public GuiServerInterface
 {
 public:
   // Constructor & Destructor
@@ -49,23 +82,24 @@ public:
 
   // Functions that supplies information to the Gui.
 
-  const InfoBase* get_information      ();
+  const InfoBase* check_information    () const;
 
   // Functions that enables the gui to have some influence over the server.
 
-  void supply_information              ();
+  void apply_request                   ( GuiRequest* req )
+  { request_stack.push( req ); }
   void quit                            ( bool exit_program = false );
 
 
   // Functions for the server.
 
-  const InfoBase* server_get_information();
-  pthread_t* get_thread_p              ();
+  void process_all_requests            ();
+  const pthread_t* get_thread_p        () const { return &thread; }
 
   // Gui functions
   const string Name                    () const { return (*func_Name)(); }
   const string UsageMessage            () const { return (*func_UsageMessage)(); }
-  int Main                             ( GuiInterface* gi )
+  int Main                             ( GuiClientInterface* gi )
   { return (*func_Main)( gi ); }
 
 private:
@@ -75,7 +109,7 @@ private:
   void* load_symbol                    ( const string& symname );
 
   // Communication to server
-  InformationDistributor server_informer;
+  stack<GuiRequest*> request_stack;
 
   // internal variables
 
@@ -94,7 +128,7 @@ private:
   const string (*func_Name)();
   const string (*func_UsageMessage)();
   bool (*func_Init)( int, char** );
-  int (*func_Main)( GuiInterface* );
+  int (*func_Main)( GuiClientInterface* );
 
   // Mutex
   pthread_mutex_t* mutex_p;
@@ -116,7 +150,7 @@ const string GIUsageMessage();
 // Initialization of gui
 bool GIInit( int , char** );
 // The main loop of the gui
-int  GIMain( GuiInterface* );
+int  GIMain( GuiClientInterface* );
 // Exit from gui. This function should not needed to be set from gui.
 void GIExit( int );
 

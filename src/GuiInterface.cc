@@ -48,7 +48,7 @@ GuiInterface::GuiInterface( const string& name, pthread_mutex_t* _mutex_p,
   func_Name = (const string (*)())load_symbol( "GIName" );
   func_UsageMessage = (const string (*)())load_symbol( "GIUsageMessage" );
   func_Init = (bool (*)( int, char** ))load_symbol( "GIInit" );
-  func_Main = (int (*)( GuiInterface* ))load_symbol( "GIMain" );
+  func_Main = (int (*)( GuiClientInterface* ))load_symbol( "GIMain" );
 
   if(!(*func_Init)( argc, argv ))
     Error( true, "Couldn't initialize gui " + name,
@@ -98,12 +98,12 @@ GuiInterface::shutdown()
 void
 GuiInterface::quit( bool exit_program )
 {
-  the_arena_controller.quit_gui( this, exit_program );
+  the_arena_controller.quit_gui( (GuiServerInterface*)this, exit_program );
 }
 
-// TODO: Make sure that the event is not deleted before the gui uses it!
+// TODO: Make sure that the event is not deleted before the gui has used it!
 const InfoBase*
-GuiInterface::get_information()
+GuiInterface::check_information() const
 {
   pthread_mutex_lock( mutex_p );
   const InfoBase* info =
@@ -112,11 +112,22 @@ GuiInterface::get_information()
   return info;
 }
 
+void
+GuiInterface::process_all_requests()
+{
+  while( !request_stack.empty() )
+    {
+      request_stack.top()->execute();
+      delete request_stack.top();
+      request_stack.pop();
+    }
+}
+
 // PreMain function
 void*
 GIMain_pre( void* arg )
 {
-  int res = ((GuiInterface*) arg)->Main( (GuiInterface*) arg );
+  int res = ((GuiInterface*) arg)->Main( (GuiClientInterface*) arg );
   GIExit( res );
   return NULL;
 }

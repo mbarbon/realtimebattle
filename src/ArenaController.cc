@@ -68,11 +68,11 @@ ArenaController::~ArenaController()
 {
   if( started ) close_arena();
 
-  list<GuiInterface*>::iterator li;
+  list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
       (*li)->shutdown();
-      delete *li;
+      delete ((GuiInterface*)*li);
     }
   gui_list.clear();
 
@@ -89,7 +89,7 @@ ArenaController::init( int argc, char** argv )
   parse_command_line( argc, argv );
 
   // Startup all guis
-  list<GuiInterface*>::iterator li;
+  list<GuiServerInterface*>::iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     (*li)->startup();
 
@@ -342,6 +342,8 @@ ArenaController::initialize_options()
 //                  "Logging frequency [Each nth update interval]",
 //                  _("Logging frequency [Each n:th update interval]") );
 
+  // ---------- Misc ----------
+
   all_options["Background colour"] = (Option*) new
     LongOption( GROUP_MISC, 0xfaf0e6, 0x000000, 0xffffff, false, false,
                 _("Background colour"), true );
@@ -390,16 +392,16 @@ ArenaController::initialize_options()
 }
 
 void
-ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
+ArenaController::quit_gui( GuiServerInterface* gui_p, bool exit_program )
 {
-  list<GuiInterface*>::iterator li;
+  list<GuiServerInterface*>::iterator li;
   if( exit_program )
     {
       for( li = gui_list.begin(); li != gui_list.end(); li++ )
         {
           (*li)->shutdown();
           //TODO: Find a way to delete *li in a clean manner
-          //          delete *li;
+          //          delete ((GuiInterface*)*li);
         }
       gui_list.clear();
       Quit();
@@ -410,7 +412,7 @@ ArenaController::quit_gui( GuiInterface* gui_p, bool exit_program )
         {
           (*li)->shutdown();
           //TODO: Find a way to delete *li in a clean manner
-          //          delete *li;
+          //          delete ((GuiInterface*)*li);
           gui_list.erase(li);
         }
     }
@@ -574,7 +576,8 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'g':
-          gui_list.push_back( new GuiInterface( optarg, &gi_mutex, argc, argv ) );
+          gui_list.push_back( ((GuiServerInterface*)
+                               new GuiInterface( optarg, &gi_mutex, argc, argv )) );
           break;
 
         default:
@@ -655,7 +658,7 @@ ArenaController::print_help_message()
   cout << _("    --version,                   -v   prints the version number") << endl;
   cout << endl;
 
-  list<GuiInterface*>::const_iterator li;
+  list<GuiServerInterface*>::const_iterator li;
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
       cout << endl;
