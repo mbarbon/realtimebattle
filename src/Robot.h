@@ -62,7 +62,8 @@ public:
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
   void set_stats(const int robots_killed_same_time);
-  void set_stats(const double pnts, const int pos, const double time_survived);
+  void set_stats(const double pnts, const int pos, const double time_survived,
+                 const bool display=true);
   void start_process();
   bool is_process_running();
   void check_process();
@@ -84,6 +85,10 @@ public:
   void add_points(double pts) { points_this_game += pts; total_points += pts; }
   bool get_died_this_round() { return died_this_round; }
   int get_last_position();
+
+  void find_current_game_stats();
+  
+
   rotation_t get_robot_angle() { return robot_angle; }
 
   bool set_and_get_has_competed() 
@@ -158,6 +163,8 @@ private:
   ofstream* outstreamp;
   int pipes[2];
   pid_t pid;    
+
+  ListIterator<stat_t> current_game_stats;
 
   int row_in_score_clist;
 
