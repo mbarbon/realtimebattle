@@ -68,7 +68,7 @@ private:
   bool responsible_for_deletion;
 };
 
-class String;
+#include "String.h"
 void Error(const bool fatal, const String& error_msg, const String& function_name);
 
 template <class T>
