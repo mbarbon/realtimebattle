@@ -601,11 +601,12 @@ ArenaController::parse_command_line( int argc, char** argv )
   if( debug_level < 0 )
     debug_level = 0;
 
-  // TODO: A better way to determine whether a tournament can be stated
+  // TODO: A better way to determine whether a tournament can be started
   //       (i.e. some guis may not start up a tournament)
   if( optind != argc ||
       ( tournament_filename == "" && gui_list.empty() ) )
     {
+      cout << "Please use a gui or start a tournament with '-t file'." << endl << endl;
       print_help_message();
       exit( EXIT_FAILURE );
     }

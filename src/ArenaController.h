@@ -31,7 +31,7 @@ class ArenaController;
 
 extern ArenaController the_arena_controller;
 
-#define the_arena (*( the_arena_controller.get_my_arena()) )
+//#define the_arena (*( the_arena_controller.get_my_arena()) )
 #define the_opts (*( the_arena_controller.get_main_opts() ))
 
 static const int max_debug_level = 5;
@@ -58,8 +58,6 @@ public:
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
 
-  Arena* get_my_arena() { return my_arena; }
-
   //  bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
@@ -77,8 +75,6 @@ private:
 
   OptionHandler* main_opts;
   InformationDistributor distributor;
-
-  Arena* my_arena;
 
 public: // global names etc.
   string option_filename;

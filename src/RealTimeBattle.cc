@@ -78,6 +78,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //class ArenaRealTime the_arena;
 class ArenaController the_arena_controller;
+class EventHandler the_eventhandler;
+class Arena* the_arenap;
+
 
 bool no_graphics;
 
@@ -159,9 +162,6 @@ main ( int argc, char* argv[] )
   signal(SIGCHLD, sig_handler);
   signal(SIGPIPE, sig_handler);
   signal(SIGFPE, sigfpe_handler);
-
-
-  EventHandler the_eventhandler;
   
   the_eventhandler.main_loop();
 
