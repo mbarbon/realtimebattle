@@ -46,7 +46,7 @@ fi
 
 %files
 
-%doc ABOUT-NLS BUGS COPYING FAQ ChangeLog README TODO
+%doc ABOUT-NLS BUGS COPYING CVS-Help FAQ ChangeLog README TODO
 %doc Documentation/*.html
 %doc Documentation/*.gif
 %doc Documentation/*.dvi
