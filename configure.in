@@ -38,7 +38,7 @@ AC_SUBST(VERSION)
 
 # Languages
 
-ALL_LINGUAS="sv"
+ALL_LINGUAS="sv pl"
 
 # Directories
 
