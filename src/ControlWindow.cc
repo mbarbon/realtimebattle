@@ -506,7 +506,7 @@ void
 ControlWindow::replay_tournament( GtkWidget* widget,
                                   class ControlWindow* cw_p )
 {
-  if( the_arena_controller.is_started() ||
+  if( the_arena_controller.is_started() &&
       ( the_arena.get_state() != NOT_STARTED &&
         the_arena.get_state() != FINISHED ) )
     {
