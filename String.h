@@ -3,6 +3,8 @@
 #ifndef __STRING__
 #define __STRING__
 
+#include <iostream.h>
+
 class String
 {
 public:
