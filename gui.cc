@@ -14,6 +14,8 @@
 
 #define GDK_360_DEGREES 23040     // 64 * 360 degrees
 
+#define call_function(function_name) function_name()
+
 static char * colour_square[] =
 {
   "14 14 1 1",
@@ -35,6 +37,20 @@ static char * colour_square[] =
 };
 
 void
+question_yes_callback(GtkWidget * widget, QuestionFunction function_name)
+{
+  (*function_name)(true);
+  the_gui.close_question_window();
+}
+
+void
+question_no_callback(GtkWidget * widget, QuestionFunction function_name)
+{
+  (*function_name)(false);
+  the_gui.close_question_window();
+}
+
+void
 pause_button_callback(GtkWidget * widget, gpointer data)
 {
   the_arena.paus_game_toggle();
@@ -50,7 +66,14 @@ step_button_callback(GtkWidget * widget, gpointer data)
 void
 end_button_callback(GtkWidget * widget, gpointer data)
 {
-  the_arena.interrupt_tournament();
+  the_gui.ask_user("This action will kill the current tournament.\nAre you sure to continue?",&end_tournament);
+}
+
+void
+end_tournament(bool really)
+{
+  if(really)
+    the_arena.interrupt_tournament();
 }
 
 void
@@ -72,9 +95,15 @@ zoom_out_callback(GtkWidget *widget, gpointer data)
 }
 
 gint
-redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+arena_size_changed (GtkWidget *widget, GdkEventConfigure *event, gpointer data)
 {
   the_gui.change_zoom();
+  return TRUE;
+}
+
+gint
+redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
   the_gui.draw_all_walls();
   return FALSE;
 }
@@ -87,7 +116,6 @@ delete_event(GtkWidget *widget, gpointer data)
 
 Gui::Gui()
 {
-  zoomfactor = 1;
   statistics_up = false;
   boundary[0] = Vector2D(0.0, 0.0);
   boundary[1] = Vector2D(0.0, 0.0);
@@ -118,14 +146,20 @@ Gui::Gui()
 void
 Gui::change_zoom()
 {
-  double w = (double)(drawing_area->allocation.width);
-  double h = (double)(drawing_area->allocation.height);
+  int width = da_scrolled_window->allocation.width - 4;
+  int height = da_scrolled_window->allocation.height - 4;
+  double w = (double)(width * zoomfactor);
+  double h = (double)(height * zoomfactor);
   double bw = boundary[1][0] - boundary[0][0];
   double bh = boundary[1][1] - boundary[0][1];
   if( w / bw >= h / bh )
     zoom = h / bh;
   else
     zoom = w / bw;
+
+  gtk_widget_set_usize(drawing_area,
+                       (da_scrolled_window->allocation.width - 4) * zoomfactor,
+                       (da_scrolled_window->allocation.width - 4) * zoomfactor);
 }
 
 void
@@ -144,9 +178,8 @@ Gui::change_zoomfactor( const zoom_t type )
         zoomfactor--;
       break;
     }
-  gtk_widget_set_usize(drawing_area,
-                       ( da_scrolled_window->allocation.width - 50 ) * zoomfactor,
-                       ( da_scrolled_window->allocation.height - 50 ) * zoomfactor);
+  draw_all_walls();
+  change_zoom();
 }
 
 int
@@ -484,6 +517,7 @@ Gui::setup_score_window()
 
   score_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   set_score_window_title();
+  gtk_window_set_policy(GTK_WINDOW (score_window), TRUE,TRUE,TRUE);
   gtk_signal_connect (GTK_OBJECT (score_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(score_window));
   gtk_container_border_width (GTK_CONTAINER (score_window), 12);
@@ -614,8 +648,11 @@ Gui::setup_arena_window( const Vector2D bound[] )
 
   arena_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (arena_window), "RealTimeBattle Arena");
+  gtk_window_set_policy(GTK_WINDOW (arena_window), TRUE,TRUE,FALSE);
   gtk_signal_connect (GTK_OBJECT (arena_window), "delete_event",
                       (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(arena_window));
+  gtk_signal_connect (GTK_OBJECT (arena_window), "configure_event",
+                      (GtkSignalFunc)arena_size_changed, (gpointer) NULL);
   gtk_container_border_width (GTK_CONTAINER (arena_window), 12);  
 
   // VBox
@@ -686,6 +723,44 @@ Gui::setup_arena_window( const Vector2D bound[] )
 }
 
 void
+Gui::ask_user(String question, QuestionFunction function_name)
+{
+  question_window = gtk_window_new (GTK_WINDOW_DIALOG);
+  gtk_window_set_title (GTK_WINDOW (question_window), "RealTimeBattle");
+  gtk_window_set_policy(GTK_WINDOW (question_window), FALSE, FALSE, FALSE);
+  gtk_window_position  (GTK_WINDOW (question_window), GTK_WIN_POS_CENTER);
+  gtk_signal_connect (GTK_OBJECT (question_window), "delete_event",
+                      (GtkSignalFunc)gtk_widget_destroy, GTK_OBJECT(question_window));
+  gtk_container_border_width (GTK_CONTAINER (question_window), 12);
+
+  GtkWidget * vbox = gtk_vbox_new (FALSE, 10);
+  gtk_container_add (GTK_CONTAINER (question_window), vbox);
+  gtk_widget_show (vbox);
+
+  GtkWidget * label = gtk_label_new(question.chars());
+  gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 0);
+  gtk_widget_show (label);
+
+  GtkWidget * hbox = gtk_hbox_new (FALSE, 10);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+  gtk_widget_show (hbox);
+
+  GtkWidget * button = gtk_button_new_with_label( "Yes" );
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (question_yes_callback), (gpointer) function_name);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+  gtk_widget_show(button);
+
+  button = gtk_button_new_with_label( "No" );
+  gtk_signal_connect (GTK_OBJECT (button), "clicked",
+                      GTK_SIGNAL_FUNC (question_no_callback), (gpointer) function_name);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 0);
+  gtk_widget_show(button);
+
+  gtk_widget_show(question_window);
+}
+
+void
 Gui::close_control_window()
 {
   control_window_size =
@@ -723,4 +798,10 @@ Gui::close_arena_window()
              (double)da_scrolled_window->allocation.height);
 
   gtk_widget_destroy ( arena_window );
+}
+
+void
+Gui::close_question_window()
+{
+  gtk_widget_destroy ( question_window );
 }

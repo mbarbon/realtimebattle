@@ -8,6 +8,8 @@
 //#include "Arena.h"
 #include "String.h"
 
+typedef void (*QuestionFunction)(bool);
+
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
 enum min_max_full_t { MMF_MIN, MMF_MAX, MMF_FULL_ROUND, MMF_ALL_ARENAS };
 enum stat_button_t
@@ -50,9 +52,12 @@ struct start_tournament_glist_info_t
   String filename;
 };
 
+void question_yes_callback(GtkWidget * widget, QuestionFunction function_name);
+void question_no_callback(GtkWidget * widget, QuestionFunction function_name);
 void pause_button_callback(GtkWidget * widget, gpointer data);
 void step_button_callback(GtkWidget * widget, gpointer data);
 void end_button_callback(GtkWidget * widget, gpointer data);
+void end_tournament(bool really);
 void statistics_button_callback(GtkWidget *widget, gpointer data);
 void start_tournament_min_callback(GtkWidget *widget, gpointer data);
 void start_tournament_max_callback(GtkWidget *widget, gpointer data);
@@ -63,6 +68,7 @@ void delete_event( GtkWidget * widget, gpointer data );
 void no_zoom_callback(GtkWidget *widget, gpointer data);
 void zoom_in_callback(GtkWidget *widget, gpointer data);
 void zoom_out_callback(GtkWidget *widget, gpointer data);
+gint arena_size_changed (GtkWidget *widget, GdkEventConfigure *event, gpointer data);
 gint redraw_arena (GtkWidget *widget, GdkEventExpose *event, gpointer data);
 
 void save_statistics_callback(GtkWidget *widget, gpointer data);
@@ -93,6 +99,7 @@ public:
   void close_arena_window();
   void close_start_tournament_window();
   void close_statistics_window();
+  void close_question_window();
 
   void quit_event();
 
@@ -131,6 +138,8 @@ public:
   void start_tournament_remove_all_selected( bool robots );
   void set_entry(const int entry, const enum min_max_full_t mmf);
 
+  void ask_user(String question, QuestionFunction function_name);
+
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget * get_score_clist() { return score_clist; }
@@ -166,6 +175,7 @@ private:
   GtkWidget * arena_window;
   GtkWidget * start_tournament_window;
   GtkWidget * statistics_window;
+  GtkWidget * question_window;
 
   Vector2D control_window_size;
   Vector2D score_window_size;
