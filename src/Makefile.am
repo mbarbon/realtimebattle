@@ -1,5 +1,3 @@
-CXXFLAGS = $(CXXFLAGS) $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
-
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
 
@@ -14,8 +12,10 @@ endif
 
 if ENABLE_CCMALLOC
 CCMALLOC_O = /usr/lib/ccmalloc.o -ldl
+CXXFLAGS += $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
 else
 CCMALLOC_O =
+CXXFLAGS += $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
 endif
 
 if ENABLE_PROF
