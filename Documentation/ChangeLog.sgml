@@ -32,6 +32,8 @@ restricted in competitions if the organizer wants to.
 
 A thin line, marking the angle the robot is facing, is now drawn.
 
+Some extra bits of information are now displayed in the window titles.
+
 'Rotate and Fire' is more or less remade.
 
 <item> <bf>0.9.6:</bf>
