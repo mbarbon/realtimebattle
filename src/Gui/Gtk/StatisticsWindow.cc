@@ -24,14 +24,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "StatisticsWindow.h"
 #include "IntlDefs.h"
 #include "Gui.h"
-#include "ArenaController.h"
 #include "Various.h"
 #include "GuiVarious.h"
-#include "Robot.h"
 #include "DrawingObjects.h"
 #include "String.h"
 
-extern class Gui* gui_p;
 
 StatisticsWindow::StatisticsWindow( const int default_width,
                                     const int default_height,
@@ -559,7 +556,7 @@ StatisticsWindow::make_title_button()
 }
 
 void
-StatisticsWindow::add_new_row( Robot* robot_p, DrawingRobot* drobot_p, 
+StatisticsWindow::add_new_row( DrawingRobot* drobot_p, 
                                stat_t average_stat, int games_played )
 {
   char* empty_list[] = { "", "", "", "", "", "", "", "" };
@@ -581,7 +578,7 @@ StatisticsWindow::add_new_row( Robot* robot_p, DrawingRobot* drobot_p,
 
       gtk_clist_set_pixmap( GTK_CLIST( clist ), row, 0,
                             colour_pixmap, bitmap_mask );
-      char* cstr = copy_to_c_string( robot_p->get_robot_name() );
+      char* cstr = copy_to_c_string( drobot_p->get_name() );
       gtk_clist_set_text( GTK_CLIST( clist ), row, 1, cstr );
       delete [] cstr;
     }

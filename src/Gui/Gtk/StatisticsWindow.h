@@ -73,7 +73,7 @@ public:
   ~StatisticsWindow                  ();
 
   void make_title_button             ();
-  void add_new_row                   ( Robot* robot_p, DrawingRobot* drobot_p,
+  void add_new_row                   ( DrawingRobot* drobot_p,
                                        stat_t average_stat, int games_played );
 
   static void delete_event_occured   ( GtkWidget* widget, GdkEvent* event,
