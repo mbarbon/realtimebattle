@@ -280,7 +280,7 @@ MessageWindow::change_robot( const string&  robot_name )
 {
   viewed_robot = robot_name;
   gtk_clist_clear( GTK_CLIST( message_view ) );
-  add_messages_to_clist( -1, 0 );
+  add_messages_to_clist( -1, 0 );
   // TODO: Change the robot info view.
 }
 
