@@ -27,6 +27,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 
 
+// Do not change order of arenaobject_t unless you
+// really know what you are doing.
+// for-loops are depending on order it
 enum arenaobject_t
 { 
   NOOBJECT_T = -1,
