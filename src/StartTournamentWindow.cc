@@ -536,8 +536,8 @@ StartTournamentWindow::start( GtkWidget* widget,
       g_list_next( stw_p->get_selected_arena_tournament() ) != NULL )
     {
       realtime_arena.start_tournament( stw_p->get_selected_robot_tournament(),
-                                  stw_p->get_selected_arena_tournament(),
-                                  value[1], value[0], value[2] );
+                                       stw_p->get_selected_arena_tournament(),
+                                       value[1], value[0], value[2] );
       the_gui.close_starttournamentwindow();
     }
 }
