@@ -128,11 +128,15 @@ ArenaWindow::ArenaWindow( const int default_width,
 
   zoom = 1;
 
-  // TODO: A good way of mark arena window as hidden before game starts.
   gtk_widget_show( window_p );
+
   gdk_window_set_background( drawing_area->window,
                              the_gui.get_bg_gdk_colour_p() );
   gdk_window_clear( drawing_area->window );
+
+  // TODO: A good way of not showing the arena window when marked as hidden.
+  if( !window_shown ) // Not a good way :)
+    gtk_widget_hide( window_p );
 }
 
 ArenaWindow::~ArenaWindow()
