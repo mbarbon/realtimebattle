@@ -232,7 +232,7 @@ bounce_on_wall(class Robot& robot, const Shape& wall, const Vector2D& normal)
   double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
   robot.change_energy(-injury);
 
-  robot.send_message(COLLISION, WALL, -injury);
+  robot.send_message(COLLISION, WALL, -injury, -angle(normal)-robot.robot_angle);
 }
 
 void
@@ -275,16 +275,16 @@ bounce_on_robot(Robot& robot1, Robot& robot2, const Vector2D& normal)
   robot1.velocity += tmp;
   robot2.velocity -= mass_quotient * tmp;
 
-  
+  double an = angle(normal);
   double en_diff = 0.5 * robot1.mass * lengthsqr(start_vel1 - robot1.velocity);
   double injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p1);
   robot1.change_energy(-injury);
-  robot1.send_message(COLLISION, ROBOT, -injury);
+  robot1.send_message(COLLISION, ROBOT, -injury, an-robot1.robot_angle);
 
   en_diff = 0.5 * robot2.mass * lengthsqr(start_vel2 - robot2.velocity);
   injury = en_diff * 0.5 * (h1 + h2) * (1.0-e) * (1.0-p2);
   robot2.change_energy(-injury);
-  robot2.send_message(COLLISION, ROBOT, -injury);
+  robot2.send_message(COLLISION, ROBOT, -injury, -an-robot2.robot_angle);
 }
 
 void
@@ -356,10 +356,10 @@ Robot::move(const double timestep, int iterstep)
           break;
         case SHOT:
           {
-            double en =  -((Shot*)colliding_object)->get_energy();
-            change_energy( en );
-            send_message(COLLISION, SHOT, en);
             Shot* shotp =(Shot*)colliding_object;
+            double en =  -shotp->get_energy();
+            change_energy( en );
+            send_message(COLLISION, SHOT, en, angle(shotp->get_center()-center)-robot_angle);
             shotp->die();
             g_list_remove((the_arena->get_object_lists())[SHOT], shotp);
             delete shotp;
@@ -367,10 +367,10 @@ Robot::move(const double timestep, int iterstep)
           break;
         case COOKIE:
           {
-            double en =  ((Cookie*)colliding_object)->get_energy();
-            change_energy( en );
-            send_message(COLLISION, COOKIE, en);
             Cookie* cookiep =(Cookie*)colliding_object;
+            double en =  cookiep->get_energy();
+            change_energy( en );
+            send_message(COLLISION, COOKIE, en, angle(cookiep->get_center()-center)-robot_angle);
             cookiep->die();
             g_list_remove((the_arena->get_object_lists())[COOKIE], cookiep);
             delete cookiep;
@@ -378,10 +378,10 @@ Robot::move(const double timestep, int iterstep)
           break;
         case MINE:
           {
-            double en =  -((Mine*)colliding_object)->get_energy();
-            change_energy( en );
-            send_message(COLLISION, MINE, en);
             Mine* minep =(Mine*)colliding_object;
+            double en =  -minep->get_energy();
+            change_energy( en );
+            send_message(COLLISION, MINE, en, angle(minep->get_center()-center)-robot_angle);
             minep->die();
             g_list_remove((the_arena->get_object_lists())[MINE], minep);
             delete minep;
@@ -515,7 +515,7 @@ Robot::get_messages()
                                         the_arena, en );
                 g_list_append((the_arena->get_object_lists())[SHOT], shotp);
               }
-            else
+            else  // No space for shot, direct hit!!
               { 
                 void* col_obj;
                 object_type cl_shape;
@@ -532,8 +532,12 @@ Robot::get_messages()
                   case WALL:
                     break;
                   case ROBOT:
-                    ((Robot*)col_obj)->change_energy(-en);
-                    ((Robot*)col_obj)->send_message(COLLISION, SHOT, -en);
+                    {
+                      Robot* robotp = (Robot*)col_obj;
+                      robotp->change_energy(-en);
+                      robotp->send_message(COLLISION, SHOT, -en, 
+                                           angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle());
+                    }
                     break;
                   case SHOT:
                     ((Shot*)col_obj)->die();
@@ -730,9 +734,13 @@ Shot::move(const double timestep)
           die();
           break;
         case ROBOT:
-          ((Robot*)colliding_object)->change_energy(-energy);
-          ((Robot*)colliding_object)->send_message(COLLISION, SHOT, -energy);
-          die();
+          {
+            Robot* robotp = (Robot*)colliding_object;
+            robotp->change_energy(-energy);
+            robotp->send_message(COLLISION, SHOT, -energy,
+                                 angle(center-robotp->get_center()) - robotp->get_robot_angle());
+            die();
+          }
           break;
         case SHOT:
           // TODO: shot explode on shot ?

@@ -83,12 +83,12 @@ static const Message message_to_robot[20] =
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
   {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
   {"BinDataTo",  2, {INT,    BINDATA,NONE,   NONE}},
-  {"LoadDataFinished",0, {NONE,   NONE,   NONE,   NONE}},
+  {"LoadDataFinished",0, {NONE,NONE, NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      3, {DOUBLE, INT,    DOUBLE, NONE}},   // first arg: distance, second arg: object_type, third arg: radar_angle
   {"Info",       3, {DOUBLE, DOUBLE, DOUBLE, NONE}},   // first arg: time, second arg: speed, third arg: cannon_angle
   {"RobotsLeft", 1, {INT,    NONE,   NONE,   NONE}},   // arg: robots left
-  {"Collision",  2, {INT,    DOUBLE, NONE,   NONE}},   // first arg: object_type, second arg: change in energy 
+  {"Collision",  3, {INT,    DOUBLE, DOUBLE, NONE}},   // first arg: object_type, second arg: change in energy, third arg: collision angle
   {"Dead",       0, {NONE,   NONE,   NONE,   NONE}},   // Robot died  
   {"Warning",    2, {INT,    STRING, NONE,   NONE}},   // first arg: warning_type, second arg: string
   {"",           0, {}}
