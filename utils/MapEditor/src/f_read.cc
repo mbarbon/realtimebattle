@@ -45,16 +45,17 @@ void SkipUnknownObject(FILE* fp)
     }
 }
 
-void Arena::Read(char * Name)
+
+void Arena::Read(char * Name, GtkWidget* ctree)
 {
   FILE *fp;
   if((fp = fopen(Name, "r")) != NULL)
     {
       cout<<"Parsing the file...\n";
       ReadHead(fp);
-      Read(fp);
+      Read(fp, ctree);
       cout<<"Parsing done!\n";
-      Write();
+      //Write();
       fclose(fp);
     }
   else
@@ -63,13 +64,16 @@ void Arena::Read(char * Name)
     }
 }
 
-int Arena::Read(FILE *fp)
+
+
+int Arena::Read(FILE *fp, GtkWidget* ctree)
 {
-  GadgetDefinition *GadgetDef;
   char GadgetName[50];
   char Value[50];
   int num_object = 0;
   int NbSkiped = 0;
+  Gadget* theGadget;
+
 
   NbSpace++;
   while (read_line(fp) > 0) 
@@ -83,10 +87,10 @@ int Arena::Read(FILE *fp)
 	  printf("Incorrect definition at line %d.\n", line_no);
 	  return (num_object != 0? 0: -1);     // ok if any objects have been read 
 	}
-      if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) /* != NULL */ )
+      if( theGadget = createGadget(Value, GadgetName) /* != NULL */ )
 	{
-	  GadgetDef->theGadget->Read(fp);
-	  GlobalGadgetDefinitions.push_back(GadgetDef);
+	  theGadget->Print();
+	  theGadget->Read(fp, ctree, NULL);
 	  num_object ++;
 	}
       else
@@ -117,10 +121,13 @@ int Arena::ReadHead(FILE *fp)
     }
 }
 
-int WallGadget::Read(FILE *fp)
+int WallGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 {
   int n;
   Spaces(); cout<<"Reading a Wall\n";
+
+  GtkCTreeNode* mynode =
+    AddToTree(ctree, parent, this);
 
   while(read_line(fp)>0)
     {
@@ -142,9 +149,13 @@ int WallGadget::Read(FILE *fp)
     }
 }
 
-int ExplosionGadget::Read(FILE *fp)
+int ExplosionGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 {
   Spaces(); cout<<"Reading a Explosion\n";
+  cout<<"Adding myself to the tree\n";
+  GtkCTreeNode* mynode =
+    AddToTree(ctree, parent, this);
+
   int n;
   int NbDefine = 0;
   while(read_line(fp)>0)
@@ -166,11 +177,14 @@ int ExplosionGadget::Read(FILE *fp)
 	}
     }
 }
-int  WeaponGadget::Read(FILE *fp)
+int  WeaponGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 {
   Spaces();
-  cout<<"Reading a Weapon\n";
+  cout<<"Reading the Weapon "<<name<<endl;
   NbSpace++;
+  GtkCTreeNode* mynode =
+    AddToTree(ctree, parent, this);
+ 
   int n;
   int NbDefine = 0;
   int NbUnknown = 0;
@@ -194,10 +208,10 @@ int  WeaponGadget::Read(FILE *fp)
 		}
 	      else
 		{
-		  if( GadgetDef=createGadgetDef(Value, GadgetName, NULL) )
+		  Gadget* theGadget;
+		  if( theGadget = createGadget(Value, GadgetName) /* != NULL */ )
 		    {
-		      GadgetDef->theGadget->Read(fp);
-		      gadget_def.push_back(GadgetDef);
+		      theGadget->Read(fp, ctree, mynode);
 		    }
 		  else
 		    {
@@ -214,68 +228,74 @@ int  WeaponGadget::Read(FILE *fp)
 	    }
 	  else if(!strcmp(type, "Shot"))
 	    {
-	      sscanf(buf, "%*s %s", type);
-	      if(type[0] == '$')
+	      /*
+		sscanf(buf, "%*s %s", type);
+		if(type[0] == '$')
 		{
-		  Spaces(); cout<<"Create a Shot of type "<<&type[1]<<endl;
-		  GadgetDef = findGadgetDefinitionFor(&type[1], this);
-		  Spaces();
-		  if(GadgetDef)
-		    {
-		      cout<<&type[1]<<" is a known definition\n";
-		    }
-		  else
-		    {
-		      cout<<"I don't know what "<<&type[1]<<" is...\n";
-		    }
-		  //shot = copy(*(GadgetDef->theGadget));
-		  //TODO : Make a copy of the definition in the Shot gadget of the weapon...
+		Spaces(); cout<<"Create a Shot of type "<<&type[1]<<endl;
+		GadgetDef = findGadgetDefinitionFor(&type[1], this);
+		Spaces();
+		if(GadgetDef)
+		{
+		cout<<&type[1]<<" is a known definition\n";
 		}
+		else
+		{
+		cout<<"I don't know what "<<&type[1]<<" is...\n";
+		}
+		//shot = copy(*(GadgetDef->theGadget));
+		//TODO : Make a copy of the definition in the Shot gadget of the weapon...
+	      
+		}
+	      */
 	    }
 	  else
 	    {
-	      int i;
-	      for(i = 0; i < LAST_WEAPONVAR; i++)
+	      /*
+		int i;
+		for(i = 0; i < LAST_WEAPONVAR; i++)
 		{
-		  if(!strcmp(type, variable_def[i].name))
-		    {
-		      break;
-		    }
-		}
-	      if(i < LAST_WEAPONVAR)
+		if(!strcmp(type, variable_def[i].name))
 		{
-		  Spaces(); cout<<variable_def[i].name<<" is a ";
-		  switch(variable_def[i].type)
-		    {
-		    case BOOL_V:
-		      sscanf(buf, "%*s %s", type);
-		      cout<<"boolean of value "<<type;
-		      break;
-		    case INT_V:
-		      cout<<"integer";
-		      break;
-		    case DOUBLE_V:
-		      cout<<"double";
-		      break;
-		    }
-		  cout<<endl;
+		break;
 		}
-	      else
+		}
+		if(i < LAST_WEAPONVAR)
 		{
-		  NbUnknown ++;
+		Spaces(); cout<<variable_def[i].name<<" is a ";
+		switch(variable_def[i].type)
+		{
+		case BOOL_V:
+		sscanf(buf, "%*s %s", type);
+		cout<<"boolean of value "<<type;
+		break;
+		case INT_V:
+		cout<<"integer";
+		break;
+		case DOUBLE_V:
+		cout<<"double";
+		break;
 		}
+		cout<<endl;
+		}
+		else
+		{
+		NbUnknown ++;
+		}
+	      */
 	    }
 	}
     }
-  Spaces();
-  cout<<NbUnknown<<" unknown values\n";
   NbSpace--;
 }
 
-int  ShotGadget::Read(FILE *fp)
+int  ShotGadget::Read(FILE *fp, GtkWidget* ctree, GtkCTreeNode* parent)
 {
   Spaces(); cout<<"Reading a shot gadget\n";
   NbSpace++;
+  GtkCTreeNode* mynode =
+    AddToTree(ctree, parent, this);
+
   int n;
   int NbDefine = 0;
   while(read_line(fp)>0)

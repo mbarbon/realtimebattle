@@ -24,6 +24,19 @@ createGadgetDef(string GadgetType, const char* Name, Gadget* const p)
   return ToReturn;
 }
 
+Gadget*
+createGadget(string GadgetType, const char* Name)
+{
+  for(int i = 0; AllGadgets[i].theGadget != 0; i++)
+    {
+      if(AllGadgets[i].Name == GadgetType)
+	{
+	  AllGadgets[i].theGadget->Print();
+	  return AllGadgets[i].theGadget->NewInstance(Name, NULL);
+	}
+    }
+  return NULL;
+}
 GadgetDefinition*
 findGadgetDefinitionFor(string GadgetName, Gadget* theGadget)
 {
