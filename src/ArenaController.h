@@ -20,7 +20,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_CONTROLLER__
 #define __ARENA_CONTROLLER__
 
-#include <pthread.h>
 #include <list>
 
 #include "Arena.h"
@@ -48,12 +47,8 @@ public:
   int init( int, char** );
   void parse_command_line( int, char** );
 
-  void quit_gui( GuiServerInterface* gui_p, bool exit_program );
   void exit_all_guis();
-  
-  //  void start_arena();
-  //  void close_arena();
-
+  const bool exit_gui( unsigned int );
 
   OptionHandler* get_main_opts() const { return main_opts; }
   InformationDistributor* get_distributor() { return &distributor; }
@@ -66,15 +61,18 @@ private:
   void initialize_options();
   void print_help_message();
 
+  void create_gui( const char*, int, char** );
+
   //  bool started;
   bool realtime;
 
   list<GuiServerInterface*> gui_list;
   // Mutex for locking processes.
-  pthread_mutex_t gi_mutex;
 
   OptionHandler* main_opts;
   InformationDistributor distributor;
+
+  int next_gui_id;
 
 public: // global names etc.
   string option_filename;

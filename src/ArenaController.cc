@@ -40,11 +40,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "IntlDefs.h"
 #include "GuiInterface.h"
+#include "EventRT.h"
+#include "EventHandler.h"
 #include "Structs.h"
 #include "String.h"
 #include "Various.h"
 #include "InformationDistributor.h"
 
+extern EventHandler the_eventhandler;
 // ArenaController constructor
 
 ArenaController::ArenaController()
@@ -61,8 +64,6 @@ ArenaController::ArenaController()
   game_mode = NORMAL_MODE;
   debug_level = 1;
   auto_start_and_end = false;
-
-  pthread_mutex_init( &gi_mutex, NULL );
 }
 
 ArenaController::~ArenaController()
@@ -70,8 +71,6 @@ ArenaController::~ArenaController()
   //  if( started ) close_arena();
 
   exit_all_guis();
-
-  pthread_mutex_destroy( &gi_mutex );
 
   delete main_opts;
 }
@@ -87,6 +86,21 @@ ArenaController::exit_all_guis()
       delete ((GuiInterface*)*li);
     }
   gui_list.clear();
+}
+
+const bool
+ArenaController::exit_gui( unsigned int gui_id )
+{
+  list<GuiServerInterface*>::iterator li;
+  for( li = gui_list.begin(); li != gui_list.end(); li++ )
+    if( (*li)->operator==( gui_id ) )
+      {
+        (*li)->shutdown();
+        delete *li;
+        gui_list.erase( li );
+        return true;
+      }
+  return false;
 }
 
 int
@@ -401,54 +415,15 @@ ArenaController::initialize_options()
 }
 
 void
-ArenaController::quit_gui( GuiServerInterface* gui_p, bool exit_program )
+ArenaController::create_gui( const char* gui_name, int argc, char* argv[] )
 {
-  // TODO: Redo with an event!
-  list<GuiServerInterface*>::iterator li;
-  if( exit_program )
-    {
-      for( li = gui_list.begin(); li != gui_list.end(); li++ )
-        {
-          (*li)->shutdown();
-          //TODO: Find a way to delete *li in a clean manner
-          //          delete ((GuiInterface*)*li);
-        }
-      gui_list.clear();
-      Quit();
-    }
-  else
-    {
-      if( (li = find( gui_list.begin(), gui_list.end(), gui_p )) != gui_list.end() )
-        {
-          (*li)->shutdown();
-          //TODO: Find a way to delete *li in a clean manner
-          //          delete ((GuiInterface*)*li);
-          gui_list.erase(li);
-        }
-    }
-
+  GuiServerInterface* gui_p = ((GuiServerInterface*)
+                               new GuiInterface( gui_name, next_gui_id,
+                                                 argc, argv ));
+  next_gui_id++;
+  the_eventhandler.insert_RT_event( new CheckGUIEvent( 0.0, 0.1, gui_p ) );
+  gui_list.push_back( gui_p );
 }
-
-//  void
-//  ArenaController::start_arena()
-//  {
-//    if( started ) close_arena();
-
-//    my_arena = new Arena();
-  
-//    started = true;
-//  }
-
-//  void
-//  ArenaController::close_arena()
-//  {
-//    if( started )
-//      {
-//        delete my_arena;
-//      }
-
-//    started = false;
-//  }
 
 void
 ArenaController::parse_command_line( int argc, char** argv )
@@ -525,7 +500,7 @@ ArenaController::parse_command_line( int argc, char** argv )
               replay_filename = (string)optarg;
               break;
             case 12:
-              gui_list.push_back( new GuiInterface( optarg, &gi_mutex, argc, argv ) );
+              create_gui( optarg, argc, argv );
               break;
             default:
               Error( true, "Bad error: Nonexisting options. This shouldn't happen",
@@ -586,8 +561,7 @@ ArenaController::parse_command_line( int argc, char** argv )
           break;
 
         case 'g':
-          gui_list.push_back( ((GuiServerInterface*)
-                               new GuiInterface( optarg, &gi_mutex, argc, argv )) );
+          create_gui( optarg, argc, argv );
           break;
 
         default:
