@@ -61,6 +61,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Wall.h"
 #include "Robot.h"
 
+#ifndef NO_GRAPHICS
+# include "ControlWindow.h"
+extern class ControlWindow* controlwindow_p;
+#endif NO_GRAPHICS
+
 ArenaBase::ArenaBase()
 {
   state = NOT_STARTED;
@@ -68,8 +73,9 @@ ArenaBase::ArenaBase()
 
   sequence_nr = 0;
   sequences_remaining = 0;
+  games_per_sequence = 0;
+  games_remaining_in_sequence = 0;
   
-  halted = false;
   halt_next = false;
   pause_after_next_game = false;
 
@@ -87,7 +93,7 @@ ArenaBase::ArenaBase()
 ArenaBase::~ArenaBase()
 {
   //  if( filep ) delete filep;
-  state=EXITING;
+  state = EXITING;
   sleep(1);
 
   delete_lists(true, true, true, true);
@@ -110,7 +116,53 @@ ArenaBase::clear()
   sequence_nr = 0;
   sequences_remaining = 0;
   
-  state = NOT_STARTED;
+  set_state( NOT_STARTED );
+}
+
+void
+ArenaBase::set_state( const state_t st )
+{
+  state = st;
+
+#ifndef NO_GRAPHICS
+  if( !no_graphics )
+    {
+      String infotext;
+      switch( state )
+        {
+        case NO_STATE:
+        case NOT_STARTED:
+          infotext = "RealTimeBattle";
+          break;
+        case STARTING_ROBOTS:
+          infotext = "RTB  *Starting robots*";
+          break;
+        case SHUTTING_DOWN_ROBOTS:
+          infotext = "RTB  *Shutting down robots*";
+          break;
+        case BEFORE_GAME_START:
+        case GAME_IN_PROGRESS:
+          infotext = "RealTimeBattle  *Running*";
+          if( pause_after_next_game ) infotext = "RTB  *Pausing after game*";
+          break;
+        case PAUSING_BETWEEN_GAMES:
+        case PAUSED:
+          infotext = "RealTimeBattle  *Paused*";
+          break;
+        case EXITING:
+          infotext = "RealTimeBattle  *Exiting*";
+          break;
+        case FINISHED:
+          infotext = "RealTimeBattle  *Finished*";
+          break;
+          
+        default:
+          Error(true, "Unknown state", "ArenaBase::set_state");
+        }
+      
+      controlwindow_p->set_window_title( infotext );
+    }
+#endif NO_GRAPHICS
 }
 
 void 
@@ -129,7 +181,7 @@ ArenaBase::interrupt_tournament()
 
       delete_lists(true, true, false, true);
       
-      state = FINISHED;
+      set_state( FINISHED );
     }
 }
 
@@ -494,35 +546,34 @@ ArenaBase::set_debug_level( const int new_level)
 
   return debug_level;
 }
+
 void
 ArenaBase::pause_game_toggle()
 {
   if( game_mode != COMPETITION_MODE )
     {
-      halted = !halted; 
+      if( state == GAME_IN_PROGRESS ) 
+        set_state( PAUSED );
+      else if( state == PAUSED ) 
+        set_state( GAME_IN_PROGRESS );
+
       halt_next = false; 
     }
   else
     {
       pause_after_next_game = !pause_after_next_game;
+      set_state( state ); // to change control window title
     }
 }
 
 void
 ArenaBase::step_paused_game()
 {
-  if( game_mode == DEBUG_MODE && halted )
+  if( game_mode == DEBUG_MODE && state == PAUSED )
     {
       halt_next = true; 
-      halted = false;
+      set_state( GAME_IN_PROGRESS );
     }
-}
-
-bool
-ArenaBase::is_game_halted()
-{
-  return( state == PAUSING_BETWEEN_GAMES || 
-          ( game_mode != COMPETITION_MODE && halted ) );
 }
 
 void

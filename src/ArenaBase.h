@@ -148,7 +148,6 @@ public:
 
   void pause_game_toggle();
   void step_paused_game();
-  bool is_game_halted();
 
 protected:
 
@@ -158,6 +157,8 @@ protected:
   void move_shots(); 
 
   void parse_arena_line(ifstream& file, double& scale, int& succession);
+
+  void set_state( const state_t );
 
   List<Shape> object_lists[LAST_ARENAOBJECT_T];
   
@@ -213,7 +214,6 @@ protected:
   int debug_level;
   int max_debug_level;
 
-  bool halted;
   bool halt_next;
   bool pause_after_next_game;
 };
