@@ -43,8 +43,8 @@ public:
   Timer();
   ~Timer() {}
 
-  double get();
-  void reset();
+  double get();   //Return the elapsed time [in sec] since the begining/last_reset
+  void reset();   //Reset the timer (how to be useless :) )
 
   unsigned int get_random_seed() { return (unsigned int)start.tv_usec; }
 
