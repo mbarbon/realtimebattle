@@ -800,7 +800,8 @@ void
 ControlWindow::open_replay_filesel()
 {
   filesel->bring_up( _("Choose a log file to replay"),
-                     &ControlWindow::replay );
+                     &ControlWindow::replay,
+                     0 );
 }
 
 void

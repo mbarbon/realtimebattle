@@ -316,7 +316,8 @@ void
 StatisticsWindow::save( GtkWidget* widget, class StatisticsWindow* sw_p )
 {
   sw_p->get_filesel()->bring_up( (string)_("Choose a statistics file to save"),
-                                 &StatisticsWindow::save_stats );
+                                 &StatisticsWindow::save_stats,
+                                 0 );
 }
 
 void
