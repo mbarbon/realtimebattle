@@ -24,6 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ArenaReplay.h"
 #include "Various.h"
+#include "Extras.h"
+#include "Shot.h"
 
 ArenaReplay::ArenaReplay()
 {
@@ -39,12 +41,13 @@ bool
 ArenaReplay::timeout_function()
 {
   update_timer();
-  
-  do
-    {
-      parse_log_line( log_file );
-    } 
+
   while( !log_file.eof() && total_time < next_check_time );
+    {
+      move_shots( next_check_time - last_replay_time );
+      last_replay_time = next_check_time;
+      parse_log_line( log_file );
+    }
 
   return true;
 }
@@ -96,6 +99,7 @@ ArenaReplay::parse_log_line( ifstream& file )
   file >> ws;
   file.get( first_letter );
 
+  cout << "first letter: " << first_letter << endl;
   //  bool get_the_rest_of_the_line = true;
   switch( first_letter )
     {
@@ -110,6 +114,7 @@ ArenaReplay::parse_log_line( ifstream& file )
     case 'T': // Time
       {
         file >> next_check_time;
+        cout << next_check_time;
       }
       break;
     case 'P': // Print a robot message
@@ -127,7 +132,8 @@ ArenaReplay::parse_log_line( ifstream& file )
         int cookie_id;
         double x, y;
         file >> cookie_id >> x >> y;
-        // add_cookie( cookie_id, x, y );
+        Cookie* cookiep = new Cookie( Vector2D(x,y), 0.0, cookie_id);
+        object_lists[COOKIE].insert_last( cookiep );
       }
       break;
     case 'M': // Mine
@@ -135,7 +141,8 @@ ArenaReplay::parse_log_line( ifstream& file )
         int mine_id;
         double x, y;
         file >> mine_id >> x >> y;
-        // add_mine( mine_id, x, y );
+        Mine* minep = new Mine( Vector2D(x,y), 0.0, mine_id);
+        object_lists[MINE].insert_last( minep );
       }
       break;
     case 'S': // Shot
@@ -143,7 +150,8 @@ ArenaReplay::parse_log_line( ifstream& file )
         int shot_id;
         double x, y, dx, dy;
         file >> shot_id >> x >> y >> dx >> dy;
-        // add_shot( shot_id, x, y, dx, dy );
+        Shot* shotp = new Shot( Vector2D(x,y), Vector2D(dx,dy), 0, shot_id );
+        object_lists[SHOT].insert_last( shotp );
       }
       break;
     case 'D': // Die
@@ -194,9 +202,10 @@ ArenaReplay::parse_log_line( ifstream& file )
     case 'L': // List of robot properties
       {
         int robot_id;
-        long robot_colour;
+        char robot_colour[7];
         char name[200];
-        file >> robot_id >> robot_colour;
+        file >> robot_id;
+        file.get( robot_colour, 6, ' ');
         file.get( name, 200, '\n' );
         // Robot* robotp = new Robot( robot_id, robot_colour, name );
         // object_lists[ROBOT].insert_last(robotp); // array bättre?
@@ -217,49 +226,53 @@ ArenaReplay::parse_log_line( ifstream& file )
         file.get( option_type );
         file.get( label, 200, ':');
         file.get( temp );
-        switch( option_type )
-          {
-          case 'D':
-            {
-              double value;
-              file >> value;
-              // set_double_opt( label, value, ENTRY_DOUBLE );
-            }
-            break;
-          case 'L':
-            {
-              long value;
-              file >> value;
-              // set_long_opt( label, value, ENTRY_LONG );
-            }              
-            break;
-          case 'H':
-            {
-              long value;
-              file >> value;
-              // set_long_opt( label, value, ENTRY_HEX );
-            }
-            break;
-          case 'S':
-            {
-              char text[400];
-              file.get( text, 400, '\n' );
-              // set_string_opt( label, value, ENTRY_STRING );
-              //              get_the_rest_of_the_line = false;
-            }
-            break;
-          case '?':
-          default:
-            Error( false, "Unknown option type", "ArenaReplay::parse_log_line" );
-            break;
-          }
+
+//          switch( option_type )
+//            {
+//            case 'D':
+//              {
+//                double value;
+//                file >> value;
+//                // set_double_opt( label, value, ENTRY_DOUBLE );
+//              }
+//              break;
+//            case 'L':
+//              {
+//                long value;
+//                file >> value;
+//                // set_long_opt( label, value, ENTRY_LONG );
+//              }              
+//              break;
+//            case 'H':
+//              {
+//                long value;
+//                file >> value;
+//                // set_long_opt( label, value, ENTRY_HEX );
+//              }
+//              break;
+//            case 'S':
+//              {
+//                char text[400];
+//                file.get( text, 400, '\n' );
+//                // set_string_opt( label, value, ENTRY_STRING );
+//                //              get_the_rest_of_the_line = false;
+//              }
+//              break;
+//            case '?':
+//            default:
+//              Error( false, "Unknown option type", "ArenaReplay::parse_log_line" );
+//              break;
+//      }
+        char line[400];
+        file.get( line, 400, '\n' );
+
       }
       break;
 
     case '?':
     default:
-      Error( false, "Unrecognized first letter in logfile",
-             "ArenaReplay::parse_log_line" );
+      Error( false, "Unrecognized first letter in logfile: " + 
+             String(first_letter), "ArenaReplay::parse_log_line" );
       break;
     }
 

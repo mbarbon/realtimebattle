@@ -45,6 +45,9 @@ private:
   char parse_log_line          ( ifstream& file );
 
   ifstream log_file;
+
+  double last_replay_time;
+  double next_check_time;
 };
 
 
