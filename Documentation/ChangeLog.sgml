@@ -32,6 +32,8 @@ restricted in competitions if the organizer wants to.
 
 A thin line, marking the angle the robot is facing, is now drawn.
 
+'Rotate and Fire' is more or less remade.
+
 <item> <bf>0.9.6:</bf>
 <p>
 The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
