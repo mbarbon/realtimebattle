@@ -34,9 +34,9 @@ Error::Error(const String& str, char ch, const String& func)
 void 
 Error::print_message() 
 { 
-  cerr << "Error in " << function_string << ": " << error_string << " " 
+  cerr << "RealTimeBattle: Error in " << function_string << ": " << error_string << " " 
        << error_string2 << " " << c << endl;
 
-  perror("Errno message");
+  perror("RealTimeBattle: errno message");
 }
 
