@@ -66,7 +66,7 @@ SocketServer::init( int argc, char* argv[]  )
   {
     //option, argument?, flag, value
     {"server_port", 1, 0, 0},
-    {"server_file", 1, 0, 0},
+    //{"server_file", 1, 0, 0},
     
     {0, 0, 0, 0}
   };
@@ -90,10 +90,10 @@ SocketServer::init( int argc, char* argv[]  )
 	    case 0 :  
 	      sscanf(optarg, "%d", &port_nb);
 	      break;
-	    case 1 :
-	      set_friends_opt_file( (string)optarg ); //TODO : find this from the option file
-	      cout<<"server file "<<optarg<<endl;
-	      break;
+	      //    case 1 :
+	      //    set_friends_opt_file( (string)optarg ); //TODO : find this from the option file
+	      //    cout<<"server file "<<optarg<<endl;
+	      //    break;
 	    }
 	  }
 	  break;
@@ -102,7 +102,7 @@ SocketServer::init( int argc, char* argv[]  )
   
   open_socket( port_nb );
   cout<<"Server Connected to Port : "<<port_nb<<endl;
-  find_first_point();      
+  //find_first_point();      
 
   optind = 1;   //For the next function which will parse the options
 }
@@ -260,6 +260,8 @@ SocketServer::check_socket()
     }
 
   
+  //NOTE : this is just an exemple on how to read from the input stream
+  //TODO : remove this exemple
   if( FD_ISSET( 0, &readfs ) )
     {
       char buffer[256];
@@ -267,117 +269,12 @@ SocketServer::check_socket()
       fgets(buffer, 255, stdin);
       
       string buf = string (buffer);
-      
+
       if( buf == "quit\n")   //The quit event (maybe a click for a chat)
 	{ 
 	  cout<<"Ciao\n";
 	  exit( 0 );
 	}
-      else if( buf.substr(0,3) == "say")
-	{
-	  //nc.send_data( ChatMessagePacket("all", 
-	  //				  buf.substr(4,buf.length()-5)
-	  //				  ).make_netstring() 
-	  //		);
-	}  
-      else if( buf.substr(0, 5) == "new_tourn")
-	{
-	  //Open a channel for the negociations...
-	  //Create the tournament
-	  //Add the event to check incoming communications and check new input
-	  cout<<"\tcreating a new tournament\n";
-	  char file[256];
-	  sscanf(buffer, "%*s %s", file);
-	  Event* new_event = new StartTournamentEvent(0.0, string(file) );
-	  the_eventhandler.insert_RT_event(new_event);
-	  
-	}
-      
-      //else if( buf.substr(0, 2) == "co")  //Full auto connection is more efficient
-      //  int port_num;
-      //	sscanf(buffer, "%*s %d", &port_num);
-      //NetConnection* nc = connect_to_an_other_server("l", port_num);
-      //  if(nc)
-      //    {
-      //      nc->send_data( InitializationPacket( "Join", 1 ).make_netstring() );
-      //      nc->set_type(SERVER_CONNECTION);
-      //      by_type_conn(SERVER_CONNECTION)->push_back(nc);
-      //      cout<<"Connected\n";
-      //    }
-      //}
-      
-      //else if( buf.substr(0, 2) == "cc")
-      //{//Connect to a channel of an channel on an existing connection
-      //  int port_num, his_channel, my_channel;
-      //char proto[256];
-      //sscanf(buffer, "%*s %d %d %s %d", &port_num, &his_channel, proto, &my_channel);
-
-      //NetConnection* nc = connect_to_an_other_server("l", port_num);
-      //if(nc)
-      //{
-      //cout<<"Contacting "<<port_num<<" to see if he have channel "<<his_channel<<endl;
-      //  nc->send_data( InitializationPacket( "Connect", string(proto), his_channel ).make_netstring() );
-      //  nc->set_type(my_channel);
-      //  by_type_conn(my_channel)->push_back(nc);
-      //  cout<<"Connected\n";
-      // }
-      //	}
-      //else if( buf.substr(0, 2) == "cl")
-      //{
-      // int channel;
-      // sscanf(buffer, "%*s %d", &channel);
-      //}
-      //else if( buf == "ch\n" )
-      //	{
-      //  cout<<"Used channels : ";
-      //for(list<int>::iterator i = used_channels.begin(); i != used_channels.end(); i ++)
-      //cout<<" "<<(*i);
-      // cout<<endl;
-      //	}
-      else if( buf == "fr\n" )
-	{
-	  cout << "Connections of my friends : "<<endl;
-	  for(map<NetConnection*, ServerState>::iterator m = server_states.begin();
-	      m != server_states.end(); m ++)
-	    cout<<"\t"<<m->second.address<<" "<<m->second.port<<" : "
-		<<m->second.nb_conn<<" "<<m->second.av_conn_friends<<endl;
-	}
-      else if( buf == "ac\n")
-	{
-	  cout<<"All the connections : \n";
-	  for(map< int, list<NetConnection*> >::iterator m_it = by_type_connections.begin();
-	      m_it != by_type_connections.end(); m_it ++)
-	    {
-	      cout<<"On channel "<<m_it->first<<endl;
-	      for(list<NetConnection*>::iterator l_it = m_it->second.begin();
-		  l_it != m_it->second.end(); l_it ++)
-		{
-		  cout<<server_states[*l_it].port<<endl;
-		}
-	    }
-	}
-      else if( buffer[0] == 'f' )
-	{
-	  char a_channel[256];
-	  ostrstream command_s;
-	  sscanf(buffer, "%*c %s", a_channel);
-	  cout<<"So you need some friends : I will ask to the current neibourghood\n";
-	  command_s << "NeedFriends " <<a_channel <<ends;
-	  
-	  CommandPacket C(command_s.str());
-	  
-	  send_packet_by_type(SERVER_CONNECTION, &C );
-	}
-      else if( buffer[0] == 'h')
-	{
-	  cout<<"Here are the allowed command : "<<endl
-	      <<"\tco port\t: connect to a port on an other computer"<<endl
-	      <<"\tcr channel\t: create a new channel"<<endl
-	      <<"\tcl channel\t: close a channel"<<endl
-	      <<"\tsay msg\t:send a message to all connected friends"<<endl
-	      <<"\tf channel\t: you need some friends"<<endl;
-	}
-      
     }
   //read(0, buffer, MAX_BUFFER_SIZE-1);
  
