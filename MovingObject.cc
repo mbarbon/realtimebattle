@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <strstream.h>
+#include <signal.h>
 #include "Arena.h"
 
 Robot::Robot(char* filename, Arena* ap)
@@ -107,13 +108,19 @@ void
 Robot::end_process()
 {
   send_message(EXIT_ROBOT);
+  send_signal();
+}
+
+void
+Robot::send_signal()
+{
+  kill(pid, SIGUSR1);
 }
 
 void
 Robot::kill_process_forcefully()
 {
-  // TODO: Kill process forcefully
-  // kill -9
+  kill(pid, SIGKILL);
 }
 
 void
@@ -139,7 +146,7 @@ Robot::update_radar_and_cannon(const double timestep)
   robot_angle += timestep*robot_angle_speed;
   object_type closest_shape;
   void* col_obj;
-  double dist = the_arena->get_shortest_distance(center, Vector2D(cos(radar_angle), sin(robot_angle)), 0.0, closest_shape, col_obj);
+  double dist = the_arena->get_shortest_distance(center, Vector2D(cos(radar_angle), sin(radar_angle)), 0.0, closest_shape, col_obj);
   send_message(RADAR, dist, closest_shape);
 }
 
@@ -211,6 +218,7 @@ Robot::move(const double timestep)
             change_energy( en );
             send_message(COLLISION, SHOT, en);
             Shot* shotp =(Shot*)colliding_object;
+            shotp->die();
             g_list_remove((the_arena->get_object_lists())[SHOT], shotp);
             delete shotp;
           }
@@ -346,9 +354,9 @@ Robot::get_messages()
           int bits;
           double rot_speed;
           *instreamp >> bits >> rot_speed;
-          if( bits & 1 == 1) robot_angle_speed = rot_speed;
-          if( bits & 2 == 2) cannon_speed = rot_speed;
-          if( bits & 4 == 4) radar_speed = rot_speed;
+          if( (bits & 1) == 1) robot_angle_speed = rot_speed;
+          if( (bits & 2) == 2) cannon_speed = rot_speed;
+          if( (bits & 4) == 4) radar_speed = rot_speed;
           break;
         case PRINT:
           instreamp->get(text, 80, '\n');
