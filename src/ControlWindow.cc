@@ -155,12 +155,12 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_option_menu_set_menu( GTK_OPTION_MENU( omenu ), menu );
   gtk_widget_show( omenu );
 
-  gtk_widget_show( window_p );
   vseparator = NULL;
   extra_vbox = NULL;
   filesel = NULL;
 
   remove_replay_widgets();
+  gtk_widget_show( window_p );
 }
 
 void
