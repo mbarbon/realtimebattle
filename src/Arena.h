@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __ARENA__
 
 #include <string>
+#include <vector>
 #include <set>
 
 #include "Event.h"
@@ -135,6 +136,7 @@ private:
                                        const string& top_file_path = "",
                                        const bool included = false ) const;
   const bool sufficient_arena_version( vector<string>& wordlist ) const;
+  void remove_comments( vector<string>& wordlist ) const;
   Gadget* create_gadget( gadget_t, const string&, Gadget* ) const;
 };
 

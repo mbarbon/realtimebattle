@@ -109,11 +109,12 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
-  enum load_file_mode_t { LF_DEFINING_MODE, LF_SCRIPT_MODE, LF_STRING_MODE };
+  enum load_file_mode_t { LAF_DEFINING_MODE, LAF_VARIABLE_MODE, LAF_SCRIPT_MODE,
+                          LAF_GEOMETRY_MODE, LAF_STRING_MODE };
 
   char buffer[400];
   string tempstr;
-  load_file_mode_t mode = LF_DEFINING_MODE;
+  load_file_mode_t mode = LAF_DEFINING_MODE;
 
   string top_filename = filename;
   if( !find_full_arena_filename( top_filename ))
@@ -140,6 +141,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
       current_file->get( buffer, 400, '\n' );
       current_file->get();
       vector<string> wordlist = split_string( buffer, wordlist );
+      remove_comments( wordlist );
       if( wordlist.size() > 0 )
         {
           if( first_line && wordlist[0][0] == '!' )
@@ -154,7 +156,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                        "Arena::load_arena_file" );
               file_stack.push( new ifstream( wordlist[1].c_str() ) );
             }
-          else if( mode == LF_DEFINING_MODE &&
+          else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Define" ) &&
                    wordlist.size() > 2 )
             {
@@ -168,7 +170,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     current_gadget->get_my_gadgets().add( gadget->get_info() );
                     current_gadget = (Gadget*)gadget;
                     if( gadget_t(i) == GAD_SCRIPT )
-                      mode = LF_SCRIPT_MODE;
+                      mode = LAF_SCRIPT_MODE;
                     break;
                   }
             }
@@ -177,15 +179,16 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
               if( wordlist.size() > 2 && wordlist[2] != current_gadget->get_name() )
                 Error( true, "Ending wrong definition", "Arena::load_arena_file" );
               current_gadget = current_gadget->get_parent();
-              mode = LF_DEFINING_MODE;
+              mode = LAF_DEFINING_MODE;
             }
-          else if( mode == LF_DEFINING_MODE &&
+          else if( mode == LAF_DEFINING_MODE &&
                    equal_strings_nocase( wordlist[0], "Function" ) &&
                    wordlist.size() > 2 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
                 find_by_name( GadgetInfo( NULL, 0, wordlist[1].c_str() ) ))).gadgetp;
               assert( typeid(gadp) == typeid(Function*) );
+              Function* func_p = (Function*)func_p;
               if( equal_strings_nocase( wordlist[2], "default" ) )
                 {
                   // TODO: Set Function allowance to default
@@ -199,11 +202,18 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                   // TODO: Set Function allowance to false
                 }
             }              
-          else if( mode == LF_SCRIPT_MODE )
+          else if( mode == LAF_VARIABLE_MODE )
+            {
+              assert( typeid(current_gadget) == typeid(Variable*) );
+            }
+          else if( mode == LAF_SCRIPT_MODE )
             {
               assert( typeid(current_gadget) == typeid(Script*) );
               ((Script*)current_gadget)->add_script_line( wordlist );
             }            
+          else if( mode == LAF_GEOMETRY_MODE )
+            {
+            }
           else if( wordlist.size() > 1 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
@@ -254,6 +264,16 @@ Arena::find_full_arena_filename( string& filename, const string& top_file_path,
 const bool
 Arena::sufficient_arena_version( vector<string>& wordlist ) const
 {
+  // Note: Is it necessary to specify arena-version?
+  return true;
+}
+
+void
+Arena::remove_comments( vector<string>& wordlist ) const
+{
+  for( vector<string>::iterator vi = wordlist.begin(); vi != wordlist.end(); vi++ )
+    if( (*vi).length() > 0 && (*vi)[0] == ';' )
+      wordlist.erase( vi, wordlist.end() );
 }
 
 // Remember to delete the gadget when not used anymore!
