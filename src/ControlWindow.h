@@ -31,6 +31,8 @@ class String;
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
+struct _GtkAdjustment;
+typedef struct _GtkAdjustment GtkAdjustment;
 typedef union _GdkEvent GdkEvent;
 typedef void* gpointer;
 
@@ -47,7 +49,7 @@ public:
 
   void set_window_title            ( const String& text );
   GtkWidget* get_window_p          () { return window_p; }
-  GtkWidget* get_debug_level_label () { return debug_level_label; }
+  //  GtkWidget* get_debug_level_label () { return debug_level_label; }
 
   static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* controlwindow_p );
@@ -58,9 +60,7 @@ public:
   static void step                 ( GtkWidget* widget, gpointer data );
   static void end_game             ( GtkWidget* widget, gpointer data );
   static void kill_robot           ( GtkWidget* widget, gpointer data );
-  static void increase_debug_level ( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p );
-  static void decrease_debug_level ( GtkWidget* widget,
+  static void change_debug_level   ( GtkAdjustment *adj,
                                      class ControlWindow* controlwindow_p );
   static void end_clicked          ( GtkWidget* widget, gpointer data ); 
   static void end_tournament       ( int result );
@@ -70,11 +70,13 @@ public:
                                      class ControlWindow* controlwindow_p );
   static void new_tournament       ( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p );
+  static void replay_tournament    ( GtkWidget* widget,
+                                     class ControlWindow* controlwindow_p );
 
 private:
 
   GtkWidget* window_p;
-  GtkWidget* debug_level_label;
+  GtkWidget* debug_level;
 };
 
 #endif NO_GRAPHICS

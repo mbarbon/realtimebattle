@@ -73,21 +73,23 @@ ControlWindow::ControlWindow( const int default_width,
   struct button_t buttons[] = {
     { " New Tournament ", 
       (GtkSignalFunc) ControlWindow::new_tournament    , TRUE  },
-    { " Pause ",
-      (GtkSignalFunc) ControlWindow::pause             , TRUE  },
-    { " End ",
-      (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
+    { " Replay Tournament ", 
+      (GtkSignalFunc) ControlWindow::replay_tournament , TRUE  },
     { " Options ",
       (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
     { " Statistics ",
       (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
+    { " Pause ",
+      (GtkSignalFunc) ControlWindow::pause             , TRUE  },
+    { " End ",
+      (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
     { "         Quit         ",
       (GtkSignalFunc) ControlWindow::quit_rtb          , FALSE } };
 
   GtkWidget* button_hbox = NULL;
-  for(int i = 0;i < 6; i++)
+  for(int i = 0;i < 7; i++)
     {
-      if( i == 0 || i == 3 || i == 5 )
+      if( i == 0 || i == 2 || i == 6 )
         {
           button_hbox = gtk_hbox_new( FALSE, 10 );
           gtk_box_pack_start( GTK_BOX( vbox ), button_hbox,
@@ -145,34 +147,6 @@ ControlWindow::ControlWindow( const int default_width,
           gtk_widget_show( button );
         }
 
-      const char * arrow_xpms[2][13] = {
-        {"9 10 2 1",
-         "       c None",
-         "x      c #000000000000",
-         "       xx",
-         "     xxxx",  
-         "   xxxxxx",
-         " xxxxxxxx",
-         "xxxxxxxxx",
-         "xxxxxxxxx",
-         " xxxxxxxx",
-         "   xxxxxx",
-         "     xxxx",
-         "       xx"},
-        {"9 10 2 1",
-         "       c None",
-         "x      c #000000000000",
-         "xx       ",
-         "xxxx     ",  
-         "xxxxxx   ",
-         "xxxxxxxx ",
-         "xxxxxxxxx",
-         "xxxxxxxxx",
-         "xxxxxxxx ",
-         "xxxxxx   ",
-         "xxxx     ",
-         "xx       "}};
-
       button_hbox = gtk_hbox_new( FALSE, 10 );
       gtk_box_pack_start( GTK_BOX( vbox ), button_hbox,
                           FALSE, FALSE, 0);
@@ -182,52 +156,15 @@ ControlWindow::ControlWindow( const int default_width,
       gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
       gtk_widget_show( label );
 
-      // Create pixmap and button for left arrow
-      {
-        GdkPixmap* pixmap;
-        GdkBitmap* bitmap_mask;
-        pixmap = gdk_pixmap_create_from_xpm_d( window_p->window,
-                                               &bitmap_mask,
-                                               &(window_p->style->black),
-                                               (gchar **)arrow_xpms[0] );
-        GtkWidget* pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
-        gtk_widget_show( pixmap_widget );
-        GtkWidget* button = gtk_button_new();
-        gtk_container_add( GTK_CONTAINER( button ), pixmap_widget );
-        gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                            (GtkSignalFunc) decrease_debug_level,
-                            (gpointer) this );
-        gtk_widget_set_usize( button, 22, 20 );
-        gtk_box_pack_start( GTK_BOX( button_hbox ), button, TRUE, FALSE, 0 );
-        gtk_widget_show( button );
-      }
+      GtkAdjustment* adj =
+        (GtkAdjustment*) gtk_adjustment_new( 1, 0, max_debug_level ,1 ,1 , 0 );
 
-      // Debug level
-      debug_level_label =
-        gtk_label_new( String( 1 ).chars() );
-      gtk_box_pack_start( GTK_BOX( button_hbox ),
-                          debug_level_label, TRUE, FALSE, 0 );
-      gtk_widget_show( debug_level_label );
-
-      // Create pixmap and button for right arrow
-      {
-        GdkPixmap* pixmap;
-        GdkBitmap* bitmap_mask;
-        pixmap = gdk_pixmap_create_from_xpm_d( window_p->window,
-                                               &bitmap_mask,
-                                               &(window_p->style->black),
-                                               (gchar **)arrow_xpms[1] );
-        GtkWidget* pixmap_widget = gtk_pixmap_new( pixmap, bitmap_mask );
-        gtk_widget_show( pixmap_widget );
-        GtkWidget* button = gtk_button_new();
-        gtk_container_add( GTK_CONTAINER( button ), pixmap_widget );
-        gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                            (GtkSignalFunc) increase_debug_level,
-                            (gpointer) this );
-        gtk_widget_set_usize( button, 22, 20 );
-        gtk_box_pack_start( GTK_BOX( button_hbox ), button, TRUE, FALSE, 0 );
-        gtk_widget_show( button );
-      }
+      debug_level = gtk_spin_button_new( adj, 0, 0 );
+      gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
+                          (GtkSignalFunc) change_debug_level,
+                          (gpointer) this );
+      gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
+      gtk_widget_show( debug_level );
     }
 }
 
@@ -294,27 +231,13 @@ ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 }
 
 void
-ControlWindow::decrease_debug_level( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p )
+ControlWindow::change_debug_level( GtkAdjustment *adj,
+                                   class ControlWindow* controlwindow_p )
 {
   if( the_arena_controller.is_started() )
-    {
-      the_arena.set_debug_level( the_arena.get_debug_level() - 1);
-      gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
-                     String( the_arena.get_debug_level() ).chars() );  
-    }
-}
-
-void
-ControlWindow::increase_debug_level( GtkWidget* widget,
-                                     class ControlWindow* controlwindow_p )
-{
-  if( the_arena_controller.is_started() )
-    {
-      the_arena.set_debug_level( the_arena.get_debug_level() + 1);
-      gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
-                     String( the_arena.get_debug_level() ).chars() );  
-    }
+    the_arena.set_debug_level
+      ( gtk_spin_button_get_value_as_int
+        ( GTK_SPIN_BUTTON( controlwindow_p->debug_level ) ) );
 }
 
 void
@@ -322,6 +245,12 @@ ControlWindow::new_tournament( GtkWidget* widget,
                                class ControlWindow* controlwindow_p )
 {
   the_gui.open_starttournamentwindow();
+}
+
+void
+ControlWindow::replay_tournament( GtkWidget* widget,
+                                  class ControlWindow* controlwindow_p )
+{
 }
 
 void
