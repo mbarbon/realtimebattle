@@ -26,6 +26,7 @@ enum message_to_robot_type
 enum message_from_robot_type 
 {
   UNKNOWN_MESSAGE_FROM_ROBOT = -1,
+  ROBOT_OPTION,
   ROTATE,
   ROTATE_TO,
   ROTATE_AMOUNT,
@@ -57,7 +58,8 @@ enum warning_type
   PROCESS_TIME_LOW,
   ENERGY_LOW,
   VARIABLE_OUT_OF_RANGE,
-  MESSAGE_SENT_IN_ILLEGAL_STATE
+  MESSAGE_SENT_IN_ILLEGAL_STATE,
+  UNKNOWN_OPTION
 };
 
 enum game_option_type
@@ -75,6 +77,11 @@ enum game_option_type
   SHOT_ENERGY_INCREASE_SPEED,
 
   TIMEOUT
+};
+
+enum robot_option_type
+{
+  SEND_SIGNAL
 };
 
 enum object_type 
@@ -102,7 +109,7 @@ static const Message message_to_robot[20] =
   {"Initialize", 1, {INT,    NONE,   NONE,   NONE}},   // arg: if 1 this is the first sequence for the robot, send name and colour!!
   {"YourName",   1, {STRING, NONE,   NONE,   NONE}},   // arg: previous name, send new name only if you don't like it
   {"YourColor",  1, {HEX,    NONE,   NONE,   NONE}},   // arg: previous colour
-  {"GameOption", 1, {INT,    DOUBLE, NONE,   NONE}},  // arg 1: OPTION_NR,  arg 2:  value 
+  {"GameOption", 2, {INT,    DOUBLE, NONE,   NONE}},  // arg 1: OPTION_NR,  arg 2:  value 
   {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"GameFinishes",0,{NONE,   NONE,   NONE,   NONE}},
   {"SaveData",   0, {NONE,   NONE,   NONE,   NONE}},
@@ -120,6 +127,7 @@ static const Message message_to_robot[20] =
 
 static const Message message_from_robot[20] = 
 {
+  {"RobotOption",   2, {INT, INT}},        // arg 1: OPTION_NR,  arg 2:  value 
   {"Rotate",       2, {INT, DOUBLE}},     // first arg: what to rotate: 1 Robot, 2 cannon, 4 radar and apropriate sums for combinations                                                             // second arg: angular velocity (rad/s)
   {"RotateTo",     3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to move to
   {"RotateAmount", 3, {INT, DOUBLE, DOUBLE}},     // first and second arg: as in 'Rotate', third arg: angle to rotate

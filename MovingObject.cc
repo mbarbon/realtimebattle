@@ -18,8 +18,12 @@ Robot::Robot(const String& filename)
   statistics = g_list_alloc();
   extra_air_resistance = 0.0;
   process_running = false;
+  send_usr_signal = false;
+
   instreamp = NULL;
   outstreamp = NULL;
+  pipes[0] = -1;  
+  pipes[1] = -1;
   last_drawn_robot_center = Vector2D(infinity,infinity);
 }
 
@@ -35,14 +39,14 @@ Robot::start_process()
   int pipe_in[2], pipe_out[2];
   if (pipe (pipe_in))
     throw Error("Couldn't setup pipe_in for robot ", 
-                robot_filename.chars(), "Robot::Robot");
+                robot_filename, "Robot::Robot");
   if (pipe (pipe_out))
     throw Error("Couldn't setup pipe_out for robot ", 
-                robot_filename.chars(), "Robot::Robot");
+                robot_filename, "Robot::Robot");
 
   if( (pid = fork()) < 0 )
     throw Error("Couldn't fork childprocess for robot ", 
-                robot_filename.chars(), "Robot::Robot");
+                robot_filename, "Robot::Robot");
 
   if(pid == 0)   // Child process, to be the new robot
     {
@@ -58,11 +62,11 @@ Robot::start_process()
       int pd_flags;
       if( (pd_flags = fcntl(pipe_out[0], F_GETFL, 0)) == -1 ) 
         throw Error("Couldn't get pd_flags for robot ", 
-                    robot_filename.chars(), "Robot::Robot, child");
+                    robot_filename, "Robot::Robot, child");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for robot ", 
-                    robot_filename.chars(), "Robot::Robot, child");
+                    robot_filename, "Robot::Robot, child");
 
       // TODO: Restrict resources
       // Restrict different resources
@@ -71,7 +75,7 @@ Robot::start_process()
       // Execute process. Should not return!
       execl(robot_filename.chars(), robot_filename.chars(), NULL);
 
-      cerr << "Couldn't open robot " << robot_filename.chars() 
+      cerr << "Couldn't open robot " << robot_filename 
            << "  Error in Robot::Robot" << endl;
       cerr << "Errno: " << errno << endl;
       exit(EXIT_FAILURE);
@@ -88,11 +92,11 @@ Robot::start_process()
       int pd_flags;
       if( (pd_flags = fcntl(pipe_in[0], F_GETFL, 0)) == -1 ) 
         throw Error("Couldn't get pd_flags for pipe_in in robot ", 
-                    robot_filename.chars(), "Robot::Robot, parent");
+                    robot_filename, "Robot::Robot, parent");
       pd_flags |= O_NONBLOCK;
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for pipe_in in robot ", 
-                    robot_filename.chars(), "Robot::Robot, parent");
+                    robot_filename, "Robot::Robot, parent");
 
       outstreamp = new ofstream(pipe_out[1]);
       instreamp = new ifstream(pipe_in[0]);
@@ -129,13 +133,15 @@ Robot::end_process()
 void
 Robot::send_signal()
 {
-  kill(pid, SIGUSR1);
+  //  if( send_usr_signal )
+    kill(pid, SIGUSR1);
 }
 
 void
 Robot::kill_process_forcefully()
 {
   kill(pid, SIGKILL);
+  process_running = false;
 }
 
 void
@@ -143,8 +149,17 @@ Robot::delete_pipes()
 {
   if( instreamp != NULL ) delete instreamp;
   if( outstreamp != NULL ) delete outstreamp;
-  close(pipes[0]);
-  close(pipes[1]);
+  if( pipes[0] != -1 ) 
+    {
+      close(pipes[0]);
+      pipes[0] = -1;
+    }
+  if( pipes[1] != -1 ) 
+    {
+      close(pipes[1]);
+      pipes[1] = -1;
+    }
+  
 }
 
 void
@@ -519,6 +534,22 @@ Robot::get_messages()
           cout << "Server: Warning sent for message: " << msg_name << endl;
           send_message(WARNING, UNKNOWN_MESSAGE, msg_name);
           instreamp->get(buffer, 80, '\n');
+          break;
+        case ROBOT_OPTION:
+          {
+            int opt_nr, val;
+            *instreamp >> opt_nr;
+            switch(opt_nr)
+              {
+              case SEND_SIGNAL:
+                *instreamp >> val;
+                send_usr_signal = (val == true);
+                break;
+              default:
+                send_message(WARNING, UNKNOWN_OPTION, msg_name);
+                break;
+              }
+              }
           break;
         case NAME:
           if( the_arena.get_state() != Arena::STARTING_ROBOTS ) 
