@@ -112,5 +112,5 @@ void
 WeaponGadget::shoot()
 {  
   // s = new Shot(c,vel,en, my_shotgadget);
-  the_arena.add_shot( s );
+  //  the_arena.add_shot( s );
 }
