@@ -150,6 +150,8 @@ private:
   GtkWidget * arenas_in_tournament_clist;
   GtkWidget * arenas_in_directory_clist;
 
+  GtkWidget * start_tournament_entries[3];
+
   GtkWidget * control_window;
   GtkWidget * score_window;
   GtkWidget * message_window;
