@@ -14,16 +14,22 @@ String::String()
   array[0] = '\0';
 }
 
+String::String(const String& str)
+{
+  buf_size = 0;
+  *this = str;
+}
+
 String::String(const char* str)
 {
   buf_size = 0;
   *this = str;
 }
 
-String::String(const String& str)
+String::String(const char c)
 {
   buf_size = 0;
-  *this = str;
+  *this = c;
 }
 
 String::String(const int n)
@@ -178,6 +184,23 @@ String::insert(const String& str, const int pos)
   strcpy(&array[pos+str.length], temp);
       
   return *this;
+}
+
+//   if start or end negativ, count from the end. -1 == the last.
+String
+get_segment(const String& str, const int start, const int end)
+{
+  String segment;
+  int st = ( start < 0 ? str.length + start : start );
+  int en = ( end < 0 ? str.length + end : end );
+  if( st < 0 || st > str.length || en < 0 || en > str.length || st > en ) throw String::Range();
+
+  segment.length = en - st + 1;
+  segment.enlarge_array(segment.length);
+  strncpy( segment.array, &str.array[st], segment.length ); 
+  segment.array[segment.length] = '\0';
+
+  return segment;
 }
 
 int

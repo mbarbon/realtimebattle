@@ -9,6 +9,7 @@ public:
   String();
   String(const String& str);
   String(const char* str);
+  String(const char c);
   String(const int);
   String(const double, const int digits=10, const bool exp_form = false);
   ~String();
@@ -33,6 +34,7 @@ public:
 
   String& erase(const int pos, const int size = 1);
   String& insert(const String&, const int pos = 0);
+  friend String get_segment(const String& str, const int start, const int end);
 
   int get_length() { return length; }
   const char* chars() { return array; }
