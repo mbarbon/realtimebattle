@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 <titlepag>
 <title>RealTimeBattle User Manual, version 0.9.9 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
-<date> 10 August 1999
+<date> 14 August 1999
 
 <!-- <abstract> -->
 
@@ -841,7 +841,7 @@ determined indirectly (approximately) by the loss of energy.
 <label id="Warning">
 <tag>Warning [warning type (int)] [message (string)]</tag> A warning
 message can be sent when robot has to be notified on different problems which have
-occured. Currently five different warning messages can be sent, namely
+occured. Currently seven different warning messages can be sent, namely
 
 <tt>UNKNOWN&lowbar;MESSAGE:</tt> The server received a message it couldn't
 recognize.
@@ -861,6 +861,13 @@ that option.
 <tt>OBSOLETE&lowbar;KEYWORD:</tt> The keyword sent is obsolete and should not be used any more, see the
 <tt>ChangeLog</tt> file for information on what to use instead.
 
+<tt>NAME&lowbar;NOT&lowbar;GIVEN:</tt> The robot has not sent its name
+before the game begins. This happens if the 
+<ref id="RobotStartupTime" name="robot startup time"> is too short or the
+robot does not send its name early enough.
+
+<tt>COLOUR&lowbar;NOT&lowbar;GIVEN:</tt> The robot has not sent its colour
+before the game begins.
 
 <tag>Dead</tag> Robot died. Do not try to send more messages to the
 server until the end of the game, the server doesn't read them.
