@@ -46,8 +46,8 @@ Options::Options()
   all_double_options[OPTION_ROBOT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12, "Robot protection coefficient", NULL);
 
-  all_double_options[OPTION_ROBOT_COS_FRONTSIZE] = 
-    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, cos(M_PI/6.0), -1.0, 1.0, 12, "Robot frontsize (cos(front angle))", NULL);
+  all_double_options[OPTION_ROBOT_FRONTSIZE] = 
+    option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, M_PI/3.0, 0.0, M_PI*2.0, 12, "Robot frontsize [radians]", NULL);
 
   all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12, "Robot front bounce coefficient", NULL);
