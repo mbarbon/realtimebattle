@@ -29,9 +29,9 @@ main(int argc, char * argv[])
   class RotateAndFire raf_obj("Rotate&Fire-select", "66ccdd");
 
 
-  // STDIN should not block and signals are not used
+  // STDIN block (otherwise, we won't get complete messages from the server) and signals are not used
 
-  raf_obj.robot_option( USE_NON_BLOCKING, true );
+  raf_obj.robot_option( USE_NON_BLOCKING, false );
   //  raf_obj.robot_option( SIGNAL, SIGUSR1 );
 
   // Make a set of file descriptor to check for.

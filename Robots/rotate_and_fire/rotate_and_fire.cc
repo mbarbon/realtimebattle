@@ -3,7 +3,7 @@
 #include <config.h>
 #endif
 
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,16 +26,11 @@
 #include "IntlDefs.h"
 #include "rotate_and_fire.h"
 
+namespace std { }
+using namespace std;
+
 RotateAndFire::RotateAndFire(const char* name, const char* colour)
 {
-#ifdef ENABLE_NLS
-# ifdef HAVE_LOCALE_H
-  setlocale( LC_MESSAGES, "" );
-# endif
-  bindtextdomain( "RealTimeBattle", RTB_LOCALEDIR );
-  textdomain( "RealTimeBattle" );
-#endif
-
   robot_name = new char[strlen(name) + 1];
   strcpy(robot_name, name);
 
@@ -49,9 +44,9 @@ RotateAndFire::RotateAndFire(const char* name, const char* colour)
   brake_value = 0.0;
 
   // Get random seed from the clock
-  timeval current_time;
-  gettimeofday(&current_time, NULL);
-  srand(current_time.tv_usec);
+  // timeval current_time;
+  // gettimeofday(&current_time, NULL);
+  // srand(current_time.tv_usec);
 
   // We want to know when RotateTo and RotateAmount finishes
   robot_option( SEND_ROTATION_REACHED, 1 );
@@ -235,6 +230,9 @@ RotateAndFire::game_option( const int option, const double value )
     case DEBUG_LEVEL:
       debug_level = value;
       break;
+    case SEND_ROBOT_COORDINATES:
+      send_robot_coordinates = (int)rint(value);
+      break;
     }
 }
 
@@ -272,10 +270,10 @@ void
 RotateAndFire::radar_robot( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate != - robot_rotate )
-  {
-    radar_and_cannon_rotate = - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate = - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 
   if( dist < 2 && acceleration != 0.0 )
     {
@@ -296,11 +294,11 @@ RotateAndFire::radar_shot( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 }
 
 // Radar info when a wall is seen.
@@ -311,11 +309,11 @@ RotateAndFire::radar_wall( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
 
   double old_acc = acceleration;
 
@@ -356,11 +354,21 @@ RotateAndFire::radar_cookie( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
+  if( debug_level >= 2 )
+    {
+      cout << "Debug " << _("Cookie found at") << " ("
+           << current_x_coordinate + dist*cos(angle + current_robot_angle)
+           << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
+           << ")" << endl;
+      cout << "Debug " << _("I am at") << " "
+           << " (" << current_x_coordinate << "," << current_y_coordinate
+           << ") " << _("at angle") << " " << current_robot_angle << endl;
+    }
 }
 
 // Radar info when a mine is seen.
@@ -369,12 +377,37 @@ RotateAndFire::radar_mine( const double dist, const double angle )
 {
   if( radar_and_cannon_rotate !=
       robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate )
-  {
-    radar_and_cannon_rotate =
-      robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
-    rotate( 6, radar_and_cannon_rotate );
-  }
+    {
+      radar_and_cannon_rotate =
+        robot_cannon_max_rotate - fabs(robot_rotate) - robot_rotate;
+      rotate( 6, radar_and_cannon_rotate );
+    }
   shoot( shot_min_energy );
+  if( debug_level >= 2 )
+    {
+      cout << "Debug " << _("Mine found at") << " ("
+           << current_x_coordinate + dist*cos(angle + current_robot_angle)
+           << "," << current_y_coordinate + dist*sin(angle + current_robot_angle)
+           << ")" << endl;
+      cout << "Debug " << _("I am at") << " "
+           << " (" << current_x_coordinate << "," << current_y_coordinate
+           << ") " << _("at angle") << " " << current_robot_angle << endl;
+    }
+}
+
+
+// Information about the position of the robot. Coordinates are given either absolute,
+// relative to the starting position, or not at all, depending on the option
+// SEND_ROBOT_COORDINATES.
+void
+RotateAndFire::coordinates( const double x, const double y, const double rotation)
+{
+  if( send_robot_coordinates == 0 )
+    return;
+
+  current_x_coordinate = x;
+  current_y_coordinate = y;
+  current_robot_angle = rotation;
 }
 
 // Get information about time, speed and cannon_angle
@@ -573,6 +606,7 @@ RotateAndFire::check_messages( )
 
       cin >> msg_name;
       msg_t = name2msg_to_robot_type(msg_name);
+
       switch(msg_t)
         {
         case INITIALIZE:
@@ -637,6 +671,13 @@ RotateAndFire::check_messages( )
                 cout << "Print" << _("Unknown Object seen!") << endl;
                 break;
               }
+          }
+          break;          
+        case COORDINATES:
+          {
+            double x, y, rotation;
+            cin >> x >> y >> rotation;
+            coordinates( x, y, rotation );
           }
           break;
         case INFO:

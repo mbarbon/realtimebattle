@@ -15,8 +15,8 @@ Version:     %{version}
 Release:     %{release}
 Copyright:   GPL
 Group:       X11/Games
-Source:      http://www.lysator.liu.se/realtimebattle/Download/%{name}-%{version}.tar.gz
-URL:         http://www.lysator.liu.se/realtimebattle
+Source:      http://realtimebattle.sourceforge.net
+URL:         http://realtimebattle.sourceforge.net
 BuildRoot:   /tmp/%{name}-%{version}
 Packager:    CW Zuckschwerdt <zany@triq.net>
 
@@ -37,11 +37,11 @@ make
 make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %post
-/sbin/install-info /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry="* RealTimeBattle: (RealTimeBattle).             A robot programming game."
+/sbin/install-info /usr/info/RealTimeBattle.info.gz --info-dir=/usr/info/dir --menuentry="* RealTimeBattle: (RealTimeBattle).             A robot programming game." --description="RealTimeBattle: A robot programming game."
 
 %preun
 if [ $1 = 0 ]; then
-    /sbin/install-info --delete /usr/info/RealTimeBattle.info.gz /usr/info/dir --entry="* RealTimeBattle: (RealTimeBattle).             A robot programming game."
+    /sbin/install-info --remove /usr/info/RealTimeBattle.info.gz --info-dir=/usr/info/dir --menuentry="* RealTimeBattle: (RealTimeBattle).             A robot programming game." --description="RealTimeBattle: A robot programming game."
 fi
 
 %files

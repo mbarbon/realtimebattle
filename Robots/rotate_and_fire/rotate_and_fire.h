@@ -57,6 +57,7 @@ public:
   void radar_wall             ( const double dist, const double angle );
   void radar_cookie           ( const double dist, const double angle );
   void radar_mine             ( const double dist, const double angle );
+  void coordinates            ( const double x, const double y, const double rotation);
   void info                   ( const double time, const double speed,
                                 const double cannon_angle );
   void robot_info             ( const double energy, int enemy );
@@ -114,6 +115,11 @@ protected:
   // The current time is stored in this variable.
   double current_time;
 
+  // If we get coordinates, these are stored here.
+  double current_x_coordinate;
+  double current_y_coordinate;
+  double current_robot_angle;
+
   // All game options are stored in these variables.
   double robot_max_rotate;
   double robot_cannon_max_rotate;
@@ -129,6 +135,7 @@ protected:
   double shot_energy_increase_speed;
   double timeout;
   double debug_level;
+  int send_robot_coordinates;
 };
 
-#endif // __ROTATE_AND_FIRE__
+#endif 

@@ -1,7 +1,0 @@
-Makefile
-Makefile.in
-POTFILES
-RealTimeBattle.pot
-*.gmo
-stamp-cat-id
-cat-id-tbl.c

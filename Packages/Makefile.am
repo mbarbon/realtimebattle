@@ -1,6 +1,6 @@
-SUBDIRS = debian freebsd rpm
+SUBDIRS = rpm debian freebsd
 
-PACKAGES = debian freebsd rpm
+PACKAGES = rpm debian freebsd
 
 packages: $(PACKAGES)
 

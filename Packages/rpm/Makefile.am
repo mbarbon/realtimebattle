@@ -1,4 +1,3 @@
-
 EXTRA_DIST = RealTimeBattle.spec.in
 
 SPECDIR =	$(shell rpm --showrc | grep "^specdir" | sed "s/specdir[  ]*: *//")
@@ -11,8 +10,9 @@ SRCRPMDIR =	$(shell rpm --showrc | grep "^srcrpmdir" | sed "s/srcrpmdir[  ]*: */
 .PHONY: rpm
 
 rpm:
+	echo "It seems as if this target rule is broken due to new versions of rpm. Please correct!"
 	if test "x$(VERSION)" != "x"; then \
-	  cp ../../$(PACKAGE)-$(VERSION).tar.gz $(SOURCEDIR) && \
+	  cp ../../../$(PACKAGE)-$(VERSION).tar.gz $(SOURCEDIR) && \
 	  cp RealTimeBattle.spec $(SPECDIR)/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
 	  rpm -ba --clean --rmsource $(SPECDIR)/RealTimeBattle-$(RTB_RPM_VERSION).spec && \
 	  cp $(RPMDIR)/$(BUILDARCH)/RealTimeBattle-$(RTB_RPM_VERSION).$(BUILDARCH).rpm . && \
