@@ -523,7 +523,8 @@ ArenaRealTime::add_cookie()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for cookie", "ArenaRealTime::timeout_function");
+  if( !found_space ) return;
+
   Cookie* cookiep = new Cookie(pos, en);
   object_lists[COOKIE].insert_last( cookiep );
 
@@ -546,7 +547,8 @@ ArenaRealTime::add_mine()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for mine", "ArenaRealTime::timeout_function");
+  if( !found_space )  return;
+
   Mine* minep = new Mine(pos, en);
   object_lists[MINE].insert_last( minep );
 
