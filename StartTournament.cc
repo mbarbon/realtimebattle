@@ -6,6 +6,7 @@
 #include <math.h>
 #include <string.h>
 #include "gui.h"
+#include "String.h"
 
 void
 start_tournament_button_callback(GtkWidget *widget, gpointer data)
@@ -86,7 +87,27 @@ start_tournament_selection_made( GtkWidget * clist, gint row, gint column,
 void
 Gui::start_new_tournament()
 {
-  the_arena.start_tournament( selected_items_in_robot_tournament , selected_items_in_arena_tournament, 4, 5, 8);  
+  int min_value,max_value;
+  int value[3];
+  for(int i = 0 ; i < 3; i++)
+    {
+      String text = gtk_entry_get_text(GTK_ENTRY(start_tournament_entries[i]));
+      if(i != 1)
+        max_value = 10000;
+      else
+        max_value = 120;
+      if(i != 1)
+        min_value = 1;
+      else
+        min_value = 2;
+
+      value[i] = str2int(text);
+      if( value[i] > max_value )
+        value[i] = max_value;
+      if( value[i] < min_value )
+        value[i] = min_value;
+    } 
+  the_arena.start_tournament( selected_items_in_robot_tournament , selected_items_in_arena_tournament, value[1], value[0], value[2]);  
   close_start_tournament_window();
 }
 
@@ -502,16 +523,23 @@ Gui::setup_start_tournament_window()
       gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
       gtk_widget_show(label);
 
-      GtkWidget * entry = gtk_entry_new_with_max_length(4);
-      gtk_entry_set_text( GTK_ENTRY( entry ), "0");
+      start_tournament_entries[i] = gtk_entry_new_with_max_length(4);
+      if(i !=1 )
+        gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[i] ), "1");
+      else
+        gtk_entry_set_text( GTK_ENTRY( start_tournament_entries[i] ), "2");
 
       entry_t * info;
-      info = new entry_t( ENTRY_INT, 0.0, 10000.0 );
-      gtk_signal_connect(GTK_OBJECT(entry), "changed",
+      if(i != 1)
+        info = new entry_t( ENTRY_INT, 1.0, 10000.0 );
+      else
+        info = new entry_t( ENTRY_INT, 2.0, 120.0 );
+
+      gtk_signal_connect(GTK_OBJECT(start_tournament_entries[i]), "changed",
                          GTK_SIGNAL_FUNC(entry_handler), info);
-      gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
-      gtk_widget_set_usize(entry, 36,18);
-      gtk_widget_show(entry);
+      gtk_box_pack_start (GTK_BOX (hbox), start_tournament_entries[i], FALSE, FALSE, 0);
+      gtk_widget_set_usize(start_tournament_entries[i], 36,18);
+      gtk_widget_show(start_tournament_entries[i]);
     }
 
   vbox2 = gtk_vbox_new (FALSE, 5);
