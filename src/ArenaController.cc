@@ -383,7 +383,7 @@ ArenaController::print_help_message()
   for( li = gui_list.begin(); li != gui_list.end(); li++ )
     {
       cout << endl;
-      cout << _(" Options for gui '") << (*li)->Name() << "':" << endl;
+      cout << " " << _("Options for gui") << " '" << (*li)->Name() << "':" << endl;
       cout << (*li)->UsageMessage() << endl;
     }
 }
