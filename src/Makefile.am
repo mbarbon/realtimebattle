@@ -16,7 +16,10 @@ if NO_GRAPHICS
 GRAPHICS_O = 
 CXXFLAGS += -DNO_GRAPHICS 
 else
-GRAPHICS_O = Gui.o Statistics.o StartTournament.o
+GRAPHICS_O = \
+	Gui.o ControlWindow.cc ControlWindow.h \
+	MessageWindow.cc MessageWindow.h \
+	Statistics.o StartTournament.o
 endif
 
 RealTimeBattle_LDADD = $(GETOPT_O) $(GRAPHICS_O) $(GTK_LIBS)
@@ -35,5 +38,7 @@ RealTimeBattle_SOURCES = \
 	Vector2D.cc Vector2D.h
 
 EXTRA_RealTimeBattle_SOURCES = \
-	getopt.c getopt.h \
-	Gui.cc StartTournament.cc Statistics.cc
+	ControlWindow.cc ControlWindow.h \
+	getopt.c getopt.h Gui.cc \
+	MessageWindow.cc MessageWindow.h \
+	StartTournament.cc Statistics.cc
