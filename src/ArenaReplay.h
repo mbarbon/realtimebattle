@@ -56,6 +56,7 @@ public:
   void   change_speed           ( const bool forward, const bool fast );
   void   change_game            ( const int inc_game, const int inc_seq );
   bool   step_forward           ( const int n_o_steps, const bool clear_time = true );
+  void   step_forward_or_backward(const bool forward );
   void   change_replay_time     ( const double time );
 
   char   search_forward         ( const String& search_letters );
