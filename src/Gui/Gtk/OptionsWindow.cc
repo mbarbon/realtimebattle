@@ -322,11 +322,11 @@ OptionsWindow::set_all_options()
 
   if( the_arena_controller.is_started() )
     {
-      if( ( the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
+      if( ( the_arena.get_game_mode() == COMPETITION_MODE &&
             ( the_arena.get_state() == NO_STATE ||
               the_arena.get_state() == NOT_STARTED ||
               the_arena.get_state() == FINISHED ) ) ||
-          ( the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE ) )
+          ( the_arena.get_game_mode() != COMPETITION_MODE ) )
         allowed = true;
     }
   if( !the_arena_controller.is_started() || allowed )

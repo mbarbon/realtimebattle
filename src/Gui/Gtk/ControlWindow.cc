@@ -167,7 +167,7 @@ ControlWindow::ControlWindow( const int default_width,
 void
 ControlWindow::remove_replay_widgets()
 {
-  if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
+  if( the_arena_controller.game_mode == DEBUG_MODE )
     display_debug_widgets();
   else
     clear_extra_widgets();
