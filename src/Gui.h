@@ -104,7 +104,7 @@ public:
   void quit_event();
 
   void print_to_message_output( const String& from_robot, const String& text, GdkColor& colour);
-  void draw_objects();
+  void draw_objects(const bool clear_objects_first);
   void draw_all_walls();
 
   void change_zoom();

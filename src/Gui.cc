@@ -190,7 +190,7 @@ Gui::print_to_message_output (const String& from_robot, const String& output_tex
 }
 
 void
-Gui::draw_objects()
+Gui::draw_objects(const bool clear_objects_first)
 {
   GList** object_lists;
   GList* gl;
@@ -203,7 +203,7 @@ Gui::draw_objects()
   object_lists = the_arena.get_object_lists();
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
-      ((Shot*)gl->data)->draw_shape( true );
+      ((Shot*)gl->data)->draw_shape( clear_objects_first );
 
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
@@ -211,7 +211,7 @@ Gui::draw_objects()
       if( robotp->get_object_type() == ROBOT )
         if( robotp->is_alive() )
           {
-            robotp->draw_shape( true );
+            robotp->draw_shape( clear_objects_first );
             robotp->draw_radar_and_cannon();
           }
     }
@@ -235,7 +235,7 @@ Gui::draw_all_walls()
     if( ((Cookie*)gl->data)->is_alive() )
       ((Cookie*)gl->data)->draw_shape( false );
 
-  draw_objects();
+  draw_objects(false);
 }
 
 void
