@@ -4,6 +4,16 @@
 <title>Change log
 <itemize>
 
+<item> <bf>0.9.6:</bf>
+<p>
+Added sorting in the statistics. Only available with Gtk 1.1.x.
+
+It is now possible to clear the message list and view messages from one robot only.
+
+Bugfixes:
+
+An updating problem with gtk 1.1.x in statistics window was solved.
+
 <item> <bf>0.9.5:</bf>
 <p>
 The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.
