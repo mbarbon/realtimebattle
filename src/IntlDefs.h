@@ -26,15 +26,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
-# define _(str)                  dgettext("RealTimeBattle",str)
-# ifdef gettext_noop
-#  define N_(str)                gettext_noop(str)
-# else
-#  define N_(str)                (str)
-# endif
+# define _(str)                  gettext("RealTimeBattle")
+# define N_(str)                 str
 #else
 # define _(str)                  (str)
-# define N_(str)                 (str)
+# define N_(str)                 str
 # define gettext(str)            (str)
 # define dgettext(dom,str)       (str)
 # define dcgettext(dom,str,type) (str)
