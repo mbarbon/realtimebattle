@@ -706,7 +706,8 @@ Robot::move(const double timestep)
 
   if( is_alive() )
     realtime_arena.print_to_logfile('R', id, center[0], center[1],
-                               cannon_angle.pos, radar_angle.pos, energy);
+                                    robot_angle.pos, cannon_angle.pos, 
+                                    radar_angle.pos, energy);
 
 }
 

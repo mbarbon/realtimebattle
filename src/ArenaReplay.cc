@@ -162,15 +162,16 @@ ArenaReplay::parse_log_line()
     case 'R': // Robot pos
       {
         int robot_id;
-        double x, y, cannon_angle, radar_angle, energy;
-        log_file >> robot_id >> x >> y >> cannon_angle >> radar_angle >> energy;
+        double x, y, robot_angle, cannon_angle, radar_angle, energy;
+        log_file >> robot_id >> x >> y >> 
+          robot_angle >> cannon_angle >> radar_angle >> energy;
         ListIterator<Shape> li;
         find_object_by_id( object_lists[ROBOT], li, robot_id );
         if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line");
 
         Robot* robotp = (Robot*)li();
 
-        robotp->change_position( x, y, 0.0, cannon_angle, radar_angle, energy );
+        robotp->change_position( x, y, robot_angle, cannon_angle, radar_angle, energy );
         robotp->live();
       }
       break;
@@ -242,7 +243,7 @@ ArenaReplay::parse_log_line()
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[COOKIE], li, object_id );
               if( !li.ok() ) 
-                Error(true, "cookie not in list", "ArenaReplay::parse_log_line");
+                Error(true, "Cookie not in list", "ArenaReplay::parse_log_line");
               ((Cookie*)li())->die();
               object_lists[COOKIE].remove(li);
             }
@@ -261,7 +262,7 @@ ArenaReplay::parse_log_line()
             {
               ListIterator<Shape> li;
               find_object_by_id( object_lists[SHOT], li, object_id );
-              if( !li.ok() ) 
+              if( !li.ok() )
                 Error(true, "Shot not in list", "ArenaReplay::parse_log_line");
               ((Shot*)li())->die();
               object_lists[SHOT].remove(li);
