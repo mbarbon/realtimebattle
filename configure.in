@@ -736,6 +736,7 @@ AC_OUTPUT([
    Robots/rotate_and_fire/Makefile
    Robots/empty/Makefile
    src/Makefile
+   src/RobotClient/Makefile
    src/Core/Makefile
    src/Common/Makefile
    src/Network/Makefile
