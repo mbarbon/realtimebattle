@@ -3,8 +3,11 @@
 <notes>
 <title>FAQ
 <descrip>
-Sorry, the program is newly released, so no questions have been asked yet, and therefore no
-frequently asked questions. This will probably change soon ...
+<item> <bf>The program doesn't compile on my computer</bf> 
+<p>
+Well, it is not stable yet, so there may be problems around. Please read the <tt>INSTALL</tt> file
+carefully, and study the 
+<url name="BUGS" url="http://realtimebattle.netpedia.net/Documentation/BUGS.html"> file.
 
 </descrip>
 </notes>

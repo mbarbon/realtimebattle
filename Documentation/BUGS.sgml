@@ -7,9 +7,24 @@ This is a list of the currently known bugs in this version of the program. If yo
 another bug, please look at the most recent version of 
 <url name="this file on the homepage" url="http://realtimebattle.netpedia.net/BUGS.html"> and if you
 cannot find it there either, send a bug report to 
-<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">.
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">. Please don't forget
+to describe the system you are using. 
 
 <descrip>
+
+<tag>Various compilation problems</tag>
+<p>
+System dependent problems are present. We need help with bug-reports to overcome this.
+
+<tag>Problem when using more robots in the tournament than in the sequence</tag>
+<p> 
+This should be fixed now.
+
+<tag>Gtk+ 1.1 doesn't work</tag>
+<p> 
+Currently only the stable version of Gtk+ works (1.0.x), this will hopefully change in the future.
+Contributions are welcome.
+
 <tag>Windows resizing</tag>
 <p> 
 We have some troubles getting the windows work properly when allowing

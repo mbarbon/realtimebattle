@@ -4,6 +4,10 @@
 <title>Change log
 <itemize>
 
+<item> <bf>0.9.2:</bf> 
+<p>
+Fixed some bugs. Thanks to Björn Augustsson for a detatiled bug-report. 
+
 <item> <bf>0.9.1:</bf> 
 <p>
 This is the first ever public release of RealTimeBattle. Even though its the first, it should be

@@ -22,7 +22,15 @@ the file are extracted to the directory <tt>RealTimeBattle</tt>.
 Change directory to <tt>RealTimeBattle</tt> and type <verb>% make</verb>
 
 Hopefully will everything compile fine. If not, please ensure that <tt>gtk+</tt> is correctly
-installed. You can check this by typing <verb>% gtk-config --version</verb>
+installed. You can check this by typing <verb>% gtk-config --version</verb>. Currently only version 
+1.0.x of <tt>gtk+</tt> will work.
+
+If it doesn't compile as it should, please first look in the makefiles <tt>src/Makefile</tt> and 
+<tt>Robots/Makefile</tt>, and read the comments. Maybe you can find a solution there.
+
+If you still have problems, please send a bug-report to 
+<htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">. Don't forget to
+describe which system you are using.
 
 <item> Install
 <p>
