@@ -47,9 +47,9 @@ Gui::Gui()
 void
 Gui::set_colours()
 {  
-  long int bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
-  long int fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
-  long int rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
+  bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
+  fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
+  rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
 
   bg_gdk_colour = make_gdk_colour( bg_rgb_colour );
   fg_gdk_colour = make_gdk_colour( fg_rgb_colour );

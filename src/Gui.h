@@ -44,6 +44,10 @@ public:
   GdkColor* get_fg_gdk_colour_p                () { return &fg_gdk_colour; }
   GdkColor* get_rtb_message_gdk_colour_p       () { return &rtb_message_gdk_colour; }
 
+  long int get_bg_rgb_colour                   () { return bg_rgb_colour; }
+  long int get_fg_rgb_colour                   () { return fg_rgb_colour; }
+  long int get_rtb_message_rgb_colour          () { return rtb_message_rgb_colour; }
+
   bool is_arenawindow_up                       ()
     { return ( arenawindow_p != NULL ); }
   ArenaWindow* get_arenawindow_p               ()
@@ -81,6 +85,10 @@ public:
   void close_starttournamentwindow             ();
 
 private:
+
+  long int bg_rgb_colour;
+  long int fg_rgb_colour;
+  long int rtb_message_rgb_colour;
 
   GdkColor bg_gdk_colour;
   GdkColor fg_gdk_colour;
