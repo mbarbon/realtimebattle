@@ -76,6 +76,7 @@ ArenaBase::ArenaBase()
   sequences_remaining = 0;
   games_per_sequence = 0;
   games_remaining_in_sequence = 0;
+  sequences = 0;
   
   halt_next = false;
   pause_after_next_game = false;

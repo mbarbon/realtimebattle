@@ -189,6 +189,7 @@ protected:
   int games_remaining_in_sequence;
   int games_per_sequence;
   int sequences_remaining;
+  int sequences; // Warning, this variable is not used in ArenaRealtime
 
   int number_of_robots;
   int robots_left;
