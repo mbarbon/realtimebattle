@@ -1,4 +1,4 @@
-arenadatadir = $(ARENADIR)
+arenadatadir = $(RTB_DIR)/Arenas
 
 arenadata_DATA = \
 	Circle.arena Circles.arena Cross.arena Diamond.arena \

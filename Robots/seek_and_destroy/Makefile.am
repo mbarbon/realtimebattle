@@ -1,9 +1,9 @@
-robotexecdir = $(ROBOTDIR)
+robotexecdir = $(RTB_DIR)/Robots
 INCLUDES = -I$(top_srcdir)/src/
 robotexec_PROGRAMS = seek_and_destroy.robot
 seek_and_destroy_robot_LDADD =
 seek_and_destroy_robot_SOURCES = seek_and_destroy.cc
 
-saddir = $(ROBOTDIR)/seek_and_destroy
+saddir = $(RTB_DIR)/Robots/seek_and_destroy
 sad_DATA = $(seek_and_destroy_robot_SOURCES) Makefile.am 
 
