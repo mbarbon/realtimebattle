@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 2000-01-15 18:12+0100\n"
+"POT-Creation-Date: 2000-02-18 17:57+0100\n"
 "PO-Revision-Date: 1999-10-10 18:08+0200\n"
 "Last-Translator: Uwe Hermann <uh1763@bingo-ev.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -13,192 +13,117 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ArenaBase.cc:118
-msgid "*Starting robots*"
-msgstr "*Starte Roboter*"
+#: src/ArenaController.cc:302
+msgid " Usage: RealTimeBattle [options] "
+msgstr " Verwendung: RealTimeBattle [Optionen] "
 
-#: src/ArenaBase.cc:121
-msgid "*Shutting down robots*"
-msgstr "*Beende Roboter*"
+#: src/ArenaController.cc:303
+msgid " Options:"
+msgstr " Optionen:"
 
-#: src/ArenaBase.cc:125
-msgid "*Running*"
-msgstr "*RTB läuft*"
+#: src/ArenaController.cc:304
+msgid "    --debug_mode,                -d   debug mode"
+msgstr "    --debug_mode,                -d   Debug-Modus"
 
-#: src/ArenaBase.cc:127
-msgid "*Pausing after game*"
-msgstr "*Pause nach dem Spiel*"
+#: src/ArenaController.cc:305
+msgid ""
+"    --debug_level [0-5],         -D   sets the initial debug level. Implies "
+"-d"
+msgstr ""
+"    --debug_level [0-5],         -D   Setzt den anfänglichen Debug-Level. "
+"Bezieht -d mit ein"
 
-#: src/ArenaBase.cc:131
-msgid "*Paused*"
-msgstr "*Pause*"
+#: src/ArenaController.cc:306
+msgid "    --normal_mode,               -n   normal mode (default)"
+msgstr "    --normal_mode,               -n   normaler Modus (Standard)"
 
-#: src/ArenaBase.cc:134
-msgid "*Exiting*"
-msgstr "*Verlasse Programm*"
+#: src/ArenaController.cc:307
+msgid "    --competition_mode,          -c   competition mode"
+msgstr "    --competition_mode,          -c   Wettkampf Modus"
 
-#: src/ArenaBase.cc:137
-msgid "*Finished*"
-msgstr "*Beendet*"
+#: src/ArenaController.cc:309
+msgid "    --no_graphics,               -g   no graphics will be displayed"
+msgstr ""
+"    --no_graphics,               -g   es werden keine Grafiken angezeigt"
 
-#: src/ArenaWindow.cc:82
-msgid " No Zoom "
-msgstr " Kein Zoom "
+#: src/ArenaController.cc:310
+msgid ""
+"    --option_file [file],        -o   selects option-file (default: "
+"$HOME/.rtbrc)"
+msgstr ""
+"    --option_file [Datei],       -o   gibt Options-Datei an (Standard: "
+"$HOME/.rtbrc)"
 
-#: src/ArenaWindow.cc:84
-msgid " Zoom In "
-msgstr " Zoom In "
+#: src/ArenaController.cc:312
+msgid ""
+"    --log_file [file],           -l   make log file, if 'file' is '-'\n"
+"                                      the log is sent to STDOUT"
+msgstr ""
+"    --log_file [Datei],          -l   schreibt Log-Datei, wenn 'Datei' ein\n"
+"                                      '-' ist, wird nach STDOUT geschrieben"
 
-#: src/ArenaWindow.cc:86
-msgid " Zoom Out "
-msgstr " Zoom Out "
+#: src/ArenaController.cc:315
+msgid ""
+"    --tournament_file [file],    -t   specify a tournament file to\n"
+"                                      autostart a tournament"
+msgstr ""
+"    --tournament_file [Datei],   -t   Gibt eine Turnier-Datei an, um\n"
+"                                      selbständig das Turnier zu starten"
 
-#: src/ArenaWindow.cc:157
-msgid "Arena"
-msgstr "Arena"
+#: src/ArenaController.cc:318
+msgid ""
+"    --statistics_file [file],    -s   file to print the statistics to\n"
+"                                       when autostarting"
+msgstr ""
+"    --statistics_file [Datei],   -s   Datei um die Statistiken zu speichern\n"
+"                                      wenn selbständig gestartet wird"
 
-#: src/ArenaRealTime.cc:759
+#: src/ArenaController.cc:321
+msgid ""
+"    --message_file [file],       -m   redirect messages to 'file'.\n"
+"                                      With '-' as 'file', STDOUT is used.\n"
+"                                      If both log and messages are sent\n"
+"                                      to STDOUT, '-m' will be ignored"
+msgstr ""
+"    --message_file [Datei],      -m   schreibt Nachrichten in 'Datei'.\n"
+"                                      Mit '-' als 'Datei', wird STDOUT\n"
+"                                      benutzt.\n"
+"                                      Wenn sowohl Logs als auch Nachrichten\n"
+"                                      nach STDOUT geschrieben werden, wird\n"
+"                                      '-m' ignoriert"
+
+#: src/ArenaController.cc:326
+msgid ""
+"    --replay [file]              -r   a log file to replay.\n"
+"                                      if '-' is specified as file,\n"
+"                                      input is taken from STDIN"
+msgstr ""
+"    --replay [file]              -r   Eine Logdatei zum Nachspielen.\n"
+"                                      Wenn '-' als Datei angegeben ist,\n"
+"                                      wird der Inhalt von STDIN genommen"
+
+#: src/ArenaController.cc:330
+msgid "    --help,                      -h   prints this message"
+msgstr "    --help,                      -h   gibt diese Meldung aus"
+
+#: src/ArenaController.cc:331
+msgid "    --version,                   -v   prints the version number"
+msgstr "    --version,                   -v   gibt die Versionsnummer aus"
+
+#: src/ArenaRealTime.cc:747
 #, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "Spiel %d von Sequenz %d beginnt in der Arena"
 
-#: src/ArenaRealTime.cc:927
+#: src/ArenaRealTime.cc:915
 #, c-format
 msgid "Robot with filename %s has not given any name"
 msgstr "Roboter mit Dateinamen %s hat keinen Namen angegeben"
 
-#: src/ArenaReplay.cc:121
+#: src/ArenaReplay.cc:119
 #, c-format
 msgid "Game %d of sequence %d"
 msgstr "Spiel %d von Sequenz %d"
-
-#: src/ControlWindow.cc:78
-msgid " New Tournament "
-msgstr " Neues Turnier "
-
-#: src/ControlWindow.cc:80
-msgid " Replay Tournament "
-msgstr " Turnier abspielen "
-
-#: src/ControlWindow.cc:82
-msgid " Pause "
-msgstr " Pause "
-
-#: src/ControlWindow.cc:84
-msgid " End "
-msgstr " Ende "
-
-#: src/ControlWindow.cc:86
-msgid " Options "
-msgstr " Optionen "
-
-#: src/ControlWindow.cc:88
-msgid " Statistics "
-msgstr " Statistiken "
-
-#: src/ControlWindow.cc:90
-msgid "         Quit         "
-msgstr "         Beenden         "
-
-#: src/ControlWindow.cc:116
-msgid "Show arena window"
-msgstr "Arena-Fenster anzeigen"
-
-#: src/ControlWindow.cc:118
-msgid "Show message window"
-msgstr "Nachrichten-Fenster anzeigen"
-
-#: src/ControlWindow.cc:120
-msgid "Show score window"
-msgstr "Score-Fenster anzeigen"
-
-#: src/ControlWindow.cc:202
-msgid " Step "
-msgstr " Schritt "
-
-#: src/ControlWindow.cc:204
-msgid " End Game "
-msgstr " Spiel beenden "
-
-#: src/ControlWindow.cc:206
-msgid " Kill Marked Robot "
-msgstr " Markierten Roboter killen "
-
-#: src/ControlWindow.cc:234
-msgid " Debug Level: "
-msgstr " Debug Level: "
-
-#: src/ControlWindow.cc:335
-msgid " Step forward "
-msgstr " Schritt vorwärts "
-
-#: src/ControlWindow.cc:339
-msgid " Step backward "
-msgstr " Schritt rückwärts "
-
-#: src/ControlWindow.cc:343
-msgid " Next Game "
-msgstr " Nächstes Spiel "
-
-#: src/ControlWindow.cc:347
-msgid " Prev Game "
-msgstr " Vorhergehendes Spiel "
-
-#: src/ControlWindow.cc:351
-msgid " Next Seq "
-msgstr " Nächste Sequenz "
-
-#: src/ControlWindow.cc:355
-msgid " Prev Seq "
-msgstr " Vorhergehende Sequenz "
-
-#: src/ControlWindow.cc:514 src/ControlWindow.cc:663 src/Gui.cc:153
-msgid ""
-"This action will kill the current tournament.\n"
-"Do you want to do that?"
-msgstr ""
-"Diese Aktion wird das aktuelle Turnier beenden.\n"
-"Willst du das tun?"
-
-#: src/ControlWindow.cc:517 src/ControlWindow.cc:666
-msgid "Yes"
-msgstr "Ja"
-
-#: src/ControlWindow.cc:518 src/ControlWindow.cc:667
-msgid "No"
-msgstr "Nein"
-
-#: src/ControlWindow.cc:531
-msgid "Choose a log file to replay"
-msgstr "Wähle ein Logfile zum abspielen"
-
-#: src/MessageWindow.cc:82
-msgid " Clear all messages "
-msgstr " Lösche alle Nachrichten "
-
-#: src/MessageWindow.cc:84
-msgid " Show only marked robot "
-msgstr " Zeige nur den markierten Roboter "
-
-#: src/MessageWindow.cc:86
-msgid " Show all "
-msgstr " Zeige alle "
-
-#: src/MessageWindow.cc:114 src/StatisticsWindow.cc:94
-msgid " Robot "
-msgstr " Roboter "
-
-#: src/MessageWindow.cc:114
-msgid " Message "
-msgstr " Nachricht "
-
-#: src/MessageWindow.cc:175
-msgid "Messages"
-msgstr "Nachrichten"
-
-#: src/MessageWindow.cc:179
-msgid " All "
-msgstr " Alle "
 
 #: src/Options.cc:62
 msgid "Gravitational Constant"
@@ -414,7 +339,7 @@ msgstr "Loggingfrequenz [Jedes n:te Update-Intervall]"
 
 #: src/Options.cc:305
 msgid "Max robots allowed simultaneously"
-msgstr ""
+msgstr "Anzahl max. gleichzeitig erlaubter Roboter"
 
 #: src/Options.cc:309
 msgid "Robot search path"
@@ -492,393 +417,446 @@ msgstr "Anfängliche Statistik-Fenster Breite"
 msgid "Initial Statistics window height"
 msgstr "Anfängliche Statistik-Fenster Höhe"
 
-#: src/OptionsWindow.cc:50
+#: src/Various.cc:62
+msgid "Error in"
+msgstr "Fehler in"
+
+#: src/Gui/Gtk/ArenaWindow.cc:87
+msgid " No Zoom "
+msgstr " Kein Zoom "
+
+#: src/Gui/Gtk/ArenaWindow.cc:89
+msgid " Zoom In "
+msgstr " Zoom In "
+
+#: src/Gui/Gtk/ArenaWindow.cc:91
+msgid " Zoom Out "
+msgstr " Zoom Out "
+
+#: src/Gui/Gtk/ArenaWindow.cc:162
+msgid "Arena"
+msgstr "Arena"
+
+#: src/Gui/Gtk/ControlWindow.cc:79
+msgid " New Tournament "
+msgstr " Neues Turnier "
+
+#: src/Gui/Gtk/ControlWindow.cc:81
+msgid " Replay Tournament "
+msgstr " Turnier abspielen "
+
+#: src/Gui/Gtk/ControlWindow.cc:83
+msgid " Pause "
+msgstr " Pause "
+
+#: src/Gui/Gtk/ControlWindow.cc:85
+msgid " End "
+msgstr " Ende "
+
+#: src/Gui/Gtk/ControlWindow.cc:87
+msgid " Options "
+msgstr " Optionen "
+
+#: src/Gui/Gtk/ControlWindow.cc:89
+msgid " Statistics "
+msgstr " Statistiken "
+
+#: src/Gui/Gtk/ControlWindow.cc:91
+msgid "         Quit         "
+msgstr "         Beenden         "
+
+#: src/Gui/Gtk/ControlWindow.cc:117
+msgid "Show arena window"
+msgstr "Arena-Fenster anzeigen"
+
+#: src/Gui/Gtk/ControlWindow.cc:119
+msgid "Show message window"
+msgstr "Nachrichten-Fenster anzeigen"
+
+#: src/Gui/Gtk/ControlWindow.cc:121
+msgid "Show score window"
+msgstr "Score-Fenster anzeigen"
+
+#: src/Gui/Gtk/ControlWindow.cc:203
+msgid " Step "
+msgstr " Schritt "
+
+#: src/Gui/Gtk/ControlWindow.cc:205
+msgid " End Game "
+msgstr " Spiel beenden "
+
+#: src/Gui/Gtk/ControlWindow.cc:207
+msgid " Kill Marked Robot "
+msgstr " Markierten Roboter killen "
+
+#: src/Gui/Gtk/ControlWindow.cc:235
+msgid " Debug Level: "
+msgstr " Debug Level: "
+
+#: src/Gui/Gtk/ControlWindow.cc:336
+msgid " Step forward "
+msgstr " Schritt vorwärts "
+
+#: src/Gui/Gtk/ControlWindow.cc:340
+msgid " Step backward "
+msgstr " Schritt rückwärts "
+
+#: src/Gui/Gtk/ControlWindow.cc:344
+msgid " Next Game "
+msgstr " Nächstes Spiel "
+
+#: src/Gui/Gtk/ControlWindow.cc:348
+msgid " Prev Game "
+msgstr " Vorhergehendes Spiel "
+
+#: src/Gui/Gtk/ControlWindow.cc:352
+msgid " Next Seq "
+msgstr " Nächste Sequenz "
+
+#: src/Gui/Gtk/ControlWindow.cc:356
+msgid " Prev Seq "
+msgstr " Vorhergehende Sequenz "
+
+#: src/Gui/Gtk/ControlWindow.cc:515 src/Gui/Gtk/ControlWindow.cc:664
+#: src/Gui/Gtk/Gui.cc:301
+msgid ""
+"This action will kill the current tournament.\n"
+"Do you want to do that?"
+msgstr ""
+"Diese Aktion wird das aktuelle Turnier beenden.\n"
+"Willst du das tun?"
+
+#: src/Gui/Gtk/ControlWindow.cc:518 src/Gui/Gtk/ControlWindow.cc:667
+msgid "Yes"
+msgstr "Ja"
+
+#: src/Gui/Gtk/ControlWindow.cc:519 src/Gui/Gtk/ControlWindow.cc:668
+msgid "No"
+msgstr "Nein"
+
+#: src/Gui/Gtk/ControlWindow.cc:532
+msgid "Choose a log file to replay"
+msgstr "Wähle ein Logfile zum abspielen"
+
+#: src/Gui/Gtk/MessageWindow.cc:83
+msgid " Clear all messages "
+msgstr " Lösche alle Nachrichten "
+
+#: src/Gui/Gtk/MessageWindow.cc:85
+msgid " Show only marked robot "
+msgstr " Zeige nur den markierten Roboter "
+
+#: src/Gui/Gtk/MessageWindow.cc:87
+msgid " Show all "
+msgstr " Zeige alle "
+
+#: src/Gui/Gtk/MessageWindow.cc:115 src/Gui/Gtk/StatisticsWindow.cc:97
+msgid " Robot "
+msgstr " Roboter "
+
+#: src/Gui/Gtk/MessageWindow.cc:115
+msgid " Message "
+msgstr " Nachricht "
+
+#: src/Gui/Gtk/MessageWindow.cc:188
+msgid "Messages"
+msgstr "Nachrichten"
+
+#: src/Gui/Gtk/MessageWindow.cc:192
+msgid " All "
+msgstr " Alle "
+
+#: src/Gui/Gtk/OptionsWindow.cc:51
 msgid "Options"
 msgstr "Optionen"
 
-#: src/OptionsWindow.cc:76
+#: src/Gui/Gtk/OptionsWindow.cc:77
 msgid "Environment"
 msgstr "Umgebung"
 
-#: src/OptionsWindow.cc:76
+#: src/Gui/Gtk/OptionsWindow.cc:77
 msgid "Robot"
 msgstr "Roboter"
 
-#: src/OptionsWindow.cc:76
+#: src/Gui/Gtk/OptionsWindow.cc:77
 msgid "Shot"
 msgstr "Schuss"
 
-#: src/OptionsWindow.cc:77
+#: src/Gui/Gtk/OptionsWindow.cc:78
 msgid "Extras"
 msgstr "Extras"
 
-#: src/OptionsWindow.cc:77 src/ScoreWindow.cc:153
+#: src/Gui/Gtk/OptionsWindow.cc:78 src/Gui/Gtk/ScoreWindow.cc:159
 msgid "Time"
 msgstr "Zeit"
 
-#: src/OptionsWindow.cc:77
+#: src/Gui/Gtk/OptionsWindow.cc:78
 msgid "Window sizes"
 msgstr "Fenster-Größen"
 
-#: src/OptionsWindow.cc:78
+#: src/Gui/Gtk/OptionsWindow.cc:79
 msgid "Misc"
 msgstr "Verschiedenes"
 
-#: src/OptionsWindow.cc:135 src/OptionsWindow.cc:172
-#: src/StartTournamentWindow.cc:295
+#: src/Gui/Gtk/OptionsWindow.cc:136 src/Gui/Gtk/OptionsWindow.cc:173
+#: src/Gui/Gtk/StartTournamentWindow.cc:303
 msgid " Min "
 msgstr " Min. "
 
-#: src/OptionsWindow.cc:137 src/OptionsWindow.cc:174 src/OptionsWindow.cc:199
+#: src/Gui/Gtk/OptionsWindow.cc:138 src/Gui/Gtk/OptionsWindow.cc:175
+#: src/Gui/Gtk/OptionsWindow.cc:200
 msgid " Def "
 msgstr " Def "
 
-#: src/OptionsWindow.cc:139 src/OptionsWindow.cc:176
-#: src/StartTournamentWindow.cc:329
+#: src/Gui/Gtk/OptionsWindow.cc:140 src/Gui/Gtk/OptionsWindow.cc:177
+#: src/Gui/Gtk/StartTournamentWindow.cc:337
 msgid " Max "
 msgstr " Max. "
 
-#: src/OptionsWindow.cc:225
+#: src/Gui/Gtk/OptionsWindow.cc:226
 msgid " Grab sizes and positions from present windows "
 msgstr " Nehme Größe und Position vom aktuellen Fenster"
 
-#: src/OptionsWindow.cc:246
+#: src/Gui/Gtk/OptionsWindow.cc:247
 msgid " Default "
 msgstr " Default "
 
-#: src/OptionsWindow.cc:248
+#: src/Gui/Gtk/OptionsWindow.cc:249
 msgid " Load options "
 msgstr " Optionen laden "
 
-#: src/OptionsWindow.cc:250
+#: src/Gui/Gtk/OptionsWindow.cc:251
 msgid " Save options "
 msgstr " Optionen speichern "
 
-#: src/OptionsWindow.cc:252
+#: src/Gui/Gtk/OptionsWindow.cc:253
 msgid " Save as default "
 msgstr " Als Standard speichern"
 
-#: src/OptionsWindow.cc:254
+#: src/Gui/Gtk/OptionsWindow.cc:255
 msgid " Apply "
 msgstr " Anwenden "
 
-#: src/OptionsWindow.cc:256 src/StartTournamentWindow.cc:565
-#: src/StartTournamentWindow.cc:714 src/StartTournamentWindow.cc:849
+#: src/Gui/Gtk/OptionsWindow.cc:257 src/Gui/Gtk/StartTournamentWindow.cc:577
+#: src/Gui/Gtk/StartTournamentWindow.cc:727
+#: src/Gui/Gtk/StartTournamentWindow.cc:867
 msgid " Ok "
 msgstr " Ok "
 
-#: src/OptionsWindow.cc:258 src/StartTournamentWindow.cc:379
+#: src/Gui/Gtk/OptionsWindow.cc:259 src/Gui/Gtk/StartTournamentWindow.cc:387
 msgid " Cancel "
 msgstr " Abbrechen "
 
-#: src/OptionsWindow.cc:425
+#: src/Gui/Gtk/OptionsWindow.cc:426
 msgid "Choose an options file to load"
 msgstr "Wähle eine Options-Datei zum laden"
 
-#: src/OptionsWindow.cc:449
+#: src/Gui/Gtk/OptionsWindow.cc:450
 msgid "Choose an options file to save"
 msgstr "Wähle eine Options-Datei zum speichern"
 
-#: src/RealTimeBattle.cc:91
-msgid " Usage: RealTimeBattle [options] "
-msgstr " Verwendung: RealTimeBattle [Optionen] "
-
-#: src/RealTimeBattle.cc:92
-msgid " Options:"
-msgstr " Optionen:"
-
-#: src/RealTimeBattle.cc:93
-msgid "    --debug_mode,                -d   debug mode"
-msgstr "    --debug_mode,                -d   Debug-Modus"
-
-#: src/RealTimeBattle.cc:94
-msgid ""
-"    --debug_level [0-5],         -D   sets the initial debug level. Implies "
-"-d"
-msgstr ""
-"    --debug_level [0-5],         -D   Setzt den anfänglichen "
-"Debug-Level.Bezieht -d mit ein"
-
-#: src/RealTimeBattle.cc:95
-msgid "    --normal_mode,               -n   normal mode (default)"
-msgstr "    --normal_mode,               -n   normaler Modus (Standard)"
-
-#: src/RealTimeBattle.cc:96
-msgid "    --competition_mode,          -c   competition mode"
-msgstr "    --competition_mode,          -c   Wettkampf Modus"
-
-#: src/RealTimeBattle.cc:98
-msgid "    --no_graphics,               -g   no graphics will be displayed"
-msgstr ""
-"    --no_graphics,               -g   es werden keine Grafiken angezeigt"
-
-#: src/RealTimeBattle.cc:99
-msgid ""
-"    --option_file [file],        -o   selects option-file (default: "
-"$HOME/.rtbrc)"
-msgstr ""
-"    --option_file [Datei],       -o   gibt Options-Datei an (Standard: "
-"$HOME/.rtbrc)"
-
-#: src/RealTimeBattle.cc:101
-msgid ""
-"    --log_file [file],           -l   make log file, if 'file' is '-'\n"
-"                                      the log is sent to STDOUT"
-msgstr ""
-"    --log_file [Datei],          -l   schreibt Log-Datei, wenn 'Datei' ein\n"
-"                                      '-' ist, wird nach STDOUT geschrieben"
-
-#: src/RealTimeBattle.cc:104
-msgid ""
-"    --tournament_file [file],    -t   specify a tournament file to\n"
-"                                      autostart a tournament"
-msgstr ""
-"    --tournament_file [Datei],   -t   Gibt eine Turnier-Datei an, um\n"
-"                                      selbständig das Turnier zu starten"
-
-#: src/RealTimeBattle.cc:107
-msgid ""
-"    --statistics_file [file],    -s   file to print the statistics to\n"
-"                                       when autostarting"
-msgstr ""
-"    --statistics_file [Datei],   -s   Datei um die Statistiken zu speichern\n"
-"                                      wenn selbständig gestartet wird"
-
-#: src/RealTimeBattle.cc:110
-msgid ""
-"    --message_file [file],       -m   redirect messages to 'file'.\n"
-"                                      With '-' as 'file', STDOUT is used.\n"
-"                                      If both log and messages are sent\n"
-"                                      to STDOUT, '-m' will be ignored"
-msgstr ""
-"    --message_file [Datei],      -m   schreibt Nachrichten in 'Datei'.\n"
-"                                      Mit '-' als 'Datei', wird STDOUT\n"
-"                                      benutzt.\n"
-"                                      Wenn sowohl Logs als auch Nachrichten\n"
-"                                      nach STDOUT geschrieben werden, wird\n"
-"                                      '-m' ignoriert"
-
-#: src/RealTimeBattle.cc:115
-msgid ""
-"    --replay [file]              -r   a log file to replay.\n"
-"                                      if '-' is specified as file,\n"
-"                                      input is taken from STDIN"
-msgstr ""
-"    --replay [file]              -r   Eine Logdatei zum Nachspielen.\n"
-"                                      Wenn '-' als Datei angegeben ist,\n"
-"                                      wird der Inhalt von STDIN genommen"
-
-#: src/RealTimeBattle.cc:119
-msgid "    --help,                      -h   prints this message"
-msgstr "    --help,                      -h   gibt diese Meldung aus"
-
-#: src/RealTimeBattle.cc:120
-msgid "    --version,                   -v   prints the version number"
-msgstr "    --version,                   -v   gibt die Versionsnummer aus"
-
-#: src/ScoreWindow.cc:75 src/StatisticsWindow.cc:228
-#: src/StatisticsWindow.cc:390
+#: src/Gui/Gtk/ScoreWindow.cc:77 src/Gui/Gtk/StatisticsWindow.cc:231
+#: src/Gui/Gtk/StatisticsWindow.cc:397
 msgid "Name"
 msgstr "Name"
 
-#: src/ScoreWindow.cc:75
+#: src/Gui/Gtk/ScoreWindow.cc:77
 msgid "Energy"
 msgstr "Energie"
 
-#: src/ScoreWindow.cc:75
+#: src/Gui/Gtk/ScoreWindow.cc:77
 msgid "Place"
 msgstr "Platz"
 
-#: src/ScoreWindow.cc:76
+#: src/Gui/Gtk/ScoreWindow.cc:78
 msgid "Last"
 msgstr "Letzer"
 
-#: src/ScoreWindow.cc:76 src/ScoreWindow.cc:146
+#: src/Gui/Gtk/ScoreWindow.cc:78 src/Gui/Gtk/ScoreWindow.cc:152
 msgid "Score"
 msgstr "Score"
 
-#: src/ScoreWindow.cc:147
+#: src/Gui/Gtk/ScoreWindow.cc:153
 msgid " Seq: "
 msgstr " Seq: "
 
-#: src/ScoreWindow.cc:150 src/StatisticsWindow.cc:91
-#: src/StatisticsWindow.cc:409 src/StatisticsWindow.cc:521
+#: src/Gui/Gtk/ScoreWindow.cc:156 src/Gui/Gtk/StatisticsWindow.cc:94
+#: src/Gui/Gtk/StatisticsWindow.cc:416 src/Gui/Gtk/StatisticsWindow.cc:528
 msgid "Game"
 msgstr "Spiel"
 
-#: src/StatisticsWindow.cc:46
+#: src/Gui/Gtk/StatisticsWindow.cc:49
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: src/StatisticsWindow.cc:83
+#: src/Gui/Gtk/StatisticsWindow.cc:86
 msgid " Close "
 msgstr " Schliessen "
 
-#: src/StatisticsWindow.cc:85
+#: src/Gui/Gtk/StatisticsWindow.cc:88
 msgid " Save Statistics "
 msgstr " Statistiken speichern "
 
-#: src/StatisticsWindow.cc:87
+#: src/Gui/Gtk/StatisticsWindow.cc:90
 msgid " Total "
 msgstr " Gesamt "
 
-#: src/StatisticsWindow.cc:89
+#: src/Gui/Gtk/StatisticsWindow.cc:92
 msgid " Sequence Total "
 msgstr " Sequenzen gesamt "
 
-#: src/StatisticsWindow.cc:228
+#: src/Gui/Gtk/StatisticsWindow.cc:231
 msgid "Position"
 msgstr "Position"
 
-#: src/StatisticsWindow.cc:228
+#: src/Gui/Gtk/StatisticsWindow.cc:231
 msgid "Points"
 msgstr "Punkte"
 
-#: src/StatisticsWindow.cc:229 src/StatisticsWindow.cc:367
+#: src/Gui/Gtk/StatisticsWindow.cc:232 src/Gui/Gtk/StatisticsWindow.cc:374
 msgid "Games"
 msgstr "Spiele"
 
-#: src/StatisticsWindow.cc:229
+#: src/Gui/Gtk/StatisticsWindow.cc:232
 msgid "Survival Time"
 msgstr "Überlebenszeit"
 
-#: src/StatisticsWindow.cc:229
+#: src/Gui/Gtk/StatisticsWindow.cc:232
 msgid "Total Points"
 msgstr "Gesamtpunktzahl"
 
-#: src/StatisticsWindow.cc:316
+#: src/Gui/Gtk/StatisticsWindow.cc:323
 msgid "Choose a statistics file to save"
 msgstr "Wähle eine Statistik-Datei zum speichern"
 
-#: src/StatisticsWindow.cc:408
+#: src/Gui/Gtk/StatisticsWindow.cc:415
 msgid "Seq"
 msgstr "Seq"
 
-#: src/StatisticsWindow.cc:505
+#: src/Gui/Gtk/StatisticsWindow.cc:512
 msgid " Grand Total "
 msgstr " Endergebnis "
 
-#: src/StatisticsWindow.cc:508
+#: src/Gui/Gtk/StatisticsWindow.cc:515
 msgid " Sequence "
 msgstr " Sequenz "
 
-#: src/StatisticsWindow.cc:520
+#: src/Gui/Gtk/StatisticsWindow.cc:527
 msgid " Sequence: "
 msgstr " Sequenz: "
 
-#: src/StartTournamentWindow.cc:68
+#: src/Gui/Gtk/StartTournamentWindow.cc:76
 msgid "Start New Tournament"
 msgstr "Starte neues Turnier"
 
-#: src/StartTournamentWindow.cc:117
+#: src/Gui/Gtk/StartTournamentWindow.cc:125
 msgid "Robots in Tournament"
 msgstr "Roboter im Turnier"
 
-#: src/StartTournamentWindow.cc:118
+#: src/Gui/Gtk/StartTournamentWindow.cc:126
 msgid "Robots in Directory"
 msgstr "Roboter im Verzeichnis"
 
-#: src/StartTournamentWindow.cc:127
+#: src/Gui/Gtk/StartTournamentWindow.cc:135
 msgid "Arenas in Tournament"
 msgstr "Arenen im Turnier"
 
-#: src/StartTournamentWindow.cc:128
+#: src/Gui/Gtk/StartTournamentWindow.cc:136
 msgid "Arenas in Directory"
 msgstr "Arenen im Verzeichnis"
 
-#: src/StartTournamentWindow.cc:145
+#: src/Gui/Gtk/StartTournamentWindow.cc:153
 msgid " Remove "
 msgstr " Entfernen "
 
-#: src/StartTournamentWindow.cc:145 src/StartTournamentWindow.cc:147
+#: src/Gui/Gtk/StartTournamentWindow.cc:153
+#: src/Gui/Gtk/StartTournamentWindow.cc:155
 msgid " Select All "
 msgstr " Alle auswählen "
 
-#: src/StartTournamentWindow.cc:146 src/StartTournamentWindow.cc:147
+#: src/Gui/Gtk/StartTournamentWindow.cc:154
+#: src/Gui/Gtk/StartTournamentWindow.cc:155
 msgid " Unselect All "
 msgstr " Alle abwählen "
 
-#: src/StartTournamentWindow.cc:146
+#: src/Gui/Gtk/StartTournamentWindow.cc:154
 msgid " Add "
 msgstr " Hinzufügen "
 
 #. Choose Number of games per sequence, Number of robots per sequence
 #. and Number of sequences
-#: src/StartTournamentWindow.cc:237
+#: src/Gui/Gtk/StartTournamentWindow.cc:245
 msgid "Games per sequence"
 msgstr "Spiele pro Sequenz"
 
-#: src/StartTournamentWindow.cc:237
+#: src/Gui/Gtk/StartTournamentWindow.cc:245
 msgid "Robots per sequence"
 msgstr "Roboter pro Sequenz"
 
-#: src/StartTournamentWindow.cc:238
+#: src/Gui/Gtk/StartTournamentWindow.cc:246
 msgid "Number of sequences"
 msgstr "Anzahl der Sequenzen"
 
-#: src/StartTournamentWindow.cc:307
+#: src/Gui/Gtk/StartTournamentWindow.cc:315
 msgid " All Arenas "
 msgstr " Alle Arenen "
 
-#: src/StartTournamentWindow.cc:319
+#: src/Gui/Gtk/StartTournamentWindow.cc:327
 msgid " Full Round "
 msgstr " Alle Runden "
 
-#: src/StartTournamentWindow.cc:357
+#: src/Gui/Gtk/StartTournamentWindow.cc:365
 msgid " Load tournament "
 msgstr " Turnier laden "
 
-#: src/StartTournamentWindow.cc:357
+#: src/Gui/Gtk/StartTournamentWindow.cc:365
 msgid " Save tournament "
 msgstr " Turnier speichern"
 
-#: src/StartTournamentWindow.cc:379
+#: src/Gui/Gtk/StartTournamentWindow.cc:387
 msgid " Start "
 msgstr " Start "
 
-#: src/StartTournamentWindow.cc:485
+#: src/Gui/Gtk/StartTournamentWindow.cc:497
 msgid "Choose a tournament file to load"
 msgstr "Wähle eine Turnier-Datei zum laden"
 
-#: src/StartTournamentWindow.cc:519
+#: src/Gui/Gtk/StartTournamentWindow.cc:531
 msgid "Choose file to save tournament into"
 msgstr "Wähle eine Datei um das Turnier zu speichern"
 
-#: src/StartTournamentWindow.cc:563
+#: src/Gui/Gtk/StartTournamentWindow.cc:575
 msgid "Error in specified tournament file."
 msgstr "Fehler in angegebener Turnier-Datei."
 
-#: src/StartTournamentWindow.cc:566
+#: src/Gui/Gtk/StartTournamentWindow.cc:578
 msgid "Tournament could not be loaded."
 msgstr "Turnier konnte nicht geladen werden."
 
-#: src/StartTournamentWindow.cc:704
+#: src/Gui/Gtk/StartTournamentWindow.cc:717
 msgid "There are too few robots in the tournament."
 msgstr "Es sind zu wenig Roboter im Turnier."
 
-#: src/StartTournamentWindow.cc:706 src/StartTournamentWindow.cc:844
+#: src/Gui/Gtk/StartTournamentWindow.cc:719
+#: src/Gui/Gtk/StartTournamentWindow.cc:862
 msgid "There are no arenas in the tournament."
 msgstr "Es sind keine Arenen im Turnier."
 
-#: src/StartTournamentWindow.cc:709
+#: src/Gui/Gtk/StartTournamentWindow.cc:722
 msgid "Could not open file."
 msgstr "Kann Datei nicht öffnen."
 
-#: src/StartTournamentWindow.cc:715
+#: src/Gui/Gtk/StartTournamentWindow.cc:728
 msgid "Tournament could not be saved."
 msgstr "Turnier konnte nicht gespeichert werden."
 
-#: src/StartTournamentWindow.cc:842
+#: src/Gui/Gtk/StartTournamentWindow.cc:860
 msgid "There must be at least two robots in the tournament."
 msgstr "Es müssen mindestens zwei Roboter im Turnier sein."
 
-#: src/StartTournamentWindow.cc:850
+#: src/Gui/Gtk/StartTournamentWindow.cc:868
 msgid "Tournament could not be started."
 msgstr "Turnier konnte nicht gestartet werden."
-
-#: src/Various.cc:71
-msgid "Error in"
-msgstr "Fehler in"
 
 #: Robots/rotate_and_fire/rotate_and_fire.cc:287
 msgid "Brakes locked: Robot found and at distance"
@@ -951,3 +929,24 @@ msgstr "Unbekanntes Objekt gesehen!"
 #: Robots/rotate_and_fire/rotate_and_fire.cc:705
 msgid "Collided with Unknown Object!"
 msgstr "Kollision mit unbekanntem Objekt!"
+
+#~ msgid "*Starting robots*"
+#~ msgstr "*Starte Roboter*"
+
+#~ msgid "*Shutting down robots*"
+#~ msgstr "*Beende Roboter*"
+
+#~ msgid "*Running*"
+#~ msgstr "*RTB läuft*"
+
+#~ msgid "*Pausing after game*"
+#~ msgstr "*Pause nach dem Spiel*"
+
+#~ msgid "*Paused*"
+#~ msgstr "*Pause*"
+
+#~ msgid "*Exiting*"
+#~ msgstr "*Verlasse Programm*"
+
+#~ msgid "*Finished*"
+#~ msgstr "*Beendet*"
