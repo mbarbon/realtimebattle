@@ -207,7 +207,7 @@ ArenaReplay::parse_this_time_index()
 #endif NO_GRAPHICS
 
   // check if robots have died and set their points
-  if( robots_killed_this_round > 0 )
+  if( robots_killed_this_round != 0 )
     {
       robots_left -= robots_killed_this_round; 
 
@@ -457,7 +457,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
           robot_angle >> cannon_angle >> radar_angle >> energy;
         ListIterator<Shape> li;
         find_object_by_id( object_lists[ROBOT], li, robot_id );
-        if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line");
+        if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line_forward");
 
         Robot* robotp = (Robot*)li();
 
@@ -510,13 +510,16 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[ROBOT], li, object_id );
               if( !li.ok() ) 
-                Error(true, "Dying robot not in list", "ArenaReplay::parse_log_line");
+                Error(true, "Dying robot not in list", "ArenaReplay::parse_log_line_forward");
               Robot* robotp = (Robot*) li();
-              robotp->die();
-              robots_killed_this_round++;
-              robotp->set_stats( points_received, pos_this_game, 
-                                 current_replay_time, false);
-              robotp->change_energy( -robotp->get_energy() );
+              if( robotp->is_alive() )
+                {
+                  robotp->die();
+                  robots_killed_this_round++;
+                  robotp->set_stats( points_received, pos_this_game, 
+                                     current_replay_time, false);
+                  robotp->change_energy( -robotp->get_energy() );
+                }
             }
             break;
           case 'C':
@@ -524,7 +527,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
               ListIterator<Shape> li;             
               find_object_by_id( object_lists[COOKIE], li, object_id );
               if( !li.ok() ) 
-                Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line");
+                Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line_forward");
               else
                 {
                   ((Cookie*)li())->die();
@@ -537,7 +540,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
               ListIterator<Shape> li;
               find_object_by_id( object_lists[MINE], li, object_id );
               if( !li.ok() ) 
-                Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line");
+                Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line_forward");
               else
                 {
                   ((Mine*)li())->die();
@@ -550,7 +553,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
               ListIterator<Shape> li;
               find_object_by_id( object_lists[SHOT], li, object_id );
               if( !li.ok() )
-                Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line");
+                Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line_forward");
               else
                 {
                   ((Shot*)li())->die();
@@ -560,7 +563,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
             break;
           case '?':
           default:
-            Error( false, "Unknown object type is dead", "ArenaReplay::parse_log_line" );
+            Error( false, "Unknown object type is dead", "ArenaReplay::parse_log_line_forward" );
             break;
           }
       }
@@ -571,7 +574,118 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
 void 
 ArenaReplay::parse_log_line_rewind( const char first_letter )
 {
-  parse_log_line_forward( first_letter ); // temporary!!
+  switch( first_letter )
+    {
+    case 'R':
+      {
+        int robot_id;
+        double x, y, robot_angle, cannon_angle, radar_angle, energy;
+        log_file >> robot_id >> x >> y >> 
+          robot_angle >> cannon_angle >> radar_angle >> energy;
+        ListIterator<Shape> li;
+        find_object_by_id( object_lists[ROBOT], li, robot_id );
+        if( !li.ok() ) Error(true, "Robot not in list", "ArenaReplay::parse_log_line_rewind");
+        
+        Robot* robotp = (Robot*)li();
+        
+        robotp->change_position( x, y, robot_angle, cannon_angle, radar_angle, energy );
+        if( !robotp->is_alive() )
+          {
+            robotp->live();
+            robots_killed_this_round--;
+            robotp->set_stats(0.0, 0, 0.0, false); // clear position_this_game
+          }
+      }
+      break;
+
+        
+    case 'C':
+      {
+        int id;
+        double x,y;
+        log_file >> id >> x >> y;
+        ListIterator<Shape> li;             
+        find_object_by_id( object_lists[COOKIE], li, id );
+        if( !li.ok() ) 
+          Error(false, "Dying cookie not in list", "ArenaReplay::parse_log_line_rewind");
+        else
+          {
+            ((Cookie*)li())->die();
+            object_lists[COOKIE].remove(li);
+          }
+      }
+      break;
+    case 'M':
+      {
+        int id;
+        double x,y;
+        log_file >> id >> x >> y;
+        ListIterator<Shape> li;
+        find_object_by_id( object_lists[MINE], li, id );
+        if( !li.ok() ) 
+          Error(false, "Dying mine not in list", "ArenaReplay::parse_log_line_rewind");
+        else
+          {
+            ((Mine*)li())->die();
+            object_lists[MINE].remove(li);
+          }
+      }
+      break;
+    case 'S':
+      {
+        int id;
+        double x,y,vx,vy;
+        log_file >> id >> x >> y >> vx >> vy;
+        cout << "Shot rewind_dying: " << id << endl;
+        ListIterator<Shape> li;
+        find_object_by_id( object_lists[SHOT], li, id );
+        if( !li.ok() )
+          Error(false, "Dying shot not in list", "ArenaReplay::parse_log_line_rewind");
+        else
+          {
+            ((Shot*)li())->die();
+            object_lists[SHOT].remove(li);
+          }
+      }
+      break;
+
+    case 'D':
+      char object_type = '?';
+      int object_id;
+      log_file.get( object_type );
+      log_file >> object_id;
+      switch( object_type )
+        {
+        case 'R':
+          {
+            // Robot will be revived at the next 'R' line.
+          }
+          break;
+        case 'C': // Cookie
+          {
+            double x, y;
+            //              Cookie* cookiep = new Cookie( Vector2D(x,y), 0.0, object_id);
+            //              object_lists[COOKIE].insert_last( cookiep );
+          }
+          break;
+        case 'M': // Mine
+          {
+            double x, y;
+            //              Mine* minep = new Mine( Vector2D(x,y), 0.0, object_id);
+            //              object_lists[MINE].insert_last( minep );
+          }
+          break;
+        case 'S': // Shot
+          {
+            double x, y, dx, dy;
+            //              Shot* shotp = new Shot( Vector2D(x,y), Vector2D(dx,dy), 0, object_id );
+            //              object_lists[SHOT].insert_last( shotp );
+          }
+          break;
+  
+        }
+      break;
+    }
 }
 
 void
@@ -703,15 +817,21 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
           if( clear_time )
             {
               total_time = time_position_in_log[index].time + 0.00001;
-              update_timer(0.0);  
+              update_timer(0.0);
               parse_this_time_index();
             }  
-          move_shots_no_check( current_replay_time - last_replay_time );
+          if( n_o_steps != 0 )
+            move_shots_no_check( current_replay_time - last_replay_time );
 
 #ifndef NO_GRAPHICS
-          if( !no_graphics )
-            the_gui.get_arenawindow_p()->draw_moving_objects( true );
-#endif NO_GRAPHICS
+          if( !no_graphics && n_o_steps != 0 )
+            {
+              the_gui.get_arenawindow_p()->draw_moving_objects( true );
+              the_gui.get_scorewindow_p()->set_window_title();
+              if( !log_from_stdin )
+                controlwindow_p->set_progress_time( current_replay_time );
+            }
+#endif
 
           return true;
         }
@@ -719,6 +839,24 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
         return false;
     }
   return true;
+}
+
+void
+ArenaReplay::step_forward_or_backward( const bool forward )
+{
+  double fff_tmp = fast_forward_factor;
+  if( forward )
+    step_forward( 1, true );
+  else
+    {
+      fast_forward_factor = -1.0;
+      step_forward( 0, true );
+      step_forward( -1, true);
+      fast_forward_factor = 1.0;
+      step_forward( 0, true );
+    }
+
+  fast_forward_factor = fff_tmp;
 }
 
 void
