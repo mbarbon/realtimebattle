@@ -41,6 +41,16 @@ PacketFactory::add_connection( NetConnection* nc )
   my_connections.push_back( nc );
 }
 
+void
+PacketFactory::remove_connection( NetConnection* nc )
+{
+  for(list<NetConnection*>::iterator li = my_connections.begin(); li != my_connections.end(); li ++)
+    if((*li) == nc) {
+      my_connections. erase( li );
+      return;
+    }
+}
+
 string&
 Packet::add_string_to_netstring( const string& str, string& netstr ) const
 {

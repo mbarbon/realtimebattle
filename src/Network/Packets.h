@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <stdio.h>
 #include <stdarg.h>
+#include <list>
 
 #include "NetConnection.h"
 
@@ -92,9 +93,11 @@ ostream & operator<<(ostream&, const Packet&);
 //This class have to be virtual (we can build a plug-in loader around it) 
 class PacketFactory {
  public:
+  virtual ~PacketFactory() {};
   virtual string Protocol() {return "NoProtocol";};
   virtual Packet* MakePacket(string & s) {return NULL;};
   virtual void add_connection( NetConnection* );
+  virtual void remove_connection( NetConnection* );
 
  protected:
   //TODO : set< NetConnection* >

@@ -31,8 +31,6 @@ class TournamentAgreementPacketFactory: public PacketFactory {
   Packet* MakePacket(string &); 
 };
 
-extern TournamentAgreementPacketFactory my_tournament_agreement_packetfactory;
-
 class TournamentCommitChangePacket : /* virtual */ public Packet {
 public:
   TournamentCommitChangePacket()

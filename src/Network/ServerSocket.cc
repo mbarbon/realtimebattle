@@ -173,6 +173,7 @@ SocketServer::find_first_point( )
   //Maybe there is no use for file_name but for debuging.
   //TODO : Put the friends addresses in the option file ?
 {
+  /*
   //Find the first point in the network
   for(unsigned int i = 0; i < friends.size(); i ++)
     {
@@ -184,7 +185,6 @@ SocketServer::find_first_point( )
 	{
 	  cout<<"connected to "<<F->port<<endl;
 	  nc->send_data( InitializationPacket( "Join" ).make_netstring() );
-	  by_type_connections[ SERVER_CONNECTION ].push_back( nc );
 	  connection_factory[ nc ] = &my_serverpacketfactory;
 
 	  if(F->mark < 100) {F->mark ++;}
@@ -196,9 +196,10 @@ SocketServer::find_first_point( )
 	}
     }
   //If I come to this point, I'm not connected to anybody : I'm the leader
+  */
   my_id = next_id = 1;
 }
-
+/*
 bool 
 SocketServer::not_connected_to(string h, int p, int c = SERVER_CONNECTION)
 {
@@ -206,13 +207,13 @@ SocketServer::not_connected_to(string h, int p, int c = SERVER_CONNECTION)
   for(list_It_NetConn li = by_type_connections[c].begin();
       li != by_type_connections[c].end(); li ++)
     {
-      ServerState s = server_states[*li];
+      //      ServerState s = server_states[*li];
       if(h == s.address && p == s.port) //doesn't work all the time : find a better way to check the address
 	return false;
     }
   return true;
 }
-
+*/
 
 void
 SocketServer::close_socket()
@@ -318,8 +319,6 @@ SocketServer::check_socket()
 	    }
 	}
     }
-  //go_through_read_buffers();
-
   remove_unconnected_sockets();
 }
 
@@ -348,26 +347,6 @@ SocketServer::open_channel(PacketFactory* PF) {
     }
   return 0;
 }
-
-/*
-int
-SocketServer::open_channel(string protocol)
-{
-  int channel = 2; //0 is not a channel; 1 is used for the socketserver
-  while( 1 ) 
-    {
-      if( services[channel] == "" )
-	{
-	  services[channel] = protocol;
-	  return channel;
-	}
-      channel ++;
-    }
-}
-*/
-
-
-
 
 NetConnection*
 SocketServer::connect_to_an_other_server( string hostname, int port_nb = 0 )
@@ -426,9 +405,11 @@ SocketServer::connect_to_an_other_server( string hostname, int port_nb = 0 )
   Negociator->connected = true;
   Negociator->make_nonblocking();
 
+  /*
   ServerState s(hostname, port_nb, max_nb_friends, max_nb_friends);
   server_states[Negociator] = s;   
-  
+  */
+
   return Negociator;
 }
 
@@ -467,16 +448,6 @@ SocketServer::accept_connection()
   return nc;
 }
 
-bool
-SocketServer::accept_new_server()  //USELESS : This must be done in the PacketFactory
-{
-  //TODO : find the most efficient servers
-  if( max_nb_friends - by_type_connections[ SERVER_CONNECTION ].size() > 0 ) 
-    return true;
-  else
-    return false;
-}
-
 vector<string>
 SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_addresses = 0)  //USELESS : must be done by the ServerPacketFactory ?
 {
@@ -507,25 +478,7 @@ SocketServer::give_other_addresses(NetConnection* nc, string protocol, int nb_ad
        * if( channel_is_used(channel)
        *   send my info
        */
-
-      if(channel == SERVER_CONNECTION ) //Maybe don't need to be so restrictive
-	{
-	  for(list_It_NetConn li = by_type_conn(channel) -> begin();
-	      li != by_type_conn(channel) -> end()  ;  li ++ )
-	    {
-	      if((*li) != nc) //Don't send his informations...
-		{
-		  ostrstream os;
-		  ServerState s = server_states[(*li)];
-		  os << s.address <<" "<< s.port << " " << SERVER_CONNECTION
-		     << ends;
-		  cout<<os<<endl;
-		  v.push_back(os.str());
-		}
-	    }
-	}
-      else
-	{ 
+ 	{ 
 	  ostrstream os;
 	  os<<host_name<<" "
 	    <<port_number<<" "
@@ -550,46 +503,14 @@ struct ptr_is_not_connected  //Use in the next function
 void
 SocketServer::remove_unconnected_sockets()
 {
-  list_It_NetConn li, lli;
-  bool a_server_left = false;
+  list_It_NetConn li;
   while( ( li = find_if( all_connections.begin(), all_connections.end(),
                          ptr_is_not_connected() ) )
          != all_connections.end() )
     {
-      if((*li)->get_type() ==  ROBOT_CONNECTION )
-	robot_nb--;
-      else if((*li)->get_type() ==  SERVER_CONNECTION )
-	{
-	  a_server_left = true;
-	  //ServerMessagePacket Temp("Server",
-	  //			   (*li)->name + string(" has left the game") 
-	  //			   );
-	  //send_packet_by_name( "all", &Temp); 
-		
-	}
-
-
-      int type = (*li) -> get_type();
-      for(lli = by_type_conn(type)->begin(); lli != by_type_conn(type)->end(); lli ++)
-	if((*lli) == (*li)) {
-	  by_type_conn(type) -> erase( lli );
-	  if(by_type_conn(type)->size() == 0) {} //TODO : This one is empty... remove it
-	  break;
-	}
-
+      connection_factory[ *li ] -> remove_connection( *li );
       delete (*li);
       all_connections.erase( li );
-    }
-  if(a_server_left)  //Notify it to all the other servers
-    {
-      ostrstream os;
-      os << "FreeConn "
-	 << by_type_connections[SERVER_CONNECTION].size() << " "
-	 << nb_conn_friends
-	 << ends;
-      CommandPacket To_Servers ( os.str() );
-      for(lli = by_type_conn(SERVER_CONNECTION)->begin(); lli != by_type_conn(SERVER_CONNECTION)->end(); lli ++)
-	(*lli)->send_data( To_Servers.make_netstring() );
     }
 }
 
@@ -617,11 +538,13 @@ SocketServer::send_packet_by_name(string name, Packet* P) //Change ServerMessage
 void
 SocketServer::send_packet_by_type(int type, Packet* P)
 {
+  /* TODO : broadcast to a packet factory
   string data = (*P).make_netstring();
 
   list_It_NetConn li;
   for( li = by_type_conn(type)->begin(); li != by_type_conn(type)->end(); li++ )
     (**li).send_data( data ); 
+  */
 }
 
 SocketServer::~SocketServer()

@@ -95,11 +95,6 @@ public:
   bool accept_new_server();                //Accept a new connection
   int port_num() {return port_number;}     //my port
 
-  list_NetConn* by_type_conn(int type) { 
-    //This may not be the best way to do it...
-    //Maybe it is better to parse each element of the map
-    return &(by_type_connections[type]); };
-
   //give addresses on which I am connected, for other servers to open a ring.
   vector<string> give_other_addresses(NetConnection*, string, int = 0); 
   list<NetConnection*> give_other_servers(NetConnection*, int = 0);
@@ -145,17 +140,9 @@ private:
   int chat_nb;   //NOTE : useless here
 
   list_NetConn all_connections;
-  map<int, list_NetConn > by_type_connections;   //Sub-lists of this big list
 
-  map<NetConnection*, ServerState> server_states;   //Only for the server connections
-  int nb_conn_friends; //Total of connections of all my friends (easier to compute average conn)
-  
-  //NOTE : maybe join those together with by_type_connections with by_type_connections
-  map<int, PacketFactory*> packet_factories; //Or maybe map.first should be the channel
+  map<int, PacketFactory*> packet_factories;
 
-  //NOTE : useless : must be done by the PacketFactory
-  map<int, bool> accept_conn;       //Can we still add some connections
-  
   PacketFactory* packet_factory(int channel) 
     {
       return packet_factories[ channel ];
