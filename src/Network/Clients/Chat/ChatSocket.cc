@@ -28,10 +28,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <unistd.h>
 
 #include "ChatPackets.h"
-#include "ClientSocket.h"
+#include "ChatSocket.h"
 
 void
-SocketClient::check_connection()
+SocketChat::check_connection()
 {
   fd_set readfs;
   fd_set exceptfs;
@@ -141,48 +141,13 @@ SocketClient::check_connection()
 }
 
 void 
-SocketClient::ask_for_info_to_metaserver()
+SocketChat::ask_for_info_to_metaserver()
 {
   nc.send_data ( MetaServerAskInfoPacket().make_netstring() );
 }
 
 
-
-void
-SocketClient::initialize( const string& name, const client_t& c )
-{
-//    string str = (string)( (char)(RTB_NETPROTOCOL_V1 & 0xff) ) + name;
-
-//    int len = str.length();
-//    string send_string = (string)( (char)(PACKET_INIT & 0xff) )
-
-  InitializationPacket IP(  RTB_NETPROTOCOL_V1, 
-			    c, name );
-  nc.name = name;
-  nc.send_data( IP.make_netstring() );
-}
-
-void
-SocketClient::close_connection()
-{
-  close( nc.the_socket );
-  nc.connected = false;
-  nc.the_socket = -1;
-}
-
-bool
-SocketClient::is_connected()
-{
-  return !nc.is_not_connected();
-}
-
-SocketClient* my_socketclient = new SocketClient;
-
-void
-exit_cleanly(int Sign)
-{
-  quit();
-}
+SocketChat* my_socketclient = new SocketChat;
 
 void
 quit()
