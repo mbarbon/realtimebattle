@@ -126,11 +126,8 @@ main ( int argc, char* argv[] )
 
   signal(SIGCHLD, sigchld_handler);
     
-  try
-    {
-      the_gui.setup_control_window();
-      the_arena.start_tournament( robotnames, arenanames, 4, 5, 8);
-    }
+  the_gui.setup_control_window();
+
   catch ( Error the_error )
 	 {
 		the_error.print_message();
