@@ -219,5 +219,20 @@ AC_CHECK_LIB(xpg4, setlocale)
 
 # Finished !
 
-AC_OUTPUT([intl/Makefile Arenas/Makefile Documentation/Makefile Robots/Makefile Robots/seek_and_destroy/Makefile Robots/rotate_and_fire/Makefile Robots/empty/Makefile src/Makefile po/Makefile.in Packages/Makefile Packages/rpm/Makefile Packages/debian/Makefile Packages/freebsd/Makefile Makefile],
-			[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+AC_OUTPUT([
+        intl/Makefile
+        Arenas/Makefile
+        Documentation/Makefile
+        Robots/Makefile
+        Robots/seek_and_destroy/Makefile
+        Robots/rotate_and_fire/Makefile
+        Robots/empty/Makefile
+        src/Makefile
+        src/Network/Makefile
+        po/Makefile.in
+        Packages/Makefile
+        Packages/rpm/Makefile
+        Packages/debian/Makefile
+        Packages/freebsd/Makefile
+        Makefile],
+        [sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
