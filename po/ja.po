@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 2000-01-06 09:50+0100\n"
+"POT-Creation-Date: 2000-01-21 19:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Minatsu Tukisima <minatsu@shiratori.riec.tohoku.ac.jp>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,14 +58,17 @@ msgid "Arena"
 msgstr "アリーナ"
 
 #: src/ArenaRealTime.cc:759
+#, c-format
 msgid "Game %d of sequence %d begins on arena"
 msgstr "第%dシーケンス 第%dゲーム スタート アリーナは"
 
 #: src/ArenaRealTime.cc:927
+#, c-format
 msgid "Robot with filename %s has not given any name"
 msgstr "ファイル名 %s のロボットが名前を通知していません"
 
 #: src/ArenaReplay.cc:121
+#, c-format
 msgid "Game %d of sequence %d"
 msgstr "第%dシーケンス 第%dゲーム "
 
@@ -799,6 +802,8 @@ msgstr " 選択解除 "
 msgid " Add "
 msgstr " 追加 "
 
+#. Choose Number of games per sequence, Number of robots per sequence
+#. and Number of sequences
 #: src/StartTournamentWindow.cc:242
 msgid "Games per sequence"
 msgstr "１シーケンスのゲーム数"
