@@ -125,45 +125,51 @@ ArenaReplay::parse_log_line( ifstream& file )
       }
       break;
     case 'M': // Mine
+      {
         int mine_id;
         double x, y;
         file >> mine_id >> x >> y;
         // add_mine( mine_id, x, y );
+      }
       break;
     case 'S': // Shot
-      int shot_id;
-      double x, y, dx, dy;
-      file >> shot_id >> x >> y >> dx >> dy;
-      // add_shot( shot_id, x, y, dx, dy );
+      {
+        int shot_id;
+        double x, y, dx, dy;
+        file >> shot_id >> x >> y >> dx >> dy;
+        // add_shot( shot_id, x, y, dx, dy );
+      }
       break;
     case 'D': // Die
-      char object_type = '?';
-      int object_id;
-      file.get( object_type );
-      file >> object_id;
-      switch( object_type )
-        {
-        case 'R':
+      {
+        char object_type = '?';
+        int object_id;
+        file.get( object_type );
+        file >> object_id;
+        switch( object_type )
           {
-            double points_received;
-            file >> points_received;
-            // robot_die( object_id, points_received );
+          case 'R':
+            {
+              double points_received;
+              file >> points_received;
+              // robot_die( object_id, points_received );
+            }
+            break;
+          case 'C':
+            // cookie_die( object_id );
+            break;
+          case 'M':
+            // mine_die( object_id );
+            break;
+          case 'S':
+            // shot_die( object_id );
+            break;
+          case '?':
+          default:
+            Error( false, "Unknown object type is dead", "ArenaReplay::parse_log_line" );
+            break;
           }
-          break;
-        case 'C':
-          // cookie_die( object_id );
-          break;
-        case 'M':
-          // mine_die( object_id );
-          break;
-        case 'S':
-          // shot_die( object_id );
-          break;
-        case '?':
-        default:
-          Error( false, "Unknown object type is dead", "ArenaReplay::parse_log_line" );
-          break;
-        }
+      }
       break;
     case 'G': // Game begins
       {
@@ -201,10 +207,10 @@ ArenaReplay::parse_log_line( ifstream& file )
       {
         char temp, option_type = '?';
         char label[200];
-        file.get( object_type );
+        file.get( option_type );
         file.get( label, 200, ':');
         file.get( temp );
-        switch( object_type )
+        switch( option_type )
           {
           case 'D':
             {
