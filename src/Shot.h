@@ -17,48 +17,32 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef __SHOT__
+#define __SHOT__
 
-#include <math.h>
-#include <iostream.h>
+#include "MovingObject.h"
 
-//#include "Gui.h"
-#include "Shape.h"
-#include "Various.h"
-#include "Options.h"
 
-extern class Options the_opts;
-
-Shape::Shape()
+class Shot : public virtual MovingObject
 {
-  set_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
-}
+public:
+  Shot(const Vector2D& c, const double r, 
+       const Vector2D& velocity, const double energy); 
+  ~Shot() {}
 
-Shape::Shape(int long colour)
-{
-  set_colour(colour);
-}
+  void move(const double timestep);
+  void die();
+  bool is_alive() { return alive; }
+  double get_energy() { return energy; }
 
-void
-Shape::set_colour(long int colour)
-{
-  rgb_colour = colour;
-#ifndef NO_GRAPHICS
-  gdk_colour = make_gdk_colour( colour );
-#endif
-}
+  friend void shot_collision(Shot* shot1p, Shot* shot2p);
+  friend void shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en);
 
-#ifndef NO_GRAPHICS
+  //  arenaobject_t get_arenaobject_t() { return SHOT; }
 
-void
-Shape::set_colour(const GdkColor& colour)
-{
-  gdk_colour = colour;
-  rgb_colour = gdk2hex_colour( colour );
-}
+private:
+  bool alive;
+  double energy;
+};
 
-#endif NO_GRAPHICS
-
-
+#endif __SHOT__

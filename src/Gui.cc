@@ -30,12 +30,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 #include "Gui.h"
 #include "Arena.h"
-#include "MovingObject.h"
+#include "Shot.h"
+#include "Robot.h"
 #include "Extras.h"
-#include "Shape.h"
 #include "Various.h"
 #include "Options.h"
 #include "Vector2D.h"
+#include "Wall.h"
 
 #define GDK_360_DEGREES 23040     // 64 * 360 degrees
 
@@ -230,19 +231,20 @@ Gui::draw_objects(const bool clear_objects_first)
     change_zoom();
 
   object_lists = the_arena.get_object_lists();
-  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->is_alive() )
       ((Shot*)gl->data)->draw_shape( clear_objects_first );
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
-      if( robotp->get_object_type() == ROBOT )
-        if( robotp->is_alive() )
-          {
-            robotp->draw_shape( clear_objects_first );
-            robotp->draw_radar_and_cannon();
-          }
+
+      //      if( robotp->get_arenaobject_t() == ROBOT ) // is this needed??
+      if( robotp->is_alive() )
+        {
+          robotp->draw_shape( clear_objects_first );
+          robotp->draw_radar_and_cannon();
+        }
     }
 }
 
@@ -253,14 +255,22 @@ Gui::draw_all_walls()
   GList* gl;
 
   object_lists = the_arena.get_object_lists();
-  for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-    ((Shape*)(WallCircle*)gl->data)->draw_shape( false ); // Strange, but it works!
 
-  for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    ((WallInnerCircle*)gl->data)->draw_shape( false );
+  for(gl = g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
+    ((WallLine*)gl->data)->draw_shape( false );
+
+  for(gl = g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    ((WallCircle*)gl->data)->draw_shape( false );
+
+
+
+  for(gl = g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Mine*)gl->data)->is_alive() )
       ((Mine*)gl->data)->draw_shape( false );
 
-  for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Cookie*)gl->data)->is_alive() )
       ((Cookie*)gl->data)->draw_shape( false );
 
@@ -393,7 +403,7 @@ Gui::change_selected_robot( const int row )
   GList* gl;
   Robot* robotp;
 
-  for(gl = g_list_next(the_arena.get_object_lists()[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(the_arena.get_object_lists()[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
 
@@ -472,10 +482,10 @@ Gui::add_robots_to_score_list()
   object_lists = the_arena.get_object_lists();
 
   int robot_number=0;
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     robot_number++;
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
 

@@ -47,13 +47,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
-#include "Gui.h"
-//#include "Arena.h"
+//#include "Gui.h"
+#include "Arena.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
 #include "Various.h"
 #include "String.h"
+#include "Shot.h"
+#include "Options.h"
+#include "Wall.h"
+#include "Robot.h"
 
 Arena::Arena()
 {
@@ -71,7 +75,7 @@ Arena::Arena()
   arena_filenames = g_list_alloc();
   exclusion_points = g_list_alloc();
 
-  for(int i=ROBOT; i<=EXPLOSION; i++)
+  for(int i=ROBOT_T; i<=LAST_ARENAOBJECT_T; i++)
     object_lists[i] = g_list_alloc();
 
   max_debug_level = 5;
@@ -89,7 +93,7 @@ Arena::~Arena()
   g_list_free(all_robots_in_tournament);
   g_list_free(arena_filenames);
   g_list_free(exclusion_points);
-  for(int i=ROBOT; i<EXPLOSION; i++)
+  for(int i=ROBOT_T; i<LAST_ARENAOBJECT_T; i++)
     g_list_free(object_lists[i]);
 
   for(int i=0; i < sequences_remaining+sequence_nr; i++)
@@ -589,7 +593,7 @@ Arena::parse_arena_file(String& filename)
           file >> vec1;
           file >> radie;
           wall_inner_circlep = new WallInnerCircle(scale*vec1, scale*radie, bounce_c, hardn);
-          g_list_insert(object_lists[WALL], wall_inner_circlep, 1);
+          g_list_insert(object_lists[WALL_INNERCIRCLE_T], wall_inner_circlep, 1);
         }
       else if( strcmp(text, "circle" ) == 0 )
         {
@@ -600,7 +604,7 @@ Arena::parse_arena_file(String& filename)
           file >> vec1;
           file >> radie;
           wall_circlep = new WallCircle(scale*vec1, scale*radie, bounce_c, hardn);
-          g_list_append(object_lists[WALL], wall_circlep);
+          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
         }
 //       else if( strcmp(text, "arc" ) == 0 )
 //         {
@@ -621,7 +625,7 @@ Arena::parse_arena_file(String& filename)
 
           wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                     scale*thickness, bounce_c , hardn);      
-          g_list_append(object_lists[WALL], wall_linep);
+          g_list_append(object_lists[WALL_LINE_T], wall_linep);
         }
       else if( strcmp(text, "polygon" ) == 0 )
         {
@@ -634,7 +638,7 @@ Arena::parse_arena_file(String& filename)
           file >> vertices;   // number of vertices
           file >> vec1;      // first point
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          g_list_append(object_lists[WALL], wall_circlep);
+          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
 
           for(int i=1; i<vertices; i++)
             {
@@ -645,9 +649,9 @@ Arena::parse_arena_file(String& filename)
 
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
-              g_list_append(object_lists[WALL], wall_linep);
+              g_list_append(object_lists[WALL_LINE_T], wall_linep);
               wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-              g_list_append(object_lists[WALL], wall_circlep);
+              g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
             }
         }
       else if( strcmp(text, "closed_polygon" ) == 0 )
@@ -661,7 +665,7 @@ Arena::parse_arena_file(String& filename)
           file >> vertices;   // number of vertices
           file >> vec1;      // first point
           wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-          g_list_append(object_lists[WALL], wall_circlep);
+          g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
           vec0 = vec1;
 
           for(int i=1; i<vertices; i++)
@@ -673,15 +677,15 @@ Arena::parse_arena_file(String& filename)
           
               wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), scale*length(vec1-vec2), 
                                         scale*thickness, bounce_c , hardn);      
-              g_list_append(object_lists[WALL], wall_linep);
+              g_list_append(object_lists[WALL_LINE_T], wall_linep);
               wall_circlep = new WallCircle(scale*vec1, scale*thickness, bounce_c, hardn);
-              g_list_append(object_lists[WALL], wall_circlep);
+              g_list_append(object_lists[WALL_CIRCLE_T], wall_circlep);
             }
 
           if( length(vec0-vec1) == 0.0 ) Error(true, "Error in arenafile: Last line in closed_polygon of zero length", "Arena::parse_arena_file");
           wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                     scale*thickness, bounce_c , hardn);      
-          g_list_append(object_lists[WALL], wall_linep);
+          g_list_append(object_lists[WALL_LINE_T], wall_linep);
         }
       else if( text[0] != '\0' )
         Error(true, "Incorrect arenafile: unknown keyword" + (String)text, "Arena::parse_arena_file");
@@ -711,64 +715,84 @@ Arena::parse_arena_file(String& filename)
 
 double
 Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, 
-                             object_type& closest_shape, void*& colliding_object, const Robot* the_robot)
+                             arenaobject_t& closest_shape, void*& colliding_object, const Robot* the_robot)
 {
   double dist = infinity;
   double d;
-  closest_shape = NOOBJECT;
+  closest_shape = NOOBJECT_T;
   GList* gl;
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     {
       if( (Robot*)gl->data != the_robot )
         {
           d = ((Robot*)gl->data)->get_distance(pos, dir, size);
           if( d < dist)
             {
-              closest_shape = ROBOT;
+              closest_shape = ROBOT_T;
               colliding_object = gl->data;
               dist = d;
             }
         }
     }
-  for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
     {
-      d = ((Shape*)(WallCircle*)gl->data)->get_distance(pos, dir, size);
+      d = ((WallLine*)gl->data)->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = WALL;
+          closest_shape = WALL_LINE_T;
           colliding_object = gl->data;
           dist = d;
         }
     }
-  for(gl = g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    {
+      d = ((WallCircle*)gl->data)->get_distance(pos, dir, size);
+      if( d < dist)
+        {
+          closest_shape = WALL_CIRCLE_T;
+          colliding_object = gl->data;
+          dist = d;
+        }
+    }
+  for(gl = g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    {
+      d = ((WallInnerCircle*)gl->data)->get_distance(pos, dir, size);
+      if( d < dist)
+        {
+          closest_shape = WALL_INNERCIRCLE_T;
+          colliding_object = gl->data;
+          dist = d;
+        }
+    }
+  for(gl = g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
     {
       d = ((Mine*)gl->data)->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = MINE;
+          closest_shape = MINE_T;
           colliding_object = gl->data;
           dist = d;
         }
     }
   
-  for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
     {
       d = ((Cookie*)gl->data)->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = COOKIE;
+          closest_shape = COOKIE_T;
           colliding_object = gl->data;
           dist = d;
         }
     }
 
-  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
     {
       d = ((Shot*)gl->data)->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = SHOT;
+          closest_shape = SHOT_T;
           colliding_object = gl->data;
           dist = d;
         }
@@ -782,26 +806,34 @@ Arena::space_available(const Vector2D& pos, const double margin)
 {
   GList* gl;
 
-  for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Robot*)gl->data)->within_distance(pos, margin) ) return false;
 
-  for(gl=g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-    if( ((Shape*)(WallCircle*)gl->data)->within_distance(pos, margin) ) return false;
 
-  for(gl=g_list_next(object_lists[MINE]); gl != NULL; gl = g_list_next(gl))
+  for(gl=g_list_next(object_lists[WALL_LINE_T]); gl != NULL; gl = g_list_next(gl))
+    if( ((WallLine*)gl->data)->within_distance(pos, margin) ) return false;
+
+  for(gl=g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    if( ((WallCircle*)gl->data)->within_distance(pos, margin) ) return false;
+
+  for(gl=g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; gl = g_list_next(gl))
+    if( ((WallInnerCircle*)gl->data)->within_distance(pos, margin) ) return false;
+
+
+  for(gl=g_list_next(object_lists[MINE_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Mine*)gl->data)->within_distance(pos, margin) ) return false;
 
-  for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
+  for(gl=g_list_next(object_lists[COOKIE_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Cookie*)gl->data)->within_distance(pos, margin) ) return false;
 
-  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+  for(gl=g_list_next(object_lists[SHOT_T]); gl != NULL; gl = g_list_next(gl))
     if( ((Shot*)gl->data)->within_distance(pos, margin) ) return false;
 
   // Check if it is possible to see any exclusion_points
   
   Vector2D vec;
   double dist;
-  object_type obj_t;
+  arenaobject_t obj_t;
   void* col_obj;
   for(gl=g_list_next(exclusion_points); gl != NULL; gl = g_list_next(gl))
     {
@@ -861,7 +893,7 @@ Arena::broadcast(const message_to_robot_type msg_type ...)
     }
   str += '\n';
 
-  for(GList* gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
+  for(GList* gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl))
     *(((Robot*)gl->data)->get_outstreamp()) << str;
 }
 
@@ -1012,7 +1044,7 @@ Arena::add_cookie()
   
   if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
-  g_list_append(object_lists[COOKIE], cookiep);
+  g_list_append(object_lists[COOKIE_T], cookiep);
 
   print_to_logfile('C', cookiep->get_id(), pos[0], pos[1]);
 }
@@ -1035,7 +1067,7 @@ Arena::add_mine()
   
   if( !found_space ) Error(false, "Couldn't find space for mine", "Arena::timeout_function");
   Mine* minep = new Mine(pos, r, en);
-  g_list_append(object_lists[MINE], minep);
+  g_list_append(object_lists[MINE_T], minep);
 
   print_to_logfile('M', minep->get_id(), pos[0], pos[1]);
 }
@@ -1064,7 +1096,7 @@ Arena::move_shots()
   GList* gl;
   Shot* shotp;
 
-  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; )
+  for(gl = g_list_next(object_lists[SHOT_T]); gl != NULL; )
     {
       shotp = (Shot*)gl->data;
 
@@ -1073,7 +1105,7 @@ Arena::move_shots()
       gl = g_list_next(gl);
       if( !shotp->is_alive() ) 
         {
-          g_list_remove(object_lists[SHOT], shotp);
+          g_list_remove(object_lists[SHOT_T], shotp);
           delete shotp;
         }
     }
@@ -1100,7 +1132,7 @@ Arena::update_robots()
   Robot* robotp;
 
   int killed_robots = 0;
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl) )
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl = g_list_next(gl) )
     {
       robotp = (Robot*)gl->data;
       if( robotp->is_alive() )
@@ -1115,13 +1147,13 @@ Arena::update_robots()
 
   // Check if robots have died and send energy level
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; )
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; )
     {
       robotp = (Robot*)gl->data;
       gl = g_list_next(gl);
       if( !robotp->is_alive() ) 
         {
-          g_list_remove(object_lists[ROBOT], robotp);          
+          g_list_remove(object_lists[ROBOT_T], robotp);          
           killed_robots++;
         }
       else
@@ -1133,7 +1165,7 @@ Arena::update_robots()
 
   if( killed_robots > 0 )
     {
-      for( gl=g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+      for( gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
         {
           ((Robot*)gl->data)->add_points(killed_robots);
 #ifndef NO_GRAPHICS
@@ -1149,19 +1181,35 @@ Arena::update_robots()
       broadcast(ROBOTS_LEFT, robots_left);
     }
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
     ((Robot*)gl->data)->send_signal();
 }
 
+
+// coulor_dist is supposed to be a subjective distance between two colours, normalized
+// to be between 0.0 (same colour) and 1.0 (furthest away).
 double
-Arena::colour_dist(const long col1, const GdkColor& col2)
+Arena::colour_dist(const long col1, const long int col2)
 {
-  return( ((double)abs((col1 & 0xff)*0x101 - col2.blue))*
-          log(1.0 + sqrt((col1 & 0xff)*0x101 + col2.blue))/log(2.0) +
-          ((double)abs(((col1 & 0xff00) >> 8)*0x101 - col2.green))*
-          log(1.0 + sqrt(((col1 & 0xff00) >> 8)*0x101 + col2.green))/log(2.0) +
-          ((double)abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red))*
-          log(1.0 + sqrt(((col1 & 0xff0000) >> 16)*0x101 + col2.red))/log(2.0));
+  double red1   = (col1 & 0x0000ff);
+  double green1 = (col1 & 0x00ff00) >> 8;
+  double blue1  = (col1 & 0xff0000) >> 16;
+
+  double red2   = (col2 & 0x0000ff);
+  double green2 = (col2 & 0x00ff00) >> 8;
+  double blue2  = (col2 & 0xff0000) >> 16;
+
+  return  ( fabs(red1  -red2  ) * log(1.0 + sqrt(red1  +red2  )) + 
+            fabs(green1-green2) * log(1.0 + sqrt(green1+green2)) +
+            fabs(blue1 -blue2 ) * log(1.0 + sqrt(blue1 +blue2 )) ) / 2417.8;
+
+
+//    return( ((double)abs((col1 & 0xff)*0x101 - col2.blue))*
+//            log(1.0 + sqrt((col1 & 0xff)*0x101 + col2.blue))/log(2.0) +
+//            ((double)abs(((col1 & 0xff00) >> 8)*0x101 - col2.green))*
+//            log(1.0 + sqrt(((col1 & 0xff00) >> 8)*0x101 + col2.green))/log(2.0) +
+//            ((double)abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red))*
+//            log(1.0 + sqrt(((col1 & 0xff0000) >> 16)*0x101 + col2.red))/log(2.0));
 }
 
 bool
@@ -1172,23 +1220,24 @@ Arena::is_colour_allowed(const long colour, const double min_dist, const Robot* 
     {
       if((Robot *)gl->data != robotp)
         {
-          d = colour_dist( colour, ((Robot*)gl->data)->get_colour() );
+          d = colour_dist( colour, ((Robot*)gl->data)->get_rgb_colour() );
           if( d < min_dist ) return false;          
         }
     }
   
-  d = colour_dist( colour, background_colour );
+  d = colour_dist( colour, gdk2hex_colour(background_colour) );
   if( d < min_dist ) return false;
 
   return true;
 }
 
-long
-Arena::find_free_colour(const long home_colour, const long away_colour, const Robot* robotp)
+long int
+Arena::find_free_colour(const long int home_colour, const long int away_colour, 
+                        const Robot* robotp)
 {  
-  long tmp_colour;
+  long int tmp_colour;
 
-  for(double min_dist = 200000.0; min_dist > 0.5 ; min_dist *= 0.8)
+  for(double min_dist = 0.2; min_dist > 0.01 ; min_dist *= 0.8)
     {
       if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
       if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
@@ -1268,44 +1317,62 @@ Arena::delete_lists(const bool kill_robots, const bool del_seq_list,
   GList* gl;
   // clear the lists;
   Robot* robotp;
-  for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
+  for(gl=g_list_next(object_lists[ROBOT_T]); gl != NULL; )
     {
       robotp = (Robot*)gl->data;
       gl=g_list_next(gl);
-      g_list_remove(object_lists[ROBOT], robotp);
+      g_list_remove(object_lists[ROBOT_T], robotp);
     }
   Shot* shotp;
-  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; )
+  for(gl=g_list_next(object_lists[SHOT_T]); gl != NULL; )
     {
       shotp = (Shot*)gl->data;
       delete shotp;
       gl=g_list_next(gl);
-      g_list_remove(object_lists[SHOT], shotp);
+      g_list_remove(object_lists[SHOT_T], shotp);
     }
   Mine* minep;
-  for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
+  for(gl=g_list_next(object_lists[MINE_T]); gl != NULL; )
     {
       minep = (Mine*)(gl->data); 
       delete minep;
       gl=g_list_next(gl);
-      g_list_remove(object_lists[MINE], minep);
+      g_list_remove(object_lists[MINE_T], minep);
     }
   Cookie* cookiep;
-  for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; )
+  for(gl=g_list_next(object_lists[COOKIE_T]); gl != NULL; )
     {
       cookiep = (Cookie*)(gl->data);
       delete cookiep;
       gl=g_list_next(gl);
-      g_list_remove(object_lists[COOKIE], cookiep);
+      g_list_remove(object_lists[COOKIE_T], cookiep);
     }
-  void* wallp;
-  for(gl=g_list_next(object_lists[WALL]); gl != NULL; )
+
+  WallLine* walllinep;
+  for(gl=g_list_next(object_lists[WALL_LINE_T]); gl != NULL; )
     {
-      wallp = gl->data;
-      delete (Shape*)(WallCircle*)wallp;
+      walllinep = (WallLine*)gl->data;
+      delete walllinep;
       gl=g_list_next(gl);
-      g_list_remove(object_lists[WALL], wallp);
+      g_list_remove(object_lists[WALL_LINE_T], walllinep);
     }
+  WallCircle* wallcirclep;
+  for(gl=g_list_next(object_lists[WALL_CIRCLE_T]); gl != NULL; )
+    {
+      wallcirclep = (WallCircle*)gl->data;
+      delete wallcirclep;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[WALL_CIRCLE_T], wallcirclep);
+    }
+  WallInnerCircle* wallinnercirclep;
+  for(gl=g_list_next(object_lists[WALL_INNERCIRCLE_T]); gl != NULL; )
+    {
+      wallinnercirclep = (WallInnerCircle*)gl->data;
+      delete wallinnercirclep;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[WALL_INNERCIRCLE_T], wallinnercirclep);
+    }
+
   Vector2D* vecp;
   for(gl=g_list_next(exclusion_points); gl != NULL; )
     {
@@ -1395,7 +1462,7 @@ Arena::start_game()
       if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
-      g_list_append(object_lists[ROBOT], gl->data);
+      g_list_append(object_lists[ROBOT_T], gl->data);
       robots_left++;
       ((Robot*)gl->data)->live();
     }
@@ -1406,7 +1473,7 @@ Arena::start_game()
   broadcast(ROBOTS_LEFT, robots_left);
   the_opts.broadcast_opts();
 
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT_T]); gl != NULL; gl=g_list_next(gl))
     ((Robot*)gl->data)->send_signal();
 
   state = GAME_IN_PROGRESS;
@@ -1499,7 +1566,7 @@ Arena::start_sequence_follow_up()
           robots_left--;
         }
       if( !robotp->set_and_get_have_competed() )
-        print_to_logfile('L', robotp->get_id(), gdk2hex_colour(robotp->get_colour()), robotp->get_robot_name().chars());
+        print_to_logfile('L', robotp->get_id(), robotp->get_rgb_colour(), robotp->get_robot_name().chars());
     }
   start_game();
 }

@@ -41,12 +41,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/stat.h>
 #include <stdarg.h>
 
-#include "Gui.h"
-#include "MovingObject.h"
+#include "Robot.h"
+#include "String.h"
 #include "Arena.h"
-#include "Extras.h"
+#include "Various.h"
 #include "Options.h"
-#include "Messagetypes.h"
+#include "Wall.h"
+#include "Shot.h"
+#include "Extras.h"
+
+//  #include "Gui.h"
+//  #include "MovingObject.h"
+//  #include "Arena.h"
+//  #include "Extras.h"
+//  #include "Options.h"
+//  #include "Messagetypes.h"
 
 Robot::Robot(const String& filename)
 {
@@ -502,11 +511,20 @@ Robot::update_radar_and_cannon(const double timestep)
 
   shot_energy = min( the_opts.get_d(OPTION_SHOT_MAX_ENERGY), 
                      shot_energy+timestep*the_opts.get_d(OPTION_SHOT_ENERGY_INCREASE_SPEED) );
-  object_type closest_shape;
+
+  arenaobject_t closest_arenaobject;
   void* col_obj;
   double dist = the_arena.
     get_shortest_distance(center, angle2vec(radar_angle.pos+robot_angle.pos),
-                          0.0, closest_shape, col_obj, this);
+                          0.0, closest_arenaobject, col_obj, this);
+
+  object_type closest_shape;
+  if( closest_arenaobject == WALL_LINE_T || closest_arenaobject == WALL_CIRCLE_T ||
+      closest_arenaobject == WALL_INNERCIRCLE_T )
+    closest_shape = WALL;
+  else
+    closest_shape = (object_type)closest_arenaobject;
+
   send_message(RADAR, dist, closest_shape, radar_angle.pos);
   if( closest_shape == ROBOT )
     {
@@ -518,11 +536,11 @@ Robot::update_radar_and_cannon(const double timestep)
 }
 
 void
-bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& normal)
+Robot::bounce_on_wall(const double bounce_c, const double hardness_c, const Vector2D& normal)
 {
   double h, p, b;
   
-  if( -dot(normal, angle2vec(robot.robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
+  if( -dot(normal, angle2vec(robot_angle.pos)) > cos(the_opts.get_d(OPTION_ROBOT_FRONTSIZE)*0.5) )
     {
       h = the_opts.get_d(OPTION_ROBOT_FRONT_HARDNESS);
       b = the_opts.get_d(OPTION_ROBOT_FRONT_BOUNCE_COEFF);
@@ -535,15 +553,15 @@ bounce_on_wall(class Robot& robot, const class Wall& wall, const Vector2D& norma
       p = the_opts.get_d(OPTION_ROBOT_PROTECTION);
     }  
 
-  double e = b * wall.bounce_coeff;
-  Vector2D start_vel = robot.velocity;
-  robot.velocity -= (1.0 + e) * dot(normal, robot.velocity) * normal;
+  double e = b * bounce_c;
+  Vector2D start_vel = velocity;
+  velocity -= (1.0 + e) * dot(normal, velocity) * normal;
 
-  double en_diff = 0.5 * the_opts.get_d(OPTION_ROBOT_MASS) * lengthsqr(start_vel - robot.velocity);
-  double injury = en_diff * 0.5 * (h + wall.hardness_coeff ) * (1.0-e) * (1.0-p);
-  robot.change_energy(-injury);
+  double en_diff = 0.5 * the_opts.get_d(OPTION_ROBOT_MASS) * lengthsqr(start_vel - velocity);
+  double injury = en_diff * 0.5 * (h + hardness_c ) * (1.0-e) * (1.0-p);
+  change_energy(-injury);
 
-  robot.send_message(COLLISION, WALL, -vec2angle(normal)-robot.robot_angle.pos);
+  send_message(COLLISION, WALL, -vec2angle(normal)-robot_angle.pos);
 }
 
 void
@@ -633,9 +651,9 @@ Robot::set_values_at_process_start_up()
     {
       send_message(INITIALIZE, 0);        // not first sequence !
       send_message(YOUR_NAME, robot_name.chars());
-      long col = gdk2hex_colour(colour);
-      long newcol = the_arena.find_free_colour(col, col, this);
-      if( col != newcol ) colour = make_gdk_colour( newcol );
+      int long col = rgb_colour;
+      int long newcol = the_arena.find_free_colour(col, col, this);
+      if( col != newcol ) set_colour( newcol );
       // TODO: probably free color!
       send_message(YOUR_COLOUR, newcol);
     } 
@@ -668,7 +686,7 @@ Robot::move(const double timestep)
 void
 Robot::move(const double timestep, int iterstep, const double eps)
 {
-  object_type closest_shape;
+  arenaobject_t closest_shape;
   void* colliding_object;
   double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, closest_shape, colliding_object, this);
   if( time_to_collision > timestep )
@@ -683,50 +701,67 @@ Robot::move(const double timestep, int iterstep, const double eps)
       //      Vector2D new_center = center - min(eps, time_to_collision)*velocity;
       switch( closest_shape )
         {
-        case WALL:
+        case WALL_LINE_T:
           {
-            Vector2D normal = ((Shape*)(WallCircle*)colliding_object)->get_normal(center);
-            bounce_on_wall(*this, *(Wall*)(WallCircle*)colliding_object, normal);
+            WallLine* wallp = (WallLine*)colliding_object;
+            Vector2D normal = wallp->get_normal(center);
+            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
             center += normal*eps;
           }
           break;
-        case ROBOT:
+        case WALL_CIRCLE_T:
+          {
+            WallCircle* wallp = (WallCircle*)colliding_object;
+            Vector2D normal = wallp->get_normal(center);
+            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
+            center += normal*eps;
+          }
+          break;
+        case WALL_INNERCIRCLE_T:
+          {
+            WallInnerCircle* wallp = (WallInnerCircle*)colliding_object;
+            Vector2D normal = wallp->get_normal(center);
+            bounce_on_wall(wallp->get_bounce_coeff(), wallp->get_hardness_coeff(), normal);
+            center += normal*eps;
+          }
+          break;
+        case ROBOT_T:
           {
             Vector2D normal = ((Robot*)colliding_object)->get_normal(center);
             bounce_on_robot(*this, *(Robot*)colliding_object, normal);
             time_remaining = 0.0;
           }
           break;
-        case SHOT:
+        case SHOT_T:
           {
             Shot* shotp =(Shot*)colliding_object;
             double en =  -shotp->get_energy();
             change_energy( en );
             send_message(COLLISION, SHOT, vec2angle(shotp->get_center()-center)-robot_angle.pos);
             shotp->die();
-            g_list_remove((the_arena.get_object_lists())[SHOT], shotp);
+            g_list_remove((the_arena.get_object_lists())[SHOT_T], shotp);
             delete shotp;
           }
           break;
-        case COOKIE:
+        case COOKIE_T:
           {
             Cookie* cookiep =(Cookie*)colliding_object;
             double en =  cookiep->get_energy();
             change_energy( en );
             send_message(COLLISION, COOKIE, vec2angle(cookiep->get_center()-center)-robot_angle.pos);
             cookiep->die();
-            g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
+            g_list_remove((the_arena.get_object_lists())[COOKIE_T], cookiep);
             delete cookiep;
           }
           break;
-        case MINE:
+        case MINE_T:
           {
             Mine* minep =(Mine*)colliding_object;
             double en =  -minep->get_energy();
             change_energy( en );
             send_message(COLLISION, MINE, vec2angle(minep->get_center()-center)-robot_angle.pos);
             minep->die();
-            g_list_remove((the_arena.get_object_lists())[MINE], minep);
+            g_list_remove((the_arena.get_object_lists())[MINE_T], minep);
             delete minep;
           }
           break;
@@ -860,7 +895,7 @@ Robot::get_messages()
               *instreamp >> hex >> home_colour >> away_colour >> dec;
               
               // TODO: check if colour is already allocated! 
-              colour = make_gdk_colour(the_arena.find_free_colour(home_colour, away_colour, this));
+              set_colour( the_arena.find_free_colour(home_colour, away_colour, this) );
             }
           break;
         case ROTATE:
@@ -1049,7 +1084,7 @@ Robot::get_messages()
               if( the_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
-                  g_list_append((the_arena.get_object_lists())[SHOT], shotp);
+                  g_list_append((the_arena.get_object_lists())[SHOT_T], shotp);
 
                   the_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
                                    shot_vel[0], shot_vel[1]);
@@ -1057,7 +1092,7 @@ Robot::get_messages()
               else  // No space for shot, direct hit!!
                 { 
                   void* col_obj;
-                  object_type cl_shape;
+                  arenaobject_t cl_shape;
                   double dist;
                   if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius*1.00001, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
                     {
@@ -1068,9 +1103,11 @@ Robot::get_messages()
                     }
                   switch(cl_shape)
                     {
-                    case WALL:
+                    case WALL_LINE_T:
+                    case WALL_CIRCLE_T:
+                    case WALL_INNERCIRCLE_T:
                       break;
-                    case ROBOT:
+                    case ROBOT_T:
                       {
                         Robot* robotp = (Robot*)col_obj;
                         robotp->change_energy(-en);
@@ -1078,22 +1115,22 @@ Robot::get_messages()
                                              vec2angle(center+dir*radius-robotp->get_center()) - robotp->get_robot_angle().pos);
                       }
                       break;
-                    case SHOT:
+                    case SHOT_T:
                       shot_collision((Shot*)col_obj, shot_vel, en);
                       break;
-                    case COOKIE:
+                    case COOKIE_T:
                       {
                         Cookie* cookiep =(Cookie*)col_obj;
                         cookiep->die();
-                        g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
+                        g_list_remove((the_arena.get_object_lists())[COOKIE_T], cookiep);
                         delete cookiep;
                       }
                       break;
-                    case MINE:
+                    case MINE_T:
                       {
                         Mine* minep =(Mine*)col_obj;
                         minep->die();
-                        g_list_remove((the_arena.get_object_lists())[MINE], minep);
+                        g_list_remove((the_arena.get_object_lists())[MINE_T], minep);
                         delete minep;
                       }
                       break;
@@ -1379,173 +1416,13 @@ Robot::draw_radar_and_cannon()
 void
 Robot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
 {
-  score_pixmap.get_pixmap( colour, win, pixm, bitm ); 
+  score_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
 }
 
 void
 Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
 {
-  stat_pixmap.get_pixmap( colour, win, pixm, bitm ); 
+  stat_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
 }
 
 #endif NO_GRAPHICS
-
-
-Shot::Shot(const Vector2D& c, const double r, 
-           const Vector2D& vel, const double en ) 
-  : MovingObject(vel), Circle(c, r)
-{
-  alive = true;
-  energy = en;
-
-  id = the_arena.increase_shot_count();
-}
-
-void
-Shot::move(const double timestep)
-{
-  object_type closest_shape;
-  void* colliding_object;
-  double time_to_collision = the_arena.get_shortest_distance(center, velocity, radius, 
-                                                             closest_shape, colliding_object);
-  if( time_to_collision > timestep )
-    {
-      center += timestep*velocity;
-    }
-  else
-    {
-      switch( closest_shape )
-        {
-        case WALL:
-          die();
-          break;
-        case ROBOT:
-          {
-            Robot* robotp = (Robot*)colliding_object;
-            robotp->change_energy(-energy);
-            robotp->send_message(COLLISION, SHOT,
-                                 vec2angle(center-robotp->get_center()) - robotp->get_robot_angle().pos);
-            die();
-          }
-          break;
-        case SHOT:
-          {
-            Shot* shotp = (Shot*)colliding_object;
-            shot_collision(this, shotp); 
-          }
-          break;
-        case COOKIE:
-          {
-            Cookie* cookiep =(Cookie*)colliding_object;
-            cookiep->die();
-            g_list_remove((the_arena.get_object_lists())[COOKIE], cookiep);
-            delete cookiep;
-            die();
-          }
-          break;
-        case MINE:
-          {
-            Mine* minep =(Mine*)colliding_object;
-            minep->die();
-            g_list_remove((the_arena.get_object_lists())[MINE], minep);
-            delete minep;
-            die();
-          }
-          break;
-        default:
-          Error(true, "Collided with unknown object", "Robot::move");
-          break;
-        }
-    }
-}
-
-void
-Shot::die()
-{
-   alive = false;
-#ifndef NO_GRAPHICS
-   if (!no_graphics )
-     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
-#endif
-
-   the_arena.print_to_logfile('D', 'S', id);
-}
-
-void
-shot_collision(Shot* shot1p, Shot* shot2p)
-{
-  shot_collision(shot1p, shot2p->velocity, shot2p->energy);
-  shot2p->die();
-}
-
-void
-shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
-{
-  Vector2D vel = ( shot1p->energy * shot1p->velocity + 
-                   shot2_en * shot2_vel ) / ( shot1p->energy + shot2_en );
-
-  double en = dot( shot1p->energy * unit(shot1p->velocity) + shot2_en * unit(shot2_vel),  
-                   unit(vel));
-
-  if( en < the_opts.get_d(OPTION_SHOT_MIN_ENERGY) || 
-      length(vel) < the_opts.get_d(OPTION_SHOT_SPEED) * 0.5 )
-    shot1p->die();
-  else
-    {
-      shot1p->velocity = vel;
-      shot1p->energy = en;
-      the_arena.print_to_logfile('D', 'S', shot1p->id);
-      the_arena.print_to_logfile('S', shot1p->id, shot1p->center[0], shot1p->center[1], 
-                                 shot1p->velocity[0], shot1p->velocity[1]);
-    }
-}
-
-#ifndef NO_GRAPHICS
-
-pixmap_t::~pixmap_t()
-{
-  if( pixmap != NULL )
-    {
-      //      gdk_pixmap_unref(pixmap);
-      //      gdk_bitmap_unref(bitmap);
-      //TODO: check if window is open before unrefing
-    }
-}
-
-void
-pixmap_t::set_pixmap(GdkColor& col, GdkWindow* win)
-{
-  if( pixmap != NULL )
-    {
-      gdk_pixmap_unref(pixmap);
-      gdk_bitmap_unref(bitmap);
-    }
-  
-  gchar square_bits[] = {
-    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f,
-    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f,
-    0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f, 0xff, 0x3f};
-
-  pixmap = gdk_pixmap_create_from_data( win, square_bits, 16, 16, -1, &col, 
-                                        the_arena.get_background_colour_p() );
-
-  bitmap = gdk_bitmap_create_from_data( win, square_bits, 16, 16 );
-}
-
-void
-pixmap_t::get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
-{
-  if( win != window && pixmap != NULL )
-    {
-      gdk_pixmap_unref(pixmap);
-      pixmap = NULL;
-      gdk_bitmap_unref(bitmap);
-      bitmap = NULL;
-    }
-  if( pixmap == NULL ) set_pixmap(col, win);
-  
-  pixm = pixmap;
-  bitm = bitmap;
-}
-
-#endif

@@ -17,26 +17,37 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __MOVING_OBJECT__
-#define __MOVING_OBJECT__
-
-class Vector2D;
+#ifndef __WALL__
+#define __WALL__
 
 #include "GeometricalObjects.h"
 
-
-class MovingObject : public virtual Circle
+class WallCircle : public virtual Circle
 {
 public:
-  MovingObject() {}
-  MovingObject(const Vector2D& vel) : velocity(vel) {}
-  ~MovingObject() {}
+  WallCircle(const Vector2D& c, const double r, 
+             const double b_c, const double hardn) : Circle(c, r) 
+    { bounce_coeff = b_c; hardness_coeff = hardn; }
 
-  virtual void move(const double timestep) = 0;
-
-protected:
-  Vector2D velocity;
-  
+  ~WallCircle() {}
 };
 
-#endif __MOVING_OBJECT__
+class WallInnerCircle : public virtual InnerCircle
+{
+public:
+  WallInnerCircle(const Vector2D& c, const double r, 
+             const double b_c, const double hardn) : InnerCircle(c, r) 
+    { bounce_coeff = b_c; hardness_coeff = hardn; }
+  ~WallInnerCircle() {}
+};
+
+class WallLine : public virtual Line
+{
+public:
+  WallLine(const Vector2D& sp, const Vector2D& d, const double len, const double th, 
+           const double b_c, const double hardn) : Line(sp, d, len, th) 
+    { bounce_coeff = b_c; hardness_coeff = hardn; }
+  ~WallLine() {}
+};
+
+#endif __WALL__

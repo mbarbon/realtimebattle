@@ -27,10 +27,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include <string.h>
 #include <stdlib.h>
 
+
+#include "Robot.h"
 #include "Gui.h"
 #include "Arena.h"
-#include "MovingObject.h"
-#include "Various.h"
+//#include "MovingObject.h"
+//#include "Various.h"
+#include "Options.h"
+
+
+
 
 void
 statistics_button_callback(GtkWidget *widget, gpointer data)

@@ -24,12 +24,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream.h>
 
-#include "Gui.h"
 #include "Extras.h"
-//#include "Arena.h"
+#include "Arena.h"
+#include "Options.h"
 
-Cookie::Cookie(const Vector2D& c, const double r, const double e) 
-  : Circle(c, r), Shape(the_opts.get_l(OPTION_COOKIE_COLOUR))
+Extras::Extras(const Vector2D& c, const double r, const double e, const long col)
+  : Circle(c, r), Shape(col)
 {
   energy = e;
   alive = true;
@@ -37,37 +37,25 @@ Cookie::Cookie(const Vector2D& c, const double r, const double e)
   if( !no_graphics )
     draw_shape( false );
 #endif
-
-   id = the_arena.increase_cookie_count();
 }
 
-void
-Cookie::die()
+Cookie::Cookie(const Vector2D& c, const double r, const double e) 
+  : Extras(c, r, e, the_opts.get_l(OPTION_COOKIE_COLOUR))
 {
-   alive = false;
-#ifndef NO_GRAPHICS
-   if (!no_graphics )
-     the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
-#endif
-
-   the_arena.print_to_logfile('D', 'C', id);
+   id = the_arena.increase_cookie_count();
+   log_file_char = 'C';
 }
 
 Mine::Mine(const Vector2D& c, const double r, const double e)
-  : Circle(c, r), Shape(the_opts.get_l(OPTION_MINE_COLOUR))
+  : Extras(c, r, e, the_opts.get_l(OPTION_MINE_COLOUR))
 {
-  energy = e;
-  alive = true;
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    draw_shape( false );
-#endif
-
-  id = the_arena.increase_mine_count();
+   id = the_arena.increase_mine_count();
+   log_file_char = 'M';
 }
 
+
 void
-Mine::die()
+Extras::die()
 {
    alive = false;
 #ifndef NO_GRAPHICS
@@ -75,8 +63,5 @@ Mine::die()
      the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
 #endif
 
-   the_arena.print_to_logfile('D', 'M', id);
+   the_arena.print_to_logfile('D', log_file_char, id);
 }
-
-
-

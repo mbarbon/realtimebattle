@@ -19,10 +19,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <gtk/gtk.h>
 
-#include "Gui.h"
-#include "String.h"
-#include "MovingObject.h"
 #include "MessageWindow.h"
+//#include "Gui.h"
+#include "Arena.h"
+#include "String.h"
+#include "Robot.h"
+
 
 
 MessageWindow::MessageWindow( const int default_width,

@@ -56,7 +56,7 @@ int binomial(const int n, const int k);
 
 GdkColor make_gdk_colour(const long col);
 
-long gdk2hex_colour(const GdkColor& col);
+int long gdk2hex_colour(const GdkColor& col);
 
 void reorder_pointer_array(void** array, int size);
 

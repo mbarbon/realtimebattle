@@ -21,8 +21,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __OPTIONS__
 
 #include <gtk/gtk.h>
-#include "String.h"
+
+//#include "Structs.h"
+//#include "String.h"
 #include "Various.h"
+
+class String;
 
 enum option_double_t
 {

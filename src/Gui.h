@@ -20,15 +20,21 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __GUI__
 #define __GUI__
 
+#ifndef NO_GRAPHICS
+
 #include <gtk/gtk.h>
 #include <math.h>
-#include "Vector2D.h"
-#include "MovingObject.h"
-#include "Arena.h"
-#include "String.h"
-#include "MessageWindow.h"
 
-#ifndef NO_GRAPHICS
+#include "Structs.h"
+#include "Vector2D.h"
+#include "MessageWindow.h"
+//#include "MovingObject.h"
+//#include "Arena.h"
+//#include "Robot.h"
+//#include "String.h"
+
+class Robot;
+class String;
 
 typedef void (*QuestionFunction)(bool);
 

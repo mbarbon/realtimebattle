@@ -23,12 +23,24 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <glib.h>
 #include <gdk/gdk.h>
 #include <iostream.h>
+#include <fstream.h>
 
 #include "Vector2D.h"
 #include "Messagetypes.h"
 #include "Gui.h"
-#include "Shape.h"
-#include "Options.h"
+//#include "Shape.h"
+//  #include "Options.h"
+//  #include "String.h"
+//  #include "Robot.h"
+#include "Structs.h"
+//  #include "Wall.h"
+
+class Robot;
+class String;
+class Options;
+class WallLine;
+class WallCircle;
+class WallInnerCircle;
 
 
 
@@ -39,7 +51,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define g_list_previous(list) ((list) ? (((GList *)list)->prev) : (GList*)NULL)
 #define g_list_next(list) ((list) ? (((GList *)list)->next) : (GList*)NULL)
 
-static const double infinity = 1.0e10;  //approximatly (-;
+static const double infinity = 1.0e10;  //approximatly ;-)
 
 extern class Options the_opts;
 extern class Arena the_arena;
@@ -48,20 +60,6 @@ extern class Gui the_gui;
 #endif
 
 extern bool no_graphics;
-
-enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS, PAUSING_BETWEEN_GAMES,
-               SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
-
-struct start_tournament_glist_info_t
-{
-  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
-    row(r), selected(s), filename(fn), directory(dir) {}
-  int row;
-  bool selected;
-  String filename;
-  String directory;
-};
-
 
 // --------------------------  Arena --------------------------
 class Arena 
@@ -77,7 +75,7 @@ public:
   void interrupt_tournament();
 
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
-                               const double size, enum object_type& closest_shape, 
+                               const double size, enum arenaobject_t& closest_shape, 
                                void*& colliding_object, const class Robot* the_robot = NULL );
 
   bool space_available(const Vector2D& pos, const double margin);
@@ -91,7 +89,8 @@ public:
 
   void broadcast(enum message_to_robot_type ...);
   void set_colours();
-  long find_free_colour(const long home_colour, const long away_colour, const class Robot*);
+  long int find_free_colour(const long int home_colour, const long int away_colour, 
+                            const class Robot*);
   void quit_ordered();
   void delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list);
@@ -160,8 +159,8 @@ private:
   void add_cookie();
   void add_mine();
 
-  bool is_colour_allowed(const long colour, const double min_dist, const class Robot*);
-  double colour_dist(const long col1, const GdkColor& col2);
+  bool is_colour_allowed(const long int col, const double min_dist, const class Robot*);
+  double colour_dist(const long int col1, const long int col2);
 
   void start_game();
   void start_sequence();
@@ -172,7 +171,7 @@ private:
   void end_tournament();
 
 
-  GList* object_lists[number_of_object_types];
+  GList* object_lists[LAST_ARENAOBJECT_T];
   
   GList* all_robots_in_tournament;
   GList* all_robots_in_sequence;
@@ -230,21 +229,6 @@ private:
   bool halted;
   bool halt_next;
   bool paus_after_next_game;
-};
-
-// ---------------------  ArenaObject ---------------------
-
-class ArenaObject
-{
-public:
-  ArenaObject() {}
-  virtual ~ArenaObject() {}
-  virtual object_type get_object_type() = 0;
-  int get_id() { return id; }
-  //  class Error;
-protected:
-
-  int id;
 };
 
 #endif __ARENA__

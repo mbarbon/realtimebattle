@@ -20,35 +20,35 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __EXTRAS__
 #define __EXTRAS__
 
-#include "Arena.h"
-#include "Shape.h"
+#include "GeometricalObjects.h"
 
 // ---------------------  Extras : ArenaObject  ---------------------
 
-class Extras : public virtual ArenaObject
+class Extras : public virtual Circle
 {
 public:
-  //Extras(const Vector2D& c, const double r); 
-  //~Extras() {}
-  
+  Extras(const Vector2D& c, const double r, const double e, const long col); 
+  ~Extras() {}
+
+  bool is_alive() { return alive; }
+  virtual void die();
+  double get_energy() { return energy; }
+
+protected:
+  double energy;
+  bool alive;
+  char log_file_char;
 };
 
 // ---------------------  Cookie : Extras  ---------------------
 
-class Cookie : public virtual Extras, public virtual Circle
+class Cookie : public virtual Extras
 {
 public:
-  Cookie(const Vector2D& c, const double r, const double e); 
+  Cookie(const Vector2D& c, const double r, const double e);
   ~Cookie() {}
   
-  object_type get_object_type() { return COOKIE; }
-  bool is_alive() { return alive; }
-  void die();
-  double get_energy() { return energy; }
-
-private:
-  double energy;
-  bool alive;
+  //  arenaobject_t get_arenaobject_t() { return COOKIE; }
 };
 
 // ---------------------  Mine : Extras  ---------------------
@@ -59,14 +59,7 @@ public:
   Mine(const Vector2D& c, const double r, const double e); 
   ~Mine() {}
 
-  object_type get_object_type() { return MINE; }
-  bool is_alive() { return alive; }
-  void die();
-  double get_energy() { return energy; }
-
-private:
-  double energy;
-  bool alive;
+  //  arenaobject_t get_arenaobject_t() { return MINE; }
 };
 
 #endif __EXTRAS__

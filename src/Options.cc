@@ -24,9 +24,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream.h>
 #include <math.h>
 
-#include "Gui.h"
+//#include "Gui.h"
+#include "Arena.h"
 #include "Options.h"
-
+#include "Messagetypes.h"
+#include "Various.h"
 
 extern class Arena the_arena;
 #ifndef NO_GRAPHICS

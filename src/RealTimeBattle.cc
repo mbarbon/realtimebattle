@@ -19,7 +19,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include <config.h>
 #endif
 
 #include <stdlib.h>
@@ -46,13 +46,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <floatingpoint.h>
 #endif
 
-
-#include "Gui.h"
 #include "ControlWindow.h"
-#include "MovingObject.h"
-#include "Options.h"
-#include "Vector2D.h"
 
+//#include "Gui.h"
+//#include "MovingObject.h"
+
+#include "Options.h"
+//#include "Vector2D.h"
+#include "Arena.h"
+#include "Various.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
