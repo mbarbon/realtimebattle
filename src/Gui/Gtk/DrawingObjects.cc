@@ -178,20 +178,19 @@ DrawingInnerCircle::draw_shape(bool erase)
 {
   if( erase )
     the_gui.get_arenawindow_p()->
-      draw_circle( last_drawn_center,
-                   last_drawn_radius,
-                   *(the_gui.get_bg_gdk_colour_p()),
-                   true );
+      draw_arc( last_drawn_center,
+                last_drawn_radius, last_drawn_radius*1.5,
+                0.0, 2*M_PI,
+                *(the_gui.get_bg_gdk_colour_p()) );
+
   last_drawn_center = icircle_p->get_center();
   last_drawn_radius = icircle_p->get_radius();
-  the_gui.get_arenawindow_p()->
-    draw_rectangle( the_arena.get_boundary()[0],
-                    the_arena.get_boundary()[1],
-                    gdk_colour, true );
-  the_gui.get_arenawindow_p()->
-    draw_circle( icircle_p->get_center(), icircle_p->get_radius(),
-                 *(the_gui.get_bg_gdk_colour_p()),
-                 true );
+
+    the_gui.get_arenawindow_p()->
+      draw_arc( icircle_p->get_center(), 
+                icircle_p->get_radius(), 
+                icircle_p->get_radius()*1.5,
+                0.0, 2*M_PI, gdk_colour );
 }
 
 // --------- DrawingInnerArc -----------
@@ -210,9 +209,7 @@ DrawingArc::draw_shape(bool erase)
                                            arc_p->get_outer_radius(),
                                            arc_p->get_start_angle(),
                                            arc_p->get_end_angle(),
-                                           *(the_gui.get_bg_gdk_colour_p()),
-                                           *(the_gui.get_bg_gdk_colour_p()),
-                                           true );
+                                           *(the_gui.get_bg_gdk_colour_p()) );
   last_drawn_center = arc_p->get_center();
 
   
@@ -221,9 +218,7 @@ DrawingArc::draw_shape(bool erase)
                                          arc_p->get_outer_radius(),
                                          arc_p->get_start_angle(),
                                          arc_p->get_end_angle(),
-                                         gdk_colour, 
-                                         *(the_gui.get_bg_gdk_colour_p()),
-                                         true );
+                                         gdk_colour );
 }
 
 
