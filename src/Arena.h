@@ -88,6 +88,8 @@ public:
 
 protected:
 
+  void garbage_collector();
+
   set<Shot> shots;  
   set<Robot*> robots;
 
@@ -106,22 +108,6 @@ protected:
   Vector2D subsquare_size; // size / number_of_subsquares 
 };
 
-
-
-
-
-
-class ShotUpdateEvent : public Event
-{
-public:
-  ShotUpdateEvent( const double time, Arena* ar) 
-    : Event(time), my_arena(ar) {}
-
-  void eval() const { my_arena->update_shots(); }
-
-protected:
-  Arena* my_arena;
-};
 
 
 #endif __ARENA__
