@@ -11,6 +11,11 @@ The default RealTimeBattle installation-directory is now
 <tt>EPREFIX/games/RealTimeBattle</tt> instead of
 <tt>PREFIX/games/RealTimeBattle</tt>.
 
+A replay function has been added. Note that logfiles made with earlier versions are
+incompatible with the replay function.
+
+It is now possible to show hidden windows.
+
 <item> <bf>0.9.7:</bf>
 <p>
 Lots of internal changes, the class hierarchy is completely

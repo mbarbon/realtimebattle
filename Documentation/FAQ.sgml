@@ -17,5 +17,10 @@ languages you have to do it explicitly.
 Another common mistake is to forget whitespace between the arguments of a message. This problem can be hard
 to find since the warning message is usually sent too late or not at all.
 
+<tag> I get error-messages when I try to replay a logfile made in
+RealTimeBattle-0.9.7</tag>
+This is due to the fact that the there was an error in the logfile-generator in
+RealTimeBattle-0.9.7, thus alla logfiles from versions before 0.9.8 is incompatible
+with the replay function.
 </descrip>
 </notes>
