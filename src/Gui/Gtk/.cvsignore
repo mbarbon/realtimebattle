@@ -1,0 +1,5 @@
+Makefile
+Makefile.in
+libGuiGtk.a
+.deps
+TAGS
