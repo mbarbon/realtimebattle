@@ -63,8 +63,14 @@ Line::within_distance(const Vector2D& pos, const double size)
 }
 
 void
-Line::draw_shape(Gui& the_gui)
+Line::draw_shape(Gui& the_gui, bool erase)
 {
+  if( erase )
+    the_gui.draw_line(last_drawn_start_point, last_drawn_direction, last_drawn_length, last_drawn_thickness, the_gui.get_background_color());
+  last_drawn_start_point = start_point;
+  last_drawn_direction = direction;
+  last_drawn_length = length;
+  last_drawn_thickness = thickness;
   the_gui.draw_line(start_point,direction,length,thickness,colour);
 }
 
@@ -106,7 +112,11 @@ Circle::get_normal(const Vector2D& pos, const Vector2D& vel, const double size)
 }
 
 void
-Circle::draw_shape(Gui& the_gui)
+Circle::draw_shape(Gui& the_gui, bool erase)
 {
+  if( erase )
+    the_gui.draw_circle(last_drawn_center,last_drawn_radius,the_gui.get_background_color(),true);
+  last_drawn_center = center;
+  last_drawn_radius = radius;
   the_gui.draw_circle(center,radius,colour,true);
 }

@@ -153,7 +153,7 @@ public:
   virtual bool within_distance(const Vector2D& pos, const double size) = 0;
   virtual Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, 
                               const double size) = 0;
-  virtual void draw_shape(Gui& the_gui) = 0;
+  virtual void draw_shape(Gui& the_gui, bool erase) = 0;
   //virtual void get_args(istream&) = 0;
 
   void set_colour(const long);
@@ -178,7 +178,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& vel, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& vel, const double size);
-  void draw_shape(Gui& the_gui);
+  void draw_shape(Gui& the_gui, bool erase);
 
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
@@ -190,6 +190,11 @@ protected:
   Vector2D direction;
   double length;
   double thickness;
+
+  Vector2D last_drawn_start_point;
+  Vector2D last_drawn_direction;
+  double last_drawn_length;
+  double last_drawn_thickness;
 };
 
 // ---------------------  Circle : Shape ---------------------
@@ -204,7 +209,7 @@ public:
   double get_distance(const Vector2D& pos, const Vector2D& dir, const double size);
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos, const Vector2D& dir, const double size);
-  void draw_shape(Gui& the_gui);
+  void draw_shape(Gui& the_gui, bool erase);
   
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
@@ -213,6 +218,9 @@ public:
 protected:
   Vector2D center;
   double radius;
+
+  Vector2D last_drawn_center;
+  double last_drawn_radius;
   //  double radiussqr;
 };
 
@@ -227,7 +235,7 @@ public:
 class WallCircle : public virtual Wall, public virtual Circle
 {
 public:
-  WallCircle(const Vector2D& c, const double r) : Circle(c, r) { set_colour( 0x333333 ); }
+  WallCircle(const Vector2D& c, const double r) : Circle(c, r) {}
   ~WallCircle() {}
 };
 
@@ -235,7 +243,7 @@ class WallLine : public virtual Wall, public virtual Line
 {
 public:
   WallLine(const Vector2D& sp, const Vector2D& d, const double len, 
-           const double th) : Line(sp, d, len, th) { set_colour( 0x333333 ); }
+           const double th) : Line(sp, d, len, th) {}
   ~WallLine() {}
 };
 

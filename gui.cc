@@ -54,23 +54,31 @@ Gui::draw_objects( void * the_arenap )
   GList* gl;
   Robot* robotp;
 
-  clear_area();
   object_lists = ((Arena *)the_arenap)->get_object_lists();
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
       if( robotp->get_object_type() == ROBOT )
         if( robotp->is_alive() )
-            robotp->draw_shape( *this );
+            robotp->draw_shape( *this , true );
     }
+
   for(gl = g_list_next(object_lists[WALL]); gl != NULL; gl = g_list_next(gl))
-    {
-      ((Shape*)(WallCircle*)gl->data)->draw_shape( *this ); // Strange, but it works!
-    }      
+      ((Shape*)(WallCircle*)gl->data)->draw_shape( *this , false ); // Strange, but it works!
+
   for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
-    {
-      ((Shot*)gl->data)->draw_shape( *this ); // Strange, but it works!
-    }      
+      ((Shot*)gl->data)->draw_shape( *this , true ); // Strange, but it works!
+}
+
+void
+Gui::draw_pixmap()
+{
+  gdk_draw_pixmap( drawing_area->window,
+                   drawing_area->style->fg_gc[GTK_WIDGET_STATE (drawing_area)],
+                   arena_pixmap,
+                   0,0,
+                   0,0,
+                   drawing_area->allocation.width,drawing_area->allocation.height);
 }
 
 void
@@ -450,7 +458,7 @@ Gui::setup_arena_window( Vector2D bound[] )
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (da_scrolled_window),
                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (arena_window), da_scrolled_window);
-  gtk_widget_set_usize(da_scrolled_window,204,204);
+  gtk_widget_set_usize(da_scrolled_window,564,564);
   gtk_widget_show (da_scrolled_window);
 
   // Drawing Area 
@@ -473,6 +481,16 @@ Gui::setup_arena_window( Vector2D bound[] )
   gdk_color_alloc (colormap, &background_colour);
   gdk_window_set_background (drawing_area->window, &background_colour);
   gdk_window_clear (drawing_area->window);
+
+  //  if(arena_pixmap)
+  //  gdk_pixmap_unref(arena_pixmap);
+
+  //arena_pixmap = gdk_pixmap_new(drawing_area->window,
+  //                              drawing_area->allocation.width,
+  //                              drawing_area->allocation.height,
+  //                              -1);
+
+  clear_area();
 }
 
 void

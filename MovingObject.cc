@@ -127,7 +127,7 @@ Robot::die()
 {
    alive = false;
    position_this_game = the_arena->get_robots_left();
-   
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,the_arena->get_the_gui()->get_background_color(),true);
 }
 
 
@@ -436,7 +436,6 @@ Shot::Shot(const Vector2D& c, const double r,
 {
   alive = true;
   energy = en;
-  set_colour( 0x333333 );
 }
 
 void
@@ -482,4 +481,5 @@ void
 Shot::die()
 {
    alive = false;
+   the_arena->get_the_gui()->draw_circle(last_drawn_center,last_drawn_radius,the_arena->get_the_gui()->get_background_color(),true);
 }
