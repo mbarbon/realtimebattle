@@ -22,7 +22,7 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 export libdirs = -L/usr/lib -L/usr/X11R6/lib
 export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o
+objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
 stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h
 
 all: RealTimeBattle robots
@@ -34,6 +34,7 @@ RealTimeBattle: $(objects)
 #implicit rule for c-file:   N.o: $(CC) -c N.c $(CPPFLAGS) $(CFLAGS) 
 #implicit rule for c++-file: N.o: $(CXX) -c N.cc $(CPPFLAGS) $(CXXFLAGS)
 
+String.o: String.cc String.h
 Vector2D.o: Vector2D.cc Vector2D.h
 Various.o: Various.cc Various.h Error.h
 gui.o: gui.cc $(stdincludes)
