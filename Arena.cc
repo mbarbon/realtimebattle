@@ -328,13 +328,19 @@ Arena::update_robots()
           killed_robots++;
         }
     }
-  
-  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+
+  if( killed_robots > 0 )
     {
-      ((Robot*)gl->data)->send_signal();
+      for( gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
+          if( ((Robot*)gl->data)->get_position_this_game() == robots_left )
+              ((Robot*)gl->data)->set_stats(killed_robots);
+      
+      robots_left -= killed_robots;
+      broadcast(ROBOTS_LEFT, robots_left);
     }
-  robots_left -= killed_robots;
-  broadcast(ROBOTS_LEFT, robots_left);
+
+  for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
+    ((Robot*)gl->data)->send_signal();
 }
 
 void
@@ -485,6 +491,7 @@ Arena::start_sequence()
   // wait a second before checking
 
   state = STARTING_ROBOTS;
+  sequence_nr++;
   g_timer_reset(timer);
   update_timer();
   next_check_time = total_time + 1.0;
@@ -575,6 +582,7 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 
   robots_per_game = robots_p_game;
   games_per_sequence = games_p_sequence;
+  sequence_nr = 0;
   start_sequence();
 }
 

@@ -139,6 +139,24 @@ Robot::die()
 }
 
 void
+Robot::set_stats(int robots_killed_same_time)
+{
+  stat_t* gl;
+  position_this_game += robots_killed_same_time - 1;
+  double points_this_game = the_arena->get_robots_per_game() - position_this_game + position_this_game * 0.5;
+  stat_t* statp = new stat_t
+    (
+     the_arena->get_sequence_nr(),
+     the_arena->get_games_per_sequence() - the_arena->get_sequences_remaining(),
+     points_this_game,
+     the_arena->get_total_time(),
+     (gl = (stat_t*)g_list_last(statistics)->data) != NULL ? gl->total_points + points : points
+     );
+
+  g_list_append(statistics, statp);
+}
+
+void
 Robot::update_radar_and_cannon(const double timestep)
 {
   radar_angle += timestep*radar_speed;

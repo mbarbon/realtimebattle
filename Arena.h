@@ -52,6 +52,10 @@ public:
   GList** get_object_lists() { return object_lists; }
   GList* get_all_robots_in_sequence() { return all_robots_in_sequence; }
   Gui* get_the_gui() { return the_gui; }
+  int get_sequence_nr() { return sequence_nr; }
+  int get_games_per_sequence() { return games_per_sequence; }
+  int get_sequences_remaining() { return sequences_remaining; }
+  int get_robots_per_game() { return robots_per_game; }
   double get_max_acceleration() { return max_acceleration; }
   double get_min_acceleration() { return min_acceleration; }
   double get_shot_radius() { return shot_radius; }
@@ -103,6 +107,7 @@ private:
   GList* all_robots_in_sequence;
   GList* arena_filenames;               // list of GStrings
   
+  int sequence_nr;
   int games_remaining_in_sequence;
   int games_per_sequence;
   int sequences_remaining;
@@ -333,6 +338,17 @@ protected:
 
 // ---------------------  Robot : MovingObject  ---------------------
 
+struct stat_t
+{
+  stat_t(int s, int g, double p, double  t, double tp) :
+    sequence_nr(s), game_nr(g), points_this_game(p), time_survived(t), total_points(tp) {}
+  int sequence_nr;
+  int game_nr;
+  double points_this_game;
+  double time_survived;
+  double total_points;
+};
+
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
@@ -349,6 +365,7 @@ public:
   void get_messages();
   void send_message(enum message_to_robot_type ...);
   void set_initial_values(const Vector2D& pos, double angle);
+  void set_stats(int robots_killed_same_time);
   void start_process();
   bool is_process_running();
   void send_signal();
@@ -362,7 +379,8 @@ public:
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
   pid_t get_pid() { return pid; }
-
+  GList* get_statistics() { return statistics; }
+  int get_position_this_game() { return position_this_game; }
   void display_energy();
   void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc );
 
@@ -384,6 +402,8 @@ private:
   double acceleration;
 
   double protection_coeff;
+
+  GList* statistics;
 
   GString robot_name;
   GString robot_filename;
