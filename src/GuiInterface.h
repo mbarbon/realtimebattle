@@ -73,7 +73,7 @@ public:
 
   // Functions that enables the gui to have some influence over the server.
 
-  void quit                                   ();
+  void quit                                   ( bool exit_program = false );
 
   int set_debug_level                         ( const int new_level );
   void pause_game_toggle                      ();
@@ -92,7 +92,7 @@ public:
   void set_opt_l                              ( option_long_t   option, long int val );
   void set_opt_s                              ( option_string_t option, string   val );
 
-  // guivent??? pop_event                        ();
+  // guievent??? pop_event                        ();
 
   // Functions for the server.
 
