@@ -493,7 +493,7 @@ Gui::setup_statistics_window()
   GtkWidget * vbox, * hbox;
   GtkWidget * button_widget;
 
-  stat_table_type = STAT_TABLE_GAME;
+  stat_table_type = STAT_TABLE_TOTAL;
   stat_looking_at_nr = ( the_arena.get_sequence_nr() - 1 ) * the_arena.get_games_per_sequence()
     + the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence();
 
