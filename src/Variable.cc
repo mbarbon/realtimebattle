@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Variable.h"
 
+
+
 void
 Variable::make_bool( const double val )
 {
@@ -35,6 +37,7 @@ Variable::make_bool( const double val )
   
   constant = true;
   assign( val );
+  set_robot_permissions( false, false );
 }
 
 
@@ -47,6 +50,7 @@ Variable::make_int ( const double val, const double min_val, const double max_va
   
   constant = true;
   assign( val );
+  set_robot_permissions( false, false );
 }
 
 
@@ -69,6 +73,7 @@ Variable::make_double( const double val, const double min_val, const double max_
     }
 
   assign( val );
+  set_robot_permissions( false, false );
 }
 
 void
@@ -82,6 +87,14 @@ Variable::make_random( const double min_val, const double max_val,
 
   constant = false;
   random = true;
+  set_robot_permissions( false, false );
+}
+
+void
+Variable::set_robot_permissions(const bool read, const bool write )
+{
+  public_readable = read;
+  public_writable = write;
 }
 
 void
