@@ -275,8 +275,8 @@ Robot::move(const double timestep, int iterstep)
   else
     {
       double time_remaining = timestep - time_to_collision; 
-      center += (time_to_collision - 0.00001)*velocity;
-
+      center += time_to_collision*velocity;
+      Vector2D new_center = center - eps*velocity;
       switch( closest_shape )
         {
         case WALL:
@@ -311,6 +311,10 @@ Robot::move(const double timestep, int iterstep)
           throw Error("Collided with unknown object", "Robot::move");
           break;
         }
+      
+      center = new_center;
+      if( iterstep > 5 ) 
+        cout << "Iterstep: " << iterstep << "   time_remaining: " << time_remaining << endl;
       if( iterstep > 20 ) throw Error("Too many bounces, must be a bug!", "Robot::move");
       if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1 );
     }
@@ -411,7 +415,7 @@ Robot::get_messages()
             Vector2D dir = Vector2D(cos(cannon_angle),sin(cannon_angle));
             double shot_radius = opts.get_shot_radius();
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
-            if( the_arena->space_available( shot_center, shot_radius + 0.00001 ) )
+            if( the_arena->space_available( shot_center, shot_radius + eps ) )
               {
                 Shot* shotp = new Shot( shot_center, shot_radius,
                                         velocity + dir * opts.get_shot_speed(),
