@@ -23,7 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
 
-#include "GuiInterface.h"
+#include "GuiFunctions.h"
 #include "IntlDefs.h"
 
 const string
@@ -49,6 +49,5 @@ GIInit( int argc, char** argv )
 int
 GIMain( GuiClientInterface* _gi_p )
 {
-  _gi_p->quit();
   return true;
 }

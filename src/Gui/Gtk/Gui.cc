@@ -27,6 +27,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "Gui.h"
+#include "GuiFunctions.h"
 #include "GuiInterface.h"
 #include "IntlDefs.h"
 #include "ArenaWindow.h"
@@ -77,7 +78,7 @@ int
 GIMain( GuiClientInterface* _gi_p )
 {
   int returncode = the_gui.main_loop( _gi_p );
-  _gi_p->quit( true );
+  _gi_p->quit_program( true );
   return returncode;
 }
 
@@ -195,9 +196,9 @@ Gui::main_loop( GuiClientInterface* _gi_p )
   set_colours();
 
   controlwindow_p = 
-    new ControlWindow( -1, -1,
-                       gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_X ),
-                       gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
+    new ControlWindow( -1, -1, 0, 0 );
+//                         gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_X ),
+//                         gtk_opts->get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
 
   gint timeout_tag;      
 //    double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
