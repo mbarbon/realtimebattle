@@ -12,22 +12,26 @@ cxxoptions = -g -Wall
 #coptions = -O
 #cxxoptions = -O
 
+includedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
+libdirs = -L/usr/lib -L/usr/X11R6/lib
+libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
+
 all: RobotArena $(ROBOTDIR)/empty
 
-RobotArena: robot.o pos.o gui.o robotarena.o
-	g++ $(cxxoptions) -o robotarena robot.o pos.o gui.o robotarena.o -I/usr/lib/glib/include -I/usr/X11R6/include -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -lglib -lXext -lX11 -lm
+RobotArena: robot.o Vector2D.o gui.o robotarena.o
+	g++ $(cxxoptions) -o robotarena robot.o Vector2D.o gui.o robotarena.o $(includedirs) $(libdirs) $(libraries)
 
-robot.o: robot.cc robot.h pos.h
+robot.o: robot.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robot.cc
 
-pos.o: pos.cc pos.h
-	g++ $(cxxoptions) -c pos.cc
+Vector2D.o: Vector2D.cc Vector2D.h
+	g++ $(cxxoptions) -c Vector2D.cc
 
 gui.o: gui.c gui.h
-	gcc $(coptions) -c gui.c -I/usr/lib/glib/include -I/usr/X11R6/include
+	gcc $(coptions) -c gui.c $(includedirs)
 
-robotarena.o: robotarena.cc robot.h pos.h
-	g++ $(cxxoptions) -c robotarena.cc -I/usr/lib/glib/include -I/usr/X11R6/include
+robotarena.o: robotarena.cc robot.h Vector2D.h
+	g++ $(cxxoptions) -c robotarena.cc $(includedirs)
 
 $(ROBOTDIR)/empty: $(ROBOTDIR)/empty.o
 	cd $(ROBOTDIR); \
