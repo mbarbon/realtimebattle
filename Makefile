@@ -16,12 +16,12 @@ gtkincludedirs = -I/usr/lib/glib/include -I/usr/X11R6/include
 libdirs = -L/usr/lib -L/usr/X11R6/lib
 libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 
-objects = robot.o Vector2D.o gui.o robotarena.o Arena.o Error.o Shape.o MovingObject.o Extras.o
+objects = robot.o Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o
 
-all: RobotArena $(ROBOTDIR)/empty
+all: RealTimeBattle $(ROBOTDIR)/empty
 
-RobotArena: $(objects)
-	g++ $(cxxoptions) -o robotarena $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
+RealTimeBattle: $(objects)
+	g++ $(cxxoptions) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
 
 robot.o: robot.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robot.cc
@@ -32,8 +32,8 @@ Vector2D.o: Vector2D.cc Vector2D.h
 gui.o: gui.cc gui.h
 	g++ $(coptions) -c gui.cc $(gtkincludedirs)
 
-robotarena.o: robotarena.cc robot.h Vector2D.h
-	g++ $(cxxoptions) -c robotarena.cc $(gtkincludedirs)
+RealTimeBattle.o: RealTimeBattle.cc Vector2D.h Arena.h messagetypes.h gui.h
+	g++ $(cxxoptions) -c RealTimeBattle.cc $(gtkincludedirs)
 
 Arena.o: Arena.cc Arena.h messagetypes.h Vector2D.h
 	g++ $(cxxoptions) -c Arena.cc $(gtkincludedirs)
