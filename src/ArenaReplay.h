@@ -34,7 +34,8 @@ public:
   bool timeout_function        ();
   void start_tournament        ();
   void end_game                ();
-  void set_filenames           ( String& replay_file );
+  void set_filenames           ( String& replay_fname, String& message_fname );
+
 private: 
   void update                  ();
   void start_game              ();
