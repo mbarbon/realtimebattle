@@ -531,42 +531,42 @@ ArenaReplay::change_speed( const bool forward, const bool fast )
     speed = REWIND;
 }
 
-String
-ArenaReplay::search_forward( const String& search_letters,
-                             streampos& strpos )
+// Searches the log_file for a line beginning with any of the 
+// letters in 'search_letters'.
+// The file pointer will be directly after the found letter.
+// Returns the letter found, or '?' if none found.
+char
+ArenaReplay::search_forward( const String& search_letters )
 {
   if( log_from_stdin )
-    return "";
+    return '?';
 
-  char letter='?';
+  char letter;
   char buffer[400];
-  while( search_letters.find( letter ) == -1 && !log_file.eof() )
+  
+
+  while( !log_file.eof() )
     {
-      strpos = log_file.tellg();
-      log_file.get( buffer, 400, '\n' );
+      log_file.clear();
+
+      log_file >> letter;   // check first letter of line
+      if( search_letters.find( letter ) != -1 )
+        {
+          return letter;
+        }
+
       log_file >> ws;
-      letter = log_file.peek();
+      log_file.get( buffer, 400, '\n' );  // go to next line
     }
-
-  if( log_file.eof() )
-    return "";
-  else
-    {
-      log_file.get( buffer, 400, '\n' );
-      beginning_of_current_line();
-      return (String) buffer;
-    }
-
-  return "";
+  
+  return '?';
 }
 
-
-// Takes a list of strings to search for in the log_file.
-// Returns the first line which begins with any of the search_strings.
-// Returns the empty string at failure.
+// Similar to the previous function, but the argument is a list
+// of strings (string lengths between 1 and 16) to serach for.
+// Returns the string found, or the empty string if none found.
 String
-ArenaReplay::search_forward( const List<String>& search_strings, 
-                             streampos& strpos )
+ArenaReplay::search_forward( const List<String>& search_strings )
 {
   if( log_from_stdin ) return "";
 
@@ -574,25 +574,34 @@ ArenaReplay::search_forward( const List<String>& search_strings,
   char buffer[400];
   ListIterator<String> li;
   int i;
+  int read_letters;
+  char letter[16];
 
-  while( !log_file.eof() && !found )
+ while( !log_file.eof() )
     {
       log_file.clear();
-      log_file >> ws;
-      strpos = log_file.tellg();
-      log_file.get( buffer, 400, '\n' );
 
+      read_letters = 0;
       for( search_strings.first(li); li.ok() && !found; li++ )
         {
-          found = true;
-          for( i=0; i < li()->get_length(); i++ )
-            if( li()->operator[](i) != buffer[i] ) found = false;          
-        }
+          found = true; 
+          for( i=0; i < li()->get_length() && found; i++ )
+            {
+              if( read_letters < i+1 )
+                {
+                  log_file >> letter[read_letters];
+                  read_letters++;
+                }
+              if( (*li())[i] != letter[i] ) found = false;
+            }
+
+          if( found ) return *li();
+        }      
+      
+      log_file.get( buffer, 400, '\n' );  // go to next line
     }
-
-  if( !found ) return "";
-
-  return (String) buffer;
+  
+  return "";
 }
 
 
@@ -667,83 +676,76 @@ ArenaReplay::make_statistics_from_file()
   double points_received;
   int pos_this_game, object_id;
   char c;
-  streampos strpos;
-  streampos old_pos;
+  char buffer[400];
+  String letters;
 
-  old_pos = log_file.tellg() + 1;//temporary!!
-  String buffer = search_forward( str_list, strpos );
+  streampos old_pos = log_file.tellg() + 1;//temporary!!
 
   cout << "make_statistics_from_file" << endl;
 
-  do
+  while(  (letters = search_forward( str_list ))  != "" )
     {
-      if( !buffer.is_empty() )
+      switch( letters[0] )
         {
-          log_file.seekg(strpos+1); // Note that strpos can't be zero!
+        case 'D':
+          log_file >> c >> object_id >> points_received >> pos_this_game;
+            
+          find_object_by_id( object_lists[ROBOT], li, object_id );
+          if( !li.ok() ) Error(true, "Dying robot not in list", 
+                               "ArenaReplay::make_statistics_from_file");
+          ((Robot*)li())->set_stats( points_received, pos_this_game, 
+                                     current_replay_time);
+          break;
+            
+        case 'L':
+          {
+            int robot_id;
+            char robot_colour[7];
+            char name[200];
+            log_file >> robot_id >> ws;
+            log_file.get( robot_colour, 7, ' ');
+            long int col = str2hex( (String)robot_colour );
+            log_file >> ws;
+            log_file.get( name, 200, '\n' );
+            Robot* robotp = new Robot( robot_id, col, (String)name );
+            object_lists[ROBOT].insert_last(robotp); // array better?
+            all_robots_in_tournament.insert_last(robotp); // used by statistics
+          }
+          break;
+            
+        case 'G':
+          log_file >> sequence_nr >> game_nr;
+          game_position_in_log[sequence_nr-1][game_nr-1] = log_file.tellg();
+          break;
+            
+        case 'T':
+          log_file >> current_replay_time;
+          break;
 
-          switch( buffer[0] )
+        case 'H':
+          if( game_position_in_log != NULL )
             {
-            case 'D':
-              log_file >> c >> object_id >> points_received >> pos_this_game;
-            
-              find_object_by_id( object_lists[ROBOT], li, object_id );
-              if( !li.ok() ) Error(true, "Dying robot not in list", 
-                                   "ArenaReplay::make_statistics_from_file");
-              ((Robot*)li())->set_stats( points_received, pos_this_game, 
-                                         current_replay_time);
-              break;
-            
-            case 'L':
-              {
-                int robot_id;
-                char robot_colour[7];
-                char name[200];
-                log_file >> robot_id >> ws;
-                log_file.get( robot_colour, 7, ' ');
-                long int col = str2hex( (String)robot_colour );
-                log_file >> ws;
-                log_file.get( name, 200, '\n' );
-                Robot* robotp = new Robot( robot_id, col, (String)name );
-                object_lists[ROBOT].insert_last(robotp); // array better?
-                all_robots_in_tournament.insert_last(robotp); // used by statistics
-              }
-              break;
-            
-            case 'G':
-              log_file >> sequence_nr >> game_nr;
-              game_position_in_log[sequence_nr-1][game_nr-1] = strpos;
-              break;
-            
-            case 'T':
-              log_file >> current_replay_time;
-              break;
-
-            case 'H':
-              if( game_position_in_log != NULL )
-                {
-                  log_file.seekg( old_pos ); // Note that old_pos can't be zero!
-                  return;
-                }
-              
-              log_file >> games_per_sequence >> robots_per_game 
-                       >> sequences_in_tournament >> number_of_robots;
-              
-              game_position_in_log = new streampos*[sequences_in_tournament];
-
-              for( int i=0; i<sequences_in_tournament; i++ )
-                game_position_in_log[i] = new streampos[games_per_sequence];
-              
-              break;
-          
-            default:
-              Error(true, "Wrong log line found", 
-                    "ArenaReplay::make_statistics_from_file");
-              break;
+              log_file.seekg( old_pos ); // Note that old_pos can't be zero!
+              return;
             }
-        }
-      
-      buffer = search_forward( str_list, strpos );
-    } while( !log_file.eof() );
+              
+          log_file >> games_per_sequence >> robots_per_game 
+                   >> sequences_in_tournament >> number_of_robots;
+              
+          game_position_in_log = new streampos*[sequences_in_tournament];
+
+          for( int i=0; i<sequences_in_tournament; i++ )
+            game_position_in_log[i] = new streampos[games_per_sequence];
+              
+          break;
+          
+        default:
+          Error(true, "Wrong log line found", 
+                "ArenaReplay::make_statistics_from_file");
+          break;
+        }             
+      log_file.get( buffer, 400, '\n' );
+    }
 
   log_file.seekg( old_pos );  // Note that old_pos can't be zero!
 }
@@ -752,6 +754,8 @@ void
 ArenaReplay::get_time_positions_in_game()
 {  
   String letter_list = "TGH";
+  char letter;
+  char buffer[400];
   int time_pos_index = 0;
   int max_time_infos = 16384;
   float cur_time;
@@ -759,49 +763,41 @@ ArenaReplay::get_time_positions_in_game()
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
 
-  streampos strpos;
   streampos old_pos;
-  old_pos = strpos = log_file.tellg() + 1; //temporary!!
-  String buffer = search_forward( letter_list, strpos );
+  old_pos = log_file.tellg() + 1; //temporary!!
 
   cout << "get_time_positions_in_game" << endl;
 
-  while( !log_file.eof() )
+  while(  (letter = search_forward( letter_list ))  != '?' )
     {
-      if( !buffer.is_empty() )
+      switch( letter )
         {
-          log_file.seekg(strpos+1); // Note that strpos can't be zero!
-          switch( buffer[0] )
-            {
-            case 'T':
-              log_file >> cur_time;
-              time_position_in_log[time_pos_index].pos = strpos;
-              time_position_in_log[time_pos_index].time = cur_time;
+        case 'T':
+          log_file >> cur_time;
+          time_position_in_log[time_pos_index].pos = log_file.tellg();
+          time_position_in_log[time_pos_index].time = cur_time;
               
-              time_pos_index++;
-              if( time_pos_index >= max_time_infos )
-                Error(false, "Too many time info entries", 
-                      "ArenaReplay::get_time_positions_in_game");
+          time_pos_index++;
+          if( time_pos_index >= max_time_infos )
+            Error(false, "Too many time-info entries", 
+                  "ArenaReplay::get_time_positions_in_game");
 
-              break;
+          break;
 
-            case 'G':
-            case 'H':
-              last_time_info = time_pos_index - 1;
-              log_file.seekg( old_pos );  // Note that old_pos can't be zero!
-              return;
-              break;
+        case 'G':
+        case 'H':
+          last_time_info = time_pos_index - 1;
+          log_file.seekg( old_pos );  // Note that old_pos can't be zero!
+          return;
+          break;
           
-            default:
-              Error(true, "Wrong log line found", 
-                    "ArenaReplay::get_time_positions_in_game");
-              break;
-            }
+        default:
+          Error(true, "Wrong log line found", 
+                "ArenaReplay::get_time_positions_in_game");
+          break;
+              
         }
-
-      strpos = log_file.tellg();
-      buffer = search_forward( letter_list,strpos );
-      log_file.clear();
+      log_file.get( buffer, 400, '\n' );
     }
 
   log_file.seekg( old_pos ); // Note that old_pos can't be zero!
