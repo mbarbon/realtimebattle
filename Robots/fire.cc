@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include "../messagetypes.h"
 
+enum object_type { NOOBJECT, ROBOT, SHOT, WALL, COOKIE, MINE, EXPLOSION };
+static const number_of_object_types = 6;
+
 message_to_robot_type
 name2msg_to_robot_type(char* msg_name)
 {
@@ -17,6 +20,8 @@ name2msg_to_robot_type(char* msg_name)
 int 
 main(int argc, char * argv[])
 {
+  double acceleration;
+
   char msg_name[81];
   char text[81];
   message_to_robot_type msg_t;
@@ -36,9 +41,45 @@ main(int argc, char * argv[])
               break;
             case GAME_STARTS:
               cout << "Print I am ready" << endl;
+              cout << "Rotate 7 0.7" << endl;
+              acceleration = 1.05;
+              cout << "Acceleration " << acceleration << endl;
               break;
             case RADAR:
-              //              cerr << "Fire: Got message: RADAR" << endl;
+              {
+                double dist;
+                int object;
+
+                cin >> dist >> object;
+                switch(object)
+                  {
+                  case ROBOT:
+                    //                    cout << "Shoot 2" << endl;
+                    cout << "Print kill" << endl;
+                    break;
+                  case WALL:
+                    if( dist < 0.5 )
+                      acceleration = -acceleration;
+                    cout << "Acceleration " << acceleration << endl;
+                    break;
+                  case SHOT:
+                    cout << "Print Help me!" << endl;
+                    cout << "Print A shot is killing me!" << endl;
+                    break;
+                  case COOKIE:
+                    cout << "Print Yummy! A cookie" << endl;
+                    break;
+                  case MINE:
+                    cout << "Print Avoid this mine" << endl;
+                    break;
+                  case EXPLOSION:
+                    cout << "Print Avoid! Explosion" << endl;
+                    break;
+                  default:
+                    break;
+                  }
+                //                cout << "Print " << dist << " " << object << endl;
+              }
               break;
             case WARNING:
               cin.getline(text,80,'\n');
