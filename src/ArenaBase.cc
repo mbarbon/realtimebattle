@@ -50,7 +50,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 //#include "Gui.h"
-#include "Arena_Base.h"
+#include "ArenaBase.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "Extras.h"
@@ -61,7 +61,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Wall.h"
 #include "Robot.h"
 
-Arena_Base::Arena_Base()
+ArenaBase::ArenaBase()
 {
   state = NOT_STARTED;
   game_mode = NORMAL_MODE;
@@ -82,7 +82,7 @@ Arena_Base::Arena_Base()
   debug_level = 0;
 }
 
-Arena_Base::~Arena_Base()
+ArenaBase::~ArenaBase()
 {
   //  if( filep ) delete filep;
   state=EXITING;
@@ -95,7 +95,7 @@ Arena_Base::~Arena_Base()
 }
 
 void
-Arena_Base::clear()
+ArenaBase::clear()
 {
   delete_lists(true, true, true, true);
 
@@ -109,7 +109,7 @@ Arena_Base::clear()
 }
 
 void 
-Arena_Base::interrupt_tournament()
+ArenaBase::interrupt_tournament()
 {
   if( state == GAME_IN_PROGRESS )
     {
@@ -131,7 +131,7 @@ Arena_Base::interrupt_tournament()
 #ifndef NO_GRAPHICS
 
 void
-Arena_Base::set_colours()
+ArenaBase::set_colours()
 {  
   bg_rgb_colour = the_opts.get_l(OPTION_BACKGROUND_COLOUR);
   fg_rgb_colour = the_opts.get_l(OPTION_FOREGROUND_COLOUR);
@@ -146,7 +146,7 @@ Arena_Base::set_colours()
 
 // This function takes the statistics and saves into a selected file
 void
-Arena_Base::save_statistics_to_file(String filename)
+ArenaBase::save_statistics_to_file(String filename)
 {
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
@@ -175,7 +175,7 @@ Arena_Base::save_statistics_to_file(String filename)
 
 
 void
-Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
+ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
 {
   char text[20];
   double radie, bounce_c, hardn, thickness;
@@ -192,7 +192,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
   if( strcmp(text, "scale" ) == 0 )
     {
       if( succession != 1 ) Error(true, "Error in arenafile: 'scale' not first", 
-                                  "Arena_Base::parse_arena_line");
+                                  "ArenaBase::parse_arena_line");
       succession = 2;
       double scl;
       file >> scl;
@@ -202,7 +202,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     {
       if( succession > 2 ) 
         Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       succession = 3;
       double b1, b2;
       file >> b1;
@@ -214,13 +214,13 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
       if( boundary[1][0] - boundary[0][0] <= 0 || 
           boundary[1][1] - boundary[0][1] <= 0 ) 
         Error(true, "Error in arenafile: 'boundary' negative", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
     }
   else if( strcmp(text, "exclusion_point" ) == 0 )
     {
       if( succession < 3 ) 
         Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       file >> vec1;
       exclusion_points.insert_last(new Vector2D(scale*vec1));
     }
@@ -228,7 +228,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     {
       if( succession < 3 ) 
         Error(true, "Error in arenafile: 'inner_circle' before boundary", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       succession = 4;
       file >> bounce_c;
       file >> hardn;
@@ -242,7 +242,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     {
       if( succession < 3 ) 
         Error(true, "Error in arenafile: 'circle' before 'boundary'", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       succession = 4;
       file >> bounce_c;
       file >> hardn;
@@ -254,7 +254,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
   else if( strcmp(text, "line" ) == 0 )
     {
       if( succession < 3 ) Error(true, "Error in arenafile: 'line' before 'boundary'",
-                                 "Arena_Base::parse_arena_line");
+                                 "ArenaBase::parse_arena_line");
       succession = 4;
       file >> bounce_c;
       file >> hardn;
@@ -266,7 +266,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
 
       if( length(vec2-vec1) == 0.0 ) 
         Error(true, "Error in arenafile: Zero length line", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
 
       wall_linep = new WallLine(scale*vec1, unit(vec2-vec1), scale*length(vec2-vec1), 
                                 scale*thickness, bounce_c , hardn);      
@@ -276,7 +276,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     {
       if( succession < 3 ) 
         Error(true, "Error in arenafile: 'polygon' before 'boundary'", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       succession = 4;
       file >> bounce_c;
       file >> hardn;
@@ -294,7 +294,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
 
           if( length(vec2-vec1) == 0.0 ) 
             Error(true, "Error in arenafile: Zero length line in polygon", 
-                  "Arena_Base::parse_arena_line");
+                  "ArenaBase::parse_arena_line");
 
           wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), 
                                     scale*length(vec1-vec2), 
@@ -308,7 +308,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     {
       if( succession < 3 ) 
         Error(true, "Error in arenafile: 'closed_polygon' before 'boundary'", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
       succession = 4;
       file >> bounce_c;
       file >> hardn;
@@ -327,7 +327,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
 
           if( length(vec2-vec1) == 0.0 )
             Error(true, "Error in arenafile: Line in closed_polygon of zero length", 
-                  "Arena_Base::parse_arena_line");
+                  "ArenaBase::parse_arena_line");
           
           wall_linep = new WallLine(scale*vec2, unit(vec1-vec2), 
                                     scale*length(vec1-vec2), 
@@ -339,7 +339,7 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
 
       if( length(vec0-vec1) == 0.0 ) 
         Error(true, "Error in arenafile: Last line in closed_polygon of zero length", 
-              "Arena_Base::parse_arena_line");
+              "ArenaBase::parse_arena_line");
 
       wall_linep = new WallLine(scale*vec1, unit(vec0-vec1), scale*length(vec0-vec1), 
                                 scale*thickness, bounce_c , hardn);      
@@ -347,14 +347,14 @@ Arena_Base::parse_arena_line(ifstream& file, double& scale, int& succession)
     }
   else if( text[0] != '\0' )
     Error(true, "Incorrect arenafile: unknown keyword" + (String)text, 
-          "Arena_Base::parse_arena_line");
+          "ArenaBase::parse_arena_line");
 
 }
 
 
 
 double
-Arena_Base::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
+ArenaBase::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, 
                                   const double size, arenaobject_t& closest_shape, 
                                   Shape*& colliding_object, const Robot* the_robot)
 {
@@ -385,7 +385,7 @@ Arena_Base::get_shortest_distance(const Vector2D& pos, const Vector2D& dir,
 }
 
 bool
-Arena_Base::space_available(const Vector2D& pos, const double margin)
+ArenaBase::space_available(const Vector2D& pos, const double margin)
 {
   ListIterator<Shape> li;
 
@@ -419,14 +419,14 @@ Arena_Base::space_available(const Vector2D& pos, const double margin)
 
 
 double 
-Arena_Base::get_shooting_penalty() 
+ArenaBase::get_shooting_penalty() 
 { 
   return min( the_opts.get_d(OPTION_SHOOTING_PENALTY), 0.5 / (double)robots_left ); 
 }
 
 
 void
-Arena_Base::update_timer()
+ArenaBase::update_timer()
 {
   double last_timer = current_timer;
 
@@ -439,7 +439,7 @@ Arena_Base::update_timer()
 }
 
 void
-Arena_Base::reset_timer()
+ArenaBase::reset_timer()
 {
   total_time = 0.0;
   current_timer = 0.0;
@@ -449,7 +449,7 @@ Arena_Base::reset_timer()
 
 
 void
-Arena_Base::move_shots()
+ArenaBase::move_shots()
 {
   Shot* shotp;
 
@@ -467,7 +467,7 @@ Arena_Base::move_shots()
 
 
 void 
-Arena_Base::set_game_mode( const enum game_mode_t gm)
+ArenaBase::set_game_mode( const enum game_mode_t gm)
 {
   game_mode = gm; 
   if( game_mode == DEBUG_MODE )
@@ -481,7 +481,7 @@ Arena_Base::set_game_mode( const enum game_mode_t gm)
 }
 
 int
-Arena_Base::set_debug_level( const int new_level)
+ArenaBase::set_debug_level( const int new_level)
 {
   if( new_level > max_debug_level || new_level < 0 || new_level == debug_level ) return debug_level;
   
@@ -490,7 +490,7 @@ Arena_Base::set_debug_level( const int new_level)
   return debug_level;
 }
 void
-Arena_Base::pause_game_toggle()
+ArenaBase::pause_game_toggle()
 {
   if( game_mode != COMPETITION_MODE )
     {
@@ -504,7 +504,7 @@ Arena_Base::pause_game_toggle()
 }
 
 void
-Arena_Base::step_paused_game()
+ArenaBase::step_paused_game()
 {
   if( game_mode == DEBUG_MODE && halted )
     {
@@ -514,14 +514,14 @@ Arena_Base::step_paused_game()
 }
 
 bool
-Arena_Base::is_game_halted()
+ArenaBase::is_game_halted()
 {
   return( state == PAUSING_BETWEEN_GAMES || 
           ( game_mode != COMPETITION_MODE && halted ) );
 }
 
 void
-Arena_Base::delete_lists(const bool kill_robots, const bool del_seq_list, 
+ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list, 
                     const bool del_tourn_list, const bool del_arena_filename_list)
 {
   // clear the lists;

@@ -17,29 +17,54 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ARENA_REPLAY__
-#define __ARENA_REPLAY__
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include "Arena_Base.h"
 
-class String;
+#include "ArenaController.h"
+#include "ArenaRealTime.h"
+#include "ArenaReplay.h"
 
-class Arena_Replay : public Arena_Base
+ArenaController::ArenaController()
 {
-public:
-  Arena_Replay();
-  ~Arena_Replay();
+  started = false;
+}
 
-  bool timeout_function();
-  void start_tournament(const String& logfilename);
-  void end_game();
-private: 
-  void update();
-  void start_game();
-  void start_sequence();
-  void end_sequence();
-  void end_tournament();
-};
+ArenaController::~ArenaController()
+{
+  if( started ) close_arena();
+}
 
+void
+ArenaController::start_realtime_arena()
+{
+  if( started ) close_arena();
 
-#endif __ARENA_REPLAY__
+  my_arena = new ArenaRealTime();
+  
+  started = true;
+  realtime = true;
+}
+
+void
+ArenaController::start_replay_arena()
+{
+  if( started ) close_arena();
+
+  my_arena = new ArenaReplay();
+  
+  started = true;
+  realtime = false;
+}
+
+void
+ArenaController::close_arena()
+{
+  if( started )
+    {
+      delete my_arena;
+    }
+
+  started = false;
+}

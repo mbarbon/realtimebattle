@@ -21,8 +21,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream.h>
 
 #include "OptionsWindow.h"
-#include "Arena_RealTime.h"
-#include "Arena_Controller.h"
+#include "ArenaRealTime.h"
+#include "ArenaController.h"
 #include "Options.h"
 #include "String.h"
 #include "Various.h"
@@ -296,11 +296,11 @@ OptionsWindow::add_option_to_notebook( GtkWidget* description_table,
 void
 OptionsWindow::set_all_options()
 {
-  if((the_arena.get_game_mode() == Arena_Base::COMPETITION_MODE &&
+  if((the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
       (the_arena.get_state() == NO_STATE ||
        the_arena.get_state() == NOT_STARTED ||
        the_arena.get_state() == FINISHED)) ||
-     (the_arena.get_game_mode() != Arena_Base::COMPETITION_MODE))
+     (the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE))
     {
       option_info_t<double>* double_opts = the_opts.get_all_double_options();
       option_info_t<long>* long_opts = the_opts.get_all_long_options();

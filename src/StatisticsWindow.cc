@@ -21,7 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "StatisticsWindow.h"
 #include "Gui.h"
-#include "Arena_Controller.h"
+#include "ArenaController.h"
 #include "String.h"
 #include "Various.h"
 #include "Robot.h"

@@ -20,9 +20,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <gtk/gtk.h>
 
 #include "ArenaWindow.h"
-#include "Arena_Base.h"
-#include "Arena_Controller.h"
-#include "Arena_RealTime.h"
+#include "ArenaBase.h"
+#include "ArenaController.h"
+#include "ArenaRealTime.h"
 #include "Extras.h"
 #include "Robot.h"
 #include "Shot.h"

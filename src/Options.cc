@@ -26,13 +26,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <stdlib.h>
 
 #include "Options.h"
-#include "Arena_RealTime.h"
-#include "Arena_Controller.h"
+#include "ArenaRealTime.h"
+#include "ArenaController.h"
 #include "OptionsWindow.h"
 #include "Messagetypes.h"
 #include "Various.h"
 
-//extern class Arena_RealTime the_arena;
+//extern class ArenaRealTime the_arena;
 
 Options::Options()
 {
@@ -504,11 +504,11 @@ Options::is_optionswindow_up()
 void
 Options::open_optionswindow()
 {
-  if((the_arena.get_game_mode() == Arena_Base::COMPETITION_MODE &&
+  if((the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
       (the_arena.get_state() == NO_STATE ||
        the_arena.get_state() == NOT_STARTED ||
        the_arena.get_state() == FINISHED)) ||
-     (the_arena.get_game_mode() != Arena_Base::COMPETITION_MODE))
+     (the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE))
     if( NULL == optionswindow_p )
       optionswindow_p = 
         new OptionsWindow( -1, -1, -1, -1 );

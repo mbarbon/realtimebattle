@@ -44,8 +44,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Robot.h"
 #include "String.h"
-#include "Arena_Controller.h"
-#include "Arena_RealTime.h"
+#include "ArenaController.h"
+#include "ArenaRealTime.h"
 #include "Various.h"
 #include "Options.h"
 #include "Wall.h"
@@ -180,7 +180,7 @@ Robot::start_process()
 
       // Deny file access
 
-      if( the_arena.get_game_mode() != Arena_Base::DEBUG_MODE )
+      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
         {
           struct rlimit res_limit;
           
@@ -1052,7 +1052,7 @@ Robot::get_messages()
             instreamp->get(text, 80, '\n');
             realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
-            if( realtime_arena.get_game_mode() == Arena_Base::DEBUG_MODE && !no_graphics)
+            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE && !no_graphics)
               the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
           }

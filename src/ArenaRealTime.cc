@@ -48,7 +48,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 //#include "Gui.h"
-#include "Arena_RealTime.h"
+#include "ArenaRealTime.h"
 #include "ArenaWindow.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
@@ -63,17 +63,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "ScoreWindow.h"
 #endif
 
-Arena_RealTime::Arena_RealTime()
+ArenaRealTime::ArenaRealTime()
 {
 }
 
-Arena_RealTime::~Arena_RealTime()
+ArenaRealTime::~ArenaRealTime()
 {
   if( use_log_file && LOG_FILE ) LOG_FILE.close();
 }
 
 void
-Arena_RealTime::set_filenames(String& log_fname, const String& statistics_fname, 
+ArenaRealTime::set_filenames(String& log_fname, const String& statistics_fname, 
                      const String& tournament_fname, const String& option_fname)
 {
   if( log_fname == "")
@@ -105,7 +105,7 @@ Arena_RealTime::set_filenames(String& log_fname, const String& statistics_fname,
 }
 
 void
-Arena_RealTime::search_directories( String directory, 
+ArenaRealTime::search_directories( String directory, 
                                     List<start_tournament_info_t>& tour_list,
                                     const bool check_robots )
 {
@@ -132,7 +132,7 @@ Arena_RealTime::search_directories( String directory,
 }
 
 void
-Arena_RealTime::check_for_robots_and_arenas( String& word, 
+ArenaRealTime::check_for_robots_and_arenas( String& word, 
                                              List<start_tournament_info_t>& tour_list,
                                              List<String>& dir_list, 
                                              const bool check_robots )
@@ -197,12 +197,12 @@ Arena_RealTime::check_for_robots_and_arenas( String& word,
 
 
 void
-Arena_RealTime::parse_arena_file(String& filename)
+ArenaRealTime::parse_arena_file(String& filename)
 {
   Vector2D vec1, vec2, vec0;
 
   ifstream file(filename.chars());
-  if( !file ) Error(true, "Couldn't open arena file" + filename, "Arena_Base::parse_arena_file");
+  if( !file ) Error(true, "Couldn't open arena file" + filename, "ArenaBase::parse_arena_file");
 
   int succession = 1;
   double scale = the_opts.get_d(OPTION_ARENA_SCALE);
@@ -220,7 +220,7 @@ Arena_RealTime::parse_arena_file(String& filename)
       char buffer[500];
       
       ifstream file(filename.chars());
-      if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "Arena_Base::parse_arena_file");
+      if( !file ) Error(true, "Couldn't open arena file for log file" + filename, "ArenaBase::parse_arena_file");
   
       do
         {
@@ -236,7 +236,7 @@ Arena_RealTime::parse_arena_file(String& filename)
 
 
 void
-Arena_RealTime::parse_tournament_file( String& fname )
+ArenaRealTime::parse_tournament_file( String& fname )
 {
   List<String> robotdirs;
   List<String> arenadirs;
@@ -280,17 +280,17 @@ Arena_RealTime::parse_tournament_file( String& fname )
           if(robots_p_s < 2)
               Error(true, "Can't start tournament with only " + String(robots_p_s) + 
                     " robots per sequence", 
-                    "Arena_RealTime::parse_tournament_file");
+                    "ArenaRealTime::parse_tournament_file");
 
           if(games_p_s < 1)
             Error(true, "Must have at least one game per sequence. " 
                   "Current value is: " + String(games_p_s),
-                  "Arena_RealTime::parse_tournament_file");
+                  "ArenaRealTime::parse_tournament_file");
 
           if(n_o_sequences < 1)
             Error(true, "Must have at least one sequence. Current value is: " + 
                   String(n_o_sequences),
-                  "Arena_RealTime::parse_tournament_file");
+                  "ArenaRealTime::parse_tournament_file");
           
           // Startup the tournament
 
@@ -355,7 +355,7 @@ Arena_RealTime::parse_tournament_file( String& fname )
 }
 
 void
-Arena_RealTime::print_to_logfile(const char first_letter ... )
+ArenaRealTime::print_to_logfile(const char first_letter ... )
 {
   if( !use_log_file ) return;
 
@@ -462,7 +462,7 @@ Arena_RealTime::print_to_logfile(const char first_letter ... )
       break;
 
     default:
-      Error(true, "Unrecognized first letter in logfile", "Arena_RealTime::print_to_logfile");
+      Error(true, "Unrecognized first letter in logfile", "ArenaRealTime::print_to_logfile");
       break;
     }
 
@@ -471,7 +471,7 @@ Arena_RealTime::print_to_logfile(const char first_letter ... )
 
 
 Vector2D
-Arena_RealTime::get_random_position()
+ArenaRealTime::get_random_position()
 {
   return Vector2D( boundary[0][0] + (boundary[1][0] - boundary[0][0])*
                    (double)rand()/(double)RAND_MAX, 
@@ -480,7 +480,7 @@ Arena_RealTime::get_random_position()
 }
 
 void
-Arena_RealTime::broadcast(const message_to_robot_type msg_type ...)
+ArenaRealTime::broadcast(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
@@ -516,13 +516,13 @@ Arena_RealTime::broadcast(const message_to_robot_type msg_type ...)
 }
 
 void
-Arena_RealTime::quit_ordered()
+ArenaRealTime::quit_ordered()
 {
   state = EXITING;
 }
 
 bool
-Arena_RealTime::timeout_function()
+ArenaRealTime::timeout_function()
 {
   if( halted ) return true;
 #ifndef NO_GRAPHICS
@@ -599,7 +599,7 @@ Arena_RealTime::timeout_function()
       return false;
       
     case NO_STATE:
-      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "Arena_RealTime::timeout_function");
+      Error(true, "Arena state is NO_STATE, shouldn't ever happen!", "ArenaRealTime::timeout_function");
     }
 
   if( halt_next )
@@ -611,7 +611,7 @@ Arena_RealTime::timeout_function()
 }
 
 void
-Arena_RealTime::update()
+ArenaRealTime::update()
 {
   print_to_logfile('T', total_time);
 
@@ -626,7 +626,7 @@ Arena_RealTime::update()
 }
 
 void
-Arena_RealTime::add_cookie()
+ArenaRealTime::add_cookie()
 {
   double en = the_opts.get_d(OPTION_COOKIE_MIN_ENERGY) + 
     (the_opts.get_d(OPTION_COOKIE_MAX_ENERGY) - the_opts.get_d(OPTION_COOKIE_MIN_ENERGY)) * 
@@ -641,7 +641,7 @@ Arena_RealTime::add_cookie()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for cookie", "Arena_RealTime::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for cookie", "ArenaRealTime::timeout_function");
   Cookie* cookiep = new Cookie(pos, r, en);
   object_lists[COOKIE_T].insert_last( cookiep );
 
@@ -649,7 +649,7 @@ Arena_RealTime::add_cookie()
 }
 
 void
-Arena_RealTime::add_mine()
+ArenaRealTime::add_mine()
 {
   double en = the_opts.get_d(OPTION_MINE_MIN_ENERGY) + 
     (the_opts.get_d(OPTION_MINE_MAX_ENERGY) - the_opts.get_d(OPTION_MINE_MIN_ENERGY)) * 
@@ -664,7 +664,7 @@ Arena_RealTime::add_mine()
       found_space = space_available(pos, r*2.0);
     }
   
-  if( !found_space ) Error(false, "Couldn't find space for mine", "Arena_RealTime::timeout_function");
+  if( !found_space ) Error(false, "Couldn't find space for mine", "ArenaRealTime::timeout_function");
   Mine* minep = new Mine(pos, r, en);
   object_lists[MINE_T].insert_last( minep );
 
@@ -672,7 +672,7 @@ Arena_RealTime::add_mine()
 }
 
 void
-Arena_RealTime::check_robots()
+ArenaRealTime::check_robots()
 {
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
@@ -687,7 +687,7 @@ Arena_RealTime::check_robots()
 }
 
 void
-Arena_RealTime::read_robot_messages()
+ArenaRealTime::read_robot_messages()
 {
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
@@ -698,7 +698,7 @@ Arena_RealTime::read_robot_messages()
 }
 
 void
-Arena_RealTime::update_robots()
+ArenaRealTime::update_robots()
 {
   Robot* robotp;
 
@@ -765,7 +765,7 @@ Arena_RealTime::update_robots()
 // coulor_dist is supposed to be a subjective distance between two colours, normalized
 // to be between 0.0 (same colour) and 1.0 (furthest away).
 double
-Arena_RealTime::colour_dist(const long col1, const long int col2)
+ArenaRealTime::colour_dist(const long col1, const long int col2)
 {
   double red1   = (col1 & 0x0000ff);
   double green1 = (col1 & 0x00ff00) >> 8;
@@ -789,7 +789,7 @@ Arena_RealTime::colour_dist(const long col1, const long int col2)
 }
 
 bool
-Arena_RealTime::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
+ArenaRealTime::is_colour_allowed(const long colour, const double min_dist, const Robot* robotp)
 {
   double d;
   ListIterator<Robot> li;
@@ -810,7 +810,7 @@ Arena_RealTime::is_colour_allowed(const long colour, const double min_dist, cons
 }
 
 long int
-Arena_RealTime::find_free_colour(const long int home_colour, 
+ArenaRealTime::find_free_colour(const long int home_colour, 
                                  const long int away_colour, 
                                  const Robot* robotp)
 {  
@@ -826,15 +826,15 @@ Arena_RealTime::find_free_colour(const long int home_colour,
           if( is_colour_allowed(tmp_colour, min_dist*2, robotp) ) return tmp_colour;
         }                  
     }
-   Error(true, "Impossible to find colour", "Arena_RealTime::find_free_colour");
+   Error(true, "Impossible to find colour", "ArenaRealTime::find_free_colour");
 
    return 0;
 }
 
 int
-Arena_RealTime::set_debug_level( const int new_level)
+ArenaRealTime::set_debug_level( const int new_level)
 {
-  Arena_Base::set_debug_level(new_level);
+  ArenaBase::set_debug_level(new_level);
 
   if( GAME_IN_PROGRESS )
     {
@@ -845,7 +845,7 @@ Arena_RealTime::set_debug_level( const int new_level)
 }
 
 void
-Arena_RealTime::start_game()
+ArenaRealTime::start_game()
 {
   // put the arena together
 
@@ -868,7 +868,7 @@ Arena_RealTime::start_game()
   if( (charpos = filename->find('/',0,true)) != -1 )
     current_arena_filename = get_segment(*filename, charpos+1, -1);
   else
-    Error(true, "Incomplete arena file path" + *filename, "Arena_RealTime::start_game");
+    Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
   // reset some variables
 
@@ -897,7 +897,7 @@ Arena_RealTime::start_game()
           found_space = space_available(pos, the_opts.get_d(OPTION_ROBOT_RADIUS)*1.2);
         }
 
-      if( !found_space ) Error(true, "Couldn't find space for all robots", "Arena_RealTime::start_game");
+      if( !found_space ) Error(true, "Couldn't find space for all robots", "ArenaRealTime::start_game");
       angle = ((double)rand())*2.0*M_PI/RAND_MAX;
       robotp->set_values_before_game(pos, angle);
       object_lists[ROBOT_T].insert_last(robotp);
@@ -938,7 +938,7 @@ Arena_RealTime::start_game()
 }
 
 void
-Arena_RealTime::end_game()
+ArenaRealTime::end_game()
 {
   Robot* robotp;
   ListIterator<Robot> li;
@@ -965,7 +965,7 @@ Arena_RealTime::end_game()
 
 
 void
-Arena_RealTime::start_sequence()
+ArenaRealTime::start_sequence()
 {
   games_remaining_in_sequence = games_per_sequence;
   current_arena_nr = 0;
@@ -998,7 +998,7 @@ Arena_RealTime::start_sequence()
 }
 
 void
-Arena_RealTime::start_sequence_follow_up()
+ArenaRealTime::start_sequence_follow_up()
 {
   // check if the process have started correctly
   Robot* robotp;
@@ -1019,7 +1019,7 @@ Arena_RealTime::start_sequence_follow_up()
 }
 
 void
-Arena_RealTime::end_sequence()
+ArenaRealTime::end_sequence()
 {
   // kill all robot processes
 
@@ -1036,7 +1036,7 @@ Arena_RealTime::end_sequence()
 }
 
 void
-Arena_RealTime::end_sequence_follow_up()
+ArenaRealTime::end_sequence_follow_up()
 {
   // check if the process have stopped, otherwise kill
   
@@ -1058,7 +1058,7 @@ Arena_RealTime::end_sequence_follow_up()
 }
 
 void
-Arena_RealTime::
+ArenaRealTime::
 start_tournament(const List<start_tournament_info_t>& robotfilename_list, 
                  const List<start_tournament_info_t>& arenafilename_list, 
                  const int robots_p_game, 
@@ -1137,7 +1137,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
             k--;
 
           if( k < 0 ) Error(true, "Problem generating list of participants, k < 0", 
-                            "Arena_RealTime::start_tournament");
+                            "ArenaRealTime::start_tournament");
 
           current_sequence[k]++;
           for(j=k+1; j<robots_per_game; j++) current_sequence[j] = current_sequence[j-1]+1;
@@ -1201,7 +1201,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 }
 
 void
-Arena_RealTime::end_tournament()
+ArenaRealTime::end_tournament()
 {
   state = FINISHED;
 

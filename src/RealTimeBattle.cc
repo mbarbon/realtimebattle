@@ -55,17 +55,17 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Options.h"
 //#include "Vector2D.h"
-#include "Arena_RealTime.h"
+#include "ArenaRealTime.h"
 #include "Various.h"
-#include "Arena_Controller.h"
+#include "ArenaController.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
 #endif
 
 class Options the_opts;
-//class Arena_RealTime the_arena;
-class Arena_Controller the_arena_controller;
+//class ArenaRealTime the_arena;
+class ArenaController the_arena_controller;
 #ifndef NO_GRAPHICS
 class Gui the_gui;
 #endif
@@ -151,7 +151,7 @@ void
 parse_command_line(int argc, char **argv)
 {
   int version_flag=false, help_flag=false, graphics_flag=true;
-  int game_mode=Arena_Base::NORMAL_MODE;
+  int game_mode=ArenaBase::NORMAL_MODE;
   int c;
   String option_file("");
   String statistics_file("");
@@ -164,9 +164,9 @@ parse_command_line(int argc, char **argv)
     {"version", 0, &version_flag, true},
     {"help", 0, &help_flag, true},
 
-    {"debug_mode", 0, &game_mode, Arena_Base::DEBUG_MODE},
-    {"normal_mode", 0, &game_mode, Arena_Base::NORMAL_MODE},
-    {"competition_mode", 0, &game_mode, Arena_Base::COMPETITION_MODE},
+    {"debug_mode", 0, &game_mode, ArenaBase::DEBUG_MODE},
+    {"normal_mode", 0, &game_mode, ArenaBase::NORMAL_MODE},
+    {"competition_mode", 0, &game_mode, ArenaBase::COMPETITION_MODE},
 
     {"option_file", 1, 0, 0},
     {"log_file", 1, 0, 0},
@@ -218,15 +218,15 @@ parse_command_line(int argc, char **argv)
 
 
         case 'd':
-          game_mode = Arena_Base::DEBUG_MODE;
+          game_mode = ArenaBase::DEBUG_MODE;
           break;
 
         case 'n':
-          game_mode = Arena_Base::NORMAL_MODE;
+          game_mode = ArenaBase::NORMAL_MODE;
           break;
 
         case 'c':
-          game_mode = Arena_Base::COMPETITION_MODE;
+          game_mode = ArenaBase::COMPETITION_MODE;
           break;
 
         case 'v':
@@ -285,7 +285,7 @@ parse_command_line(int argc, char **argv)
   else
     the_opts.read_options_file(option_file,true);
 
-  the_arena.set_game_mode((Arena_Base::game_mode_t)game_mode);
+  the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
   no_graphics = !graphics_flag;
   realtime_arena.set_filenames(log_file, statistics_file, tournament_file, option_file);
 }

@@ -20,20 +20,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_CONTROLLER__
 #define __ARENA_CONTROLLER__
 
-#include "Arena_Base.h"
+#include "ArenaBase.h"
 
-class Arena_Controller
+class ArenaController
 {
 public:
-  Arena_Controller();
-  ~Arena_Controller();
+  ArenaController();
+  ~ArenaController();
   
   void start_realtime_arena();
   void start_replay_arena();
 
   void close_arena();
 
-  Arena_Base* get_the_arena() { return my_arena; }
+  ArenaBase* get_the_arena() { return my_arena; }
   bool is_started() { return started; }
   bool is_realtime() { return realtime; }
 
@@ -42,7 +42,7 @@ private:
   bool started;
   bool realtime;
 
-  Arena_Base* my_arena;
+  ArenaBase* my_arena;
 };
 
 #endif __ARENA_CONTROLLER__

@@ -20,13 +20,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_REALTIME__
 #define __ARENA_REALTIME__
 
-#include "Arena_Base.h"
+#include "ArenaBase.h"
 
-class Arena_RealTime : public Arena_Base
+class ArenaRealTime : public ArenaBase
 {
 public:
-  Arena_RealTime();
-  virtual ~Arena_RealTime();
+  ArenaRealTime();
+  virtual ~ArenaRealTime();
 
   bool timeout_function();
   void start_tournament(const List<start_tournament_info_t>& robotfilename_list, 

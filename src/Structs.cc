@@ -24,8 +24,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef NO_GRAPHICS
 
 #include "Structs.h"
-#include "Arena_Controller.h"
-#include "Arena_RealTime.h"
+#include "ArenaController.h"
+#include "ArenaRealTime.h"
 
 pixmap_t::~pixmap_t()
 {

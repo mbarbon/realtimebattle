@@ -39,11 +39,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "List.h"
 #include "Shape.h"
 
-class Arena_Controller;
-extern Arena_Controller the_arena_controller;
+class ArenaController;
+extern ArenaController the_arena_controller;
 #define the_arena (*( the_arena_controller.get_the_arena()) )
-#define realtime_arena (*( (Arena_RealTime*) (the_arena_controller.get_the_arena()) ))
-#define replay_arena   (*( (Arena_Replay*) (the_arena_controller.get_the_arena()) ))
+#define realtime_arena (*( (ArenaRealTime*) (the_arena_controller.get_the_arena()) ))
+#define replay_arena   (*( (ArenaReplay*) (the_arena_controller.get_the_arena()) ))
 
 class Robot;
 class String;
@@ -51,12 +51,12 @@ class Options;
 class WallLine;
 class WallCircle;
 class WallInnerCircle;
-class Arena_RealTime;
+class ArenaRealTime;
 
 static const double infinity = 1.0e10;  //approximatly ;-)
 
 extern class Options the_opts;
-//extern class Arena_RealTime the_arena;
+//extern class ArenaRealTime the_arena;
 #ifndef NO_GRAPHICS
 extern class Gui the_gui;
 #endif
@@ -65,12 +65,12 @@ extern bool no_graphics;
 
 
 
-class Arena_Base
+class ArenaBase
 {
 public:
 
-  Arena_Base();
-  virtual ~Arena_Base();
+  ArenaBase();
+  virtual ~ArenaBase();
 
   enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
