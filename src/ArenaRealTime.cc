@@ -732,17 +732,17 @@ ArenaRealTime::start_game()
   
   current_arena_nr = current_arena_nr % number_of_arenas + 1;
   
-  String* filename = arena_filenames.get_nth(current_arena_nr);
+  String filename = arena_filenames[current_arena_nr];
 
   print_to_logfile('G', sequence_nr, game_nr + 1);
 
-  parse_arena_file(*filename);
+  parse_arena_file(filename);
 
-  int charpos;
-  if( (charpos = filename->find('/',0,true)) != -1 )
-    current_arena_filename = get_segment(*filename, charpos+1, -1);
+  int charpos = -1;
+  if( (charpos = filename.find('/',0,true)) != -1 )
+    current_arena_filename = get_segment(filename, charpos+1, -1);
   else
-    Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
+    Error(true, "Incomplete arena file path" + filename, "ArenaRealTime::start_game");
 
   char msg[128];
   snprintf( msg, 127, _("Game %d of sequence %d begins on arena"),
@@ -1010,7 +1010,6 @@ start_tournament(const list<start_tournament_info_t>& robotfilename_list,
   number_of_robots = 0;
   robot_count = 0;
   Robot* robotp;
-  String* stringp;
 
   list<start_tournament_info_t>::const_iterator li;
   for( li = robotfilename_list.begin(); li != robotfilename_list.end(); li++ )
@@ -1025,8 +1024,7 @@ start_tournament(const list<start_tournament_info_t>& robotfilename_list,
   
   for( li = arenafilename_list.begin(); li != arenafilename_list.end(); li++ )
     {
-      stringp = new String((*li).filename);
-      arena_filenames.insert_last( stringp );
+      arena_filenames.push_back( String((*li).filename) );
       number_of_arenas++;
     }
 

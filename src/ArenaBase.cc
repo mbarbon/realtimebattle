@@ -160,24 +160,23 @@ ArenaBase::save_statistics_to_file(String filename)
   int mode = _IO_OUTPUT;
   ofstream file(filename.chars(), mode);
 
-  stat_t* statp;
   Robot* robotp;
 
   ListIterator<Robot> li;
-  ListIterator<stat_t> stat_li;
+  list<stat_t>::const_iterator stat_li;
   for(all_robots_in_tournament.first(li); li.ok() ; li++ )
     {
       robotp = li();
       file << robotp->get_robot_name() << ": " << endl;
-      for(robotp->get_statistics()->first(stat_li); stat_li.ok(); stat_li++)
+      for( stat_li = robotp->get_statistics()->begin();
+           stat_li != robotp->get_statistics()->end(); stat_li++ )
         {
-          statp = stat_li();
-          file << "Seq: " << statp->sequence_nr 
-               << "  Game: " << statp->game_nr 
-               << "  Pos: " << statp->position
-               << "  Points: " << statp->points 
-               << "  Time Survived: " << statp->time_survived
-               << "  Total Points: " << statp->total_points << endl;
+          file << "Seq: " << (*stat_li).sequence_nr 
+               << "  Game: " << (*stat_li).game_nr 
+               << "  Pos: " << (*stat_li).position
+               << "  Points: " << (*stat_li).points 
+               << "  Time Survived: " << (*stat_li).time_survived
+               << "  Total Points: " << (*stat_li).total_points << endl;
         }
     }
 }
@@ -242,7 +241,7 @@ ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)
         Error(true, "Error in arenafile: 'boundary' after wallpieces or duplicate", 
               "ArenaBase::parse_arena_line");
       file >> vec1;
-      exclusion_points.insert_last(new Vector2D(scale*vec1));
+      exclusion_points.push_back( Vector2D(scale*vec1) );
     }
   else if( strcmp(text, "inner_circle" ) == 0 )
     {
@@ -422,14 +421,13 @@ ArenaBase::space_available(const Vector2D& pos, const double margin)
   object_type obj_t;
   Shape* shapep;
 
-  ListIterator<Vector2D> li_ex;
+  list<Vector2D>::const_iterator li_ex;
 
-  for( exclusion_points.first(li_ex); li_ex.ok(); li_ex++)
+  for( li_ex = exclusion_points.begin(); li_ex != exclusion_points.end(); li_ex++)
     {
-      vec = *(li_ex());
-      dist = length(vec - pos);
+      dist = length((*li_ex) - pos);
       if( dist <= margin || 
-          dist <= get_shortest_distance(pos, unit(vec - pos), 0.0, 
+          dist <= get_shortest_distance(pos, unit((*li_ex) - pos), 0.0, 
                                         obj_t, shapep, (Robot*)NULL) )
         return false;
     }
@@ -564,7 +562,7 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
     if( obj_type != ROBOT || del_robot_obj_list )
       object_lists[obj_type].delete_list();
 
-  exclusion_points.delete_list();
+  exclusion_points.clear();
 
   if( del_seq_list )
     {
@@ -578,7 +576,7 @@ ArenaBase::delete_lists(const bool kill_robots, const bool del_seq_list,
     }
 
   if( del_tourn_list )  all_robots_in_tournament.delete_list();
-  if( del_arena_filename_list ) arena_filenames.delete_list();
+  if( del_arena_filename_list ) arena_filenames.clear();
 }
 
 bool

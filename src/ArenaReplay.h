@@ -20,8 +20,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ARENA_REPLAY__
 #define __ARENA_REPLAY__
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include <fstream.h>
+#include <list>
+
 #include "ArenaBase.h"
-#include "fstream.h"
 
 class String;
 
@@ -60,7 +66,7 @@ public:
   void   change_replay_time     ( const double time );
 
   char   search_forward         ( const String& search_letters );
-  String search_forward         ( const List<String>& search_strings );
+  String search_forward         ( const list<String>& search_strings );
   String search_backwards       ( const String& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
@@ -106,7 +112,7 @@ private:
     float time;
   };
 
-  List<object_pos_info_t> object_positions_in_log;
+  list<object_pos_info_t> object_positions_in_log;
   time_pos_info_t* time_position_in_log;
   int last_time_info;
 

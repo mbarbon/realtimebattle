@@ -977,27 +977,27 @@ ArenaReplay::recreate_lists()
             }
       }
 
-    ListIterator<object_pos_info_t> li;
-    for( object_positions_in_log.first(li); li.ok(); li++ )
+    list<object_pos_info_t>::const_iterator li;
+    for( li = object_positions_in_log.begin();
+         li != object_positions_in_log.end(); li++ )
       {
-        object_pos_info_t* info = li();
-        if( current_replay_time > info->start_time &&
-            current_replay_time < info->end_time )
+        if( current_replay_time > (*li).start_time &&
+            current_replay_time < (*li).end_time )
           {
-            switch( info->obj )
+            switch( (*li).obj )
               {
               case SHOT:
                 object_lists[SHOT].insert_last
-                  ( new Shot( info->pos + (current_replay_time - info->start_time)
-                              * info->vel, info->vel, 0, info->id ) );
+                  ( new Shot( (*li).pos + (current_replay_time - (*li).start_time)
+                              * (*li).vel, (*li).vel, 0, (*li).id ) );
                 break;
               case COOKIE:
                 object_lists[COOKIE].insert_last
-                  ( new Cookie( info->pos, 0.0, info->id ) );
+                  ( new Cookie( (*li).pos, 0.0, (*li).id ) );
                 break;
               case MINE:
                 object_lists[MINE].insert_last
-                  ( new Mine( info->pos, 0.0, info->id ) );
+                  ( new Mine( (*li).pos, 0.0, (*li).id ) );
                 break;
               case ROBOT:
                 break;
@@ -1046,13 +1046,13 @@ ArenaReplay::search_forward( const String& search_letters )
 // of strings (string lengths between 1 and 16) to serach for.
 // Returns the string found, or the empty string if none found.
 String
-ArenaReplay::search_forward( const List<String>& search_strings )
+ArenaReplay::search_forward( const list<String>& search_strings )
 {
   if( log_from_stdin ) return "";
 
   bool found = false;
   char buffer[400];
-  ListIterator<String> li;
+  list<String>::const_iterator li;
   int i;
   int read_letters;
   char letter[16];
@@ -1062,20 +1062,20 @@ ArenaReplay::search_forward( const List<String>& search_strings )
       log_file.clear();
 
       read_letters = 0;
-      for( search_strings.first(li); li.ok() && !found; li++ )
+      for( li = search_strings.begin(); li != search_strings.end() && !found; li++ )
         {
           found = true; 
-          for( i=0; i < li()->get_length() && found; i++ )
+          for( i=0; i < (*li).get_length() && found; i++ )
             {
               if( read_letters < i+1 )
                 {
                   log_file >> letter[read_letters];
                   read_letters++;
                 }
-              if( (*li())[i] != letter[i] ) found = false;
+              if( (*li)[i] != letter[i] ) found = false;
             }
 
-          if( found ) return *li();
+          if( found ) return (*li);
         }      
       
       log_file.get( buffer, 400, '\n' );  // go to next line
@@ -1145,12 +1145,12 @@ ArenaReplay::beginning_of_current_line()
 void
 ArenaReplay::make_statistics_from_file()
 {
-  List<String> str_list;
-  str_list.insert_last( new String("DR") );
-  str_list.insert_last( new String("L") );
-  str_list.insert_last( new String("G") );
-  str_list.insert_last( new String("T") );
-  str_list.insert_last( new String("H") );
+  list<String> str_list;
+  str_list.push_back( String("DR") );
+  str_list.push_back( String("L") );
+  str_list.push_back( String("G") );
+  str_list.push_back( String("T") );
+  str_list.push_back( String("H") );
 
   ListIterator<Shape> li;             
   double points_received;
@@ -1245,7 +1245,7 @@ ArenaReplay::get_time_positions_in_game()
   if( time_position_in_log != NULL ) delete [] time_position_in_log;
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
-  object_positions_in_log.delete_list();
+  object_positions_in_log.clear();
 
   for(int i=0; i<max_time_infos; i++) 
     {
@@ -1278,10 +1278,10 @@ ArenaReplay::get_time_positions_in_game()
             int shot_id;
             double x, y, dx, dy;
             log_file >> shot_id >> x >> y >> dx >> dy;
-            object_positions_in_log.insert_last
-              ( new object_pos_info_t( SHOT, shot_id, Vector2D( x,y ),
-                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ),
-                                       Vector2D( dx,dy ) ) );
+            object_positions_in_log.push_back
+              ( object_pos_info_t( SHOT, shot_id, Vector2D( x,y ),
+                                   cur_time, the_opts.get_d( OPTION_TIMEOUT ),
+                                   Vector2D( dx,dy ) ) );
           }
           break;
 
@@ -1290,9 +1290,9 @@ ArenaReplay::get_time_positions_in_game()
             int mine_id;
             double x, y;
             log_file >> mine_id >> x >> y;
-            object_positions_in_log.insert_last
-              ( new object_pos_info_t( MINE, mine_id, Vector2D( x,y ),
-                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
+            object_positions_in_log.push_back
+              ( object_pos_info_t( MINE, mine_id, Vector2D( x,y ),
+                                   cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
           }
           break;
         case 'C':
@@ -1301,9 +1301,9 @@ ArenaReplay::get_time_positions_in_game()
             double x, y;
             log_file >> cookie_id >> x >> y;
             
-            object_positions_in_log.insert_last
-              ( new object_pos_info_t( COOKIE, cookie_id, Vector2D( x,y ),
-                                       cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
+            object_positions_in_log.push_back
+              ( object_pos_info_t( COOKIE, cookie_id, Vector2D( x,y ),
+                                   cur_time, the_opts.get_d( OPTION_TIMEOUT ) ) );
           }
           break;
 
@@ -1315,9 +1315,9 @@ ArenaReplay::get_time_positions_in_game()
 
             if( NULL == ( find_object_in_log( ROBOT, robot_id ) ) )
               {
-                object_positions_in_log.insert_last
-                  ( new object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
-                                           0, the_opts.get_d( OPTION_TIMEOUT ) ) );
+                object_positions_in_log.push_back
+                  ( object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
+                                       0, the_opts.get_d( OPTION_TIMEOUT ) ) );
                 ListIterator<Robot> li;
                 find_object_by_id( all_robots_in_tournament, li, robot_id );
                 object_lists[ROBOT].insert_last( li() );
@@ -1423,11 +1423,11 @@ ArenaReplay::get_length_of_current_game()
 ArenaReplay::object_pos_info_t*
 ArenaReplay::find_object_in_log( object_type obj, int id )
 {
-  ListIterator<object_pos_info_t> li;
-  for( object_positions_in_log.first(li); li.ok(); li++ )
+  list<object_pos_info_t>::iterator li;
+  for( li = object_positions_in_log.begin(); li != object_positions_in_log.end(); li++ )
     {
-      if( obj == li()->obj && id == li()->id )
-        return li();
+      if( obj == (*li).obj && id == (*li).id )
+        return &(*li);
     }
 
   return NULL;

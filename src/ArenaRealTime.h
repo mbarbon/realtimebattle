@@ -57,7 +57,7 @@ public:
   
   bool get_use_message_file() { return use_message_file; }
   Vector2D get_random_position();
-  List<String> get_arena_filenames() { return arena_filenames; }
+  vector<String>& get_arena_filenames() { return arena_filenames; }
   int get_current_arena_nr() { return current_arena_nr; }
 
   int set_debug_level( const int new_level);

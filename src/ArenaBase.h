@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream.h>
 #include <fstream.h>
+#include <list>
+#include <vector>
 
 //  #ifndef NO_GRAPHICS
 //  #include "Gui.h"
@@ -157,10 +159,10 @@ protected:
   
   List<Robot> all_robots_in_tournament;
   List<Robot> all_robots_in_sequence;
-  List<Vector2D> exclusion_points;
+  list<Vector2D> exclusion_points;
 
   String current_arena_filename;
-  List<String> arena_filenames;               // list of Strings
+  vector<String> arena_filenames;               // list of Strings
 
   String statistics_file_name;
   String option_file_name;
