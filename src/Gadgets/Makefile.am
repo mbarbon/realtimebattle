@@ -14,13 +14,16 @@ libRTB_Gadgets_a_SOURCES = \
 	CommunicationGadget.cc CommunicationGadget.h \
 	DefenseGadget.cc DefenseGadget.h \
 	EngineGadget.cc EngineGadget.h \
+	EnvironmentGadget.h EnvironmentGadget.cc \
 	ExplosionGadget.cc ExplosionGadget.h \
 	Function.h \
 	Gadget.cc Gadget.h \
 	GadgetSet.cc GadgetSet.h \
 	RobotBodyGadget.cc RobotBodyGadget.h \
 	Script.h Script.cc \
+	SensorGadget.cc SensorGadget.h \
 	ShotGadget.cc ShotGadget.h \
 	Value.h Value.cc \
 	Variable.cc Variable.h \
+	WallGadget.h WallGadget.cc \
 	WeaponGadget.h WeaponGadget.cc
