@@ -34,10 +34,16 @@ html_docs:
 docs:
 	cd $(DOCSDIR) && $(MAKE) all
 
-clean: root_clean rtb_clean robot_clean docs_clean html_clean
+clean: root_clean rtb_clean robot_clean
+
+clean_all: root_clean_all rtb_clean robot_clean docs_clean html_clean
 
 root_clean:
-	rm -f *~ RealTimeBattle*.rpm $(ARENADIR)/*~ RealTimeBattle.tar* BUGS FAQ INSTALL ChangeLog README TODO
+	rm -f *~ $(ARENADIR)/*~ core*
+
+root_clean_all:
+	rm -f *~ RealTimeBattle*.rpm $(ARENADIR)/*~ RealTimeBattle.tar* core* BUGS FAQ INSTALL ChangeLog README TODO
+
 
 rtb_clean:
 	cd $(SRCDIR) && $(MAKE) clean
@@ -99,15 +105,16 @@ install:
 	cp BUGS FAQ INSTALL ChangeLog README TODO $(INSTALLDIR); \
 	cp -R $(DOCSDIR) $(INSTALLDIR); \
 	cp Makefile   $(INSTALLDIR)/; \
-	grep -qe "RealTimeBattle" $(INFO_TOPDIR) || \
-	echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> $(INFO_TOPDIR)
+   install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
+                --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 
 uninstall:
 	rm -r $(INSTALLDIR); \
 	rm $(INFODIR)/RealTimeBattle.info.gz; \
 	rm $(INCLUDEDIR)/Messagetypes.h; \
 	rm $(BINDIR)/RealTimeBattle; \
-	grep -v "RealTimeBattle" $(INFO_TOPDIR) > /tmp/dir && cat /tmp/dir > $(INFO_TOPDIR)
+	grep -v "RealTimeBattle" $(INFO_TOPDIR) > /tmp/dir && cat /tmp/dir > $(INFO_TOPDIR); \
+   install-info --delete --info-dir /usr/info /usr/info/RealTimeBattle.info.gz
 
 rpm-install:
 	$(MAKE) -f Makefile.rpm rpm-install

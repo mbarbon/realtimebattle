@@ -28,10 +28,7 @@ rpm-install:
 	cp src/Messagetypes.h   /usr/games/RealTimeBattle/; \
 	cp src/Messagetypes.h   /usr/include/; \
 	cp RealTimeBattle.xpm   /usr/games/RealTimeBattle/; \
-	gzip -c $(DOCSDIR)/RealTimeBattle.info > $(INFODIR)/RealTimeBattle.info.gz; \
-	grep -qe "RealTimeBattle" /usr/info/dir || \
-	echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir
-
+	gzip -c $(DOCSDIR)/RealTimeBattle.info > $(INFODIR)/RealTimeBattle.info.gz
 
 rpm:
 	cp RealTimeBattle.tar.gz $(SOURCEDIR) && \
