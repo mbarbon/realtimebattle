@@ -17,24 +17,46 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ALLGADGETS__
-#define __ALLGADGETS__
+#ifndef __ENGINE_GADGET__
+#define __ENGINE_GADGET__
 
+#include <limits.h>
+#include <float.h>
 
 #include "Gadget.h"
-#include "GadgetSet.h"
-
-#include "Function.h"
 #include "Variable.h"
-
-#include "ArenaGadget.h"
-#include "CommunicationGadget.h"
-#include "DefenseGadget.h"
-#include "EngineGadget.h"
-#include "ExplosionGadget.h"
-#include "RobotBodyGadget.h"
-#include "ShotGadget.h"
-#include "WeaponGadget.h"
+#include "Function.h"
 
 
-#endif  __ALLGADGETS__
+class EngineGadget : public Gadget
+{
+public:
+
+  EngineGadget( const char* name, Gadget* const p );
+
+private:
+
+  enum EngineVars
+  {
+    MAXPOWER=0, HEATPERPOWER, SOUNDLEVELPERPOWER, 
+    USEUSECOSTPERTIME, USECOSTPERPOWER, MAX_TEMPERATURE, 
+    COLOUR, PRICE, MASS, LAST_ENGINEVAR
+  };
+
+  const static VariableDefinition variable_def[LAST_ENGINEVAR]; 
+
+
+
+  enum EngineFcns
+  {
+    ACCELERATE=0, LAST_ENGINEFCN
+  };
+
+  const static FunctionDefinition function_def[LAST_ENGINEFCN];
+
+
+  void eval_function(const int fcn);
+};
+
+
+#endif __ENGINE_GADGET__

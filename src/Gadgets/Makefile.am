@@ -15,6 +15,7 @@ libRTB_Gadgets_a_SOURCES = \
 	ArenaGadget.h \
 	CommunicationGadget.cc CommunicationGadget.h \
 	DefenseGadget.cc DefenseGadget.h \
+	EngineGadget.cc EngineGadget.h \
 	ExplosionGadget.cc ExplosionGadget.h \
 	Function.h \
 	Gadget.cc Gadget.h \
