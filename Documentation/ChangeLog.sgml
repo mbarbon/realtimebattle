@@ -3,9 +3,12 @@
 <notes>
 <title>Change log
 <itemize>
-
+<!--
 <item> <bf>0.9.6:</bf>
 <p>
+The installation procedure is completely changed. Now <tt>configure</tt> is used to make the program
+easier to adjust to different systems (thanks to Martin Norb&auml;ck)
+
 Log files of games can now be generated. The only problem is that they tend to be very large ...
 
 Added sorting in the statistics. Only available with Gtk 1.1.x.
@@ -17,12 +20,19 @@ It is now possible to autostart a tournament. See docs to know how to do a tourn
 It is now possible to choose a statistics file for saving the statistics when autostarting a
 tournament.
 
+You can now run RTB without any GUI, either by giving a command line option or by a compilation flag
+(gtk+ is still required though).
+
 Added window positions to options.
 
 Bugfixes:
 
 An updating problem with gtk 1.1.x in statistics window was solved.
 
+<tt>Messagetypes.h</tt> is now LGPL'd instead of GPL'd.
+
+Error handling is improved (by removing exception handling).
+-->
 <item> <bf>0.9.5:</bf>
 <p>
 The resource-file is now implemented. Please write a <tt>.rtbrc</tt> for your favorite settings.
