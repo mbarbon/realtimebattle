@@ -170,7 +170,6 @@ struct option_info_t
 #endif NO_GRAPHICS
     return *this; }
 
-
   entry_datatype_t datatype;
   pages_in_options_t page;
   T value;
@@ -186,31 +185,48 @@ struct option_info_t
 #endif
 };
 
+struct option_return_t
+{
+  option_return_t( const entry_datatype_t d, const int n ) :
+    datatype(d), option_number(n) {}
+
+  option_return_t& operator=( const option_return_t& n )
+    { datatype = n.datatype; option_number = n.option_number; return *this; }
+
+  entry_datatype_t datatype;
+  int option_number;
+};
+
 class Options
 {
 public:
-  Options();
-  ~Options() {}
+  Options                                      ();
+  ~Options                                     () {}
   //static void set_options();
 
-  inline double get_d( option_double_t  option ) { return all_double_options[option].value; }
-  inline long   get_l( option_long_t    option ) { return all_long_options[option].value; }
-  inline const String get_s( option_string_t  option ) { return all_string_options[option].value.chars(); }
-  //  inline bool get_b( option_bool_t option ) { return all_bool_options[option].value; }
+  inline double get_d                          ( option_double_t  option )
+    { return all_double_options[option].value; }
+  inline long   get_l                          ( option_long_t    option )
+    { return all_long_options[option].value; }
+  inline const String get_s                    ( option_string_t  option )
+    { return all_string_options[option].value.chars(); }
+  //  inline bool get_b                        ( option_bool_t option )
+  // { return all_bool_options[option].value; }
 
-  void broadcast_opts();
-  void log_all_options();
+  void broadcast_opts                          ();
+  void log_all_options                         ();
 
-  void save_all_options_to_file(String filename, const bool as_default);
-  void get_options_from_rtbrc();
-  void read_options_file(String file_string, const bool as_default);
+  void save_all_options_to_file                ( String filename,
+                                                 const bool as_default );
+  void get_options_from_rtbrc                  ();
+  void read_options_file                       ( String file_string,
+                                                 const bool as_default );
 
-  option_info_t<double>* get_all_double_options()
-    { return all_double_options; }
-  option_info_t<long>* get_all_long_options()
-    { return all_long_options; }
-  option_info_t<String>* get_all_string_options()
-    { return all_string_options; }
+  option_info_t<double>* get_all_double_options() { return all_double_options; }
+  option_info_t<long>* get_all_long_options    () { return all_long_options; }
+  option_info_t<String>* get_all_string_options() { return all_string_options; }
+
+  option_return_t get_option_from_string       ( const String& option_name );
 
 #ifndef NO_GRAPHICS
   OptionsWindow* get_optionswindow_p           ()

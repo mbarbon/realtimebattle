@@ -498,6 +498,24 @@ Options::save_all_options_to_file(String filename, const bool as_default)
     file << all_string_options[i].label << ": " << all_string_options[i].value << endl;
 }
 
+option_return_t
+Options::get_option_from_string( const String& option_name )
+{
+  option_return_t result( ENTRY_INT, -1 );
+
+  for( int i=0; i<LAST_DOUBLE_OPTION; i++ )
+    if( option_name == all_double_options[i].label )
+      result = option_return_t( ENTRY_DOUBLE, i );
+  for( int i=0; i<LAST_LONG_OPTION; i++ )
+    if( option_name == all_long_options[i].label )
+      result = option_return_t( all_long_options[i].datatype, i );
+  for( int i=0; i<LAST_STRING_OPTION; i++ )
+    if( option_name == all_string_options[i].label )
+      result = option_return_t( ENTRY_CHAR, i );
+
+  return result;
+}
+
 #ifndef NO_GRAPHICS
 
 bool
