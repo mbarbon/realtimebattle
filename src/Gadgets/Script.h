@@ -43,7 +43,7 @@ public:
   ~Script() {}
 
   void run();
-  void continue_script();
+  void continue_script() {}
   
 
   

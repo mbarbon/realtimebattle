@@ -56,7 +56,8 @@ public:
 
 
   void add_shot(Shot* s);
-  void update_shots();
+  void update_shots() {}
+  void update_robots() {}
 
   void collision( Shape* obj1, Shape* obj2, const double time_to_collsion ) {}
 
