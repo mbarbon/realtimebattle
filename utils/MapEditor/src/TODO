@@ -1,0 +1,8 @@
+What is to do...
+Everything
+The original version was based on XFig 3.2 (It was just to see how it would look like), but we gonna try to do better this time (still modifying XFig).
+
+Parse a file : This is the very begining and we try to parse a fill... 
+Write a file : This will be the second part of the job
+g++ XFig     : Modify XFig main functions to be compilable by g++
+Modify XFig  : Modify the Canvas' functions of XFig
