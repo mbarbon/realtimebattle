@@ -125,7 +125,7 @@ ArenaWindow::ArenaWindow( const int default_width,
   window_shown = true;
 
   gdk_window_set_background( drawing_area->window,
-                             the_arena.get_bg_gdk_colour_p() );
+                             the_gui.get_bg_gdk_colour_p() );
   gdk_window_clear( drawing_area->window );
   zoom = 1;
 }
@@ -178,7 +178,7 @@ ArenaWindow::clear_area()
   GdkGC * colour_gc;
 
   colour_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( colour_gc, the_arena.get_bg_gdk_colour_p() );
+  gdk_gc_set_foreground( colour_gc, the_gui.get_bg_gdk_colour_p() );
 
   gdk_draw_rectangle( drawing_area->window,
                       colour_gc,

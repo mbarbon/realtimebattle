@@ -33,6 +33,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Various.h"
 
 extern class Options the_opts;
+extern class Gui the_gui;
 extern class ControlWindow* controlwindow_p;
 
 OptionsWindow::OptionsWindow( const int default_width,
@@ -314,11 +315,18 @@ OptionsWindow::add_option_to_notebook( GtkWidget* description_table,
 void
 OptionsWindow::set_all_options()
 {
-  if((the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
-      (the_arena.get_state() == NO_STATE ||
-       the_arena.get_state() == NOT_STARTED ||
-       the_arena.get_state() == FINISHED)) ||
-     (the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE))
+  bool allowed = false;
+
+  if( the_arena_controller.is_started() )
+    {
+      if( ( the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
+            ( the_arena.get_state() == NO_STATE ||
+              the_arena.get_state() == NOT_STARTED ||
+              the_arena.get_state() == FINISHED ) ) ||
+          ( the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE ) )
+        allowed = true;
+    }
+  if( !the_arena_controller.is_started() || allowed )
     {
       option_info_t<double>* double_opts = the_opts.get_all_double_options();
       option_info_t<long>* long_opts = the_opts.get_all_long_options();
@@ -357,7 +365,10 @@ OptionsWindow::set_all_options()
         string_opts[i].value =
           gtk_entry_get_text( GTK_ENTRY( string_opts[i].entry ) );
 
-      the_arena.set_colours();
+#ifndef NO_GRAPHICS
+      if( !no_graphics )
+        the_gui.set_colours();
+#endif
     }
 }
 

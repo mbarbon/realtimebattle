@@ -530,14 +530,21 @@ Options::is_optionswindow_up()
 void
 Options::open_optionswindow()
 {
-  if((the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
-      (the_arena.get_state() == NO_STATE ||
-       the_arena.get_state() == NOT_STARTED ||
-       the_arena.get_state() == FINISHED)) ||
-     (the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE))
-    if( NULL == optionswindow_p )
-      optionswindow_p = 
-        new OptionsWindow( -1, -1, -1, -1 );
+  bool allowed = false;
+
+  if( the_arena_controller.is_started() )
+    {
+      if( ( the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
+            ( the_arena.get_state() == NO_STATE ||
+              the_arena.get_state() == NOT_STARTED ||
+              the_arena.get_state() == FINISHED ) ) ||
+          ( the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE ) )
+        allowed = true;
+    }
+  if( ( !the_arena_controller.is_started() || allowed ) &&
+      NULL == optionswindow_p )
+    optionswindow_p = 
+      new OptionsWindow( -1, -1, -1, -1 );
 }
 
 void

@@ -30,6 +30,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "String.h"
 
+extern int global_game_mode;
+
 ControlWindow::ControlWindow( const int default_width,
                               const int default_height,
                               const int default_x_pos,
@@ -106,7 +108,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Debug-mode buttons
 
-  if( the_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
+  if( global_game_mode == ArenaBase::DEBUG_MODE )
     {
       GtkWidget* vseparator = gtk_vseparator_new();
       gtk_box_pack_start( GTK_BOX (hbox), vseparator, FALSE, FALSE, 0 );
@@ -202,7 +204,7 @@ ControlWindow::ControlWindow( const int default_width,
 
       // Debug level
       debug_level_label =
-        gtk_label_new( String( the_arena.get_debug_level() ).chars() );
+        gtk_label_new( String( 1 ).chars() );
       gtk_box_pack_start( GTK_BOX( button_hbox ),
                           debug_level_label, TRUE, FALSE, 0 );
       gtk_widget_show( debug_level_label );
@@ -258,51 +260,61 @@ ControlWindow::quit_rtb( GtkWidget* widget,
 void
 ControlWindow::pause( GtkWidget* widget, class ControlWindow* controlwindow_p )
 {
-  the_arena.pause_game_toggle();
+  if( the_arena_controller.is_started() )
+    the_arena.pause_game_toggle();
 }
 
 void
 ControlWindow::step( GtkWidget* widget, gpointer data )
 {
-  the_arena.step_paused_game();
+  if( the_arena_controller.is_started() )
+    the_arena.step_paused_game();
 }
 
 void
 ControlWindow::end_game( GtkWidget* widget, gpointer data )
 {
-  if( the_arena.get_state() != NOT_STARTED &&
-      the_arena.get_state() != FINISHED )
-    the_arena.end_game();
+  if( the_arena_controller.is_started() )
+    if( the_arena.get_state() != NOT_STARTED &&
+        the_arena.get_state() != FINISHED )
+      the_arena.end_game();
 }
 
 void
 ControlWindow::kill_robot( GtkWidget* widget, gpointer data )
 {
-  if(the_arena.get_state() == GAME_IN_PROGRESS || 
-     the_arena.get_state() == PAUSED )
-    {
-      Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
-      if( robotp != NULL )
-        robotp->die();
-    }
+  if( the_arena_controller.is_started() )
+    if(the_arena.get_state() == GAME_IN_PROGRESS || 
+       the_arena.get_state() == PAUSED )
+      {
+        Robot* robotp = the_gui.get_scorewindow_p()->get_selected_robot();
+        if( robotp != NULL )
+          robotp->die();
+      }
 }
 
 void
 ControlWindow::decrease_debug_level( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p )
 {
-  the_arena.set_debug_level( the_arena.get_debug_level() - 1);
-  gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
-                 String( the_arena.get_debug_level() ).chars() );  
+  if( the_arena_controller.is_started() )
+    {
+      the_arena.set_debug_level( the_arena.get_debug_level() - 1);
+      gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
+                     String( the_arena.get_debug_level() ).chars() );  
+    }
 }
 
 void
 ControlWindow::increase_debug_level( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p )
 {
-  the_arena.set_debug_level( the_arena.get_debug_level() + 1);
-  gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
-                 String( the_arena.get_debug_level() ).chars() );  
+  if( the_arena_controller.is_started() )
+    {
+      the_arena.set_debug_level( the_arena.get_debug_level() + 1);
+      gtk_label_set( GTK_LABEL( controlwindow_p->get_debug_level_label() ),
+                     String( the_arena.get_debug_level() ).chars() );  
+    }
 }
 
 void
@@ -315,22 +327,23 @@ ControlWindow::new_tournament( GtkWidget* widget,
 void
 ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
 {
-  if( the_arena.get_state() != NOT_STARTED &&
-      the_arena.get_state() != FINISHED )
-    {
-      List<String> string_list;
-      string_list.insert_last( new String( "Yes" ) );
-      string_list.insert_last( new String( "No"  ) );
-      Dialog( "This action will kill the current tournament.\nDo you want do that?",
-              string_list, (DialogFunction) ControlWindow::end_tournament );
-    }
+  if( the_arena_controller.is_started() )
+    if( the_arena.get_state() != NOT_STARTED &&
+        the_arena.get_state() != FINISHED )
+      {
+        List<String> string_list;
+        string_list.insert_last( new String( "Yes" ) );
+        string_list.insert_last( new String( "No"  ) );
+        Dialog( "This action will kill the current tournament.\nDo you want do that?",
+                string_list, (DialogFunction) ControlWindow::end_tournament );
+      }
 }
 
 void
 ControlWindow::end_tournament( int result )
 {
-  if( result == 1 )
-    the_arena.interrupt_tournament();
+  if( the_arena_controller.is_started() && result == 1 )
+      the_arena.interrupt_tournament();
 }
 
 void

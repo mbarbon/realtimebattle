@@ -43,6 +43,18 @@ Gui::Gui()
 }
 
 void
+Gui::set_colours()
+{  
+  long int bg_rgb_colour = the_opts.get_l( OPTION_BACKGROUND_COLOUR );
+  long int fg_rgb_colour = the_opts.get_l( OPTION_FOREGROUND_COLOUR );
+  long int rtb_message_rgb_colour = the_opts.get_l( OPTION_RTB_MESSAGE_COLOUR );
+
+  bg_gdk_colour = make_gdk_colour( bg_rgb_colour );
+  fg_gdk_colour = make_gdk_colour( fg_rgb_colour );
+  rtb_message_gdk_colour = make_gdk_colour( rtb_message_rgb_colour );
+}
+
+void
 Gui::open_arenawindow()
 {
   if( NULL == arenawindow_p )
@@ -108,11 +120,12 @@ Gui::close_scorewindow()
 void
 Gui::open_statisticswindow()
 {
-  if( NULL == statisticswindow_p && the_arena.get_state() != NOT_STARTED )
-    statisticswindow_p = 
-      new StatisticsWindow( the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
-                            the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ),
-                            -1, -1 );
+  if( the_arena_controller.is_started() )
+    if( NULL == statisticswindow_p && the_arena.get_state() != NOT_STARTED )
+      statisticswindow_p = 
+        new StatisticsWindow( the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_X ),
+                              the_opts.get_l( OPTION_STATISTICS_WINDOW_SIZE_Y ),
+                              -1, -1 );
 }
 
 void
@@ -129,18 +142,25 @@ void
 Gui::open_starttournamentwindow()
 {
   if( NULL == starttournamentwindow_p )
-    if( the_arena.get_state() == NOT_STARTED || 
-        the_arena.get_state() == FINISHED )
-      starttournamentwindow_p = 
-        new StartTournamentWindow( -1, -1, -1, -1 );
-    else
-      {
-        List<String> string_list;
-        string_list.insert_last( new String( "Yes" ) );
-        string_list.insert_last( new String( "No"  ) );
-        Dialog( "This action will kill the current tournament.\nDo you want do that?",
-                string_list, (DialogFunction) Gui::kill_and_start_new_tournament );
-      }
+    {
+      if( the_arena_controller.is_started() )
+        {
+          if( the_arena.get_state() != NOT_STARTED &&
+              the_arena.get_state() != FINISHED )
+            {
+              List<String> string_list;
+              string_list.insert_last( new String( "Yes" ) );
+              string_list.insert_last( new String( "No"  ) );
+              Dialog( (String)"This action will kill the current tournament.\n" +
+                      "Do you want do that?",
+                      string_list,
+                      (DialogFunction) Gui::kill_and_start_new_tournament );
+            }
+        }
+      else
+        starttournamentwindow_p = 
+          new StartTournamentWindow( -1, -1, -1, -1 );
+    }
   else
     close_starttournamentwindow();
 }
@@ -148,7 +168,7 @@ Gui::open_starttournamentwindow()
 void
 Gui::kill_and_start_new_tournament( int result )
 {
-  if( result == 1 )
+  if( the_arena_controller.is_started() && result == 1 )
     {
       the_arena.interrupt_tournament();
       the_gui.open_starttournamentwindow();

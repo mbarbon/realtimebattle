@@ -69,8 +69,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern class ControlWindow* controlwindow_p;
 #endif
 
+extern class String global_option_fname;
+extern class String global_statistics_fname;
+extern class String global_log_fname;
+extern class String global_tournament_fname;
+extern class String global_message_fname;
+extern int global_game_mode;
+
 ArenaRealTime::ArenaRealTime()
 {
+  game_mode = (ArenaBase::game_mode_t)global_game_mode;
+  set_filenames( global_log_fname, global_statistics_fname,
+                 global_tournament_fname, global_message_fname,
+                 global_option_fname );
 }
 
 ArenaRealTime::~ArenaRealTime()
@@ -863,7 +874,7 @@ ArenaRealTime::is_colour_allowed(const long colour, const double min_dist, const
         }
     }
   
-  d = colour_dist( colour, bg_rgb_colour );
+  d = colour_dist( colour, the_opts.get_l( OPTION_BACKGROUND_COLOUR ) );
   if( d < min_dist ) return false;
 
   return true;

@@ -29,11 +29,19 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "MessageWindow.h"
 
+extern class String global_replay_fname;
+extern int global_game_mode;
+
 ArenaReplay::ArenaReplay()
 {
   reset_timer();
   state = NOT_STARTED;
   next_check_time = 0.0;
+
+  game_mode = (ArenaBase::game_mode_t)global_game_mode;
+  set_filenames( global_replay_fname );
+
+  start_tournament();
 }
 
 ArenaReplay::~ArenaReplay()

@@ -156,7 +156,7 @@ MessageWindow::add_message( String name_of_messager, String message )
   if( window_shown )
     {
       if( viewed_robot != NULL &&
-          viewed_robot->get_robot_name() == name_of_messager )
+          viewed_robot->get_robot_name() != name_of_messager )
         return;
 
       char* lst[2];
@@ -171,14 +171,14 @@ MessageWindow::add_message( String name_of_messager, String message )
       gtk_clist_insert( GTK_CLIST( clist ), row, lst );
       GdkColor* fg_colour = NULL;
       if( name_of_messager == "RealTimeBattle" )
-        fg_colour = the_arena.get_rtb_message_gdk_colour_p();
+        fg_colour = the_gui.get_rtb_message_gdk_colour_p();
       else
-        fg_colour = the_arena.get_fg_gdk_colour_p();
+        fg_colour = the_gui.get_fg_gdk_colour_p();
 
       gtk_clist_set_foreground( GTK_CLIST( clist ), row,
                                 fg_colour );
       gtk_clist_set_background( GTK_CLIST( clist ), row,
-                                the_arena.get_bg_gdk_colour_p() );
+                                the_gui.get_bg_gdk_colour_p() );
 
       gtk_clist_set_text( GTK_CLIST( clist ), row, 0,
                           name_of_messager.non_const_chars() );
