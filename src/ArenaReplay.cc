@@ -455,7 +455,7 @@ ArenaReplay::parse_log_line_forward( const char first_letter )
       {
         int robot_id;
         double x, y, robot_angle, cannon_angle, radar_angle, energy; 
-        Robot* robotp;       
+        Robot* robotp = NULL;
         log_file >> robot_id >> x >> y 
                  >> robot_angle >> cannon_angle >> radar_angle >> energy;
         ListIterator<Shape> li;
