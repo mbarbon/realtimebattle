@@ -47,9 +47,9 @@ public:
     : id(0), the_socket(the_socket), size_buf( 0 ),
     connected(connected), state(NOT_INITIALIZED), type(UNINITIALIZED_CONN)
     {}
-  virtual ~NetConnection() { close_socket(); }
+  virtual ~NetConnection();
 
-  virtual void close_socket     ();
+  virtual int close_socket     ();
   
   int read_data         ();
   int write_data        ();

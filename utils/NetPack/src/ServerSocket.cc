@@ -40,7 +40,6 @@ SocketServer::SocketServer()
 {
   my_id = 0;
   next_id = 0;
-  open_socket( );
 }
 
 
@@ -72,7 +71,7 @@ SocketServer::open_socket( int port_nb = 0 )
 
   if( (server_socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 )
     {
-      cout<<( "Failed to open socket." );
+      cout<<( "Failed to open socket." )<<endl;
       quit();
     }
 
@@ -88,13 +87,15 @@ SocketServer::open_socket( int port_nb = 0 )
 
   if( bind( server_socket, (struct sockaddr*) &src, sizeof( src ) ) < 0 )
     {
-      cout<<( "Failed to bind socket." );
+      cout<<( "Failed to bind socket." )<<endl;
+      port_number ++;
       continue;
     }
 
   if( listen( server_socket, max_number_connections ) < 0 )
     {
-      cout<<( "Listen to socket failed." );
+      cout<<( "Listen to socket failed." )<<endl;
+      port_number ++;
       continue;
     }
   break;
@@ -108,75 +109,54 @@ SocketServer::close_socket()
 }
 
 void
-SocketServer::check_socket()
+SocketServer::set_fd( )
 {
-  struct timeval tv;
-  tv.tv_sec  = 0;
-  tv.tv_usec = 0; //500000;
-
-  fd_set readfs;
-  fd_set exceptfs;
-
-
-  FD_ZERO( &readfs );
-  FD_ZERO( &exceptfs );
-
-  FD_SET( 0 , &readfs ); 
- 
-  FD_SET( server_socket, &readfs );
-  FD_SET( server_socket, &exceptfs );
-
-  int max_desc = server_socket;
-
+  add_fd( server_socket );
   list_It_NetConn li;
   for( li = all_connections.begin(); li != all_connections.end(); li++ )
     if( (**li).connected )
-      {
-        FD_SET( (**li).the_socket, &readfs );
-        FD_SET( (**li).the_socket, &exceptfs );
-        max_desc = max( max_desc, (**li).the_socket );
-      }
+      add_fd( (**li).the_socket );
+}
 
-  if( select( max_desc + 1, &readfs, NULL, &exceptfs, &tv ) < 0 )
-    {
-      cout<<( "select failed." ) << endl;
-      quit();
-    }
 
-  
-  if( FD_ISSET( 0, &readfs ) )
-    {
-      char buffer[256];
-      bzero(buffer, 256);
-      fgets(buffer, 255, stdin);
-      
-      istrstream is(buffer);
-      string command;
-      is >> command;
-      
-      if( command == "quit")   //The quit event (maybe a click for a chat)
-	{ 
-	  cout<<"Ciao\n";
-	  exit( 0 );
-	}
-    }
+void
+SocketServer::handle_stdin( char * buffer )
+{
+  istrstream is(buffer);
+  string command;
+  is >> command;
 
-  if( FD_ISSET( server_socket, &readfs ) )
-    {
-      cout << "Got new connection."<<endl;
-      accept_connection();
-    }
+  if( command == "quit")   //The quit event
+  {
+    cout<<"Ciao\n";
+    exit( 0 );
+  }
+}
+
+void
+SocketServer::check_fd( )
+{
+  //See if no exception occured
+  list_It_NetConn li;
 
   for( li = all_connections.begin(); li != all_connections.end(); li++ )
-    if( (**li).connected && FD_ISSET((**li).the_socket, &exceptfs) )
+    if( (**li).connected && is_fd_except((**li).the_socket) )
       {
         cout<<( "Exception for client.\n" );
         (**li).close_socket();
       }
 
+  //New comer.
+  if( is_fd_read( server_socket ) )
+    {
+      cout << "Got new connection."<<endl;
+      accept_connection();
+    }
+
+
   for( li = all_connections.begin(); li != all_connections.end(); li++ )
     {
-      if( (**li).connected && FD_ISSET( (**li).the_socket, &readfs ) )
+      if( (**li).connected && is_fd_read( (**li).the_socket ) )
 	{
 	  //NOTE : Maybe have the connection as a variable in the class.
 	  int read = (**li).read_data();
@@ -185,25 +165,17 @@ SocketServer::check_socket()
 	    {
 	      //Extract the string for the queue and make a packet with it
 	      string data = (**li).read_buffers.front();
+        cout<<"data in server : "<<data<<endl;
+        Packet * P;
+        P = server_packet_factory->MakePacket( data, *li );
+        (*li)->read_buffers.pop_front();
 
-        if( data  == "remote" )
-        {
-          cout<<"A new remote client\n";
-          remote_clients.push_back( *li );
-        }
-        else if( data.substr(0, 5) == "local" )
-          {
-            if( remote_clients.size() != 0 )
-            {
-              (*(remote_clients.begin()))->send_data(data.substr(5, data.length()-5));
-              (*(remote_clients.begin()))->send_data( "@CQuit" );
-              (*(remote_clients.begin()))->close_socket();
-            }
-            else
-              cout<<"Not enough remote clients\n";
-            (**li).send_data( "@CQuit" );
-            (**li).close_socket();
-          }
+        if( !P ) continue; //Jump to the next Packet
+
+        P->handle_packet( );
+        delete P;
+
+
 	      (**li).read_buffers.pop_front();
 	    }
 
@@ -229,7 +201,7 @@ SocketServer::accept_connection()
   if( (new_socket = accept( server_socket,
                             (struct sockaddr*) &fromend, &fromlen )) < 0 )
     {
-      cout<<( "Accepting connection failed" );
+      cout<<( "Accepting connection failed" )<<endl;
       close( server_socket );
       quit();
     }
@@ -237,7 +209,7 @@ SocketServer::accept_connection()
   struct NetConnection* nc = new NetConnection;
   nc->id = next_id;
   next_id++;
-
+      cout<<"Connected to "<<new_socket<<endl;
   nc->the_socket = new_socket;
   nc->make_nonblocking();
   nc->connected = true;
@@ -258,17 +230,12 @@ SocketServer::remove_unconnected_sockets()
   list_It_NetConn li;
 
 
-  while( ( li = find_if( remote_clients.begin(), remote_clients.end(),
-                         ptr_is_not_connected() ) )
-         != remote_clients.end() )
-    {
-      remote_clients.erase( li );
-    }
 
   while( ( li = find_if( all_connections.begin(), all_connections.end(),
                          ptr_is_not_connected() ) )
          != all_connections.end() )
     {
+      server_packet_factory->remove_connection( *li );
       delete (*li);
       all_connections.erase( li );
     }
@@ -291,6 +258,8 @@ SocketServer::~SocketServer()
       delete (*li);
     }
   all_connections.clear();
+
+  delete server_packet_factory;
 
 }
 

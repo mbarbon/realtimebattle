@@ -36,14 +36,14 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 SocketClient::~SocketClient()
 {
-  if(his_packet_factory) delete his_packet_factory;
-  if(my_connection)      delete my_connection;
+  if(client_packet_factory) delete client_packet_factory;
+  if(server_connection)      delete server_connection;
 }
 
 void 
 SocketClient::set_packet_factory( PacketFactory* pf )
 {
-  his_packet_factory = pf;
+  client_packet_factory = pf;
 }
 
 NetConnection*
@@ -65,7 +65,7 @@ SocketClient::connect_to_server( string hostname, int port_nb = 0 )
       if( (address = inet_addr( hostname.c_str() )) == (long)INADDR_NONE )
         {
           cout<< "Invalid hostname\n" ;
-	  return NULL;
+          return NULL;
         }
       src.sin_addr.s_addr = address;
       src.sin_family = AF_INET;
@@ -95,81 +95,64 @@ SocketClient::connect_to_server( string hostname, int port_nb = 0 )
       return NULL;
     }
   
-  my_connection = new NetConnection;
+  server_connection = new NetConnection;
+        cout<<"Connected to "<<the_socket<<endl;
+  server_connection->the_socket = the_socket;
+  server_connection->connected = true;
+  server_connection->make_nonblocking();
 
-  my_connection->the_socket = the_socket;
-  my_connection->connected = true;
-  my_connection->make_nonblocking();
-
-  return my_connection;
+  return server_connection;
 }
 
-int
-SocketClient::check_socket()
+void
+SocketClient::set_fd( )
 {
-  struct timeval tv;
-  tv.tv_sec  = 0;
-  tv.tv_usec = 0; //500000;
-  
-  fd_set readfs;
-  fd_set exceptfs;
-  
-  
-  FD_ZERO( &readfs );
-  FD_ZERO( &exceptfs );
-  
-  FD_SET( 0 , &readfs ); 
-  
-  FD_SET( my_connection->the_socket, &readfs );
-  FD_SET( my_connection->the_socket, &exceptfs );
+  if( server_connection->connected )
+    add_fd( server_connection->the_socket );
+}
 
-  int max_desc = my_connection->the_socket;
-
-  if( select( max_desc + 1, &readfs, NULL, &exceptfs, &tv ) < 0 )
+void
+SocketClient::check_fd( )
+{
+  if( server_connection->connected )
+  {
+    if( is_fd_except( server_connection->the_socket ) )
     {
-      cout<<( "select failed." ) << endl;
-      exit( 0 );
+      cout<<"Close b\n";
+      server_connection->close_socket();
+      return;
     }
-
-  if( FD_ISSET( 0, &readfs ) )
+    if( is_fd_read( server_connection->the_socket ) )
     {
-      char buffer[256];
-      bzero(buffer, 256);
-      fgets(buffer, 255, stdin);
-
-      handle_input_stream( buffer );
-      
-    }
-
-  if( my_connection->connected && FD_ISSET(my_connection->the_socket, &exceptfs) )
-    {
-      my_connection->close_socket();
-      return 1;
-    }
-
-  if( FD_ISSET( my_connection->the_socket, &readfs ) )
-    {
-      int read = my_connection->read_data();
+      int read = server_connection->read_data();
       Packet *P;
-      while( ! (my_connection->read_buffers).empty() )
-	{
-	  //Extract the string for the queue and make a packet with it
-	  string data = my_connection->read_buffers.front();
-	  P = his_packet_factory->MakePacket( data, my_connection );
-	  
-	  my_connection->read_buffers.pop_front();
-	  
-	  if( !P ) continue; //Jump to the next Packet
+      while( ! (server_connection->read_buffers).empty() )
+      {
+        //Extract the string for the queue and make a packet with it
+        string data = server_connection->read_buffers.front();
+        cout<<"data in client : "<<data<<endl;
+        P = client_packet_factory->MakePacket( data, server_connection );
+        server_connection->read_buffers.pop_front();
 
-	  P->handle_packet( );
-	  delete P;
-	}
-      
+        if( !P ) continue; //Jump to the next Packet
+
+        P->handle_packet( );
+        delete P;
+      }
+
       if( read < 0 )
-	{
-	  my_connection->close_socket();
-	  return 1;
-	}
+      {
+        cout<<"Close a\n";
+        server_connection->close_socket();
+        return;
+      }
     }
-  return 0;
+  }
+}
+
+void
+SocketClient::send_to_server( string s )
+{
+  cout<<"send "<<s<<endl;
+  server_connection->send_data( s );
 }

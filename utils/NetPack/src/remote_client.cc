@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <strstream>
 #include "ClientSocket.h"
+#include "SocketHandler.h"
 #include <unistd.h>
 
 class ASmallFactory : public PacketFactory{
@@ -34,31 +35,16 @@ class ASmallFactory : public PacketFactory{
 
     if( s == "@CQuit" )
       exit( 0 );
-    else if( s.substr(0, 2) == "FI" )
-      {
-	istrstream data( s.substr(2, s.length() - 1).c_str() );
-	string protocol; string channel;
-	data >> protocol >> channel;
-	if(protocol.substr(0, 12) == "RTB_NET_View" )
-	  cout<<"this is informationa about view protocol\n";
-	else if(protocol.substr(0, 13) == "RTB_NET_Robot") {
-	  Robot_Protocol = protocol;
-	  Robot_Channel  = channel;
-	}
-      }
     else if(s.substr(0, 10) == "TCRunRobot")
       {
-	//TODO : put this code in src/Clients/Gui/Common
-	istrstream data( s.substr(10, s.length() - 1).c_str() );
-	char name[256], dir[256], unique_id[8], rand_id[8];
-	data >> name >> dir >> unique_id >> rand_id;
-	pid_t pid = fork();
-	if(pid  == 0 )
-	  {
-	    execl("/tmp/roussebe/RealTimeBattle/src/RobotClient/rtb_RobotClient",
-		  "rtb_RobotClient", "localhost", "4147", Robot_Protocol.c_str(), Robot_Channel.c_str(),
-		  dir, name,  unique_id, rand_id, NULL);
-	  }
+        //TODO : put this code in src/Clients/Gui/Common
+        istrstream data( s.substr(10, s.length() - 1).c_str() );
+        char name[256], dir[256], unique_id[8], rand_id[8];
+        data >> name >> dir >> unique_id >> rand_id;
+        pid_t pid = fork();
+        if(pid  == 0 )
+        {
+        }
       }
     else
       cout<<s<<endl; 
@@ -71,7 +57,7 @@ protected:
 
 class RawSocketClient : public SocketClient {
 public:
-  void handle_input_stream(char * buffer)
+  void handle_stdin(char * buffer)
   {
     istrstream is(buffer);
     string command;
@@ -79,16 +65,12 @@ public:
     
     if( command == "quit")   //The quit event (maybe a click for a chat)
       { 
-	cout<<"Ciao\n";
-	exit( 0 );
-      }
-    else if( command == "1")
-      {
-	my_connection->send_data( "remote" );
+        cout<<"Ciao\n";
+        exit( 0 );
       }
     else
       {
-	my_connection->send_data( (string)buffer );
+        my_connection->send_data( (string)buffer );
       }
   }
 };
@@ -97,6 +79,7 @@ int main()
 {
   RawSocketClient sc;
   sc.connect_to_server( "localhost", 4147 );
+  sc.send_to_server( "remote" );
   sc.set_packet_factory( new ASmallFactory );
   while(1)
     {

@@ -35,15 +35,25 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "NetConnection.h"
 
-void
+
+NetConnection::~NetConnection()
+{
+ close(the_socket);
+}
+
+int
 NetConnection::close_socket()
 {
+  cout<<"Close it\n";
   if( connected )
     {
-      close( the_socket );
+      int i = close( the_socket );
+      cout<<"Close "<<i<<endl;
       connected = false;
       the_socket = -1;
+      return i;
     }
+  return 0;
 }
 
 int
@@ -135,9 +145,7 @@ NetConnection::write_data()
 
       if( FD_ISSET( the_socket, &exceptfs ) )
         {
-          close( the_socket );
-          connected = false;
-          the_socket = -1;
+          close_socket();
           return -1;
         }
 
@@ -166,6 +174,7 @@ NetConnection::write_data()
 	    {
 	      //The information to send
 	      string newstr = write_buffer.substr( 0, max_packet_length );
+        cout<<newstr.data()<<endl;
 	      if( (nput = write( the_socket, newstr.data(), newstr.length() )) == -1 )
 		{
 		  if( errno == EWOULDBLOCK || errno == EAGAIN )
@@ -173,6 +182,7 @@ NetConnection::write_data()
 		  close_socket(); // Should I really do this here?
 		  return -1;
 		}
+    cout<<"sent\n";
 
 	      //The information we still have here (it isn't in the socket :-( )
 	      if( (int)write_buffer.length() < nput )

@@ -22,20 +22,29 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __CLIENT_SOCKET_H__
 
 #include "NetConnection.h"
+#include "SocketHandler.h"
 #include "Packets.h"
 #include <string>
 
-class SocketClient {
- public:
-  SocketClient() : my_connection( NULL ), his_packet_factory( NULL ) {}
+class SocketClient : public SocketHandler {
+public:
+  SocketClient() : server_connection( NULL ), client_packet_factory( NULL ) {}
   virtual ~SocketClient();
   void set_packet_factory( PacketFactory* );
   NetConnection* connect_to_server( string hostname, int port_nb = 0 );
-  int check_socket();
-  virtual void handle_input_stream(char*) {};
- protected:
-  NetConnection* my_connection;
-  PacketFactory* his_packet_factory;
+  virtual void check_socket() { SocketHandler::check_socket(); }
+
+  void send_to_server( string );
+
+protected:
+  //Functions needed by SocketHandler
+  virtual void handle_stdin( char * ) {};
+  virtual void check_fd( );
+  virtual void set_fd( );
+
+
+  NetConnection* server_connection;
+  PacketFactory* client_packet_factory;
 };
 
 #endif //__CLIENT_SOCKET_H__

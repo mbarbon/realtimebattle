@@ -27,6 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <map>
 
 #include "NetConnection.h"
+#include "Packets.h"
+#include "SocketHandler.h"
 
 #define NB_FRIENDS_IN_FILE  10      //NOTE : Maybe get this from the real option file
 #define MAX_NB_FRIENDS      9999    //Just a big number; find a better way to limit this...          
@@ -50,7 +52,7 @@ typedef list<NetConnection*> list_NetConn;
 typedef list<NetConnection*>::iterator list_It_NetConn; //Note : use sets instead of lists ?!?
 
 
-class SocketServer
+class SocketServer : public SocketHandler
 {
 public:
   SocketServer();
@@ -59,12 +61,20 @@ public:
   void open_socket( int port_number = 0 ); //Open a socket to listen to connections
   void close_socket();                     //Close the listing socket
 
-  virtual void check_socket();             //Check what is in every socket
-  
   bool accept_new_server();                //Accept a new connection
   int port_num() {return port_number;}     //my port
 
-private:
+  virtual void check_socket() { SocketHandler::check_socket(); }
+
+  void set_packet_factory( PacketFactory* pf)
+    { server_packet_factory = pf ; }
+
+protected:
+  //Functions needed by SocketHandler
+  virtual void handle_stdin( char * );
+  virtual void check_fd( );
+  virtual void set_fd( );
+
   NetConnection* accept_connection();       //Accept an incomming connection
   void remove_unconnected_sockets();        //Remove all connections that has been closed during this check
 
@@ -76,13 +86,14 @@ private:
 
   list_NetConn all_connections;
 
-  list_NetConn remote_clients;
 
   string host_name;         //My host name
   int port_number;          //The port I use.
+
+  PacketFactory* server_packet_factory;
+
+private:
   int server_socket;        //The server socket
 };
-
-extern SocketServer my_socketserver;
 
 #endif //__SOCKETSERVER_H__

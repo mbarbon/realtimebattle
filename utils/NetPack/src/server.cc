@@ -68,6 +68,52 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class SocketServer my_socketserver;
 
+class TheRealServerPacketFactory : public PacketFactory {
+public:
+  Packet* MakePacket( string & data, NetConnection* nc)
+  {
+    if( data  == "remote" )
+    {
+      cout<<"A new remote client\n";
+      remote_clients.push_back( nc );
+    }
+    else if( data.substr(0, 5) == "local" )
+    {
+      if( remote_clients.size() != 0 )
+      {
+        cout<<"I have something for you\n";
+        (*(remote_clients.begin()))->send_data(data.substr(5, data.length()-5));
+        (*(remote_clients.begin()))->send_data( "@CQuit" );
+        (*(remote_clients.begin()))->close_socket();
+      }
+      else
+        cout<<"Not enough remote clients\n";
+      cout<<"Tell him to quit \n";
+      nc->send_data( "@CQuit" );
+      cout<<"Message sent\n";
+      sleep( 1 );
+      nc->close_socket();
+      cout<<"Done\n";
+    }
+    return NULL;
+  }
+  void remove_connection( NetConnection* nc )
+  {
+    for(list<NetConnection*>::iterator li = remote_clients.begin();
+        li != remote_clients.end() ; li ++ )
+    {
+      if( *li == nc )
+      {
+        remote_clients.erase( li );
+        break;
+      }
+    }
+  }
+
+protected:
+  list<NetConnection*> remote_clients;
+};
+
 
 /*
 void
@@ -112,6 +158,9 @@ main( int argc, char* argv[] )
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
 */
+  my_socketserver.open_socket();
+
+  my_socketserver.set_packet_factory( new TheRealServerPacketFactory );
 
   while( 1 )
     my_socketserver.check_socket();

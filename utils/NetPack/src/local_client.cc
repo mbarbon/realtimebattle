@@ -28,66 +28,84 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ServerSocket.h"
 #include <unistd.h>
 
-class ASmallFactory : public PacketFactory{
- public:
+class ASmallServerPacketFactory : public PacketFactory{
+public:
   Packet* MakePacket( string & s, NetConnection*) 
   {
-
+    cout<<"I receive (server) "<<s<<endl;
     if( s == "@CQuit" )
       exit( 0 );
-    else if( s.substr(0, 2) == "FI" )
-      {
-	istrstream data( s.substr(2, s.length() - 1).c_str() );
-	string protocol; string channel;
-	data >> protocol >> channel;
-	if(protocol.substr(0, 12) == "RTB_NET_View" )
-	  cout<<"this is informationa about view protocol\n";
-	else if(protocol.substr(0, 13) == "RTB_NET_Robot") {
-	  Robot_Protocol = protocol;
-	  Robot_Channel  = channel;
-	}
-      }
-  return NULL;
-}
 
-protected:
-  string Robot_Protocol, Robot_Channel;
+    return NULL;
+  }
 };
 
-class RawSocketClient : public SocketClient {
+class ASmallClientPacketFactory : public PacketFactory {
 public:
-  void handle_input_stream(char * buffer)
+  Packet* MakePacket( string & s, NetConnection* nc)
+  {
+    cout<<"I receive (client) "<<s<<endl;
+    if( s == "@CQuit" ) nc->close_socket();
+    return NULL;
+  }
+};
+
+class RawSocketClientServer : public SocketClient, public SocketServer {
+public:
+  void check_socket() { SocketServer::check_socket(); };
+
+  void say_hello_to_server() {
+    char buffer[16];
+    sprintf( buffer, "%i", port_number);
+    send_to_server( "local " + string(buffer) );
+  }
+  void set_packet_factories( PacketFactory* server_pf, PacketFactory* client_pf ) {
+    SocketServer::set_packet_factory( server_pf );
+    SocketClient::set_packet_factory( client_pf );
+  }
+
+protected:
+  //Functions needed by SocketHandler
+  void handle_stdin( char * buffer )
   {
     istrstream is(buffer);
     string command;
     is >> command;
-    
-    if( command == "quit")   //The quit event (maybe a click for a chat)
-      { 
-	cout<<"Ciao\n";
-	exit( 0 );
-      }
-    else if( command == "1")
+
+    if( command == "quit" )   //The quit event (maybe a click for a chat)
       {
-	my_connection->send_data( "local 1123" );
+        cout<<"Ciao\n";
+        exit( 0 );
       }
     else
       {
-	my_connection->send_data( (string)buffer );
+        send_to_server( (string)buffer );
       }
   }
+
+  void check_fd( ) {
+    SocketServer::check_fd();
+    SocketClient::check_fd();
+  }
+  void set_fd( ) {
+    SocketServer::set_fd();
+    SocketClient::set_fd();
+  }
+
 };
 
 int main()
 {
-  RawSocketClient sc;
-  SocketServer the_server; //just to open a socket to allow the remote client to connect on me !
-  the_server.open_socket( );
+  RawSocketClientServer sc;
+
+  sc.open_socket();
   sc.connect_to_server( "localhost", 4147 );
-  sc.set_packet_factory( new ASmallFactory );
+
+  sc.set_packet_factories( new ASmallServerPacketFactory, new ASmallClientPacketFactory );
+
+  sc.say_hello_to_server();
   while(1)
     {
-      the_server.check_socket();
       sc.check_socket();
     }
 }
