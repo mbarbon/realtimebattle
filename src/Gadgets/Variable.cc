@@ -58,7 +58,6 @@ void
 Variable::make_double( const double val, const double min_val, const double max_val,
                        const double inacc )
 {
-  my_type = DOUBLE_V;
   minimum = min_val;
   maximum = max_val;
 
@@ -98,20 +97,28 @@ Variable::set_robot_permissions(const bool read, const bool write )
 }
 
 void
-Variable::assign(const double val)
+Variable::assign(const Value& val)
 {
-  if( val >= maximum ) value = maximum;
+  value = val;
 
-  if( val >= minimum ) value = minimum;
-
-  if( my_type == DOUBLE_V ) 
-    value = val;
-  else    
-    value = rint( val ); 
+  if( value.is_double )
+    {
+      if( value.d_val >= double(maximum) ) 
+        value.d_val = maximum;
+      else if( value.d_val <= double(minimum) )
+        value = minimum;
+    }
+  else
+    {
+      if( value.i_val >= int(maximum) ) 
+        value.d_val = int(maximum);
+      else if( value.i_val <= int(minimum) )
+        value = int(minimum);
+    }
 }
 
 
-double
+Value&
 Variable::get_value() const
 {
   if( constant ) return value;
@@ -119,15 +126,23 @@ Variable::get_value() const
 
   if( random ) 
     {
-      double c = minimum + double( rand() ) * ( maximum - minimum ) / double(RAND_MAX);
-      if( my_type == INT_V ) 
-        return rint( c );
+      if( value.is_double )
+        {
+          value.d_val = double(minimum) + double( rand() ) * 
+            ( double(maximum) - double(minimum) ) / double(RAND_MAX);
+        }
+      else
+        {
+          value.i_val = int(minimum) + rand() % ( int(maximum) - int(minimum) + 1 );
+        }
 
-      return c;
+      return value;
     }
   
 
   // Add normal-distributed error
+
+  assert( value.is_double );
 
   double err=0.0;
 
@@ -135,5 +150,7 @@ Variable::get_value() const
 
   err = (err - 6.0)*inaccuracy / sqrt(12.0);
 
-  return( err + value );
+  value.d_val = mean + err;
+
+  return value;
 }

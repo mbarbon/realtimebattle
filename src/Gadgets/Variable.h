@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __VARIABLE_GADGET__
 
 #include "Gadget.h"
+#include "Value.h"
 
 enum variable_type { BOOL_V, INT_V, DOUBLE_V };
 
@@ -62,30 +63,29 @@ public:
 
 
 
-  // conversions to/from double
+  // conversions to/from Value
 
-  operator double() const { return get_value(); }
-  //  double operator() () { return get_value(); }
+  operator const Value() { return get_value(); }
+  operator const double() const  { return double(get_value()); }
+  operator const int() { return int(get_value()); }
 
-  const Variable& operator= (const double val) { assign(val); return *this; }
-
+  const Variable& operator= (const Value& val) { assign(val); return *this; }
+  void assign(const Value& val);
 
 
 private:
-  
-  void assign(const double val);
-  double get_value() const;
 
+  Value& get_value() const;
 
   variable_type my_type;
-  // all types are represented as double
-  double value;
+
+  mutable Value value;
 
   bool public_readable;  // Whether it can be sent to robots
   bool public_writable;  // Whether it can be set by robots
 
-  double minimum;
-  double maximum;
+  Value minimum;
+  Value maximum;
 
 
   // A constant is not random and has no inaccuracy
@@ -93,8 +93,9 @@ private:
 
 
   bool random;   // completely random
-  double inaccuracy;  // a normal-distributed error
-  
+
+  double inaccuracy;  // a normal-distributed
+  double mean;        // error
 };
 
 
