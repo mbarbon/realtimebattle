@@ -1118,7 +1118,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      if( use_message_file )
+      if( !use_message_file )
         the_gui.open_messagewindow();
       the_gui.open_arenawindow();
       the_gui.open_scorewindow();
@@ -1255,7 +1255,7 @@ ArenaRealTime::end_tournament()
 #ifndef NO_GRAPHICS
   if( !no_graphics )
     {
-      if( use_message_file )
+      if( !use_message_file )
         the_gui.close_messagewindow();
       the_gui.close_scorewindow();
       the_gui.close_arenawindow();
