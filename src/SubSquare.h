@@ -22,6 +22,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <set>
 #include "Vector2D.h"
+#include "Messagetypes.h"
 
 // This playing arena is divided into subrectangles in order to make finding close
 // objects easier. The ArenaObjectCollector class is responsible for placing the
@@ -38,6 +39,11 @@ public:
   void clean();  // removes shapes which are no longer inside the subsquare
 
   void add(const Shape* s);
+
+  inline double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
+                                      const double size, enum object_type& closest_shape, 
+                                      Shape*& colliding_object, 
+                                      const class Robot* the_robot = NULL ) {return 0.0; }
 
   friend class Arena;  // the arena needs to access the shapes smoothly
 

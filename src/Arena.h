@@ -66,7 +66,7 @@ public:
   double get_shortest_distance(const Vector2D& pos, const Vector2D& vel, 
                                const double size, enum object_type& closest_shape, 
                                Shape*& colliding_object, 
-                               const class Robot* the_robot = NULL ) { return 0.0; }
+                               const class Robot* the_robot = NULL );
 
   void find_closest_object( const Vector2D& point, const Vector2D& direction, 
                             Shape* closest_shape, double distance );
@@ -85,6 +85,9 @@ public:
 // Slow but general algorithm used by static objects
   void find_subsquares_for_shape( const Shape& s); 
 
+
+  SubSquare* get_subsquare_at( const Vector2D& pos ) const;
+  void get_subsquare_at( const Vector2D& pos, int& x, int& y ) const;
 
   // cleans subsquares and removes killed objects from lists.
   void garbage_collector();
