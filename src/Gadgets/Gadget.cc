@@ -21,6 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <config.h>
 #endif
 
+#include <string>
+#include <typeinfo>
+
 #include "Gadget.h"
 #include "Variable.h"
 #include "Function.h"
@@ -76,4 +79,46 @@ Gadget::init_functions( const FunctionDefinition* fcn_def, const int last_fcn )
       functions[fcn_nr] = Function( fcn_def[fcn_nr].name, this );
     }
 
+}
+
+bool
+Gadget::eval_message(const string& msg)
+{
+  unsigned int pos=msg.find_first_of(". ");
+
+  if( pos <= 0 || pos >= msg.length() )
+    return false;
+
+  GadgetInfo first_gadget = msg.substr( 0, pos-1 );
+
+  set_iterator si =  my_gadgets.find_by_name(first_gadget);
+  
+  if( si == my_gadgets.the_set.end() ) // No gadget found
+    {
+      if( parent != NULL )  return false;
+
+      return( parent->eval_message( msg ) );
+    }
+
+  if( msg[pos] == '.')  
+    {
+      return( (*si).gadgetp->eval_message(msg.substr( pos+1 ) ) );
+    }
+
+  if( typeid((*si).gadgetp) == typeid(Function*) )
+    {
+      // TODO: Should check if we are allowed to eval the function
+      // TODO: How should arguments be treated?
+      eval_function( ((Function*)(*si).gadgetp)->get_fcn_nr() );
+    }
+  else if( typeid((*si).gadgetp) == typeid(Variable*) )
+    {
+      // Use the argument to set the value of the variable
+    }
+  else
+    {
+      // Run the default function
+    }
+
+  return true;
 }

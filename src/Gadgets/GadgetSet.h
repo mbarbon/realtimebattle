@@ -54,6 +54,8 @@ struct GadgetInfo
   GadgetInfo(Gadget* const gp, const long int id_nr, const char* nm) 
     : gadgetp(gp), id(id_nr), name(nm) {}
 
+  GadgetInfo(const string& str ) : gadgetp(NULL), id(0), name(str) {}
+
   ~GadgetInfo() {}
 
   friend bool operator<(const GadgetInfo& a, const GadgetInfo& b) 
@@ -85,6 +87,7 @@ public:
 
   set_iterator find_by_name( const GadgetInfo& gi) const;
   
+  friend class Gadget;
 
 protected:
 

@@ -68,6 +68,8 @@ public:
 
   static void set_last_id_used() { last_id_used = 0; }
   
+  bool eval_message(const string& msg);
+
   void eval_function(const int fcn) {}
 
   const Variable* get_variables() const { return variables; }

@@ -37,7 +37,9 @@ public:
 
   ~Function() {}
 
-  void operator() () { parent->eval_function(fcn_nr); }
+  //void operator() () { parent->eval_function(fcn_nr); }
+
+  int get_fcn_nr() { return fcn_nr; }
 
   void set(const int fcn) { fcn_nr = fcn; }
 
