@@ -20,9 +20,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __ROBOT__
 #define __ROBOT__
 
-#ifndef NO_GRAPHICS
-# include <gdk/gdk.h>
-#endif
+//  #ifndef NO_GRAPHICS
+//  # include <gdk/gdk.h>
+//  #endif
 
 #include <fstream.h>
 #include <sys/types.h>
@@ -97,22 +97,24 @@ public:
   
 
   rotation_t get_robot_angle() { return robot_angle; }
+  rotation_t get_cannon_angle() { return cannon_angle; }
+  rotation_t get_radar_angle() { return radar_angle; }
 
   bool set_and_get_has_competed() 
     { if( has_competed ) return true; else { has_competed = true; return false; } }
 
-#ifndef NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
 
-  int get_row_in_score_clist() { return row_in_score_clist; }
-  void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-  void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
+//    int get_row_in_score_clist() { return row_in_score_clist; }
+//    void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
+//    void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
-  void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
-  void reset_last_displayed();
-  void display_score();
-  void draw_radar_and_cannon();
+//    void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
+//    void reset_last_displayed();
+//    void display_score();
+//    void draw_radar_and_cannon();
 
-#endif
+//  #endif
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -146,9 +148,9 @@ private:
   double acceleration;
   double shot_energy;
 
-  Vector2D last_drawn_robot_center;
-  double last_drawn_radar_angle;
-  double last_drawn_cannon_angle;
+//    Vector2D last_drawn_robot_center;
+//    double last_drawn_radar_angle;
+//    double last_drawn_cannon_angle;
 
   List<stat_t> statistics;
 
@@ -183,17 +185,17 @@ private:
 
   bool use_non_blocking;
 
-  int row_in_score_clist;
+//    int row_in_score_clist;
 
-  int last_displayed_energy;
-  int last_displayed_place;
-  int last_displayed_last_place;
-  long last_displayed_score;
+//    int last_displayed_energy;
+//    int last_displayed_place;
+//    int last_displayed_last_place;
+//    long last_displayed_score;
 
-#ifndef NO_GRAPHICS
-  pixmap_t score_pixmap;
-  pixmap_t stat_pixmap;
-#endif
+//  #ifndef NO_GRAPHICS
+//    pixmap_t score_pixmap;
+//    pixmap_t stat_pixmap;
+//  #endif
 };
 
 #endif __ROBOT__

@@ -35,7 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "IntlDefs.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
-#include "OptionsWindow.h"
+//#include "OptionsWindow.h"
 #include "Messagetypes.h"
 #include "Various.h"
 
@@ -296,7 +296,7 @@ Options::Options()
 
   all_long_options[OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL] =
     option_info_t<long>(ENTRY_INT, PAGE_TIME, 1, 1, 1000, 5,
-                        false, false, "Logging frequency [Each n:th update interval]",
+                        false, false, "Logging frequency [Each nth update interval]",
                         _("Logging frequency [Each n:th update interval]") );
 
   all_long_options[OPTION_MAX_ROBOTS_ALLOWED] =
@@ -564,10 +564,10 @@ Options::save_all_options_to_file(String filename, const bool as_default)
       return;
     }
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics && is_optionswindow_up() )
-    optionswindow_p->set_all_options();
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics && is_optionswindow_up() )
+//      optionswindow_p->set_all_options();
+//  #endif
 
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
     file << all_double_options[i].label << ": " << all_double_options[i].value << endl;
@@ -607,40 +607,40 @@ Options::get_option_from_string( const String& option_name )
 bool
 Options::is_optionswindow_up()
 {
-  if( NULL == optionswindow_p )
-    return false;
+//    if( NULL == optionswindow_p )
+//      return false;
 
-  return true;
+//    return true;
 }
 
 void
 Options::open_optionswindow()
 {
-  bool allowed = false;
+//    bool allowed = false;
 
-  if( the_arena_controller.is_started() )
-    {
-      if( ( the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
-            ( the_arena.get_state() == NO_STATE ||
-              the_arena.get_state() == NOT_STARTED ||
-              the_arena.get_state() == FINISHED ) ) ||
-          ( the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE ) )
-        allowed = true;
-    }
-  if( ( !the_arena_controller.is_started() || allowed ) &&
-      NULL == optionswindow_p )
-    optionswindow_p = 
-      new OptionsWindow( -1, -1, -1, -1 );
+//    if( the_arena_controller.is_started() )
+//      {
+//        if( ( the_arena.get_game_mode() == ArenaBase::COMPETITION_MODE &&
+//              ( the_arena.get_state() == NO_STATE ||
+//                the_arena.get_state() == NOT_STARTED ||
+//                the_arena.get_state() == FINISHED ) ) ||
+//            ( the_arena.get_game_mode() != ArenaBase::COMPETITION_MODE ) )
+//          allowed = true;
+//      }
+//    if( ( !the_arena_controller.is_started() || allowed ) &&
+//        NULL == optionswindow_p )
+//      optionswindow_p = 
+//        new OptionsWindow( -1, -1, -1, -1 );
 }
 
 void
 Options::close_optionswindow()
 {
-  if( NULL != optionswindow_p )
-    {
-      delete optionswindow_p;
-      optionswindow_p = NULL;
-    }
+//    if( NULL != optionswindow_p )
+//      {
+//        delete optionswindow_p;
+//        optionswindow_p = NULL;
+//      }
 }
 
 #endif NO_GRAPHICS

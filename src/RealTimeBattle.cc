@@ -26,6 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <unistd.h>
 #include <signal.h>
 
+#include <pthread.h>
+
 #include <sys/types.h>
 #ifdef TIME_WITH_SYS_TIME 
 # include <sys/time.h>
@@ -58,10 +60,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <floatingpoint.h>
 #endif
 
-#ifndef NO_GRAPHICS
-#include "ControlWindow.h"
-#endif NO_GRAPHICS
-
 #include "IntlDefs.h"
 #include "Options.h"
 #include "ArenaRealTime.h"
@@ -70,6 +68,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaController.h"
 #include "String.h"
 
+#include "GuiInterface.h"
+
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
 #endif
@@ -77,10 +77,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 class Options the_opts;
 //class ArenaRealTime the_arena;
 class ArenaController the_arena_controller;
-#ifndef NO_GRAPHICS
-class Gui the_gui;
-class ControlWindow* controlwindow_p;
-#endif
 
 bool no_graphics;
 
@@ -121,18 +117,6 @@ print_help_message()
   cout << endl;
 }
 
-#ifndef NO_GRAPHICS
-gint
-update_function(gpointer data)
-{  
-  gint res = 1;
-
-  if( the_arena_controller.is_started() )
-    res = (gint)the_arena.timeout_function();
-
-  return res;
-}
-#else NO_GRAPHICS
 void
 update_function(const long int interval_usec)
 {
@@ -152,7 +136,6 @@ update_function(const long int interval_usec)
   while( res );
 
 }
-#endif NO_GRAPHICS
 
 RETSIGTYPE
 sig_handler (int signum)
@@ -364,6 +347,15 @@ parse_command_line(int argc, char **argv)
   no_graphics = !graphics_flag;
 }
 
+#ifndef NO_GRAPHICS
+void*
+GIMain_temp( void* arg )
+{
+  int res = GIMain( (ArenaController*) arg );
+  // Change this!!!!!
+  return NULL;
+}
+#endif
 
 int 
 main ( int argc, char* argv[] )
@@ -373,12 +365,6 @@ main ( int argc, char* argv[] )
   fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP | FP_X_OFL | FP_X_UFL | FP_X_DNML) );
   //fpsetmask ( ~ (FP_X_INV | FP_X_DZ | FP_X_IMP) );
 #endif
-
-#ifndef NO_GRAPHICS
-  gtk_set_locale();
-
-  gtk_init (&argc, &argv);
-#endif NO_GRAPHICS
 
 #ifdef HAVE_LOCALE_H
   setlocale( LC_MESSAGES, "" );
@@ -398,28 +384,12 @@ main ( int argc, char* argv[] )
   signal(SIGFPE, sigfpe_handler);
 
 #ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      the_gui.set_colours();
-      controlwindow_p = 
-        new ControlWindow( -1, -1,
-                           the_opts.get_l( OPTION_CONTROL_WINDOW_POS_X ),
-                           the_opts.get_l( OPTION_CONTROL_WINDOW_POS_Y ) );
-    }
+  GIInit( argc, argv );
+  pthread_t gui_thread;
+  pthread_create(&gui_thread, NULL, GIMain_temp, (void*)&the_arena_controller);
+#endif
 
-
-  gint timeout_tag;      
-  double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
-  timeout_tag = gtk_timeout_add( (unsigned int) interval,
-                                 GtkFunction(update_function), (gpointer) NULL );
-
-  gtk_main();
-
-#else !NO_GRAPHICS
-  
   update_function( (long int)(the_opts.get_d( OPTION_UPDATE_INTERVAL ) * 1000000.0) );
   
-#endif !NO_GRAPHICS
-
   return EXIT_SUCCESS;
 }

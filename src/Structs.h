@@ -20,10 +20,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __STRUCTS__
 #define __STRUCTS__
 
-#ifndef NO_GRAPHICS
-# include <gdk/gdk.h>
-#endif
-
 #include "String.h"
 
 
@@ -61,6 +57,14 @@ enum state_t { NO_STATE, NOT_STARTED, STARTING_ROBOTS, GAME_IN_PROGRESS,
                PAUSING_BETWEEN_GAMES, PAUSED, BEFORE_GAME_START,
                SHUTTING_DOWN_ROBOTS, FINISHED, EXITING };
 
+struct message_t
+{
+  message_t( const class String m, const class String f ) : message(m), from(f) {}
+  class String message;
+  class String from;
+  int id; //Is this necessary?
+};
+
 struct start_tournament_info_t
 {
   start_tournament_info_t(const int r, const bool s,
@@ -72,22 +76,5 @@ struct start_tournament_info_t
   class String directory;
 };
 
-
-#ifndef NO_GRAPHICS
-
-struct pixmap_t
-{
-  pixmap_t() : pixmap(NULL), window(NULL) {}
-  ~pixmap_t();
-
-  void set_pixmap(GdkColor& col, GdkWindow* win);
-  void get_pixmap(GdkColor& col, GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm);
-
-  GdkPixmap* pixmap;
-  GdkWindow* window;
-  GdkBitmap* bitmap;
-};
-    
-#endif NO_GRAPHICS
 
 #endif __STRUCTS__

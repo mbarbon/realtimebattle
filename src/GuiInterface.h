@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-1999  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2000  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,48 +17,35 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef __GUIINTERFACE__
+#define __GUIINTERFACE__
 
-#include <math.h>
-#include <iostream.h>
+#include <pthread.h>
 
-//#include "Gui.h"
-#include "Shape.h"
-#include "Various.h"
-#include "Options.h"
+class String;
+class ArenaController;
 
-extern class Options the_opts;
+// The name of the gui should be returned as a const String
+const String GIName();
+// The usage string of the gui should be returned as a const String
+const String GIUsageMessage();
 
-Shape::Shape()
-{
-  set_colour(the_opts.get_l(OPTION_FOREGROUND_COLOUR));
-}
+// Initialization of gui
+bool GIInit( int , char** );
+// The main loop of the gui
+int  GIMain( ArenaController* );
+// Exit from gui
+void GIExit( int );
 
-Shape::Shape(int long colour)
-{
-  set_colour(colour);
-}
 
+// Internal 
+
+// TODO: GIExit should maybe do something more
 void
-Shape::set_colour(long int colour)
+GIExit( int returncode )
 {
-  rgb_colour = colour;
-//  #ifndef NO_GRAPHICS
-//    gdk_colour = make_gdk_colour( colour );
-//  #endif
+  int* returncode_p = new int(returncode);
+  pthread_exit(returncode_p);
 }
 
-//  #ifndef NO_GRAPHICS
-
-//  void
-//  Shape::set_colour(const GdkColor& colour)
-//  {
-//    gdk_colour = colour;
-//    rgb_colour = gdk2hex_colour( colour );
-//  }
-
-//  #endif NO_GRAPHICS
-
-
+#endif __GUIINTERFACE__

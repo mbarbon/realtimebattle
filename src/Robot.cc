@@ -53,13 +53,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Wall.h"
 #include "Shot.h"
 #include "Extras.h"
-#include "ArenaWindow.h"
 
-#ifndef NO_GRAPHICS
-# include "ScoreWindow.h"
-#endif
-
-//  #include "Gui.h"
 //  #include "MovingObject.h"
 //  #include "Arena.h"
 //  #include "Extras.h"
@@ -101,7 +95,7 @@ Robot::Robot(const String& filename)
   pipes[0] = -1;  
   pipes[1] = -1;
   pid = -1;
-  last_drawn_robot_center = Vector2D(infinity,infinity);
+  //  last_drawn_robot_center = Vector2D(infinity,infinity);
 
   use_non_blocking = get_default_non_blocking_state();
 }
@@ -120,7 +114,7 @@ Robot::Robot(const int r_id, const long int col, const String& name)
   
   has_competed = false;
 
-  last_drawn_robot_center = Vector2D(infinity,infinity);
+  //  last_drawn_robot_center = Vector2D(infinity,infinity);
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
 }
 
@@ -410,15 +404,15 @@ Robot::die()
     {
       alive = false;
       dead_but_stats_not_set = true;
-#ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          the_gui.get_arenawindow_p()->
-            draw_circle( last_drawn_center, last_drawn_radius,
-                         *(the_gui.get_bg_gdk_colour_p()), true );
-          last_drawn_robot_center = Vector2D( infinity, infinity );
-        }
-#endif
+//  #ifndef NO_GRAPHICS
+//        if( !no_graphics )
+//          {
+//            the_gui.get_arenawindow_p()->
+//              draw_circle( last_drawn_center, last_drawn_radius,
+//                           *(the_gui.get_bg_gdk_colour_p()), true );
+//            last_drawn_robot_center = Vector2D( infinity, infinity );
+//          }
+//  #endif
     }
 }
 
@@ -456,9 +450,9 @@ Robot::set_stats(const int robots_killed_same_time, const bool timeout)
 
   statistics.insert_last( statp );
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics ) display_score();
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics ) display_score();
+//  #endif
 }
 
 // Version of set_stats used by ArenaReplay
@@ -488,9 +482,9 @@ Robot::set_stats(const double pnts, const int pos, const double time_survived,
   
       statistics.insert_last( statp );
     }
-#ifndef NO_GRAPHICS
-  if( !no_graphics && !make_stats ) display_score();
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics && !make_stats ) display_score();
+//  #endif
 }
 
 void
@@ -503,9 +497,9 @@ Robot::change_position( const double x, const double y,
   cannon_angle.pos = cannon_a;
   radar_angle.pos  = radar_a;
   energy = en;
-#ifndef NO_GRAPHICS  
-  if( !no_graphics )  display_score();
-#endif
+//  #ifndef NO_GRAPHICS  
+//    if( !no_graphics )  display_score();
+//  #endif
 }
 
 void
@@ -1242,19 +1236,19 @@ Robot::get_messages()
                   send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
                                message_from_robot[msg_t].msg);
                 }
-#ifndef NO_GRAPHICS
-              else if( !no_graphics )
-                {
-                  double a1, d1, a2, d2;
-                  *instreamp >> a1 >> d1 >> a2 >> d2;
+//  #ifndef NO_GRAPHICS
+//                else if( !no_graphics )
+//                  {
+//                    double a1, d1, a2, d2;
+//                    *instreamp >> a1 >> d1 >> a2 >> d2;
                   
-                  Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
-                  Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
+//                    Vector2D start = d1 * angle2vec(a1 + robot_angle.pos);
+//                    Vector2D direction = d2 * angle2vec(a2 + robot_angle.pos) - start;
                   
-                  the_gui.get_arenawindow_p()->
-                    draw_line(start + center, direction, 1.0, gdk_colour);
-                }
-#endif NO_GRAPHICS              
+//                    the_gui.get_arenawindow_p()->
+//                      draw_line(start + center, direction, 1.0, gdk_colour);
+//                  }
+//  #endif NO_GRAPHICS              
             }
           break;
 
@@ -1266,18 +1260,18 @@ Robot::get_messages()
                   send_message(WARNING, MESSAGE_SENT_IN_ILLEGAL_STATE,
                                message_from_robot[msg_t].msg);
                 }
-#ifndef NO_GRAPHICS
-              else if( !no_graphics )
-                {
-                  double a, d, r;
-                  *instreamp >> a >> d >> r;
+//  #ifndef NO_GRAPHICS
+//                else if( !no_graphics )
+//                  {
+//                    double a, d, r;
+//                    *instreamp >> a >> d >> r;
 
-                  Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
+//                    Vector2D c = d * angle2vec(a + robot_angle.pos) + center;
 
-                  the_gui.get_arenawindow_p()->
-                    draw_circle(c, r, gdk_colour, false);
-                }
-#endif NO_GRAPHICS
+//                    the_gui.get_arenawindow_p()->
+//                      draw_circle(c, r, gdk_colour, false);
+//                  }
+//  #endif NO_GRAPHICS
             }         
           break;          
 
@@ -1594,113 +1588,113 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy = min(energy+energy_diff, the_opts.get_d(OPTION_ROBOT_MAX_ENERGY));
-#ifndef NO_GRAPHICS  
-  if( !no_graphics )  display_score();
-#endif
+//  #ifndef NO_GRAPHICS  
+//    if( !no_graphics )  display_score();
+//  #endif
   if( energy <= 0.0 ) die();
 }
 
-#ifndef NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
 
-void
-Robot::reset_last_displayed()
-{
-  last_displayed_energy = -1;
-  last_displayed_place = 0;
-  last_displayed_last_place = 0;
-  last_displayed_score = -1;
-}
+//  void
+//  Robot::reset_last_displayed()
+//  {
+//    last_displayed_energy = -1;
+//    last_displayed_place = 0;
+//    last_displayed_last_place = 0;
+//    last_displayed_score = -1;
+//  }
 
-void
-Robot::display_score()
-{
-  int p;
+//  void
+//  Robot::display_score()
+//  {
+//    int p;
 
-  if( last_displayed_energy != (int)energy )
-    {
-      last_displayed_energy = (int)energy;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         2, String((int)energy).non_const_chars());
-    }
+//    if( last_displayed_energy != (int)energy )
+//      {
+//        last_displayed_energy = (int)energy;
+//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
+//                           row_in_score_clist,
+//                           2, String((int)energy).non_const_chars());
+//      }
 
-  if( last_displayed_place != position_this_game )
-    {
-      String str;
-      if( position_this_game != 0 ) str = String(position_this_game);
-      last_displayed_place = position_this_game;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         3, str.non_const_chars());
-    }
+//    if( last_displayed_place != position_this_game )
+//      {
+//        String str;
+//        if( position_this_game != 0 ) str = String(position_this_game);
+//        last_displayed_place = position_this_game;
+//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
+//                           row_in_score_clist,
+//                           3, str.non_const_chars());
+//      }
 
-  p = get_last_position();
-  if( p != 0 && p != last_displayed_last_place  )
-    {
-      last_displayed_last_place = p;
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         4, String(p).non_const_chars());
-    }
+//    p = get_last_position();
+//    if( p != 0 && p != last_displayed_last_place  )
+//      {
+//        last_displayed_last_place = p;
+//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
+//                           row_in_score_clist,
+//                           4, String(p).non_const_chars());
+//      }
 
 
-  double pnts = get_total_points();
-  if( last_displayed_score != (int)(10 * pnts) )
-    {
-      last_displayed_score = (int)(10 * pnts);
-      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                         row_in_score_clist,
-                         5, String(pnts).non_const_chars());
-    }
-}
+//    double pnts = get_total_points();
+//    if( last_displayed_score != (int)(10 * pnts) )
+//      {
+//        last_displayed_score = (int)(10 * pnts);
+//        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
+//                           row_in_score_clist,
+//                           5, String(pnts).non_const_chars());
+//      }
+//  }
 
-void
-Robot::draw_radar_and_cannon()
-{
-  double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
+//  void
+//  Robot::draw_radar_and_cannon()
+//  {
+//    double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
 
-  if( radius*scale < 2.5 ) return;
-  // Draw Cannon
-  the_gui.get_arenawindow_p()->
-    draw_line( center,
-               angle2vec(cannon_angle.pos+robot_angle.pos),
-               radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
-               the_opts.get_d(OPTION_SHOT_RADIUS),
-               *(the_gui.get_fg_gdk_colour_p()) );
+//    if( radius*scale < 2.5 ) return;
+//    // Draw Cannon
+//    the_gui.get_arenawindow_p()->
+//      draw_line( center,
+//                 angle2vec(cannon_angle.pos+robot_angle.pos),
+//                 radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
+//                 the_opts.get_d(OPTION_SHOT_RADIUS),
+//                 *(the_gui.get_fg_gdk_colour_p()) );
 
-  // Draw radar lines
-  Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
-  the_gui.get_arenawindow_p()->
-    draw_line( center - radius * 0.25 * radar_dir,
-               rotate( radar_dir, M_PI / 4.0 ),
-               radius / 1.5,
-               radius / 20.0,
-               *(the_gui.get_fg_gdk_colour_p()) );
-  the_gui.get_arenawindow_p()->
-    draw_line( center - radius * 0.25 * radar_dir,
-               rotate( radar_dir, - (M_PI / 4.0) ),
-               radius / 1.5,
-               radius / 20.0,
-               *(the_gui.get_fg_gdk_colour_p()) );
+//    // Draw radar lines
+//    Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
+//    the_gui.get_arenawindow_p()->
+//      draw_line( center - radius * 0.25 * radar_dir,
+//                 rotate( radar_dir, M_PI / 4.0 ),
+//                 radius / 1.5,
+//                 radius / 20.0,
+//                 *(the_gui.get_fg_gdk_colour_p()) );
+//    the_gui.get_arenawindow_p()->
+//      draw_line( center - radius * 0.25 * radar_dir,
+//                 rotate( radar_dir, - (M_PI / 4.0) ),
+//                 radius / 1.5,
+//                 radius / 20.0,
+//                 *(the_gui.get_fg_gdk_colour_p()) );
 
-  // Draw robot angle line
-  the_gui.get_arenawindow_p()->
-    draw_line( center,
-               angle2vec(robot_angle.pos),
-               radius * 0.9 - 2.0 / scale,
-               *(the_gui.get_fg_gdk_colour_p()) );
-}
+//    // Draw robot angle line
+//    the_gui.get_arenawindow_p()->
+//      draw_line( center,
+//                 angle2vec(robot_angle.pos),
+//                 radius * 0.9 - 2.0 / scale,
+//                 *(the_gui.get_fg_gdk_colour_p()) );
+//  }
 
-void
-Robot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
-{
-  score_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
-}
+//  void
+//  Robot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
+//  {
+//    score_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
+//  }
 
-void
-Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
-{
-  stat_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
-}
+//  void
+//  Robot::get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )
+//  {
+//    stat_pixmap.get_pixmap( gdk_colour, win, pixm, bitm ); 
+//  }
 
-#endif NO_GRAPHICS
+//  #endif NO_GRAPHICS

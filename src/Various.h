@@ -20,12 +20,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __VARIOUS__
 #define __VARIOUS__
 
-#ifndef NO_GRAPHICS
-# include <glib.h>
-# include <gdk/gdktypes.h>
-# include <gtk/gtkwidget.h>
-#endif NO_GRAPHICS
-
 #include "List.h"
 
 //#include "String.h"
@@ -84,21 +78,6 @@ bool parse_tournament_file( const String& fname,
 
 
 void create_tmp_rtb_dir();
-
-#ifndef NO_GRAPHICS
-
-void entry_handler( GtkWidget * entry, entry_t * entry_info );
-
-GdkColor make_gdk_colour(const long col);
-int long gdk2hex_colour(const GdkColor& col);
-
-#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-gint int_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
-gint float_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
-gint string_case_sensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
-gint string_case_insensitive_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
-#endif
-#endif NO_GRAPHICS
 
 #endif __VARIOUS__
 

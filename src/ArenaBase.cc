@@ -49,7 +49,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
-//#include "Gui.h"
 #include "ArenaBase.h"
 #include "ArenaController.h"
 //#include "MovingObject.h"
@@ -62,12 +61,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "Wall.h"
 #include "Robot.h"
-
-#ifndef NO_GRAPHICS
-# include "ControlWindow.h"
-# include "MessageWindow.h"
-extern class ControlWindow* controlwindow_p;
-#endif NO_GRAPHICS
 
 ArenaBase::ArenaBase()
 {
@@ -104,46 +97,46 @@ ArenaBase::set_state( const state_t st )
 {
   state = st;
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      String infotext;
-      switch( state )
-        {
-        case NO_STATE:
-        case NOT_STARTED:
-          infotext = "RealTimeBattle";
-          break;
-        case STARTING_ROBOTS:
-          infotext = "RTB  " + (String)_("*Starting robots*");
-          break;
-        case SHUTTING_DOWN_ROBOTS:
-          infotext = "RTB  " + (String)_("*Shutting down robots*");
-          break;
-        case BEFORE_GAME_START:
-        case GAME_IN_PROGRESS:
-          infotext = "RealTimeBattle  " + (String)_("*Running*");
-          if( pause_after_next_game )
-            infotext = "RTB  " + (String)_("*Pausing after game*");
-          break;
-        case PAUSING_BETWEEN_GAMES:
-        case PAUSED:
-          infotext = "RealTimeBattle  " + (String)_("*Paused*");
-          break;
-        case EXITING:
-          infotext = "RealTimeBattle  " + (String)_("*Exiting*");
-          break;
-        case FINISHED:
-          infotext = "RealTimeBattle  " + (String)_("*Finished*");
-          break;
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      {
+//        String infotext;
+//        switch( state )
+//          {
+//          case NO_STATE:
+//          case NOT_STARTED:
+//            infotext = "RealTimeBattle";
+//            break;
+//          case STARTING_ROBOTS:
+//            infotext = "RTB  " + (String)_("*Starting robots*");
+//            break;
+//          case SHUTTING_DOWN_ROBOTS:
+//            infotext = "RTB  " + (String)_("*Shutting down robots*");
+//            break;
+//          case BEFORE_GAME_START:
+//          case GAME_IN_PROGRESS:
+//            infotext = "RealTimeBattle  " + (String)_("*Running*");
+//            if( pause_after_next_game )
+//              infotext = "RTB  " + (String)_("*Pausing after game*");
+//            break;
+//          case PAUSING_BETWEEN_GAMES:
+//          case PAUSED:
+//            infotext = "RealTimeBattle  " + (String)_("*Paused*");
+//            break;
+//          case EXITING:
+//            infotext = "RealTimeBattle  " + (String)_("*Exiting*");
+//            break;
+//          case FINISHED:
+//            infotext = "RealTimeBattle  " + (String)_("*Finished*");
+//            break;
           
-        default:
-          Error(true, "Unknown state", "ArenaBase::set_state");
-        }
+//          default:
+//            Error(true, "Unknown state", "ArenaBase::set_state");
+//          }
       
-      controlwindow_p->set_window_title( infotext );
-    }
-#endif NO_GRAPHICS
+//        controlwindow_p->set_window_title( infotext );
+//      }
+//  #endif NO_GRAPHICS
 }
 
 void 
@@ -153,15 +146,6 @@ ArenaBase::interrupt_tournament()
       state == PAUSING_BETWEEN_GAMES )
     {
       the_arena_controller.auto_start_and_end = false;
-#ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          controlwindow_p->remove_replay_widgets();
-          the_gui.close_scorewindow();
-          the_gui.close_arenawindow();
-          the_gui.close_messagewindow();
-        }
-#endif
 
       delete_lists(true, true, false, true);
       
@@ -204,10 +188,10 @@ ArenaBase::print_message( const String& messager,
 {
   if( use_message_file )
     message_file << messager << ": " << text << endl;
-#ifndef NO_GRAPHICS
-  else if( !no_graphics && the_gui.is_messagewindow_up() )
-    the_gui.get_messagewindow_p()->add_message( messager, text );
-#endif
+//  #ifndef NO_GRAPHICS
+//    else if( !no_graphics && the_gui.is_messagewindow_up() )
+//      the_gui.get_messagewindow_p()->add_message( messager, text );
+//  #endif
 }
 
 void

@@ -24,17 +24,12 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-#ifndef NO_GRAPHICS
-#include <glib.h>
-#include <gdk/gdk.h>
-#endif NO_GRAPHICS
-
 #include <iostream.h>
 #include <fstream.h>
 
-#ifndef NO_GRAPHICS
-#include "Gui.h"
-#endif NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
+//  #include "Gui.h"
+//  #endif NO_GRAPHICS
 
 #include "Vector2D.h"
 #include "Messagetypes.h"
@@ -62,10 +57,6 @@ static const double infinity = 1.0e10;  //approximatly ;-)
 static const int max_debug_level = 5;
 
 extern class Options the_opts;
-//extern class ArenaRealTime the_arena;
-#ifndef NO_GRAPHICS
-extern class Gui the_gui;
-#endif
 
 extern bool no_graphics;
 

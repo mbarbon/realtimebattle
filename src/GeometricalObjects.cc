@@ -24,9 +24,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 
 #include "GeometricalObjects.h"
-#include "ArenaWindow.h"
 #include "Various.h"
-#include "Gui.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
 
@@ -38,18 +36,14 @@ Line::Line()
   direction = Vector2D(0.0, 0.0);
   length = 0.0;
   thickness = 0.0;
-  last_drawn_start_point = Vector2D(-infinity,-infinity);
-  last_drawn_direction = Vector2D(-infinity,-infinity);
-  last_drawn_length = 0.0;
-  last_drawn_thickness = 0.0;
 }
 
 Line::Line(const Vector2D& sp, const Vector2D& d, const double len, const double th)
 {
-  last_drawn_start_point = start_point = sp;
-  last_drawn_direction = direction = d;
-  last_drawn_length = length = len;
-  last_drawn_thickness = thickness = th;
+  start_point = sp;
+  direction = d;
+  length = len;
+  thickness = th;
 }
 
 // Line::Line(const Vector2D& sp, const Vector2D& d, const double len, 
@@ -110,45 +104,23 @@ Line::within_distance(const Vector2D& pos, const double size)
           (-dot(y,direction) >= 0 && -dot(y,direction) <= length));
 }
 
-#ifndef NO_GRAPHICS
-void
-Line::draw_shape( bool erase )
-{
-  if( erase )
-    the_gui.get_arenawindow_p()->draw_line( last_drawn_start_point,
-                                            last_drawn_direction,
-                                            last_drawn_length,
-                                            last_drawn_thickness,
-                                            *(the_gui.get_bg_gdk_colour_p()) );
-  last_drawn_start_point = start_point;
-  last_drawn_direction = direction;
-  last_drawn_length = length;
-  last_drawn_thickness = thickness;
-  the_gui.get_arenawindow_p()->draw_line( start_point, direction,
-                                          length, thickness,
-                                          gdk_colour );
-}
-
-#endif
 
 Circle::Circle()
 {
   center = Vector2D(0.0, 0.0);
   radius = 0.0;
-  last_drawn_center = Vector2D(-infinity,-infinity);
-  last_drawn_radius = 0.0;
 }
 
 Circle::Circle(const Vector2D& c, const double r)
 {
-  last_drawn_center = center = c;
-  last_drawn_radius = radius = r;
+  center = c;
+  radius = r;
 }
 
 Circle::Circle(const Vector2D& c, const double r, const long int col) : Shape(col)
 {
-  last_drawn_center = center = c;
-  last_drawn_radius = radius = r;
+  center = c;
+  radius = r;
 }
 
 
@@ -184,35 +156,16 @@ Circle::get_normal(const Vector2D& pos)
   return unit(pos - center);
 }
 
-#ifndef NO_GRAPHICS
-
-void
-Circle::draw_shape(bool erase)
-{
-  if( erase )
-    the_gui.get_arenawindow_p()->draw_circle( last_drawn_center,
-                                              last_drawn_radius,
-                                              *(the_gui.get_bg_gdk_colour_p()),
-                                              true );
-  last_drawn_center = center;
-  last_drawn_radius = radius;
-  the_gui.get_arenawindow_p()->draw_circle( center, radius, gdk_colour, true );
-}
-
-#endif
-
 InnerCircle::InnerCircle()
 {
   center = Vector2D(0.0, 0.0);
   radius = 0.0;
-  last_drawn_center = Vector2D(-infinity,-infinity);
-  last_drawn_radius = 0.0;
 }
 
 InnerCircle::InnerCircle(const Vector2D& c, const double r)
 {
-  last_drawn_center = center = c;
-  last_drawn_radius = radius = r;
+  center = c;
+  radius = r;
 }
 
 // InnerCircle::InnerCircle(const Vector2D& c, const double r, const double b_c, const double hardn)
@@ -245,28 +198,3 @@ InnerCircle::get_normal(const Vector2D& pos)
 {
   return unit(center - pos);
 }
-
-#ifndef NO_GRAPHICS
-
-void
-InnerCircle::draw_shape(bool erase)
-{
-  if( erase )
-    the_gui.get_arenawindow_p()->
-      draw_circle( last_drawn_center,
-                   last_drawn_radius,
-                   *(the_gui.get_bg_gdk_colour_p()),
-                   true );
-  last_drawn_center = center;
-  last_drawn_radius = radius;
-  the_gui.get_arenawindow_p()->
-    draw_rectangle( the_arena.get_boundary()[0],
-                    the_arena.get_boundary()[1],
-                    gdk_colour, true );
-  the_gui.get_arenawindow_p()->
-    draw_circle( center, radius,
-                 *(the_gui.get_bg_gdk_colour_p()),
-                 true );
-}
-
-#endif

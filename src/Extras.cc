@@ -27,17 +27,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Extras.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
-#include "ArenaWindow.h"
 #include "Options.h"
 
 Extras::Extras(const Vector2D& c, const double r, const double e, const long int col)
   : Circle(c, r, col), energy(e)
 {
   alive = true;
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    draw_shape( false );
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      draw_shape( false );
+//  #endif
 }
 
 Cookie::Cookie(const Vector2D& c, const double e, const int c_id = -1) 
@@ -68,12 +67,12 @@ void
 Extras::die()
 {
    alive = false;
-#ifndef NO_GRAPHICS
-   if (!no_graphics )
-     the_gui.get_arenawindow_p()->
-       draw_circle( last_drawn_center, last_drawn_radius,
-                    *(the_gui.get_bg_gdk_colour_p()), true );
-#endif
+//  #ifndef NO_GRAPHICS
+//     if (!no_graphics )
+//       the_gui.get_arenawindow_p()->
+//         draw_circle( last_drawn_center, last_drawn_radius,
+//                      *(the_gui.get_bg_gdk_colour_p()), true );
+//  #endif
 
    if( the_arena_controller.is_realtime() )
      realtime_arena.print_to_logfile( 'D', (int)log_file_char, id );

@@ -176,16 +176,15 @@ List<T>::remove(const T* x)
 }
 
 
-// inserts x directly after current_pos
-//
+// inserts x directly after li's pos
+
 //  template <class T>
 //  void
-//  List<T>::insert(T* x)
+//  List<T>::insert(ListIterator<T>& li, T* x)
 //  {
-//    if( current_pos == list_head )
-//      insert_first(x);
+//    if( li.listp == NULL ) Error(true, "Nowhere to insert", "List::insert");
 
-//    if ( current_pos == NULL ) Error(true, "Nowhere to insert", "List::insert");    
+//    ListNode<T>* current_pos = li.listp;
 
 //    ListNode<T>*  p = new ListNode<T>(x, current_pos->next, current_pos);
 
@@ -193,7 +192,7 @@ List<T>::remove(const T* x)
 
 //    if( current_pos->next ) current_pos->next->prev = p;
 //    current_pos->next = p;
-//    current_pos = p;
+//    li.listp = p;
 //  }
 
 template <class T>
@@ -241,3 +240,7 @@ template class List<start_tournament_info_t>;
 
 #include "ArenaReplay.h"
 template class List<ArenaReplay::object_pos_info_t>;
+
+#include "Gui/Gtk/DrawingObjects.h" //TODO: Fix a lot better way to do this
+template class List<DrawingShape>;
+template class List<DrawingRobot>;

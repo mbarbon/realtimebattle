@@ -25,7 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
-#include "ArenaWindow.h"
+//#include "ArenaWindow.h"
 #include "Extras.h"
 #include "Various.h"
 #include "Options.h"
@@ -112,12 +112,12 @@ Shot::die()
   if( alive )
     {
       alive = false;
-#ifndef NO_GRAPHICS
-      if (!no_graphics )
-        the_gui.get_arenawindow_p()->
-          draw_circle( last_drawn_center, last_drawn_radius,
-                       *(the_gui.get_bg_gdk_colour_p()), true );
-#endif
+//  #ifndef NO_GRAPHICS
+//        if (!no_graphics )
+//          the_gui.get_arenawindow_p()->
+//            draw_circle( last_drawn_center, last_drawn_radius,
+//                         *(the_gui.get_bg_gdk_colour_p()), true );
+//  #endif
       
       if( the_arena_controller.is_realtime() )
         realtime_arena.print_to_logfile('D', (int)'S', id);

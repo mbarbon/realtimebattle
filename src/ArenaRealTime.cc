@@ -35,7 +35,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include "Gui.h"
 #include "ArenaRealTime.h"
 #include "ArenaController.h"
-#include "ArenaWindow.h"
+//#include "ArenaWindow.h"
 //#include "MovingObject.h"
 //#include "Shape.h"
 #include "IntlDefs.h"
@@ -46,15 +46,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "Wall.h"
 #include "Robot.h"
-#ifndef NO_GRAPHICS
-# include "ScoreWindow.h"
-# include "ControlWindow.h"
-# include "MessageWindow.h"
-#endif
-
-#ifndef NO_GRAPHICS
-extern class ControlWindow* controlwindow_p;
-#endif
 
 ArenaRealTime::ArenaRealTime()
 {
@@ -384,9 +375,9 @@ ArenaRealTime::quit_ordered()
 bool
 ArenaRealTime::timeout_function()
 {
-#ifndef NO_GRAPHICS
-      int old_total = (int)total_time;
-#endif NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
+//        int old_total = (int)total_time;
+//  #endif NO_GRAPHICS
 
   if( state != PAUSED )
     {
@@ -434,10 +425,10 @@ ArenaRealTime::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
-#ifndef NO_GRAPHICS
-        if((int)total_time > old_total && !no_graphics)
-          the_gui.get_scorewindow_p()->set_window_title();
-#endif
+//  #ifndef NO_GRAPHICS
+//          if((int)total_time > old_total && !no_graphics)
+//            the_gui.get_scorewindow_p()->set_window_title();
+//  #endif
         if( robots_left <= 1 || total_time > the_opts.get_d(OPTION_TIMEOUT) ) 
           {
             end_game();
@@ -485,22 +476,17 @@ ArenaRealTime::update()
 {
   print_to_logfile('T', total_time);
 
-#ifndef NO_GRAPHICS
-  if( state == GAME_IN_PROGRESS && !no_graphics)
-    the_gui.get_messagewindow_p()->freeze_clist();
-#endif
-
   read_robot_messages();
   move_shots(timestep);
   update_robots();
 
-#ifndef NO_GRAPHICS
-  if( state == GAME_IN_PROGRESS && !no_graphics)
-    {
-      the_gui.get_arenawindow_p()->draw_moving_objects( true );
-      the_gui.get_messagewindow_p()->thaw_clist();
-    }
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( state == GAME_IN_PROGRESS && !no_graphics)
+//      {
+//        the_gui.get_arenawindow_p()->draw_moving_objects( true );
+//        the_gui.get_messagewindow_p()->thaw_clist();
+//      }
+//  #endif
 
   update_count_for_logging++;
   if( update_count_for_logging == the_opts.get_l(OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL) )
@@ -625,10 +611,10 @@ ArenaRealTime::update_robots()
         {
           robotp = (Robot*)li();
           //          robotp->add_points(robots_killed_this_round);
-#ifndef NO_GRAPHICS
-          if( robots_left < 15 && !no_graphics ) 
-            robotp->display_score();
-#endif
+//  #ifndef NO_GRAPHICS
+//            if( robots_left < 15 && !no_graphics ) 
+//              robotp->display_score();
+//  #endif
         }
 
       ListIterator<Robot> li2;
@@ -820,18 +806,18 @@ ArenaRealTime::start_game()
   set_state( GAME_IN_PROGRESS );
   game_nr++;
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      the_gui.get_arenawindow_p()->clear_area();
-      the_gui.get_arenawindow_p()->drawing_area_scale_changed();
-      the_gui.get_scorewindow_p()->update_robots();
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      {
+//        the_gui.get_arenawindow_p()->clear_area();
+//        the_gui.get_arenawindow_p()->drawing_area_scale_changed();
+//        the_gui.get_scorewindow_p()->update_robots();
 
-      reset_timer();  // Time should be zero in score window
-      the_gui.get_scorewindow_p()->set_window_title();
-      the_gui.get_arenawindow_p()->set_window_title();
-    }
-#endif
+//        reset_timer();  // Time should be zero in score window
+//        the_gui.get_scorewindow_p()->set_window_title();
+//        the_gui.get_arenawindow_p()->set_window_title();
+//      }
+//  #endif
 
   reset_timer();  // Game starts !
   next_check_time = total_time + the_opts.get_d(OPTION_CHECK_INTERVAL);
@@ -1003,18 +989,18 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 
   // Open windows if they were closed, else clear them 
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      if( the_gui.is_messagewindow_up() )
-        MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
-      else if( !use_message_file )
-        the_gui.open_messagewindow();
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      {
+//        if( the_gui.is_messagewindow_up() )
+//          MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
+//        else if( !use_message_file )
+//          the_gui.open_messagewindow();
 
-      if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
-      if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
-    }
-#endif
+//        if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
+//        if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
+//      }
+//  #endif
 
   // Create robot classes and put them into the list all_robots_in_tournament
 
@@ -1145,13 +1131,8 @@ ArenaRealTime::end_tournament()
 {
   set_state( FINISHED );
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      //      if( !use_message_file )
-      //        the_gui.close_messagewindow();
-      //      the_gui.close_scorewindow();
-      the_gui.close_arenawindow();
-    }
-#endif
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      the_gui.close_arenawindow();
+//  #endif
 }

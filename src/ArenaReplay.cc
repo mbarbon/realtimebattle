@@ -33,15 +33,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Options.h"
 #include "Extras.h"
 #include "Shot.h"
-#include "MessageWindow.h"
-#include "ArenaWindow.h"
-#include "ScoreWindow.h"
-#include "ControlWindow.h"
+//  #include "MessageWindow.h"
+//  #include "ArenaWindow.h"
+//  #include "ScoreWindow.h"
+//  #include "ControlWindow.h"
 #include "Robot.h"
 
 const int max_time_infos = 16384;
-
-extern class ControlWindow* controlwindow_p;
 
 ArenaReplay::ArenaReplay()
 {
@@ -89,39 +87,39 @@ ArenaReplay::timeout_function()
       break;
     case GAME_IN_PROGRESS:
       {
-#ifndef NO_GRAPHICS
-        int old_total = (int)current_replay_time;
-#endif NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
+//          int old_total = (int)current_replay_time;
+//  #endif NO_GRAPHICS
 
         parse_this_interval();
 
-#ifndef NO_GRAPHICS
-        if((int)current_replay_time - old_total != 0 && !no_graphics)
-          {
-            the_gui.get_scorewindow_p()->set_window_title();
-            if( !log_from_stdin )
-              controlwindow_p->set_progress_time( current_replay_time );
-          }
-#endif
+//  #ifndef NO_GRAPHICS
+//          if((int)current_replay_time - old_total != 0 && !no_graphics)
+//            {
+//              the_gui.get_scorewindow_p()->set_window_title();
+//              if( !log_from_stdin )
+//                controlwindow_p->set_progress_time( current_replay_time );
+//            }
+//  #endif
       }
       break;
 
     case BEFORE_GAME_START:
       parse_this_interval();
-#ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          if( controlwindow_p->get_displayed() != ControlWindow::REPLAY_WIDGETS &&
-              !log_from_stdin )
-            controlwindow_p->display_replay_widgets();
-          the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
-          the_gui.get_arenawindow_p()->draw_everything();      
-          the_gui.get_scorewindow_p()->update_robots();
+//  #ifndef NO_GRAPHICS
+//        if( !no_graphics )
+//          {
+//            if( controlwindow_p->get_displayed() != ControlWindow::REPLAY_WIDGETS &&
+//                !log_from_stdin )
+//              controlwindow_p->display_replay_widgets();
+//            the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
+//            the_gui.get_arenawindow_p()->draw_everything();      
+//            the_gui.get_scorewindow_p()->update_robots();
           char msg[64];
           snprintf(msg, 63, _("Game %d of sequence %d"), game_nr, sequence_nr);
           print_message( "RealTimeBattle", (String)msg );
-        }
-#endif NO_GRAPHICS
+//          }
+//  #endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );
       break;
 
@@ -144,10 +142,6 @@ ArenaReplay::timeout_function()
 void
 ArenaReplay::parse_this_interval()
 {
-#ifndef NO_GRAPHICS
-  if( state == GAME_IN_PROGRESS && !no_graphics)
-    the_gui.get_messagewindow_p()->freeze_clist();
-#endif
   if( fast_forward_factor > 0.0 )
     while( !log_file.eof() && total_time >= current_replay_time )
       {
@@ -161,21 +155,17 @@ ArenaReplay::parse_this_interval()
         parse_this_time_index();
       }
     }
-#ifndef NO_GRAPHICS
-  if( state == GAME_IN_PROGRESS && !no_graphics)
-    the_gui.get_messagewindow_p()->thaw_clist();
-#endif
   
   if( log_file.eof() )
     {
       set_state( FINISHED );
-#ifndef NO_GRAPHICS
-      if( !no_graphics )
-        {
-          controlwindow_p->remove_replay_widgets();
-          the_gui.close_arenawindow();
-        }
-#endif
+//  #ifndef NO_GRAPHICS
+//        if( !no_graphics )
+//          {
+//            controlwindow_p->remove_replay_widgets();
+//            the_gui.close_arenawindow();
+//          }
+//  #endif
     }
 }
 
@@ -205,10 +195,10 @@ ArenaReplay::parse_this_time_index()
   current_replay_time = next_replay_time;
   move_shots_no_check( current_replay_time - last_replay_time );
 
-#ifndef NO_GRAPHICS
-        if( !no_graphics )
-          the_gui.get_arenawindow_p()->draw_moving_objects( true );
-#endif NO_GRAPHICS
+//  #ifndef NO_GRAPHICS
+//          if( !no_graphics )
+//            the_gui.get_arenawindow_p()->draw_moving_objects( true );
+//  #endif NO_GRAPHICS
 
   // check if robots have died and set their points
   if( robots_killed_this_round != 0 )
@@ -223,10 +213,10 @@ ArenaReplay::parse_this_time_index()
           if( robotp->is_alive() )
             {
               //              robotp->add_points(robots_killed_this_round);
-#ifndef NO_GRAPHICS
-              if( robots_left < 15 && !no_graphics ) 
-                robotp->display_score();
-#endif
+//  #ifndef NO_GRAPHICS
+//                if( robots_left < 15 && !no_graphics ) 
+//                  robotp->display_score();
+//  #endif
             }
         }
 
@@ -237,18 +227,18 @@ ArenaReplay::parse_this_time_index()
 void 
 ArenaReplay::start_tournament()
 {
-#ifndef NO_GRAPHICS
-  if( !no_graphics )
-    {
-      if( the_gui.is_messagewindow_up() )
-        MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
-      else //if( !use_message_file )
-        the_gui.open_messagewindow();
+//  #ifndef NO_GRAPHICS
+//    if( !no_graphics )
+//      {
+//        if( the_gui.is_messagewindow_up() )
+//          MessageWindow::clear_clist( NULL, the_gui.get_messagewindow_p() );
+//        else //if( !use_message_file )
+//          the_gui.open_messagewindow();
 
-      if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
-      if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
-    }
-#endif
+//        if( !the_gui.is_scorewindow_up() ) the_gui.open_scorewindow();
+//        if( !the_gui.is_arenawindow_up() ) the_gui.open_arenawindow();
+//      }
+//  #endif
 
   if( !log_from_stdin )
     make_statistics_from_file();
@@ -352,9 +342,9 @@ ArenaReplay::parse_log_line()
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
 
-#ifndef NO_GRAPHICS
-        controlwindow_p->change_time_limitations();
-#endif
+//  #ifndef NO_GRAPHICS
+//          controlwindow_p->change_time_limitations();
+//  #endif
       }
       break;
     case 'H': // Header
@@ -869,15 +859,15 @@ ArenaReplay::step_forward( const int n_o_steps, const bool clear_time )
           if( n_o_steps != 0 )
             move_shots_no_check( current_replay_time - last_replay_time );
 
-#ifndef NO_GRAPHICS
-          if( !no_graphics && n_o_steps != 0 )
-            {
-              the_gui.get_arenawindow_p()->draw_moving_objects( true );
-              the_gui.get_scorewindow_p()->set_window_title();
-              if( !log_from_stdin )
-                controlwindow_p->set_progress_time( current_replay_time );
-            }
-#endif
+//  #ifndef NO_GRAPHICS
+//            if( !no_graphics && n_o_steps != 0 )
+//              {
+//                the_gui.get_arenawindow_p()->draw_moving_objects( true );
+//                the_gui.get_scorewindow_p()->set_window_title();
+//                if( !log_from_stdin )
+//                  controlwindow_p->set_progress_time( current_replay_time );
+//              }
+//  #endif
 
           return true;
         }

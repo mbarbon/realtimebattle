@@ -23,8 +23,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shape.h"
 #include "Vector2D.h"
 
-//class Vector2D;
-
 // ---------------------  Line : Shape ---------------------
 
 class Line : public Shape
@@ -40,10 +38,6 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-#ifndef NO_GRAPHICS
-  void draw_shape(bool erase);
-#endif
-
   Vector2D get_start_point() { return start_point; }
   Vector2D get_direction() { return direction; }
   double get_length() { return length; }
@@ -54,11 +48,6 @@ protected:
   Vector2D direction;
   double length;
   double thickness;
-
-  Vector2D last_drawn_start_point;
-  Vector2D last_drawn_direction;
-  double last_drawn_length;
-  double last_drawn_thickness;
 };
 
 
@@ -77,19 +66,12 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-#ifndef NO_GRAPHICS
-  void draw_shape(bool erase);
-#endif
-  
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
   
 protected:
   Vector2D center;
   double radius;
-
-  Vector2D last_drawn_center;
-  double last_drawn_radius;
 };
 
 // ---------------------  InnerCircle : Shape ---------------------
@@ -106,19 +88,12 @@ public:
   bool within_distance(const Vector2D& pos, const double size);
   Vector2D get_normal(const Vector2D& pos);
 
-#ifndef NO_GRAPHICS
-  void draw_shape(bool erase);
-#endif
-
   double get_radius() { return radius; }
   Vector2D get_center() { return center; }
    
 protected:
   Vector2D center;
   double radius;
-
-  Vector2D last_drawn_center;
-  double last_drawn_radius;
 };
 
 #endif __GEOMETRICAL_OBJECTS__

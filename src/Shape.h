@@ -22,9 +22,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class Vector2D;
 
-#ifndef NO_GRAPHICS
-# include <gdk/gdktypes.h>
-#endif
+//  #ifndef NO_GRAPHICS
+//  # include <gdk/gdktypes.h>
+//  #endif
 
 
 /*
@@ -83,20 +83,10 @@ public:
   double get_hardness_coeff() { return hardness_coeff; }
 
   //  virtual arenaobject_t get_arenaobject_t() = 0;
-  //  friend void bounce_on_wall(class Robot& robot, const class Shape& wall, const Vector2D& normal);
-
-#ifndef NO_GRAPHICS
-  virtual void draw_shape(bool erase) = 0;
-  GdkColor& get_gdk_colour() { return gdk_colour; }
-  void set_colour(const GdkColor& gdk_colour);
-#endif
 
   void set_colour(const long int colour);
 
 protected:
-#ifndef NO_GRAPHICS
-  GdkColor gdk_colour;
-#endif
   long int rgb_colour;
 
   double bounce_coeff;
