@@ -119,7 +119,7 @@ Gui::Gui()
   control_window_size = Vector2D(294,110);
   start_tournament_window_size = Vector2D(485,410);
   arena_window_size = Vector2D(350,350);
-  score_window_size = Vector2D(359,374);
+  score_window_size = Vector2D(394,374);
   message_window_size = Vector2D(294,110);
   statistics_window_size = Vector2D(499,428);
 
@@ -565,11 +565,11 @@ Gui::setup_score_window()
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_EXTENDED);
   gtk_clist_set_border(GTK_CLIST(score_clist), GTK_SHADOW_IN);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 20);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 80);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 3, 38);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 4, 35);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 5, 50);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 5, 45);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 0, GTK_JUSTIFY_CENTER);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 1, GTK_JUSTIFY_LEFT);
   gtk_clist_set_column_justification(GTK_CLIST(score_clist), 2, GTK_JUSTIFY_RIGHT);
