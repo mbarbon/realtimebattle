@@ -12,6 +12,11 @@ EXTRA_DIST = $(rtbextra_DATA)
 export PAPER_SIZE = a4
 
 
+uninstall-local:
+	rmdir $(RTB_DIR)/Arenas; \
+	rm -r $(RTB_DIR)/Robots; \
+	rmdir $(RTB_DIR)
+
 #These targets are indended mainly for the maintainer
 
 robots:
@@ -96,7 +101,7 @@ rpm: tar.gz
 	BUILDARCH=`rpm --showrc | grep "^buildarch" | sed "s/buildarch[  ]*: *//"` && \
 
 	cp RealTimeBattle.tar.gz $SOURCEDIR && \
-	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > $SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
-	rpm -ba $SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
-	cp $RPMDIR/$BUILDARCH/RealTimeBattle-$(VERSION)-$(RELEASE).$BUILDARCH.rpm . && \
-	cp $SRCRPMDIR/RealTimeBattle-$(VERSION)-$(RELEASE).src.rpm . 
+	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > "$SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec" && \
+	rpm -ba "$SPECDIR/RealTimeBattle-$(VERSION)-$(RELEASE).spec" && \
+	cp "$RPMDIR/$BUILDARCH/RealTimeBattle-$(VERSION)-$(RELEASE).$BUILDARCH.rpm" . && \
+	cp "$SRCRPMDIR/RealTimeBattle-$(VERSION)-$(RELEASE).src.rpm" . 
