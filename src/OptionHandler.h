@@ -32,8 +32,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // ---------------------------------------------------------------------------
 // class OptionHandler
 // ---------------------------------------------------------------------------
-// Optionarrays supplied to Optionhandler are deleted when OptionHandler
-// is destructed.
+// All Option*:s within the map supplied to Optionhandler are deleted
+// when OptionHandler is destructed.
 // ---------------------------------------------------------------------------
 
 class OptionHandler
@@ -57,6 +57,9 @@ public:
   void set_long_option                   ( const string&, const long int );
   void set_double_option                 ( const string&, const double );
   void set_string_option                 ( const string&, const string& );
+
+  const map<string,Option*>& get_options () const { return all_options; }
+  const vector<string>& get_group_names  () const { return group_names; }
 
   const bool is_option_existing          ( const string& option_name ) const;
 
