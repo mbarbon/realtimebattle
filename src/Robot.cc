@@ -214,20 +214,20 @@ Robot::start_process()
           if( robotp != this ) robotp->delete_pipes();
         }
 
-        if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
-          {
-            struct rlimit res_limit;
+      if( the_arena.get_game_mode() != ArenaBase::DEBUG_MODE )
+        {
+          struct rlimit res_limit;
 
-//        // Deny file access
+          //        // Deny file access
           
-//            if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-//              Error(true, "Couldn't get file limits for robot " + robot_filename, 
-//                    "Robot::start_process, child");
+          //            if( getrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+          //              Error(true, "Couldn't get file limits for robot " + robot_filename, 
+          //                    "Robot::start_process, child");
           
-//            //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
-//            if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
-//              Error(true, "Couldn't limit file access for robot " + robot_filename, 
-//                    "Robot::start_process, child");
+          //            //res_limit.rlim_cur = 7;   // Don't know why, but it is the lowest number that works
+          //            if( setrlimit( RLIMIT_NOFILE, &res_limit ) == -1 )
+          //              Error(true, "Couldn't limit file access for robot " + robot_filename, 
+          //                    "Robot::start_process, child");
           
 
           // Forbid creation of child processes
@@ -537,7 +537,7 @@ Robot::check_name_uniqueness()
     }
 
   if( robot_name_uniqueness_number > 0 )
-      robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
+    robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
 }
 
 double
@@ -637,25 +637,25 @@ Robot::update_rotation(rotation_t& angle, const double timestep)
 
   if( angle.pos >= angle.right && angle.mode == ROTATE_TO_RIGHT )
     {
-      angle.set( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
+      angle.set_rot( angle.right, 0.0, -infinity, infinity, NORMAL_ROT);
       if( send_rotation_reached >= 1 ) rot_reached = true;
     }
 
   if( angle.pos >= angle.right && angle.mode == SWEEP_RIGHT )
     {
-      angle.set( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
+      angle.set_rot( angle.right, -angle.vel, angle.left, angle.right, SWEEP_LEFT);
       if( send_rotation_reached >= 2 ) rot_reached = true;
     }
   
   if( angle.pos <= angle.left && angle.mode == ROTATE_TO_LEFT )
     {      
-      angle.set( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
+      angle.set_rot( angle.left, 0.0, -infinity, infinity, NORMAL_ROT);
       if( send_rotation_reached >= 1 ) rot_reached = true;
     }
 
   if( angle.pos <= angle.left && angle.mode == SWEEP_LEFT )
     {
-      angle.set( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
+      angle.set_rot( angle.left, -angle.vel, angle.left, angle.right, SWEEP_RIGHT);
       if( send_rotation_reached >= 2 ) rot_reached = true;
     }
 
@@ -776,9 +776,9 @@ void
 Robot::set_values_before_game(const Vector2D& pos, const double angle)
 {
   center = pos;
-  robot_angle.set (angle, 0.0, -infinity, infinity, NORMAL_ROT);
-  cannon_angle.set(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
-  radar_angle.set (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
+  robot_angle.set_rot (angle, 0.0, -infinity, infinity, NORMAL_ROT);
+  cannon_angle.set_rot(0.0,   0.0, -infinity, infinity, NORMAL_ROT);
+  radar_angle.set_rot (0.0,   0.0, -infinity, infinity, NORMAL_ROT);
   shot_energy = 0.0;
   radius = the_opts.get_d(OPTION_ROBOT_RADIUS);
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
@@ -963,7 +963,7 @@ void
 Robot::get_messages()
 {
   char buffer[81];
-  char text[81];
+  char text[161];
   char msg_name[81];
   message_from_robot_type msg_t;
 
@@ -1069,154 +1069,154 @@ Robot::get_messages()
               rot_speed *= rot_sign;
 
               if( bits & 1 ) 
-                robot_angle.set( robot_angle.pos, rot_speed,
-                                 -infinity, infinity, NORMAL_ROT );
+                robot_angle.set_rot( robot_angle.pos, rot_speed,
+                                     -infinity, infinity, NORMAL_ROT );
               if( bits & 2 ) 
-                cannon_angle.set( cannon_angle.pos, rot_speed,  
-                                  -infinity, infinity, NORMAL_ROT );
+                cannon_angle.set_rot( cannon_angle.pos, rot_speed,  
+                                      -infinity, infinity, NORMAL_ROT );
               if( bits & 4 )
-                radar_angle.set( radar_angle.pos, rot_speed,
-                                 -infinity, infinity, NORMAL_ROT );
+                radar_angle.set_rot( radar_angle.pos, rot_speed,
+                                     -infinity, infinity, NORMAL_ROT );
             }
           break;
 
         case ROTATE_TO:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-          {
-            int bits;
-            double rot_speed, rot_end_angle, rot_amount;
-            *instreamp >> bits >> rot_speed >> rot_end_angle;
-            rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
+            {
+              int bits;
+              double rot_speed, rot_end_angle, rot_amount;
+              *instreamp >> bits >> rot_speed >> rot_end_angle;
+              rot_end_angle = max(min(rot_end_angle, infinity), -infinity);
 
-            rot_speed = fabs(rot_speed);
-            if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-            if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+              rot_speed = fabs(rot_speed);
+              if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+              if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
 
-            if( bits & 2 )
-              {
-                cannon_angle.pos -= rint( (cannon_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
-                rot_amount = rot_end_angle - cannon_angle.pos;
-                if( rot_amount > 0 )
-                  cannon_angle.set( cannon_angle.pos, rot_speed, 
-                                    -infinity, cannon_angle.pos + rot_amount, 
-                                    ROTATE_TO_RIGHT );
-                else
-                  cannon_angle.set( cannon_angle.pos, -rot_speed,
-                                    cannon_angle.pos + rot_amount, infinity, 
-                                    ROTATE_TO_LEFT );
-              }
-            if( bits & 4 )
-              {
-                radar_angle.pos -= rint( (radar_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
-                rot_amount = rot_end_angle - radar_angle.pos;
-                if( rot_amount > 0 )
-                  radar_angle.set( radar_angle.pos, rot_speed,
-                                   -infinity, radar_angle.pos + rot_amount, 
-                                   ROTATE_TO_RIGHT );
-                else
-                  radar_angle.set( radar_angle.pos, -rot_speed,
-                                   radar_angle.pos + rot_amount, infinity, 
-                                   ROTATE_TO_LEFT );
-              }            
-          }
+              if( bits & 2 )
+                {
+                  cannon_angle.pos -= rint( (cannon_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
+                  rot_amount = rot_end_angle - cannon_angle.pos;
+                  if( rot_amount > 0 )
+                    cannon_angle.set_rot( cannon_angle.pos, rot_speed, 
+                                          -infinity, cannon_angle.pos + rot_amount, 
+                                          ROTATE_TO_RIGHT );
+                  else
+                    cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
+                                          cannon_angle.pos + rot_amount, infinity, 
+                                          ROTATE_TO_LEFT );
+                }
+              if( bits & 4 )
+                {
+                  radar_angle.pos -= rint( (radar_angle.pos-rot_end_angle) / (2.0*M_PI) ) * 2.0 * M_PI;
+                  rot_amount = rot_end_angle - radar_angle.pos;
+                  if( rot_amount > 0 )
+                    radar_angle.set_rot( radar_angle.pos, rot_speed,
+                                         -infinity, radar_angle.pos + rot_amount, 
+                                         ROTATE_TO_RIGHT );
+                  else
+                    radar_angle.set_rot( radar_angle.pos, -rot_speed,
+                                         radar_angle.pos + rot_amount, infinity, 
+                                         ROTATE_TO_LEFT );
+                }            
+            }
           break;
 
         case ROTATE_AMOUNT:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-          {
-            int bits;
-            double rot_speed, rot_amount;
-            *instreamp >> bits >> rot_speed >> rot_amount;
+            {
+              int bits;
+              double rot_speed, rot_amount;
+              *instreamp >> bits >> rot_speed >> rot_amount;
 
-            rot_speed = fabs(rot_speed);
-            if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-            if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-            if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+              rot_speed = fabs(rot_speed);
+              if( bits & 1 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+              if( bits & 2 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+              if( bits & 4 ) rot_speed = min( rot_speed, the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
 
-            if( bits & 1 )
-              {
-                if( rot_amount > 0 )
-                  robot_angle.set( robot_angle.pos, rot_speed,
-                                   -infinity, robot_angle.pos + rot_amount, 
-                                   ROTATE_TO_RIGHT );
-                else
-                  robot_angle.set( robot_angle.pos, -rot_speed,
-                                   robot_angle.pos + rot_amount, infinity, 
-                                   ROTATE_TO_LEFT );
-              }
-            if( bits & 2 )
-              {
-                if( rot_amount > 0 )
-                  cannon_angle.set( cannon_angle.pos, rot_speed,
-                                    -infinity, cannon_angle.pos + rot_amount, 
-                                    ROTATE_TO_RIGHT );
-                else
-                  cannon_angle.set( cannon_angle.pos, -rot_speed,
-                                    cannon_angle.pos + rot_amount, infinity, 
-                                    ROTATE_TO_LEFT );
-              }
-            if( bits & 4 )
-              {
-                if( rot_amount > 0 )
-                  radar_angle.set( radar_angle.pos, rot_speed,
-                                   -infinity, radar_angle.pos + rot_amount, 
-                                   ROTATE_TO_RIGHT );
-                else
-                  radar_angle.set( radar_angle.pos, -rot_speed,
-                                   radar_angle.pos + rot_amount, infinity, 
-                                   ROTATE_TO_LEFT );
-              }
-          }
+              if( bits & 1 )
+                {
+                  if( rot_amount > 0 )
+                    robot_angle.set_rot( robot_angle.pos, rot_speed,
+                                         -infinity, robot_angle.pos + rot_amount, 
+                                         ROTATE_TO_RIGHT );
+                  else
+                    robot_angle.set_rot( robot_angle.pos, -rot_speed,
+                                         robot_angle.pos + rot_amount, infinity, 
+                                         ROTATE_TO_LEFT );
+                }
+              if( bits & 2 )
+                {
+                  if( rot_amount > 0 )
+                    cannon_angle.set_rot( cannon_angle.pos, rot_speed,
+                                          -infinity, cannon_angle.pos + rot_amount, 
+                                          ROTATE_TO_RIGHT );
+                  else
+                    cannon_angle.set_rot( cannon_angle.pos, -rot_speed,
+                                          cannon_angle.pos + rot_amount, infinity, 
+                                          ROTATE_TO_LEFT );
+                }
+              if( bits & 4 )
+                {
+                  if( rot_amount > 0 )
+                    radar_angle.set_rot( radar_angle.pos, rot_speed,
+                                         -infinity, radar_angle.pos + rot_amount, 
+                                         ROTATE_TO_RIGHT );
+                  else
+                    radar_angle.set_rot( radar_angle.pos, -rot_speed,
+                                         radar_angle.pos + rot_amount, infinity, 
+                                         ROTATE_TO_LEFT );
+                }
+            }
           break;
         case SWEEP:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-          {
-            int bits;
-            double rot_speed, sweep_left, sweep_right;
-            *instreamp >> bits >> rot_speed >> sweep_left >> sweep_right;
-            sweep_left = max(min(sweep_left, infinity), -infinity);
-            sweep_right = max(min(sweep_right, infinity), -infinity);
-            rotation_mode_t rot_dir;
-            rot_dir = ( rot_speed < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+            {
+              int bits;
+              double rot_speed, sweep_left, sweep_right;
+              *instreamp >> bits >> rot_speed >> sweep_left >> sweep_right;
+              sweep_left = max(min(sweep_left, infinity), -infinity);
+              sweep_right = max(min(sweep_right, infinity), -infinity);
+              rotation_mode_t rot_dir;
+              rot_dir = ( rot_speed < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
 
-            if( bits & 2 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
-            if( bits & 4 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
+              if( bits & 2 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_CANNON_MAX_ROTATE) );
+              if( bits & 4 ) rot_speed = min( fabs(rot_speed), the_opts.get_d(OPTION_ROBOT_RADAR_MAX_ROTATE) );
             
-            if( bits & 2 )
-              {
-                cannon_angle.pos -= rint( (cannon_angle.pos - 0.5*(sweep_left+sweep_right)) / 
-                                          (2.0*M_PI) ) * 2.0 * M_PI;
-                if( fabs(cannon_angle.vel) > 1e-10 ) 
-                  rot_dir = ( cannon_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+              if( bits & 2 )
+                {
+                  cannon_angle.pos -= rint( (cannon_angle.pos - 0.5*(sweep_left+sweep_right)) / 
+                                            (2.0*M_PI) ) * 2.0 * M_PI;
+                  if( fabs(cannon_angle.vel) > 1e-10 ) 
+                    rot_dir = ( cannon_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
                   
-                if( cannon_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
-                if( cannon_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
+                  if( cannon_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
+                  if( cannon_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
 
-                double cannon_speed = rot_speed;
-                if( rot_dir == SWEEP_LEFT ) cannon_speed = -rot_speed;    
-                cannon_angle.set( cannon_angle.pos, cannon_speed, 
-                                  sweep_left, sweep_right, rot_dir );
-              }
-            if( bits & 4 )
-              {
-                radar_angle.pos -= rint( (radar_angle.pos - 0.5*(sweep_left+sweep_right)) / 
-                                         (2.0*M_PI) ) * 2.0 * M_PI;
-                if( fabs(radar_angle.vel) > 1e-10 ) 
-                  rot_dir = ( radar_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
+                  double cannon_speed = rot_speed;
+                  if( rot_dir == SWEEP_LEFT ) cannon_speed = -rot_speed;    
+                  cannon_angle.set_rot( cannon_angle.pos, cannon_speed, 
+                                        sweep_left, sweep_right, rot_dir );
+                }
+              if( bits & 4 )
+                {
+                  radar_angle.pos -= rint( (radar_angle.pos - 0.5*(sweep_left+sweep_right)) / 
+                                           (2.0*M_PI) ) * 2.0 * M_PI;
+                  if( fabs(radar_angle.vel) > 1e-10 ) 
+                    rot_dir = ( radar_angle.vel < 0 ? SWEEP_LEFT :  SWEEP_RIGHT );
                   
-                if( radar_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
-                if( radar_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
+                  if( radar_angle.pos <= sweep_left  ) rot_dir = SWEEP_RIGHT;
+                  if( radar_angle.pos >= sweep_right ) rot_dir = SWEEP_LEFT;
                 
-                double radar_speed = rot_speed;
-                if( rot_dir == SWEEP_LEFT ) radar_speed = -rot_speed;    
-                radar_angle.set( radar_angle.pos, radar_speed,
-                                 sweep_left, sweep_right, rot_dir );
-              }
-          }
+                  double radar_speed = rot_speed;
+                  if( rot_dir == SWEEP_LEFT ) radar_speed = -rot_speed;    
+                  radar_angle.set_rot( radar_angle.pos, radar_speed,
+                                       sweep_left, sweep_right, rot_dir );
+                }
+            }
           break;
         case PRINT:
           {
-            instreamp->get(text, 80, '\n');
+            instreamp->get(text, 160, '\n');
             realtime_arena.print_to_logfile('P', id, text);
             the_arena.print_message( robot_name, text );
           }
@@ -1224,10 +1224,12 @@ Robot::get_messages()
 
         case DEBUG:
           {
-            instreamp->get(text, 80, '\n');
-            realtime_arena.print_to_logfile('P', id, text);
+            instreamp->get(text, 160, '\n');
             if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
-              the_arena.print_message( robot_name, text );
+              {
+                realtime_arena.print_to_logfile('P', id, text);
+                the_arena.print_message( robot_name, text );
+              }
           }
           break;
 
@@ -1256,7 +1258,7 @@ Robot::get_messages()
           break;
 
         case DEBUG_CIRCLE:
-         if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
+          if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
             {
               if( !the_arena.is_max_debug_level() )
                 {
@@ -1276,7 +1278,7 @@ Robot::get_messages()
                 }
 #endif NO_GRAPHICS
             }         
-         break;          
+          break;          
 
         case SHOOT:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
@@ -1298,7 +1300,7 @@ Robot::get_messages()
                   realtime_arena.get_object_lists()[SHOT].insert_last( shotp );
 
                   realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
-                                   shot_vel[0], shot_vel[1]);
+                                                  shot_vel[0], shot_vel[1]);
                 }
               else  // No space for shot, direct hit!!
                 { 
@@ -1352,55 +1354,55 @@ Robot::get_messages()
           break;
         case ACCELERATE:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-          {
-            double acc;
-            *instreamp >> acc;
-            acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
-            acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
-            acceleration = acc;
-          }
+            {
+              double acc;
+              *instreamp >> acc;
+              acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
+              acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
+              acceleration = acc;
+            }
           break;
         case BREAK:  // Included only for compatibility reasons
           send_message(WARNING, OBSOLETE_KEYWORD, msg_name);
         case BRAKE:
           if( check_state_for_message(msg_t, GAME_IN_PROGRESS) )
-          {
-            double brk;
-            *instreamp >> brk;
-            brk = max( brk, 0.0);
-            brk = min( brk, 1.0);
-            brake_percent = brk;
-          } 
+            {
+              double brk;
+              *instreamp >> brk;
+              brk = max( brk, 0.0);
+              brk = min( brk, 1.0);
+              brake_percent = brk;
+            } 
           break;
-//          case LOAD_DATA:
-//            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
-//              {
-//                bool bin;
-//                *instreamp >> bin;
-//                load_data(bin);
-//              }
-//            break;
-//          case SAVE_DATA_FINISHED:
-//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-//              {
-//                send_message(EXIT_ROBOT);
-//                send_signal();
-//              }
-//            break;
-//          case BIN_DATA_FROM:
-//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-//              {
-//                save_data(true, has_saved);
-//                has_saved = true;
-//              }
-//            break;
-//          case ASCII_DATA_FROM:
-//            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
-//              {
-//                save_data(false, has_saved);
-//                has_saved = true;
-//              }
-//            break;
+          //          case LOAD_DATA:
+          //            if( check_state_for_message(msg_t, STARTING_ROBOTS) )
+          //              {
+          //                bool bin;
+          //                *instreamp >> bin;
+          //                load_data(bin);
+          //              }
+          //            break;
+          //          case SAVE_DATA_FINISHED:
+          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+          //              {
+          //                send_message(EXIT_ROBOT);
+          //                send_signal();
+          //              }
+          //            break;
+          //          case BIN_DATA_FROM:
+          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+          //              {
+          //                save_data(true, has_saved);
+          //                has_saved = true;
+          //              }
+          //            break;
+          //          case ASCII_DATA_FROM:
+          //            if( check_state_for_message(msg_t, SHUTTING_DOWN_ROBOTS) )
+          //              {
+          //                save_data(false, has_saved);
+          //                has_saved = true;
+          //              }
+          //            break;
         default:
           Error(true, "Message_type not implemented, " + (String)msg_name, "Robot::get_messages");
         }
@@ -1633,12 +1635,12 @@ Robot::display_score()
 
   p = get_last_position();
   if( p != 0 && p != last_displayed_last_place  )
-      {
-        last_displayed_last_place = p;
-        gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
-                           row_in_score_clist,
-                           4, String(p).non_const_chars());
-      }
+    {
+      last_displayed_last_place = p;
+      gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
+                         row_in_score_clist,
+                         4, String(p).non_const_chars());
+    }
 
 
   double pnts = get_total_points();
