@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libRTBGui_Gtk.la
+bin_PROGRAMS = libRTBGui_Gtk.so
 
 if ENABLE_PROF
 PROFFLAGS = -pg
@@ -14,11 +14,12 @@ CCMALLOC_O =
 endif
 
 
-libRTBGui_Gtk_la_LIBADD = 
-libRTBGui_Gtk_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-module $(STDCXX_LIBS) $(GTK_LIBS) $(CCMALLOC_O)
-libRTBGui_Gtk_la_DEPENDENCIES = $(INTLOBJS)
-libRTBGui_Gtk_la_SOURCES = \
+libRTBGui_Gtk_so_LDADD = 
+libRTBGui_Gtk_so_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+	-module $(STDCXX_LIBS) $(GTK_LIBS) $(CCMALLOC_O) \
+	-fPIC -shared
+libRTBGui_Gtk_so_DEPENDENCIES = $(INTLOBJS)
+libRTBGui_Gtk_so_SOURCES = \
 	ArenaDisplay.cc ArenaDisplay.h \
 	ArenaWindow.cc ArenaWindow.h \
 	ControlWindow.cc ControlWindow.h \

@@ -49,7 +49,7 @@ ControlWindow::ControlWindow( const int default_width,
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Control" );
   gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
-  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle" );
+  gtk_window_set_title( GTK_WINDOW( window_p ), "RealTimeBattle v2 (devel)" );
 
   gtk_container_border_width( GTK_CONTAINER( window_p ), 0 );
 
@@ -97,6 +97,8 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("File") "/tearoff", NULL, NULL, 0, "<Tearoff>" },
     { "/" N_("File") "/" N_("New tournament"), "<control>n",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEW_TOURNAMENT, "" },
+    { "/" N_("File") "/" N_("Join tournament"), "<control>j",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_JOIN_TOURNAMENT, ""},
     { "/" N_("File") "/" N_("Replay tournament"), "<control>r",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_REPLAY_TOURNAMENT, "" },
@@ -631,7 +633,10 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
     case MENU_MESSAGEFILE:
       break;
     case MENU_NEW_TOURNAMENT:
-      the_gui.open_starttournamentwindow();
+      the_gui.open_starttournamentwindow (true);
+      break;
+    case MENU_JOIN_TOURNAMENT:
+      the_gui.open_starttournamentwindow(false);
       break;
     case MENU_REPLAY_TOURNAMENT:
       if( //the_arena_controller.is_started() &&

@@ -26,6 +26,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <typeinfo>
 #include <string>
 
+#include <string>
+#include <iostream>
+#include <strstream>
+
 #include "ArenaWindow.h"
 #include "ControlWindow.h"
 #include "Dialog.h"
@@ -51,6 +55,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 int gui_returncode;
 class Gui* gui_p;
 
+//extern "C" {
+
 const string
 GIName()
 {
@@ -75,24 +81,49 @@ GIInit( int argc, char** argv )
   gtk_init (&argc, &argv);
 
   gui_returncode = EXIT_SUCCESS;
+
   gui_p = new Gui();
   return (gui_p != NULL);
 }
 
 int
-GIMain( GuiClientInterface* _gi_p )
+GIMain( GuiClientInterface*  _gi_p )
 {
   the_gui.main_loop( _gi_p );
+
+  cout<<"End of the Gui main loop\n";
+
   _gi_p->quit_program( true );
   delete gui_p;
   return gui_returncode;
 }
+
+int
+GICommand( string command )
+{
+  istrstream is(command);
+  cout<<command<<endl;
+  string window, action;
+  is>>window>>action;
+  if(window == "TournamentAgreement")
+    {
+      if(action == "add_robot")
+	{
+	  string robot_name;
+	  is>>robot_name;
+	}
+    }
+}
+
+//}
 
 Gui::Gui()
 {
   main_opts = NULL;
   statisticswindow_p = NULL;
   starttournamentwindow_p = NULL;
+
+  gui_interface_p = NULL;
 
   debug_level = 0;
   state = NO_STATE;
@@ -212,7 +243,9 @@ Gui::initialize_gtk_options()
 int
 Gui::main_loop( GuiClientInterface* _gi_p )
 {
-  guiinterface_p = _gi_p;
+
+  gui_interface_p = (GuiClientInterface*) _gi_p;
+
   set_colours();
 
   controlwindow_p = 
@@ -222,7 +255,8 @@ Gui::main_loop( GuiClientInterface* _gi_p )
 
   gint timeout_tag;      
 //    double interval = 1000.0*the_opts.get_d( OPTION_UPDATE_INTERVAL ) - 10.0; 
-  double interval = 1000.0*0.05 - 10.0; 
+  double interval = 1000.0*0.05 - 10.0;
+
   timeout_tag = gtk_timeout_add( (unsigned int) interval,
                                  GtkFunction(Gui::update_function), (gpointer) NULL );
 
@@ -242,7 +276,7 @@ void
 Gui::get_information()
 {
   const InfoBase* info_p;
-  while( NULL != ( info_p = guiinterface_p->check_information() ) )
+  while( NULL != ( info_p = gui_interface_p->check_information() ) )
     {
       game_time = info_p->get_game_time();
       switch( info_p->get_type() )
@@ -332,7 +366,7 @@ Gui::get_information()
 void
 Gui::apply_request( GuiRequest* req )
 {
-  guiinterface_p->apply_request( req );
+  gui_interface_p->apply_request( req );
 }
 
 void
@@ -353,7 +387,7 @@ void
 Gui::quit( bool exit_program )
 {
   if( exit_program )
-    guiinterface_p->quit_program( EXIT_SUCCESS );
+    gui_interface_p->quit_program( EXIT_SUCCESS );
   gui_returncode = EXIT_SUCCESS;
   gtk_main_quit();
 }
@@ -366,7 +400,7 @@ Gui::error( const bool fatal, const string& error_msg, const string& function_na
        << function_name << ": " << error_msg << endl;
   if( fatal )
     {
-      guiinterface_p->quit_program( EXIT_FAILURE );
+      gui_interface_p->quit_program( EXIT_FAILURE );
       gui_returncode = EXIT_FAILURE;
       gtk_main_quit();
     }
@@ -451,32 +485,35 @@ Gui::close_statisticswindow()
 }
 
 void
-Gui::open_starttournamentwindow()
+Gui::open_starttournamentwindow(bool create_channel)
 {
-//    bool open = false;
-//    if( NULL == starttournamentwindow_p )
-//      {
-//        if( the_arena_controller.is_started() )
-//          if( the_arena.get_state() != NOT_STARTED &&
-//              the_arena.get_state() != FINISHED )
-//            {
-//              string info_text = _("This action will kill the current tournament.\n"
-//                                   "Do you want to do that?");
-//              list<string> string_list;
-//              string_list.push_back( string( _("Yes") ) );
-//              string_list.push_back( string( _("No")  ) );
-//              Dialog( info_text, string_list,
-//                      (DialogFunction) Gui::kill_and_start_new_tournament );
-//            }
-//          else
-//            open = true;
-//        else
-//          open = true;
-//      }
-
-//    if( open )
-//      starttournamentwindow_p = 
-//        new StartTournamentWindow( -1, -1, -1, -1 );
+    bool open = false;
+    if( NULL == starttournamentwindow_p )
+      {
+        /*if( the_arena_controller.is_started() )
+          if( the_arena.get_state() != NOT_STARTED &&
+              the_arena.get_state() != FINISHED )
+            {
+              string info_text = _("This action will kill the current tournament.\n"
+                                   "Do you want to do that?");
+              list<string> string_list;
+              string_list.push_back( string( _("Yes") ) );
+              string_list.push_back( string( _("No")  ) );
+              Dialog( info_text, string_list,
+                      (DialogFunction) Gui::kill_and_start_new_tournament );
+            }
+          else
+            open = true;
+	    else */
+	open = true;
+      }
+    
+    if( open ) 
+      {
+	the_gui.apply_request(new OpenTournamentAgreementChannelRequest(create_channel));
+	starttournamentwindow_p = 
+	  new StartTournamentWindow( -1, -1, -1, -1 );
+      }
 }
 
 void
@@ -508,3 +545,4 @@ Gui::update_function(gpointer data)
 
   return res;
 }
+

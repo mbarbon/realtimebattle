@@ -91,7 +91,7 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
 
   // Lists for clists
 
-  list<string> robotdirs;
+  list<string> robotdirs;  //Maybe need a more complex structure (ie the team)
   list<string> arenadirs;
 
   read_dirs_from_system( robotdirs, arenadirs );
@@ -192,15 +192,19 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
           li = arenadirs.begin();
           li_end = arenadirs.end();
         }
-
+      long int team_bg_rgb_colour = 16445670;
       for( ; li != li_end ; li++ )
         {
           DIR* dir;
           if( NULL != (dir = opendir((*li).c_str())))
             {
+	      
               struct dirent * entry;
               while (NULL != ( entry = readdir( dir ) ) )
                 {
+		  team_bg_rgb_colour -= 500000;
+		  GdkColor  bg_gdk_colour = make_gdk_colour( team_bg_rgb_colour );
+
                   string full_file_name = (*li) + entry->d_name;
                   if( ( robot && check_if_filename_is_robot( full_file_name ) ) ||
                       ( !robot && check_if_filename_is_arena( full_file_name ) ) )
@@ -208,11 +212,12 @@ StartTournamentWindow::StartTournamentWindow( const int default_width,
                       char* lst[] = { entry->d_name };
 
                       int row = gtk_clist_append( GTK_CLIST( dir_clist ), lst );
-#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION > 1
                       gtk_clist_set_foreground( GTK_CLIST( dir_clist ), row, 
                                                 the_gui.get_fg_gdk_colour_p());
-                      gtk_clist_set_background( GTK_CLIST( dir_clist ), row, 
-                                                the_gui.get_bg_gdk_colour_p());
+                      gtk_clist_set_background( GTK_CLIST( dir_clist ), row,
+						the_gui.get_bg_gdk_colour_p());
+		      // & bg_gdk_colour ); //To have strange colors in the list (to test for teams)
 #endif
                       dir_list->push_back( start_tournament_info_t
                                            ( row, false, entry->d_name,
@@ -1002,7 +1007,7 @@ StartTournamentWindow::add_all_selected( const bool robots )
           char * list[] = { "" };
           
           int row = gtk_clist_append( GTK_CLIST( clist_tourn ), list );
-#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION < 1
+#if GTK_MAJOR_VERSION != 1 || GTK_MINOR_VERSION > 1
           gtk_clist_set_foreground( GTK_CLIST( clist_tourn ), row,
                                     the_gui.get_fg_gdk_colour_p() );
           gtk_clist_set_background( GTK_CLIST( clist_tourn ), row,
@@ -1011,6 +1016,10 @@ StartTournamentWindow::add_all_selected( const bool robots )
 
           char* cstr = copy_to_c_string( (*li).filename );
           gtk_clist_set_text( GTK_CLIST( clist_tourn ), row, 0, cstr );
+	  GuiRequest *R = new BroadCastTournamentChangeRequest("AddRobot", cstr);
+	  cout<<"Try to apply the request\n";
+	  gui_p->apply_request( R );
+
           delete [] cstr;
       
           string full_filename = (*li).directory + (*li).filename;

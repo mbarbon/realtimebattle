@@ -58,7 +58,7 @@ public:
   Gui();
   ~Gui();
 
-  int main_loop                                ( GuiClientInterface* );
+  int main_loop                                ( GuiClientInterface*  );
   int timeout_function                         ();
   void get_information                         ();
   void apply_request                           ( GuiRequest* req );
@@ -70,7 +70,7 @@ public:
 
   const OptionHandler* get_main_opts           () const { return main_opts; }
   const OptionHandler* get_gtk_opts            () const { return gtk_opts; }
-  GuiClientInterface* get_guiinterface         () const { return guiinterface_p; }
+  GuiClientInterface* get_guiinterface         () const { return gui_interface_p; }
 
   list<DrawingShape*>* get_drawing_objects_lists() { return drawing_objects_lists; }
 
@@ -138,7 +138,7 @@ public:
   StartTournamentWindow* get_starttournament_p () const
     { return starttournamentwindow_p; }
   static void kill_and_start_new_tournament    ( int result );
-  void open_starttournamentwindow              ();
+  void open_starttournamentwindow              ( bool );
   void close_starttournamentwindow             ();
 
   static gint update_function                  ( gpointer data );
@@ -149,7 +149,7 @@ private:
 
   void initialize_gtk_options                  ();
 
-  GuiClientInterface* guiinterface_p;
+  GuiClientInterface* gui_interface_p;
 
   OptionHandler* main_opts;
   OptionHandler* gtk_opts;
