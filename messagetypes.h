@@ -34,7 +34,8 @@ extern "C++" {
 
 enum message_to_robot_type 
 {
-  INITIALIZE = 0,              
+  INITIALIZE = 0,
+  GAME_STARTS,
   EXIT_ROBOT,
   RADAR,
   WARNING
@@ -74,6 +75,7 @@ struct Message
 static const Message message_to_robot[20] = 
 {
   {"Initialize", 0, {NONE,   NONE,   NONE,   NONE}},
+  {"GameStarts", 0, {NONE,   NONE,   NONE,   NONE}},
   {"ExitRobot",  0, {NONE,   NONE,   NONE,   NONE}},
   {"Radar",      2, {DOUBLE, INT,    NONE,   NONE}},
   {"Warning",    2, {INT,    STRING, NONE,   NONE}}
@@ -83,7 +85,7 @@ static const Message message_from_robot[20] =
 {
   {"Rotate",     2, {INT,    DOUBLE}},
   {"Name",       1, {STRING}},
-  {"Output",     1, {STRING}},
+  {"Print",      1, {STRING}},
   {"",           0, {}}
 };
 
