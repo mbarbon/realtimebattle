@@ -382,7 +382,8 @@ public:
   GList* get_statistics() { return statistics; }
   int get_position_this_game() { return position_this_game; }
   void display_energy();
-  void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc );
+  void display_place();
+  void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc );
 
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
@@ -417,6 +418,7 @@ private:
 
   GtkWidget* widget_energy;
   GtkWidget* widget_place;
+  GtkWidget* widget_last;
   GtkWidget* widget_score;
 };
 

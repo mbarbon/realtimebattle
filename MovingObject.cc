@@ -12,6 +12,7 @@ Robot::Robot(char* filename, Arena* ap)
   robot_filename = *g_string_new(filename);
   robot_name = *g_string_new("");
   robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
+  statistics = g_list_alloc();
   extra_air_resistance = 0.0;
   process_running = false;
   the_arena = ap;
@@ -141,8 +142,9 @@ Robot::die()
 void
 Robot::set_stats(int robots_killed_same_time)
 {
-  stat_t* gl;
+  stat_t* sp;
   position_this_game += robots_killed_same_time - 1;
+  display_place();
   double points_this_game = the_arena->get_robots_per_game() - position_this_game + position_this_game * 0.5;
   stat_t* statp = new stat_t
     (
@@ -150,7 +152,7 @@ Robot::set_stats(int robots_killed_same_time)
      the_arena->get_games_per_sequence() - the_arena->get_sequences_remaining(),
      points_this_game,
      the_arena->get_total_time(),
-     (gl = (stat_t*)g_list_last(statistics)->data) != NULL ? gl->total_points + points : points
+     (sp = (stat_t*)g_list_last(statistics)->data) != NULL ? sp->total_points + points : points
      );
 
   g_list_append(statistics, statp);
@@ -498,10 +500,24 @@ Robot::display_energy()
 }
 
 void
-Robot::set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * sc )
+Robot::display_place()
+{
+  strstream ss;
+  char str_place[25];
+
+  ss << position_this_game;
+  ss >> str_place;
+
+  cerr << "display_place(): String: " << str_place << endl;
+  gtk_entry_set_text (GTK_ENTRY (widget_place), str_place);
+}
+
+void
+Robot::set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc )
 {
   widget_energy = en;
   widget_place = pl;
+  widget_last = la;
   widget_score = sc;
 }
 
