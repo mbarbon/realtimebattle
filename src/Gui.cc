@@ -141,28 +141,30 @@ Gui::close_statisticswindow()
 void
 Gui::open_starttournamentwindow()
 {
+  bool open = false;
   if( NULL == starttournamentwindow_p )
     {
       if( the_arena_controller.is_started() )
-        {
-          if( the_arena.get_state() != NOT_STARTED &&
-              the_arena.get_state() != FINISHED )
-            {
-              List<String> string_list;
-              string_list.insert_last( new String( "Yes" ) );
-              string_list.insert_last( new String( "No"  ) );
-              Dialog( (String)"This action will kill the current tournament.\n" +
-                      "Do you want do that?",
-                      string_list,
-                      (DialogFunction) Gui::kill_and_start_new_tournament );
-            }
-        }
+        if( the_arena.get_state() != NOT_STARTED &&
+            the_arena.get_state() != FINISHED )
+          {
+            List<String> string_list;
+            string_list.insert_last( new String( "Yes" ) );
+            string_list.insert_last( new String( "No"  ) );
+            Dialog( (String)"This action will kill the current tournament.\n" +
+                    "Do you want do that?",
+                    string_list,
+                    (DialogFunction) Gui::kill_and_start_new_tournament );
+          }
+        else
+          open = true;
       else
-        starttournamentwindow_p = 
-          new StartTournamentWindow( -1, -1, -1, -1 );
+        open = true;
     }
-  else
-    close_starttournamentwindow();
+
+  if( open )
+    starttournamentwindow_p = 
+      new StartTournamentWindow( -1, -1, -1, -1 );
 }
 
 void
