@@ -439,12 +439,16 @@ Robot::set_stats(int robots_killed_same_time)
 void
 Robot::change_position( const double x, const double y, 
                         const double robot_a, const double cannon_a, 
-                        const double radar_a, const double energy )
+                        const double radar_a, const double en )
 {
   center = Vector2D(x, y);
   robot_angle.pos  = robot_a;
   cannon_angle.pos = cannon_a;
   radar_angle.pos  = radar_a;
+  energy = en;
+#ifndef NO_GRAPHICS  
+  if( !no_graphics )  display_score();
+#endif
 }
 
 void
