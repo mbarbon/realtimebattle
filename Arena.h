@@ -13,6 +13,8 @@
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
+//#define abs(a) ((a) > 0 ? (a) : -(a))
+//#define sgn(a) ((a) > 0 ? 1 : -1)
 
 static const double infinity = 1.0e10;
 static const double eps = 1.0e-2;
@@ -388,6 +390,22 @@ struct stat_t
   double total_points;
 };
 
+enum rotation_mode_t { NORMAL_ROT, SWEEP_LEFT, SWEEP_RIGHT, ROTATE_TO_RIGHT, ROTATE_TO_LEFT };
+
+struct rotation_t
+{
+  rotation_t() {}
+  rotation_t(double p, double v, double l, double r, rotation_mode_t m) :
+    pos(p), vel(v), left(l), right(r), mode(m) {}
+  void set(double p, double v, double l, double r, rotation_mode_t m) 
+    { pos=p; vel=v; left=l; right=r; mode=m; }
+  double pos;
+  double vel;
+  double left;
+  double right;
+  rotation_mode_t mode;
+};
+
 class Robot : public virtual MovingObject, public virtual Circle
 {
 public:
@@ -423,7 +441,7 @@ public:
   int get_position_this_game() { return position_this_game; }
   double get_total_points();
   int get_last_position();
-  double get_robot_angle() { return robot_angle; }
+  rotation_t get_robot_angle() { return robot_angle; }
   void display_energy();
   void display_place();
   void display_last();
@@ -440,12 +458,10 @@ private:
   double extra_air_resistance;
   double break_percent;
 
-  double radar_angle;
-  double radar_speed;
-  double cannon_angle;
-  double cannon_speed;
-  double robot_angle;
-  double robot_angle_speed;
+  rotation_t robot_angle;
+  rotation_t cannon_angle;
+  rotation_t radar_angle;
+
   double acceleration;
   double shot_energy;
 
