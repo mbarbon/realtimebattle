@@ -11,19 +11,22 @@ INT      integer numbers, could be HEX if a # before number
 BOOL     true or false
 STRING   ""-enclosed characters
 *GADGET  The name of a previously defined Gadget of specified type, with a $ in front
+
+
 FUNCSPEC true, false or default
+Is this necessary? FUNCSPEC(false) will never be used, since a Function
+not mentioned should not be activate. Or did I misunderstand something?
+
+
 VARTYPE  bool, int or double
 *LIST    a list of specified type, whitespace-separated (e.g no commas)
 
-The scriptlanguage
-******************
-
-;TODO: Specify the scritlanguage
 
 GadgetDefinitions
 *****************
 
 A gadgetname can not hold whitespaces, but all other characters.
+                                           ^^^^^^^^^ is ';jk"')( ok as a name?
 
 A Gadget is defined like this:
 
@@ -46,6 +49,7 @@ Define Gadget name
 
    ;Functions:
    Function Die             FUNCSPEC (true)
+   
 
    ;Other:
    InfoString               STRING ("No info given")
@@ -59,15 +63,12 @@ Define Variable name
 
    ;Functions:
    Function SetValue        FUNCSPEC (default)
-   Function Equal           FUNCSPEC (true)
-   Function Add             FUNCSPEC (true)
-   Function Multiply        FUNCSPEC (true)
    Function GetValue        FUNCSPEC (true)
 
    ;Variables:
-   Information              BOOL  ;The value will be sent to the robots.
-   Parameter                BOOL  ;The value can be set by the robots.
-   Option                   BOOL  ;The value can be set by the user as an option.
+   Information              BOOL (false)  ;The value will be sent to the robots.
+   Parameter                BOOL (false)  ;The value can be set by the robots.
+   Option                   BOOL (false)  ;The value can be set by the user as an option.
 
    DefaultValue             REAL (0.0)
    MinValue                 REAL (-infinity)
@@ -84,7 +85,44 @@ EndDefine
 
 Define Script name
 
-   ;Scriptlines, the scriptlanguage is discussed above
+   Function Eval            FUNCSPEC (default)
+
+
+   ; A script consists of a number of lines with the following syntax:
+
+   Line  INT    SCRIPTCOMMAND    ARGUMENT
+
+   ; The INT is the line number, ARGUMENT are dependent on the SCRIPTCOMMAND.
+
+  ;SCRIPTCOMMAND  ARGUMENT
+  ;------------------------
+  ;PUSH           VARTYPE
+  ;POP
+  ;COPY
+  ;STORE          VARIABLE
+  ;ACTION         STRING
+  ;ADD            VARTYPE
+  ;SUB            VARTYPE
+  ;MULT           VARTYPE
+  ;DIV            VARTYPE
+  ;INV
+  ;NEG
+  ;SIN
+  ;COS
+  ;TAN
+  ;ASIN
+  ;ACOS
+  ;ATAN
+  ;LT             VARTYPE
+  ;LE             VARTYPE
+  ;GT             VARTYPE
+  ;GE             VARTYPE
+  ;EQ             VARTYPE
+  ;NE             VARTYPE
+  ;THEN
+  ;ELSE
+  ;GOTO           INT
+  ;WAIT           REAL
 
 EndDefine
 
@@ -261,12 +299,10 @@ Define Engine name
 
    Power                    REAL
    MaxPower                 REAL
-   HeatPerPower             REAL
+   MinPower                 REAL ; It may consume fuel at standby
    SoundLevelPerPower       REAL
    UseCostPerTime           REAL
    UseCostPerPower          REAL
-   FuelUsagePerTime         REAL ;Amount of fuel is needed per time
-   FuelUsagePerPower        REAL ;Amount of fuel is needed per power
    Efficiency               REAL
    MaxTemperature           REAL
    Colour                   INT  ;Max: #ffffff Min: #000000
