@@ -68,7 +68,7 @@ public:
   void clear_area                  ();
   void draw_everything             ();
   void draw_moving_objects         ( const bool clear_objects_first );
-  void drawing_area_scale_changed  ();
+  void drawing_area_scale_changed  ( const bool change_da_value = false );
   void draw_circle                 ( const Vector2D& center,
                                      const double radius,
                                      GdkColor& colour,
@@ -87,6 +87,8 @@ public:
                                      GdkColor& colour,
                                      const bool filled );
 
+  GtkWidget* get_drawing_area      () { return drawing_area; }
+  GtkWidget* get_scrolled_window   () { return scrolled_window; }
   GtkWidget* get_window_p          () { return window_p; }
   bool is_window_shown             () { return window_shown; }
   void set_window_shown            ( bool win_shown );
