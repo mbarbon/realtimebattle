@@ -67,6 +67,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern class ControlWindow* controlwindow_p;
 #endif NO_GRAPHICS
 
+extern int global_debug_level;
+
 ArenaBase::ArenaBase()
 {
   state = NOT_STARTED;
@@ -534,7 +536,8 @@ ArenaBase::set_game_mode( const enum game_mode_t gm)
   game_mode = gm; 
   if( game_mode == DEBUG_MODE )
     {
-      if( debug_level == 0 ) debug_level = 1;
+      if( debug_level == 0 )
+        set_debug_level( global_debug_level );
     }
   else
     {

@@ -82,6 +82,7 @@ class String global_tournament_fname("");
 class String global_message_fname("");
 class String global_replay_fname("");
 int global_game_mode=ArenaBase::NORMAL_MODE;
+int global_debug_level=1;
 
 void 
 print_help_message()
@@ -89,27 +90,28 @@ print_help_message()
   cout << endl;
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
   cout << " Options:" << endl;
-  cout << "    --debug_mode,              -d   debug mode" << endl;
-  cout << "    --normal_mode,             -n   normal mode (default)" << endl;
-  cout << "    --competition_mode,        -c   competition mode" << endl ;
-  cout << "    --no_graphics,             -g   no graphics will be displayed" << endl ;
-  cout << "    --option_file [file],      -o   selects option-file (default: $HOME/.rtbrc)"  << endl;
-  cout << "    --log_file [file],         -l   make log file, if 'file' is '-'" << endl;
-  cout << "                                    the log is sent to STDOUT" << endl;
-  cout << "    --tournament_file [file],  -t   specify a tournament file to" << endl;
+  cout << "    --debug_mode,                -d   debug mode" << endl;
+  cout << "    --normal_mode,               -n   normal mode (default)" << endl;
+  cout << "    --competition_mode,          -c   competition mode" << endl ;
+  cout << "    --debug_level [0-5],         -D   sets the initial debug level. implies -d" << endl;
+  cout << "    --no_graphics,               -g   no graphics will be displayed" << endl ;
+  cout << "    --option_file [file],        -o   selects option-file (default: $HOME/.rtbrc)"  << endl;
+  cout << "    --log_file [file],           -l   make log file, if 'file' is '-'" << endl;
+  cout << "                                      the log is sent to STDOUT" << endl;
+  cout << "    --tournament_file [file],    -t   specify a tournament file to" << endl;
   cout << "                                    autostart a tournament" << endl;
-  cout << "    --statistics_file [file],  -s   file to print the statistics to" << endl;
-  cout << "                                    when autostarting" << endl;
-  cout << "    --message_file [file],     -m   redirect messages to 'file'." << endl;
-  cout << "                                    '-' as 'file' is equivalent to STDOUT." << endl;
-  cout << "                                    If both log and messages are send" << endl;
-  cout << "                                    to STDOUT, '-m' will be ignored" << endl;
-  cout << "    --replay [file]            -r   a log file to replay." << endl;
-  cout << "                                    if '-' is specified as file," << endl;
-  cout << "                                    input is taken from STDIN" << endl;
+  cout << "    --statistics_file [file],    -s   file to print the statistics to" << endl;
+  cout << "                                     when autostarting" << endl;
+  cout << "    --message_file [file],       -m   redirect messages to 'file'." << endl;
+  cout << "                                      '-' as 'file' is equivalent to STDOUT." << endl;
+  cout << "                                      If both log and messages are send" << endl;
+  cout << "                                      to STDOUT, '-m' will be ignored" << endl;
+  cout << "    --replay [file]              -r   a log file to replay." << endl;
+  cout << "                                      if '-' is specified as file," << endl;
+  cout << "                                      input is taken from STDIN" << endl;
   cout << endl;
-  cout << "    --help,                    -h   prints this message" << endl;
-  cout << "    --version,                 -v   prints the version number" << endl;
+  cout << "    --help,                      -h   prints this message" << endl;
+  cout << "    --version,                   -v   prints the version number" << endl;
   cout << endl;
 }
 
@@ -174,6 +176,9 @@ parse_command_line(int argc, char **argv)
   int version_flag=false, help_flag=false, graphics_flag=true;
   int c;
 
+  extern char* optarg;
+  extern int optind;
+
   static struct option long_options[] =
   {
     //option, argument?, flag, value
@@ -181,9 +186,9 @@ parse_command_line(int argc, char **argv)
     {"help", 0, &help_flag, true},
 
     {"debug_mode", 0, &global_game_mode, ArenaBase::DEBUG_MODE},
+    {"debug_level", 1, 0, 0},
     {"normal_mode", 0, &global_game_mode, ArenaBase::NORMAL_MODE},
     {"competition_mode", 0, &global_game_mode, ArenaBase::COMPETITION_MODE},
-
     {"option_file", 1, 0, 0},
     {"log_file", 1, 0, 0},
     {"statistics_file", 1, 0, 0},
@@ -200,9 +205,10 @@ parse_command_line(int argc, char **argv)
     {
       int option_index = 0;
      
-      c = getopt_long (argc, argv, "dncvho:l:s:t:m:r:g", long_options, &option_index);
+      c = getopt_long( argc, argv, "dncD:vho:l:s:t:m:r:g",
+                       long_options, &option_index );
 
-      /* Detect the end of the options. */
+      // Detect the end of the options.
       if (c == -1)
         break;
      
@@ -210,28 +216,34 @@ parse_command_line(int argc, char **argv)
         {
 
         case 0:
-          /* If this option set a flag, do nothing else now. */
-          if (long_options[option_index].flag != 0)
+          // If this option set a flag, do nothing else now.
+          // This is not the case for debug_mode
+          if( long_options[option_index].flag != 0 &&
+              option_index != 2 )
             break;
           
-          switch (option_index)
+          switch( option_index )
             {
-            case 5: 
+            case 3:
+              global_debug_level = str2int( optarg );
+              global_game_mode = ArenaBase::DEBUG_MODE;
+              break;
+            case 6: 
               global_option_fname = (String)optarg;
               break;
-            case 6:
+            case 7:
               global_log_fname = (String)optarg;
               break;
-            case 7:
+            case 8:
               global_statistics_fname = (String)optarg;
               break;
-            case 8:
+            case 9:
               global_tournament_fname = (String)optarg;
               break;
-            case 9:
+            case 10:
               global_message_fname = (String)optarg;
               break;
-            case 10:
+            case 11:
               global_replay_fname = (String)optarg;
               break;
             default:
@@ -243,6 +255,11 @@ parse_command_line(int argc, char **argv)
 
 
         case 'd':
+          global_game_mode = ArenaBase::DEBUG_MODE;
+          break;
+
+        case 'D':
+          global_debug_level = str2int( optarg );
           global_game_mode = ArenaBase::DEBUG_MODE;
           break;
 
@@ -295,6 +312,9 @@ parse_command_line(int argc, char **argv)
           exit( EXIT_FAILURE );
         }
     }
+
+  if( global_debug_level > max_debug_level ) global_debug_level = 5;
+  if( global_debug_level < 0 ) global_debug_level = 0;
 
   if(optind != argc) 
     {
