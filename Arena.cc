@@ -4,12 +4,25 @@
 Arena::Arena()
 {
   state = NOT_STARTED;
-  g_timer_start(&timer);
+  timer = g_timer_new();
+  all_robots_in_sequence = g_list_alloc();
+  all_robots_in_tournament = g_list_alloc();
+  solid_objects = g_list_alloc();
+  arena_filenames = g_list_alloc();
+  for(int i=ROBOT; i<EXPLOSION; i++)
+    object_lists[i] = g_list_alloc();
 }
 
 Arena::~Arena()
 {
   //  if( filep ) delete filep;
+  g_timer_destroy(timer);
+  g_list_free(all_robots_in_sequence);
+  g_list_free(all_robots_in_tournament);
+  g_list_free(solid_objects);
+  g_list_free(arena_filenames);
+  for(int i=ROBOT; i<EXPLOSION; i++)
+    g_list_free(object_lists[i]);
 }
 
 void
@@ -37,8 +50,8 @@ Arena::parse_file(istream& file)
           file >> ws >> number1;
 
           wallp = new WallCircle(vec1, number1);
-          g_list_append(&object_lists[WALL], wallp);
-          g_list_append(&solid_objects, wallp);
+          g_list_append(object_lists[WALL], wallp);
+          g_list_append(solid_objects, wallp);
         }
       //  else if( strcmp(text, "outer_circle" ) == 0 )
       //    {
@@ -53,8 +66,8 @@ Arena::parse_file(istream& file)
           file >> ws >> number2;   // thickness
           
           wallp = new WallLine(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
-          g_list_append(&object_lists[WALL], wallp);
-          g_list_append(&solid_objects, wallp);
+          g_list_append(object_lists[WALL], wallp);
+          g_list_append(solid_objects, wallp);
         }
       //   else if( strcmp(text, "polygon" ) == 0 )
       //     {
@@ -72,25 +85,25 @@ Arena::parse_file(istream& file)
 void
 Arena::add_to_list(class ArenaObject& obj)
 {
-  g_list_append(&object_lists[obj.get_object_type()], &obj);
+  g_list_append(object_lists[obj.get_object_type()], &obj);
 }  
 
 void
 Arena::add_to_solid_object_list(class Shape& obj)
 {
-  g_list_append(&solid_objects, &obj);
+  g_list_append(solid_objects, &obj);
 }
   
 void
 Arena::remove_from_list(class ArenaObject& obj)
 {
-  g_list_remove(&object_lists[obj.get_object_type()], &obj);
+  g_list_remove(object_lists[obj.get_object_type()], &obj);
 }  
 
 void
 Arena::remove_from_solid_object_list(class Shape& obj)
 {
-  g_list_remove(&solid_objects, &obj);
+  g_list_remove(solid_objects, &obj);
 }  
 
 
@@ -103,7 +116,7 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
   closest_shape = NULL;
   GList* gl;
 
-  for(gl = g_list_first(&solid_objects); gl->next != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(solid_objects); gl->next != NULL; gl = g_list_next(gl))
     {
       objp = (Shape*)gl->data;
       objp->get_distance(pos, dir, size);
@@ -121,7 +134,7 @@ bool
 Arena::space_available(const Vector2D& pos, const double margin)
 {
   Shape* objp;
-  GList* gl =g_list_first(&solid_objects);
+  GList* gl =g_list_next(solid_objects);
 
   for(; gl->next != NULL; gl = g_list_next(gl))
     {
@@ -186,7 +199,7 @@ Arena::update_timer()
 {
   gdouble last_time = total_time;
   gulong microsecs;
-  total_time = g_timer_elapsed(&timer, &microsecs);
+  total_time = g_timer_elapsed(timer, &microsecs);
   timestep = total_time - last_time;
 }
 
@@ -196,7 +209,7 @@ Arena::update_robots()
   GList* gl;
   Robot* robotp;
 
-  for(gl = g_list_first(&object_lists[ROBOT]); gl->next != NULL; gl = g_list_next(gl))
+  for(gl = g_list_next(object_lists[ROBOT]); gl->next != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)gl->data;
       if( robotp->is_alive() )
@@ -214,7 +227,7 @@ Arena::start_game()
 {
   // put the arena together
   
-  GString* filename = (GString*)g_list_nth(&arena_filenames, current_arena_nr)->data;
+  GString* filename = (GString*)g_list_nth(arena_filenames, current_arena_nr)->data;
   ifstream file(filename->str);
   if( !file ) throw Error("Couldn't open file", filename->str, "Arena::Arena");
 
@@ -222,7 +235,7 @@ Arena::start_game()
 
   // Place robots on the arena
 
-  GList* gl = g_list_first(&all_robots_in_sequence);
+  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
   bool found_space;
   double angle;
@@ -246,18 +259,18 @@ Arena::start_game()
 
   // Make list of living robots and tell them to get ready
 
-  gl = g_list_first(&all_robots_in_sequence);
+  gl = g_list_next(all_robots_in_sequence);
   robots_left = 0;
   for( ; gl != NULL; gl=g_list_next(gl))
     {
-      g_list_append(&object_lists[ROBOT], gl->data);
-      g_list_append(&solid_objects, gl->data);
+      g_list_append(object_lists[ROBOT], gl->data);
+      g_list_append(solid_objects, gl->data);
       ((Robot*)gl->data)->send_message(GAME_STARTS);
       robots_left++;
     }
 
   games_remaining_in_sequence--;
-  g_timer_reset(&timer);
+  g_timer_reset(timer);
   update_timer();
 }
 
@@ -265,18 +278,19 @@ void
 Arena::end_game()
 {
   // pull down the arena
-  GList* gl = g_list_first(&object_lists[WALL]);
+  GList* gl = g_list_next(object_lists[WALL]);
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
       delete gl->data;
     }
 
-  // delete some lists;
-  for(int i= ROBOT; i < EXPLOSION; i++)
-    g_list_free(&object_lists[i]);
+  // clear the lists;
+  
+  //for(int i= ROBOT; i < EXPLOSION; i++)
+  //  g_list_free(object_lists[i]);
  
-  g_list_free(&solid_objects);
+    //g_list_free(&solid_objects);
  
   if(games_remaining_in_sequence == 0) end_sequence();
 }
@@ -289,16 +303,16 @@ Arena::start_sequence()
 
   // Make list of robots in this sequence
 
-  GList* gl = g_list_first(&all_robots_in_tournament);
+  GList* gl = g_list_next(all_robots_in_tournament);
 
   for(int i=0; i<robots_per_game; i++)
     {
-      g_list_append(&all_robots_in_sequence, gl->data);
+      g_list_append(all_robots_in_sequence, gl->data);
       gl = g_list_next(gl);
     }
 
   // execute robot processes
-  gl = g_list_first(&all_robots_in_sequence);
+  gl = g_list_next(all_robots_in_sequence);
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
@@ -314,7 +328,7 @@ void
 Arena::start_sequence_follow_up()
 {
   // check if the process have started correctly
-  GList* gl = g_list_first(&all_robots_in_sequence);
+  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
 
   for(; gl != NULL; gl = g_list_next(gl))
@@ -322,7 +336,7 @@ Arena::start_sequence_follow_up()
       robotp = (Robot*)gl->data;
       if( !(robotp->is_process_running()) ) 
         {
-          g_list_remove(&all_robots_in_sequence, robotp);
+          g_list_remove(all_robots_in_sequence, robotp);
           robots_left--;
         }
     }
@@ -334,7 +348,7 @@ Arena::end_sequence()
 {
   // kill all robot processes
   
-  GList* gl = g_list_first(&all_robots_in_sequence);
+  GList* gl = g_list_next(all_robots_in_sequence);
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
@@ -351,7 +365,7 @@ Arena::end_sequence_follow_up()
 {
   // check if the process have stopped, otherwise kill
   
-  GList* gl = g_list_first(&all_robots_in_sequence);
+  GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
 
   for(; gl != NULL; gl = g_list_next(gl))
@@ -375,15 +389,15 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
 
   for(int i=0; robotfilename_list[i] != NULL; i++)
     {
-      robotp = new Robot(robotfilename_list[i]);
-      g_list_append(&all_robots_in_tournament, robotp);
+      robotp = new Robot(robotfilename_list[i], this);
+      g_list_append(all_robots_in_tournament, robotp);
     }
 
   // Create list of arena filenames
 
   for(int i=0; arenafilename_list[i] != NULL; i++)
     {
-      g_list_append(&arena_filenames, g_string_new(arenafilename_list[i]));
+      g_list_append(arena_filenames, g_string_new(arenafilename_list[i]));
     }
 
   robots_per_game = robots_p_game;
@@ -397,13 +411,13 @@ Arena::end_tournament()
 {
   // delete all robot classes in all_robots_in_tournament
 
-  GList* gl = g_list_first(&all_robots_in_tournament);
+  GList* gl = g_list_next(all_robots_in_tournament);
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
       delete gl->data;
     }
-  g_list_free(&all_robots_in_tournament);
+  //g_list_free(all_robots_in_tournament);
 }
 
 
