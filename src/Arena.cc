@@ -209,7 +209,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                    wordlist.size() > 2 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                find_by_name( GadgetInfo( NULL, 0, wordlist[1].c_str() ) ))).gadgetp;
+                                find_by_name( wordlist[1] ))).gadgetp;
               assert( typeid(gadp) == typeid(Function*) );
               Function* func_p = (Function*)func_p;
               if( equal_strings_nocase( wordlist[2], "default" ) )
@@ -242,9 +242,7 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
           else if( wordlist.size() > 1 )
             {
               Gadget* gadp = (*(current_gadget->get_my_gadgets().
-                                find_by_name( GadgetInfo( NULL, 0,
-                                                          wordlist[0].c_str() )
-                                              ))).gadgetp;
+                                find_by_name( wordlist[0] ))).gadgetp;
               assert( typeid(gadp) == typeid(Variable*) );
               // TODO: set value to the found gadget
             }
