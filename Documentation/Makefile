@@ -10,9 +10,9 @@ all: target RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt note-files
 
 html: RealTimeBattle.html note-files.html
 
-note-files: ../BUGS ../FAQ ../INSTALL ../NEWS ../README ../TODO
+note-files: ../BUGS ../FAQ ../INSTALL ../ChangeLog ../README ../TODO
 
-note-files.html: BUGS.html FAQ.html INSTALL.html NEWS.html README.html TODO.html
+note-files.html: BUGS.html FAQ.html INSTALL.html ChangeLog.html README.html TODO.html
 
 RealTimeBattle.html: RealTimeBattle.sgml
 	sgml2html --imagebuttons RealTimeBattle.sgml
@@ -54,12 +54,12 @@ INSTALL.html: INSTALL.sgml
 	sed -e "s/.//g" INSTALL.txt > ../INSTALL
 
 
-NEWS.html: NEWS.sgml
-	sgml2html --split=0 NEWS.sgml
+ChangeLog.html: ChangeLog.sgml
+	sgml2html --split=0 ChangeLog.sgml
 
-../NEWS: NEWS.sgml
-	sgml2txt NEWS.sgml &&\
-	sed -e "s/.//g" NEWS.txt > ../NEWS
+../ChangeLog: ChangeLog.sgml
+	sgml2txt ChangeLog.sgml &&\
+	sed -e "s/.//g" ChangeLog.txt > ../ChangeLog
 
 
 README.html: README.sgml

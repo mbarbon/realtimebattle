@@ -1,0 +1,17 @@
+<!doctype linuxdoc system>
+
+<notes>
+<title>Change log
+<itemize>
+
+<item> <bf>0.9.1:</bf> 
+<p>
+This is the first ever public release of RealTimeBattle. Even though its the first, it should be
+pretty stable and regarded as an alpha release of the forthcoming version 1.0. 
+Please report any bugs you encounter. Especially if you have problem with the
+messaging language, it has to be changed before version 1.0 is released, since thereafter the
+messaging language is fixed and may not be altered (until version 2.0). 
+
+
+</itemize>
+</notes>
