@@ -60,6 +60,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "OptionHandler.h"
 #include "Wall.h"
 #include "Robot.h"
+#include "GuiEvent.h"
+#include "GuiEventHandler.h"
 
 ArenaBase::ArenaBase()
 {
@@ -183,6 +185,8 @@ ArenaBase::print_message( const string& messager,
 {
   if( use_message_file )
     message_file << messager << ": " << text << endl;
+  the_arena_controller.get_guievents()->
+    insert_event( new GuiMessageEvent( messager, text ) );
 //  #ifndef NO_GRAPHICS
 //    else if( !no_graphics && the_gui.is_messagewindow_up() )
 //      the_gui.get_messagewindow_p()->add_message( messager, text );
