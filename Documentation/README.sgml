@@ -1,8 +1,8 @@
 <!doctype linuxdoc system>
 
 <notes>
-<title>README
-
+<title>RealTimeBattle
+<p>
 RealTimeBattle is a programming game for Unix, in which robots controlled by
 programs are fighting each other. The goal is to destroy the enemies,
 using the radar to examine the environment and the cannon to shoot.
@@ -22,7 +22,5 @@ Comments, bug reports and/or patches can be sent to the email address
 <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com">
 
 Hope you will enjoy your time using the program!
-
-
 
 </notes>
