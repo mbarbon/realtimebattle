@@ -5,6 +5,8 @@
 
 #include <iostream.h>
 
+enum string_double_t { STRING_NORMAL_FORM, STRING_EXP_FORM, STRING_FIXED_FORM };
+
 class String
 {
 public:
@@ -14,7 +16,7 @@ public:
   String(const char c);
   String(const int);
   String(const long int);
-  String(const double, const int digits=10, const bool exp_form = false);
+  String(const double, const int digits = 10, const string_double_t form = STRING_NORMAL_FORM);
   ~String();
 
   String& operator=(const String&);
@@ -42,7 +44,8 @@ public:
 
   int get_length() { return length; }
   const char* chars() { return array; }
-  char* copy_chars();   // allocates an array of chars, remember to delete afterwards!!!
+  char* non_const_chars() { return array; }   //  Warning! This allows for changing the private member array.
+  char* copy_chars();   // allocates an array of chars, remember to delete afterwards!
 
 private:
   char* array;

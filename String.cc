@@ -81,11 +81,16 @@ String::String(const long int n)
     erase(0, pos+1);
 }
 
-String::String(const double x, const int digits, const bool exp_form)
+String::String(const double x, const int digits, const string_double_t form)
 {
   buf_size = 0;
   strstream ss;
-  ss << (exp_form ? setiosflags(ios::scientific) : setiosflags(ios::fixed)) << setprecision(digits) << x << endl;
+  if( form == STRING_NORMAL_FORM ) 
+    ss << setprecision(digits) << x << endl;
+  else
+    ss << (form == STRING_EXP_FORM ? setiosflags(ios::scientific) : setiosflags(ios::fixed)) 
+       << setprecision(digits) << x << endl;
+
   ss >> *this;
 }
 
