@@ -80,6 +80,7 @@ ArenaReplay::timeout_function()
       parse_this_interval();
       the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
       the_gui.get_arenawindow_p()->draw_everything();      
+      the_gui.get_scorewindow_p()->add_robots();
       set_state( GAME_IN_PROGRESS );
       break;
 
@@ -299,8 +300,10 @@ ArenaReplay::parse_log_line()
         delete_lists(false, false, false, false, false);
         reset_timer();
         next_check_time = 0.0;
-        int sequence, game;
-        log_file >> sequence >> game;
+        int seq, game;
+        log_file >> seq >> game;
+        sequence_nr = seq;
+        sequences_remaining = sequences - seq;
         games_remaining_in_sequence = games_per_sequence - game;
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
@@ -313,7 +316,7 @@ ArenaReplay::parse_log_line()
         log_file >> gps >> rps >> seq >> robots;
         games_per_sequence = gps;
         robots_per_game = rps;
-        games_remaining_in_sequence = seq; // TODO: Correct this
+        sequences = seq;
         number_of_robots = robots;
       }
       break;
