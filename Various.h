@@ -15,15 +15,15 @@ enum entry_datatype_t
   ENTRY_DOUBLE,
   ENTRY_HEX,
   ENTRY_CHAR,
+  ENTRY_BOOL
 };
 
 struct entry_t
 {
-  entry_t(entry_datatype_t d, double mn, double mx) :
-    datatype(d), min_value(mn), max_value(mx) {}
+  entry_t(entry_datatype_t d, bool s) :
+    datatype(d), allow_sign(s) {}
   entry_datatype_t datatype;
-  double min_value;
-  double max_value;
+  bool allow_sign;
 };
 
 int factorial(const int n);

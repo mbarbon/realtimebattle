@@ -90,14 +90,22 @@ entry_handler( GtkWidget * entry, entry_t * entry_info )
       switch( entry_info->datatype )
         {
         case ENTRY_INT:
-          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') || ((entry_text[i] == '-' && i == 0 ) && entry_info->min_value < 0.0 ))  )
+          if( !((entry_text[i] >= '0' && entry_text[i] <= '9') ||
+                (entry_text[i] == '-' && i == 0 && entry_info->allow_sign ))  )
             entry_text.erase(i);
           break;
         case ENTRY_DOUBLE:
           break;
         case ENTRY_HEX:
+          if( !(((entry_text[i] >= '0' && entry_text[i] <= '9') || 
+                 (entry_text[i] >= 'a' && entry_text[i] <= 'f') ||
+                 (entry_text[i] >= 'A' && entry_text[i] <= 'F')) ||
+                (entry_text[i] == '-' && i == 0 ) && entry_info->allow_sign ) )
+            entry_text.erase(i);
           break;
         case ENTRY_CHAR:
+          break;
+        case ENTRY_BOOL:
           break;
         }
     }
