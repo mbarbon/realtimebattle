@@ -14,7 +14,6 @@
 //#include "Various.h"
 
 static const double infinity = 1.0e10;
-static const double eps = 1.0e-2;
 
 extern class Options the_opts;
 extern class Arena the_arena;
