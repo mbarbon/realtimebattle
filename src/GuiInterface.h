@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 
 #include "InfoClasses.h"
+#include "InformationDistributor.h"
 
 // ---------------------------------------------------------------------------
 // class GuiInterface
@@ -48,16 +49,17 @@ public:
 
   // Functions that supplies information to the Gui.
 
-  // Don't know what functions is needed here yet!
+  const InfoBase* get_information      ();
 
   // Functions that enables the gui to have some influence over the server.
 
+  void supply_information              ();
   void quit                            ( bool exit_program = false );
 
-  const InfoBase* get_information      ();
 
   // Functions for the server.
 
+  const InfoBase* server_get_information();
   pthread_t* get_thread_p              ();
 
   // Gui functions
@@ -71,6 +73,9 @@ private:
   // internal functions
 
   void* load_symbol                    ( const string& symname );
+
+  // Communication to server
+  InformationDistributor server_informer;
 
   // internal variables
 
