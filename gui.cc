@@ -66,6 +66,10 @@ Gui::draw_objects( gpointer the_arenap )
     {
       ((Shape*)(WallCircle*)gl->data)->draw_shape( *this ); // Strange, but it works!
     }      
+  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      ((Shot*)gl->data)->draw_shape( *this ); // Strange, but it works!
+    }      
 }
 
 void
