@@ -34,7 +34,9 @@ RealTimeBattle_DEPENDENCIES = $(top_srcdir)/src/Gadgets/libRTB_Gadgets.a \
 RealTimeBattle_SOURCES = \
 	Arena.cc Arena.h \
 	ArenaController.cc ArenaController.h \
-	Event.h EventGT.h EventRT.h \
+	Event.h \
+	EventGT.h EventGT.cc \
+	EventRT.h EventRT.cc \
 	EventHandler.h EventHandler.cc \
 	Explosion.h Explosion.cc \
 	Extras.cc Extras.h \
