@@ -66,7 +66,7 @@ step_button_callback(GtkWidget * widget, gpointer data)
 void
 end_button_callback(GtkWidget * widget, gpointer data)
 {
-  the_gui.ask_user("This action will kill the current tournament.\nAre you sure to continue?",&end_tournament);
+  the_gui.ask_user("This action will kill the current tournament.\nDo you want do that?",&end_tournament);
 }
 
 void
