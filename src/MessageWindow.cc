@@ -177,7 +177,11 @@ MessageWindow::add_message( const String& name_of_messager,
                        message.non_const_chars() };
   
       int row = 0;
+#if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
       row = gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+#else
+      gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+#endif
 
       GdkColor* fg_colour = NULL;
       if( name_of_messager == "RealTimeBattle" )
