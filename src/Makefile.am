@@ -1,4 +1,4 @@
-SUBDIRS = Gadgets Network
+SUBDIRS = Gadgets Network Gui
 
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
@@ -44,7 +44,6 @@ RealTimeBattle_SOURCES = \
 	InfoClasses.h \
 	InformationDistributor.cc InformationDistributor.h \
 	IntlDefs.h \
-	List.cc List.h \
 	Messagetypes.h \
 	MovingObject.h \
 	Option.cc Option.h \
