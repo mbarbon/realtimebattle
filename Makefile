@@ -94,7 +94,7 @@ rpm-install:
 	if [ $? -eq 1 ]; then echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir; fi
 
 rpm: tar.gz
-	pm --showrc > /dev/null && \
+	rpm --showrc > /dev/null && \
 	cp RealTimeBattle.tar.gz $(SOURCEDIR) && \
 	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
 	rpm -ba $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec;\

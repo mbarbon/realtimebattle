@@ -5,6 +5,7 @@ ifndef DEBUG_MODE
 DEBUG_MODE=no
 endif
 
+ifndef RPM_OPT_FLAGS
 ifeq ($(DEBUG_MODE), yes)
 #debug-options
 CPPFLAGS = $(gtkincludedirs)
@@ -15,6 +16,11 @@ else
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = -O
 CXXFLAGS = -O
+endif
+else
+CPPFLAGS = $(gtkincludedirs)
+CFLAGS = $(RPM_OPT_FLAGS)
+CXXFLAGS = $(RPM_OPT_FLAGS)
 endif
 
 gtkincludedirs = `gtk-config --cflags`
