@@ -1,5 +1,4 @@
-export DEBUG_MODE = no
-export PAPER_SIZE = a4
+
 
 #
 # Install directories. Feel free to change if you want the 
@@ -18,6 +17,10 @@ ROBOTDIR=Robots
 DOCSDIR=Documentation
 HTMLDIR=HTML
 ARENADIR=Arenas
+
+#If you compile the documentation from the sgml-sources with, you may change the paper-size to 'letter'.
+#Mainly for the author of the documentation.
+export PAPER_SIZE = a4
 
 target: RealTimeBattle robots
 all: RealTimeBattle robots docs ETAGS
