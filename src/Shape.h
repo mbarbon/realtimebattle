@@ -27,6 +27,42 @@ class Vector2D;
 #endif
 
 
+/*
+
+  Shape is the base class for all objects in the arena. The class hierarchy
+  is as follows:
+
+                  ---------
+                  | Shape | 
+                  ---------
+            _____/    |     \_____________
+           /          |                   \
+   --------       ----------               ---------------
+   | Line |       | Circle |               | InnerCircle |
+   --------       ----------               ---------------
+      |            |  |    \                       \
+      |            |  |     \                       \
+ ------------      |  |     --------------       -------------------
+ | WallLine |     /   |     | WallCircle |       | WallInnerCircle |
+ ------------    /     \    --------------       -------------------
+                /       \
+       ----------        ----------------
+       | Extras |        | MovingObject |
+       ----------        ----------------
+       /      \             |        \      
+      /        \            |         \     
+ ----------  --------    --------  ---------
+ | Cookie |  | Mine |    | Shot |  | Robot |
+ ----------  --------    --------  ---------
+
+ */
+
+
+
+
+
+
+
 class Shape
 {
 public:
