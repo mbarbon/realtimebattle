@@ -57,8 +57,8 @@ TournamentAgreementPacketFactory::TournamentAgreementPacketFactory()
     }
   */
 
+  my_tournament.arenas.push_back(arena_info_t("Original.arena", "/home/roussebe/RealTimeBattle/Arenas/"));
   my_tournament.arenas.push_back(arena_info_t("Arena1", "/arenas/"));
-  my_tournament.arenas.push_back(arena_info_t("Arena2", "/arenas/"));
   my_tournament.arenas.push_back(arena_info_t("Arena3", "/arenas/"));
 }
 
@@ -86,7 +86,7 @@ TournamentAgreementPacketFactory::add_connection( NetConnection* nc, string more
        ai != my_tournament.arenas.end(); ai ++ )
     {
       ostrstream os;
-      os<<"InitArn "<<ai->directory<<" "<<ai->filename<<" "<<ai->id<<" "<<ai->selected;
+      os<<"InitArn "<<ai->directory<<" "<<ai->filename<<" "<<ai->id<<" "<<ai->selected<<ends;
       TournamentCommitChangePacket P( os.str() );
       nc->send_data( P.make_netstring() );
     }
@@ -255,7 +255,7 @@ TournamentCommitChangePacket::handle_packet()
       robot_info_t the_robot(name, dir, team, my_connection);
       tourn_p->robots.push_back(the_robot);
       ostrstream os;
-      os << type_init << " " << dir <<" "<< name << " " << team << " " <<the_robot.id;
+      os << type_init << " " << dir <<" "<< name << " " << team << " " <<the_robot.id <<ends;
       change = os . str();
       my_factory->broadcast( this );
       modified = true;
@@ -275,7 +275,7 @@ TournamentCommitChangePacket::handle_packet()
 	    tourn_p->robots.erase( ri );
 
 	    ostrstream os;
-	    os << type_init << " " << dir <<" "<< name << " " << team << " " <<id;
+	    os << type_init << " " << dir <<" "<< name << " " << team << " " <<id<<ends;
 	    change = os . str();
 	    my_factory->broadcast( this );
 	    modified = true;
@@ -286,20 +286,21 @@ TournamentCommitChangePacket::handle_packet()
       string dir, name;
       int id;
       is >> dir >> name >> id ;
-      cout<<"Switch arena : "<<dir<<name<<", id : "<<id<<endl; //Not such a good idea !
       
       for(list<arena_info_t>::iterator ai = tourn_p->arenas.begin();
 	  ai != tourn_p->arenas.end(); ai ++ )
 	if( ai->id == id && 
 	    (ai->filename == name && ai->directory == dir))  //Arena found
 	  {
+	    cout<<"Switch arena : "<<dir<<name<<", id : "<<id<<endl; //Not such a good idea !
+
 	    if(type_init == "RemArn")
 	      ai -> selected = false;
 	    else
 	      ai -> selected = true;
 
 	    ostrstream os;
-	    os << type_init << " " << id << " " << ai->selected ;
+	    os << type_init << " " << id << " " << ai->selected << ends ;
 	    change = os . str();
 	    my_factory->broadcast( this );
 	    modified = true;

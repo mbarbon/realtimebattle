@@ -80,4 +80,21 @@ protected:
   string message;
 };
 
+class RobotCommandPacket : /* virtual */ public Packet {
+public:
+  RobotCommandPacket( ) {};
+  RobotCommandPacket( string & message ) 
+    : message( message ) {};
+
+  RobotCommandPacket( const string& data, NetConnection* nc ) 
+     : Packet(data, nc) {} ;
+
+  string make_netstring() const;
+  int handle_packet( );
+  packet_t packet_type() { return PACKET_ROBOT_COMMAND; };
+
+protected:
+  string message;
+};
+
 #endif

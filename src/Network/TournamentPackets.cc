@@ -22,6 +22,8 @@ TournamentRobotPacketFactory::MakePacket( string& netstr, NetConnection* nc )
   string data = netstr.substr(2, netstr.length() - 2);
 
   if     (type == "OM")    return new OldRTBMessagePacket( data, nc );
+  else if(type == "@R")    return new RobotCommandPacket( data, nc );
+
   //else if(type == "@C")    return new CommandPacket( );
   //else if(type == "SL")    return new SubmitListPacket( );
 
@@ -68,5 +70,14 @@ string OldRTBMessagePacket::make_netstring() const
 }
 
 int OldRTBMessagePacket::handle_packet( )
+{
+}
+
+string RobotCommandPacket::make_netstring() const
+{
+  return string("@R");
+}
+
+int RobotCommandPacket::handle_packet( )
 {
 }
