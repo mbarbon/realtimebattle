@@ -59,6 +59,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaReplay.h"
 #include "Various.h"
 #include "ArenaController.h"
+#include "String.h"
 
 #ifndef WAIT_ANY
 #define WAIT_ANY (pid_t)-1
@@ -73,6 +74,14 @@ class ControlWindow* controlwindow_p;
 #endif
 
 bool no_graphics;
+
+class String option_fname("");
+class String statistics_fname("");
+class String log_fname("");
+class String tournament_fname("");
+class String message_fname("");
+class String replay_fname("");
+bool realtime = true; // if false -> replay
 
 void 
 print_help_message()
@@ -122,14 +131,17 @@ update_function(const long int interval_usec)
   struct timeval timeout;
   timeout.tv_sec = 0;
   timeout.tv_usec = interval_usec;
+  bool res = true;
 
   do
     {
       timeout.tv_sec = 0;
       timeout.tv_usec = interval_usec;
       select(FD_SETSIZE, NULL, NULL, NULL, &timeout);
+      if( the_arena_controller.is_started() )
+        res = the_arena.timeout_function();
     } 
-  while( the_arena.timeout_function() );
+  while( res );
 
 }
 #endif NO_GRAPHICS
@@ -145,7 +157,7 @@ sig_handler (int signum)
       if (pid < 0)
         {
           if( errno != ECHILD ) 
-            Error(true, "waitpid failed", "RealTimeBattle.cc:sigchld_handler");
+            Error(true, "waitpid failed", "RealTimeBattle.cc:sig_handler");
           break;
         }
       if (pid == 0)
@@ -162,13 +174,6 @@ parse_command_line(int argc, char **argv)
   int version_flag=false, help_flag=false, graphics_flag=true;
   int game_mode=ArenaBase::NORMAL_MODE;
   int c;
-  String option_file("");
-  String statistics_file("");
-  String log_file("");
-  String tournament_file("");
-  String message_file("");
-  String replay_file("");
-  bool realtime = true; // if false -> replay
 
   static struct option long_options[] =
   {
@@ -213,22 +218,22 @@ parse_command_line(int argc, char **argv)
           switch (option_index)
             {
             case 5: 
-              option_file = (String)optarg;
+              option_fname = (String)optarg;
               break;
             case 6:
-              log_file = (String)optarg;
+              log_fname = (String)optarg;
               break;
             case 7:
-              statistics_file = (String)optarg;
+              statistics_fname = (String)optarg;
               break;
             case 8:
-              tournament_file = (String)optarg;
+              tournament_fname = (String)optarg;
               break;
             case 9:
-              message_file = (String)optarg;
+              message_fname = (String)optarg;
               break;
             case 10:
-              replay_file = (String)optarg;
+              replay_fname = (String)optarg;
               realtime = false;
               break;
             default:
@@ -260,27 +265,27 @@ parse_command_line(int argc, char **argv)
           break;
 
         case 'o':
-          option_file = (String)optarg;
+          option_fname = (String)optarg;
           break;
 
         case 'l':
-          log_file = (String)optarg;
+          log_fname = (String)optarg;
           break;
 
         case 's':
-          statistics_file = (String)optarg;
+          statistics_fname = (String)optarg;
           break;
 
         case 't':
-          tournament_file = (String)optarg;
+          tournament_fname = (String)optarg;
           break;
 
         case 'm':
-          message_file = (String)optarg;
+          message_fname = (String)optarg;
           break;
 
         case 'r':
-          replay_file = (String)optarg;
+          replay_fname = (String)optarg;
           realtime = false;
           break;
 
@@ -308,10 +313,10 @@ parse_command_line(int argc, char **argv)
 
   if( help_flag || version_flag ) exit( EXIT_SUCCESS );
 
-  if( option_file == "" )
+  if( option_fname == "" )
     {
       the_opts.get_options_from_rtbrc();
-      option_file = ".rtbrc";
+      option_fname = ".rtbrc";
     }
   else
     the_opts.read_options_file(option_file,true);
@@ -321,15 +326,15 @@ parse_command_line(int argc, char **argv)
   if( realtime )
     {
       the_arena_controller.start_realtime_arena();
-      the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
-      realtime_arena.set_filenames( log_file, statistics_file, tournament_file,
-                                    message_file, option_file );
+      the_arena.set_game_mode( (ArenaBase::game_mode_t)game_mode );
+      realtime_arena.set_filenames( log_fname, statistics_fname, tournament_fname,
+                                    message_fname, option_fname );
     }
   else
     {
       the_arena_controller.start_replay_arena();
-      the_arena.set_game_mode((ArenaBase::game_mode_t)game_mode);
-      replay_arena.set_filenames( replay_file );
+      the_arena.set_game_mode( (ArenaBase::game_mode_t)game_mode );
+      replay_arena.set_filenames( replay_fname );
     }
 }
 
