@@ -143,7 +143,7 @@ public:
   virtual void draw_shape(Gui& the_gui) = 0;
   //virtual void get_args(istream&) = 0;
 
-  void set_colour( int red, int green, int blue );
+  void set_colour(const long);
   GdkColor get_colour() { return colour; }
 
 protected:
