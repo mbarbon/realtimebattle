@@ -193,6 +193,10 @@ Gui::draw_objects()
   Robot* robotp;
 
   object_lists = the_arena.get_object_lists();
+  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    if( ((Shot*)gl->data)->is_alive() )
+      ((Shot*)gl->data)->draw_shape( true );
+
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       robotp = (Robot*)(gl->data);
@@ -203,10 +207,6 @@ Gui::draw_objects()
             robotp->draw_radar_and_cannon();
           }
     }
-
-  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
-    if( ((Shot*)gl->data)->is_alive() )
-      ((Shot*)gl->data)->draw_shape( true );
 }
 
 void
