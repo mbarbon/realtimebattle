@@ -28,12 +28,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "EventHandler.h"
 #include "Tournament.h"
 
+#include "ServerSocket.h"
+
+//TODO : change this one to TournamentAgreementPackets
+#include "ServerPackets.h"
+#include "TournamentAgreementPackets.h"
+
 extern EventHandler the_eventhandler;
 
 void
 QuitProgramRequest::accept() const
 {
-//    Quit( success ); // TODO: How should we quit really?
+    Quit( success ); // TODO: How should we quit really?
 }
 
 void
@@ -51,10 +57,14 @@ TogglePauseGameRequest::accept() const
 void
 StartTournamentRequest::accept() const
 {
+  cout<<"void StartTournamentRequest::accept()\n";
+  the_eventhandler.set_tournament( new Tournament ( my_tournament_info ) );
+  /*
   the_eventhandler.set_tournament( new Tournament( robots_per_match,
                                                    number_of_matches,
                                                    robot_files,
                                                    arena_files ) );
+  */
 }
 
 void
@@ -67,4 +77,24 @@ void
 ChangeDebugLevelRequest::accept() const
 {
   //TODO: change debug level
+}
+
+void
+BroadCastTournamentChangeRequest::accept() const
+{
+  TournamentCommitChangePacket P(type + " " + value);
+  my_socketserver.send_packet_by_type(TOURN_AGREE_CHANNEL, &P);
+}
+
+void
+OpenTournamentAgreementChannelRequest::accept() const
+{
+  if(create_channel) {
+    my_socketserver.open_channel(&my_tournament_agreement_packetfactory);
+  }
+  else {
+    my_socketserver.open_channel(&my_tournament_agreement_packetfactory);
+    CommandPacket C("NeedFriends " + my_tournament_agreement_packetfactory.Protocol());
+    my_socketserver.send_packet_by_type(SERVER_CONNECTION, &C );
+  }
 }

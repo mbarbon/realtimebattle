@@ -1,4 +1,4 @@
-SUBDIRS = Gadgets Network .
+SUBDIRS = Gui Gadgets Network .
 
 #noinst_LIBRARIES = libRTB.a
 #include_HEADERS = Messagetypes.h

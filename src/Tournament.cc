@@ -55,6 +55,12 @@ Tournament::Tournament() :
 
 }
 
+Tournament::Tournament(const tourn_info_t& new_tournament_info ) :
+  my_tournament_info(new_tournament_info)
+{
+  start();
+}
+
 Tournament::Tournament(const int robots_p_match,
                        const int number_o_matches,
                        const vector<string>& robot_filenames,
@@ -145,9 +151,7 @@ Tournament::start()
   // TODO: Load all arenafiles.
 
   // TODO: Create the_robots
-  // NOTE: The robots are already 'created' as it is done when a client add a new robot name
-  //       We need to tell the client to run the robots he submitted
-  //       and get the new connection for the robot (It is done in the server socket...)
+
 
   started = true;
 

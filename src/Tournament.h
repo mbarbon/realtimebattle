@@ -25,6 +25,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Gadgets/ArenaGadget.h"
 #include "Robot.h"
+#include "Structs.h"
 
 
 class Match
@@ -70,6 +71,8 @@ class Tournament
              const int number_o_matches,
              const vector<string>& robot_filenames,     //Robot_filenames not enough : also need the computer who will run it
              const vector<string>& arena_filenames);    //As robot (Or maybe the arena have to be localy stored)
+
+  Tournament(const tourn_info_t& new_tournament);
   
   Tournament(const string& tournament_file);
   
@@ -118,6 +121,8 @@ private:
   vector<ArenaGadget> the_arenagadgets;
   
   bool load_succeeded;
+
+  tourn_info_t my_tournament_info;
 
 };
 

@@ -21,6 +21,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define __STRUCTS__
 
 #include <string>
+#include <list>
+#include <vector>
 
 enum game_mode_t { DEBUG_MODE, NORMAL_MODE, COMPETITION_MODE };
 
@@ -54,6 +56,43 @@ struct start_tournament_info_t
   bool selected;
   string filename;
   string directory;
+};
+struct arena_info_t 
+{
+  string filename;
+  string directory;
+  int row;
+  bool selected;
+
+  string type;
+};
+struct robot_info_t
+{
+  robot_info_t( const robot_info_t& i )
+  { 
+    row = i.row; selected = i.selected;
+    filename = i.filename; directory = i.directory;
+    team = i.team; 
+  }
+  robot_info_t(const string& fn, const string& dir, int& r, bool s, int t) :
+    filename(fn), directory(dir), row(r), selected(s), team(t) {}
+  string filename;
+  string directory;
+  int row;
+  bool selected;
+  int team;
+};
+struct match_info_t
+{
+  arena_info_t match_arena;
+  list<robot_info_t> robots;
+  vector<int> team_colors;
+};
+struct tourn_info_t
+{
+  list<match_info_t> matches;
+  list<match_info_t>::iterator current_match;
+  bool keep_same_robot_set;
 };
 
 struct message_t

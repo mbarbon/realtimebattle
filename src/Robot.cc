@@ -1,6 +1,6 @@
 /*
 RealTimeBattle, a robot programming game for Unix
-Copyright (C) 1998-2001  Erik Ouchterlony and Ragnar Ouchterlony
+Copyright (C) 1998-2002  Erik Ouchterlony and Ragnar Ouchterlony
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -51,9 +51,7 @@ Robot::Robot(const string& filename, NetConnection* nc) :
 
   nb_robots ++;
   char Code[20];
-  //TODO : Use a string stream instead of a char*
-  //TODO : Maybe include some char of the robot file name...
-  //TODO : Find a better way to identify it in fact...
+
   sprintf( Code, "%d-%drtb_robot", nb_robots, int(rand() % 15) );
   robot_name = string( Code );
 
@@ -65,6 +63,11 @@ Robot::Robot(const string& filename, NetConnection* nc) :
   id = 0; //the_arena.increase_robot_count();
 
 }
+
+/*Robot::Robot(const string& filename)
+{
+  
+}*/
 
 // Constructor used by ArenaReplay. No process needed.
 //

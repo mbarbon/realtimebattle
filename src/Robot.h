@@ -104,7 +104,7 @@ private:
 
   static int nb_robots;
 
-  NetConnection* owner;
+  NetConnection* owner;           //NOTE : not such a good idea ?
   bool connected_to_robot_client; //False if it is still connected to chat_client
 
   //Doesn't correspond to the description of a robot anymore...

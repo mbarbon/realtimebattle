@@ -23,6 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <vector>
 
+#include "Structs.h"
+
 class GuiRequest
 {
 public:
@@ -71,20 +73,13 @@ public:
 class StartTournamentRequest : public GuiRequest
 {
 public:
-  StartTournamentRequest       ( const int rounds_pm, const int robots_pm,
-                                 const int nom, const vector<string>& _robots,
-                                 const vector<string>& _arenas )
-    : rounds_per_match(rounds_pm), robots_per_match(robots_pm),
-      number_of_matches(nom), robot_files(_robots), arena_files(_arenas) {}
+  StartTournamentRequest       ( tourn_info_t & ti ) :
+    my_tournament_info ( ti ) {};
   ~StartTournamentRequest      () {}
 private:
   void accept                  () const;
 
-  int rounds_per_match;
-  int robots_per_match;
-  int number_of_matches;
-  vector<string> robot_files;
-  vector<string> arena_files;
+  tourn_info_t my_tournament_info;
 };
 
 class EndTournamentRequest : public GuiRequest
@@ -107,5 +102,33 @@ private:
 
   int new_debug_level;
 };
+
+//Send every change in the Tournament to other servers ...
+class BroadCastTournamentChangeRequest : public GuiRequest
+{
+ public:
+  BroadCastTournamentChangeRequest  (string type, string value) 
+    : channel(channel), type(type), value(value) {}
+  ~BroadCastTournamentChangeRequest () {}
+ 
+ private:
+  void accept                () const;
+  int channel;
+  string type;
+  string value;
+};
+
+class OpenTournamentAgreementChannelRequest : public GuiRequest
+{
+ public:
+  OpenTournamentAgreementChannelRequest(bool create_channel) 
+    : create_channel(create_channel)
+    {}
+ private:
+  void accept                 () const;
+  bool create_channel;
+};
+
+
 
 #endif // __GUIREQUEST__

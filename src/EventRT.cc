@@ -47,9 +47,11 @@ CheckGUIEvent::eval() const
 {
   // Note: might have to supply process_all_options() with eventhandler in the future.
   //cout<<"CheckGUIEvent::eval()\n";
-  gui_p->process_all_requests();
+
 
   pthread_mutex_lock( &the_mutex );
+
+  gui_p->process_all_requests();
   //  list<unsigned int>::iterator li;
   //if( (li = find( GI_exit_list.begin(), GI_exit_list.end(), gui_p->get_unique_id() ))
   //    != GI_exit_list.end() )
