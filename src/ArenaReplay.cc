@@ -675,11 +675,10 @@ ArenaReplay::make_statistics_from_file()
   ListIterator<Shape> li;             
   double points_received;
   int pos_this_game, object_id;
-  char c;
   char buffer[400];
   String letters;
 
-  streampos old_pos = log_file.tellg() + 1;//temporary!!
+  streampos old_pos = log_file.tellg();
 
   cout << "make_statistics_from_file" << endl;
 
@@ -688,9 +687,10 @@ ArenaReplay::make_statistics_from_file()
       switch( letters[0] )
         {
         case 'D':
-          log_file >> c >> object_id >> points_received >> pos_this_game;
+          log_file >> object_id >> points_received >> pos_this_game;
             
           find_object_by_id( object_lists[ROBOT], li, object_id );
+
           if( !li.ok() ) Error(true, "Dying robot not in list", 
                                "ArenaReplay::make_statistics_from_file");
           ((Robot*)li())->set_stats( points_received, pos_this_game, 
@@ -725,7 +725,7 @@ ArenaReplay::make_statistics_from_file()
         case 'H':
           if( game_position_in_log != NULL )
             {
-              log_file.seekg( old_pos ); // Note that old_pos can't be zero!
+              log_file.seekg( old_pos );
               return;
             }
               
@@ -747,7 +747,8 @@ ArenaReplay::make_statistics_from_file()
       log_file.get( buffer, 400, '\n' );
     }
 
-  log_file.seekg( old_pos );  // Note that old_pos can't be zero!
+  log_file.seekg( old_pos );
+  log_file.clear();
 }
 
 void
@@ -763,8 +764,7 @@ ArenaReplay::get_time_positions_in_game()
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
 
-  streampos old_pos;
-  old_pos = log_file.tellg() + 1; //temporary!!
+  streampos old_pos = log_file.tellg();
 
   cout << "get_time_positions_in_game" << endl;
 
@@ -787,7 +787,7 @@ ArenaReplay::get_time_positions_in_game()
         case 'G':
         case 'H':
           last_time_info = time_pos_index - 1;
-          log_file.seekg( old_pos );  // Note that old_pos can't be zero!
+          log_file.seekg( old_pos );
           return;
           break;
           
@@ -800,5 +800,5 @@ ArenaReplay::get_time_positions_in_game()
       log_file.get( buffer, 400, '\n' );
     }
 
-  log_file.seekg( old_pos ); // Note that old_pos can't be zero!
+  log_file.seekg( old_pos );
 }
