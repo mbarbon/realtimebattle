@@ -73,7 +73,10 @@ ArenaReplay::timeout_function()
 
 #ifndef NO_GRAPHICS
         if((int)current_replay_time > old_total && !no_graphics)
-          the_gui.get_scorewindow_p()->set_window_title();
+          {
+            the_gui.get_scorewindow_p()->set_window_title();
+            controlwindow_p->set_progress_time( current_replay_time );
+          }
 #endif
       }
       break;
