@@ -1,14 +1,16 @@
 
 bin_PROGRAMS = Server 
-INCLUDES = -I.. -I../..
+INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/Network/common
 
 Server_SOURCES = \
-	ServerPackets.cc \
-	ServerSocket.cc \
-	ServerRobot_Conn.cc \
 	ServerChat_Conn.cc \
-	ServerNetConnection.cc
+	ServerNetConnection.cc ServerNetConnection.h \
+	ServerPackets.cc \
+	ServerRobot_Conn.cc \
+	ServerSocket.cc ServerSocket.h
 
-Server_DEPENDENCIES = ../libRTBNetwork.a ../../libRTB.a
-Server_LDADD        = ../libRTBNetwork.a ../../libRTB.a 
+Server_DEPENDENCIES = $(top_builddir)/src/Network/common/libRTBNetwork.a
+# ../../libRTB.a
+Server_LDADD        = $(top_builddir)/src/Network/common/libRTBNetwork.a
+# ../../libRTB.a 
 
