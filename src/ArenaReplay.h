@@ -41,6 +41,7 @@ public:
                                   const String& option_fname );
   void change_speed             ( const bool forward, const bool fast );
   String search_forward         ( const String& search_letters );
+  String search_forward         ( const List<String>& search_strings );
   String search_backwards       ( const String& search_letters );
 
   double get_current_replay_time() { return current_replay_time; }
@@ -57,6 +58,9 @@ private:
   void beginning_of_prev_line   ();
   void beginning_of_current_line();
 
+  void make_statistics_from_file();
+  void get_time_positions_in_game();
+
   ifstream log_file;
 
   double last_replay_time;
@@ -65,6 +69,17 @@ private:
   bool log_from_stdin;
 
   speed_t speed;
+
+  streampos** game_position_in_log;
+
+  struct time_pos_info_t
+  {
+    streampos pos;
+    float time;
+  };
+
+  time_pos_info_t* time_position_in_log;
+  int last_time_info;
 
   // These two vars are used when creating the arena
   double arena_scale;
