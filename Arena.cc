@@ -1,7 +1,7 @@
-#include "Arena.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include "Arena.h"
 
 Line::Line()
 {
@@ -60,6 +60,20 @@ Circle::get_distance(const Vector2D& pos, const Vector2D& dir, const double size
   return dt - sqrt(c);
 }
 
+Cookie::Cookie(const Vector2D& c, const double r, const double e)
+{
+  my_shape = Circle(c, r);
+  energy = e;
+}
+
+int
+Cookie::touch_action(class Robot& robot)
+{
+  robot.change_energy(energy);
+  return( 1 );
+}
+
+
 Robot::Robot(char* filename)
 {
   my_shape = Circle();
@@ -112,14 +126,74 @@ Robot::Robot(char* filename)
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for pipe_in in robot ", robot_filename.str, "Robot::Robot, parent");
 
-      // send_message(MESSAGE_INITIATE);
+      send_message(INITIALIZE);
     }
 }
 
 Robot::~Robot()
 {
-  //send_message(MESSAGE_EXIT_ROBOT);
+  send_message(EXIT_ROBOT);
 } 
+
+void
+Robot::update_radar_and_cannon()
+{
+  radar_angle += radar_speed;
+  cannon_angle += cannon_speed;
+  SolidObject* closest_shape;
+  double dist = the_arena->get_shortest_distance(my_shape.get_center(), velocity, 0.0, closest_shape);
+  send_message(RADAR, dist, closest_shape->get_object_type());
+}
+
+void
+Robot::move(const double& timestep)
+{
+  SolidObject* closest_shape;
+  double dist = the_arena->get_shortest_distance(my_shape.get_center(), velocity, my_shape.get_radius(), closest_shape);
+  if( dist > timestep )
+    {
+      my_shape.add_to_center(timestep*velocity);
+    }
+  else
+    {
+      alive = false; // not entirely complete ...
+    }
+}
+
+void
+Robot::send_message(const message_type msg_type ...)
+{
+  va_list args;
+  va_start(args, msg_type);
+  outstream << message[msg_type].msg << " ";
+  for(int i=0; i<message[msg_type].number_of_args; i++)
+    {
+      switch(message[msg_type].arg_type[i])
+        {
+        case NONE: 
+          throw Error("Couldn't send message, no arg_type", "Robot::send_message");
+          break;
+        case INT:
+          outstream << va_arg(args, int) << " ";
+          break;
+        case DOUBLE:
+          outstream << va_arg(args, double) << " ";
+          break;
+        case STRING:
+          outstream << va_arg(args, char*) << " ";
+          break;
+        default:
+          throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
+        }
+    }
+  outstream << endl;
+}
+
+void
+Robot::change_energy(const double energy_diff)
+{
+  energy += energy_diff;
+}
 
 Arena::Arena(char* filename)
 {
@@ -139,15 +213,9 @@ Arena::parse_file(istream& file)
 {
   char text[20];
   double number1, number2;
-  int max_shapes;
-  Vector2D vec1, vec2;
 
-  file >> ws >> text;
-  if( strcmp(text, "max_shapes" ) == 0 )
-    {
-      file >> ws >> max_shapes;
-      shapes = new Shape*[max_shapes];
-    }
+  Vector2D vec1, vec2;
+  Shape* shapep;
 
   do
     {
@@ -157,7 +225,10 @@ Arena::parse_file(istream& file)
         {
           file >> ws >> vec1;
           file >> ws >> number1;
-          shapes[number_of_shapes++] = new Circle(vec1, number1);      
+
+          shapep = new Circle(vec1, number1);
+          g_list_append(&object_lists[WALL], shapep);
+          g_list_append(&solid_objects, shapep);
         }
       //  else if( strcmp(text, "outer_circle" ) == 0 )
       //    {
@@ -171,7 +242,9 @@ Arena::parse_file(istream& file)
           file >> ws >> vec2;      // end_point
           file >> ws >> number2;   // thickness
           
-          shapes[number_of_shapes++] = new Line(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
+          shapep = new Line(vec1, unit(vec2-vec1), length(vec2-vec1), number2);      
+          g_list_append(&object_lists[WALL], shapep);
+          g_list_append(&solid_objects, shapep);
         }
       //   else if( strcmp(text, "polygon" ) == 0 )
       //     {
@@ -182,24 +255,71 @@ Arena::parse_file(istream& file)
     } while( text[0] != '\0' );
 }
 
-double
-Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, int closest_shape)
+void
+Arena::add_to_list(class ArenaObject& obj)
 {
-  closest_shape = -1;
+  g_list_append(&object_lists[obj.get_object_type()], &obj);
+}  
+
+void
+Arena::add_to_solid_object_list(class SolidObject& obj)
+{
+  g_list_append(&solid_objects, &obj);
+}
+  
+void
+Arena::remove_from_list(class ArenaObject& obj)
+{
+  g_list_remove(&object_lists[obj.get_object_type()], &obj);
+}  
+
+void
+Arena::remove_from_solid_object_list(class SolidObject& obj)
+{
+  g_list_remove(&solid_objects, &obj);
+}  
+
+
+double
+Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const double size, SolidObject* closest_shape)
+{
   double dist = infinity;
   double d;
+  SolidObject* objp;
+  closest_shape = NULL;
+  GList* gl;
 
-  for(int i=0; i<number_of_shapes; i++)
+  for(gl = g_list_first(&solid_objects); gl->next != NULL; gl = g_list_next(gl))
     {
-      d = shapes[i]->get_distance(pos, dir, size);
+      objp = (SolidObject*)gl->data;
+      objp->get_distance(pos, dir, size);
       if( d < dist)
         {
-          closest_shape = i;
+          closest_shape = objp;
           dist = d;
         }
     }
 
   return dist;
+}
+
+void
+Arena::update_robots()
+{
+  GList* gl;
+  Robot* robotp;
+
+  for(gl = g_list_first(&object_lists[ROBOT]); gl->next != NULL; gl = g_list_next(gl))
+    {
+      robotp = (Robot*)gl->data;
+      if( robotp->is_alive() )
+        {
+          robotp->move(timestep);
+          if( !robotp->is_alive() ) remove_from_solid_object_list(*(SolidObject*)robotp);
+          
+          robotp->update_radar_and_cannon();  
+        }      
+    }
 }
   
 Error::Error(char* strp, char* funcp) 
