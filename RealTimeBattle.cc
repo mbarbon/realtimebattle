@@ -2,6 +2,7 @@
 #include <time.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include "Arena.h"
 #include "Vector2D.h"
 #include "gui.h"
@@ -40,7 +41,7 @@ sigchld_handler (int signum)
       pid = waitpid (WAIT_ANY, &status, WNOHANG);
       if (pid < 0)
         {
-          perror ("waitpid");
+          if( errno != ECHILD ) throw Error("waidpid failed", "RealTimeBattle.cc:sigchld_handler");
           break;
         }
       if (pid == 0)
