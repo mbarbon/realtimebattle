@@ -404,7 +404,7 @@ Robot::die()
 }
 
 void
-Robot::set_stats(int robots_killed_same_time)
+Robot::set_stats(const int robots_killed_same_time)
 {
   died_this_round = false;
 
@@ -423,7 +423,8 @@ Robot::set_stats(int robots_killed_same_time)
       send_message(DEAD);
       send_signal();
 
-      realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game);
+      realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game,
+                                      position_this_game);
     }
 
   stat_t* statp = new stat_t
@@ -433,6 +434,34 @@ Robot::set_stats(int robots_killed_same_time)
      position_this_game,
      points_this_game,   
      the_arena.get_total_time(),
+     total_points
+     );
+
+  statistics.insert_last( statp );
+}
+
+// Version of set_stats used by ArenaReplay
+//
+void
+Robot::set_stats(const double pnts, const int pos, const double time_survived)
+{
+  position_this_game = pos;
+  total_points = total_points - points_this_game + pnts;
+  points_this_game = pnts;
+
+  time_survived_in_sequence += time_survived;
+
+#ifndef NO_GRAPHICS
+  if( !no_graphics ) display_score();
+#endif
+
+stat_t* statp = new stat_t
+    (
+     the_arena.get_sequence_nr(),
+     the_arena.get_game_nr(),
+     position_this_game,
+     points_this_game,   
+     time_survived,
      total_points
      );
 

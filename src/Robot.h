@@ -61,7 +61,8 @@ public:
   void send_message(enum message_to_robot_type ...);
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
-  void set_stats(int robots_killed_same_time);
+  void set_stats(const int robots_killed_same_time);
+  void set_stats(const double pnts, const int pos, const double time_survived);
   void start_process();
   bool is_process_running();
   void check_process();
