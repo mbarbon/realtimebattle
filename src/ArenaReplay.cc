@@ -933,7 +933,7 @@ ArenaReplay::make_statistics_from_file()
 void
 ArenaReplay::get_time_positions_in_game()
 {  
-  String letter_list = "TGH";
+  String letter_list = "TGHSMCD";
   char letter;
   char buffer[400];
   int time_pos_index = 0;
@@ -941,6 +941,7 @@ ArenaReplay::get_time_positions_in_game()
   if( time_position_in_log != NULL ) delete [] time_position_in_log;
 
   time_position_in_log = new time_pos_info_t[max_time_infos];
+  object_positions_in_log.delete_list();
 
   for(int i=0; i<max_time_infos; i++) 
     {
@@ -966,6 +967,77 @@ ArenaReplay::get_time_positions_in_game()
             Error(false, "Too many time-info entries", 
                   "ArenaReplay::get_time_positions_in_game");
 
+          break;
+
+        case 'S':
+          {
+            int shot_id;
+            double x, y, dx, dy;
+            log_file >> shot_id >> x >> y >> dx >> dy;
+            object_positions_in_log.insert_last
+              ( new object_pos_info_t( SHOT, shot_id, Vector2D( x,y ),
+                                       cur_time, cur_time, Vector2D( dx,dy ) ) );
+          }
+          break;
+
+        case 'M':
+          {
+            int mine_id;
+            double x, y;
+            log_file >> mine_id >> x >> y;
+            object_positions_in_log.insert_last
+              ( new object_pos_info_t( MINE, mine_id, Vector2D( x,y ),
+                                       cur_time, cur_time ) );
+          }
+          break;
+        case 'C':
+          {
+            int cookie_id;
+            double x, y;
+            log_file >> cookie_id >> x >> y;
+            
+            object_positions_in_log.insert_last
+              ( new object_pos_info_t( COOKIE, cookie_id, Vector2D( x,y ),
+                                       cur_time, cur_time ) );
+          }
+          break;
+
+        case 'D':
+          {
+            char obj = '?';
+            int object_id;
+            log_file.get( obj );
+            log_file >> object_id;
+            object_type object = NOOBJECT;
+            switch( obj )
+              {
+              case 'S':
+                object = SHOT;
+                break;
+
+              case 'M':
+                object = MINE;
+                break;
+              case 'C':
+                object = COOKIE;
+                break;
+
+              default:
+                break;
+              }
+            
+            if( object != NOOBJECT )
+              {
+                object_pos_info_t* obj_info;
+                if( NULL != ( obj_info = find_object( object, object_id ) ) )
+                  {
+                    obj_info->end_time = cur_time;
+                  }
+                else
+                  Error(false, "Dying object not in list: " + String(obj) + " "
+                        + String(object_id), "ArenaReplay::get_time_positions_in_game");
+              }
+          }
           break;
 
         case 'G':
@@ -1015,4 +1087,17 @@ ArenaReplay::get_length_of_current_game()
 
   cout << the_opts.get_d( OPTION_TIMEOUT ) + 1.0 << endl;
   return the_opts.get_d( OPTION_TIMEOUT ) + 1.0;
+}
+
+ArenaReplay::object_pos_info_t*
+ArenaReplay::find_object( object_type obj, int id )
+{
+  ListIterator<object_pos_info_t> li;
+  for( object_positions_in_log.first(li); li.ok(); li++ )
+    {
+      if( obj == li()->obj && id == li()->id )
+        return li();
+    }
+
+  return NULL;
 }

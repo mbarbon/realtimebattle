@@ -28,6 +28,20 @@ class String;
 class ArenaReplay : public ArenaBase
 {
 public:
+  struct object_pos_info_t
+  {
+    object_pos_info_t( object_type o, int i, Vector2D p, float s,
+                       float e, Vector2D v ) :
+      obj(o), id(i), pos(p), start_time(s), end_time(e), vel(v) {}
+    object_pos_info_t( object_type o, int i, Vector2D p, float s, float e ) :
+      obj(o), id(i), pos(p), start_time(s), end_time(e) {}
+    object_type obj;
+    int id;
+    Vector2D pos;
+    float start_time;
+    float end_time;
+    Vector2D vel; // For shots
+  };
   //  enum speed_t { REWIND, PLAY, FAST_FORWARD };
 
   ArenaReplay                   ();
@@ -67,6 +81,7 @@ private:
   void make_statistics_from_file();
   void get_time_positions_in_game();
   int  find_streampos_for_time  ( const float cur_time );
+  object_pos_info_t* find_object( object_type obj, int id );
 
   ifstream log_file;
 
@@ -86,15 +101,7 @@ private:
     float time;
   };
 
-  struct object_pos_info_t
-  {
-    object_type obj;
-    streampos pos;
-    float start_time;
-    float end_time;
-    Vector2D vel; // For shots
-  };
-
+  List<object_pos_info_t> object_positions_in_log;
   time_pos_info_t* time_position_in_log;
   int last_time_info;
 
