@@ -50,7 +50,7 @@ enum packet_t
 
   PACKET_SUBMIT,
   PACKET_TOURNAMENT_COMMIT_CHANGE,
-  
+  PACKET_START_TOURNAMENT,
 
   PACKET_WARNING,       //Send a warning message... (should be used by everybody...)
 };

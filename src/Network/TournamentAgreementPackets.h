@@ -27,11 +27,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class TournamentAgreementPacketFactory: public PacketFactory {
  public:
-  /* TODO : construct this class with a GuiInterface pointer as argument... */
+  TournamentAgreementPacketFactory();
   string Protocol() {return RTB_PROTOCOL_TOURNAMENT_AGREEMENT ;};
+  void add_connection( NetConnection* );
+  void set_start(NetConnection*, bool);
+  void reset_start();
+  void remove_connection( NetConnection* );
+  void start_tournament( bool = false );
+
   Packet* MakePacket(string &); 
  protected:
   tourn_info_t my_tournament;
+  map<NetConnection*, bool> ready_to_start;
 };
 
 class TournamentCommitChangePacket : /* virtual */ public Packet {
@@ -46,14 +53,28 @@ public:
   int handle_packet( void* );
   packet_t packet_type() { return PACKET_TOURNAMENT_COMMIT_CHANGE; };
 
-  void add_connection( NetConnection* );
-
   string& type()  {return type_init;}
   string& value() {return change;}
 protected:
   tourn_info_t *tourn_p;
   string type_init;
   string change;
+  TournamentAgreementPacketFactory* my_factory;
+};
+
+class StartTournamentPacket : /* virtual */ public Packet {
+public:
+  StartTournamentPacket(TournamentAgreementPacketFactory* f)
+    : start(false), my_factory( f ) {};
+  StartTournamentPacket( bool start ) 
+    : start(start)  {};
+
+  string make_netstring() const;
+  int handle_packet( void* );
+  packet_t packet_type() { return PACKET_START_TOURNAMENT; };
+
+protected:
+  bool start;
   TournamentAgreementPacketFactory* my_factory;
 };
 

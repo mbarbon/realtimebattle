@@ -98,27 +98,24 @@ InitializationPacket::handle_packet(void* p_void)
   istrstream is(data.c_str());
   string type_init;
 
-  cout<<data<<endl;
-
   is >> type_init >> protocol;
 
   if(type_init == "Connect") //He is already connected and he wants to open a other channel
     {
       is >> channel;
       cout<<"He wants to connect to protocol "<<protocol<<" on channel "<<channel<<endl;
-      cout<<"See if we have some..."<<endl;
-      if(my_socketserver.channel_protocol(channel) == protocol) {
-	cout<<"Ok, he can connect\n";
-	nc->set_type(channel);
 
-	PacketFactory* factory =  my_socketserver.packet_factory( channel );
+      PacketFactory* factory =  my_socketserver.packet_factory( channel );
+      if(factory && factory->Protocol() == protocol)
+	{
+	  nc->set_type(channel);
 
-	factory->add_connection( nc );
-	my_socketserver. connection_factory[ nc ] = factory;
-	cout<<factory->Protocol()<<endl;
+	  factory->add_connection( nc );
+	  my_socketserver. connection_factory[ nc ] = factory;
+	  cout<<factory->Protocol()<<endl;
 
-	return 1;
-      }
+	  return 1;
+	}
     }
   else
     {}
