@@ -9,7 +9,7 @@
 //#include "Function.h"
 #include "ShotGadget.h"
 //#include "../Arena.h"
-
+#include "AllGadgets.h"
 
 
 class WeaponGadget : public Gadget
