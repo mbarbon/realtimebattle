@@ -54,6 +54,7 @@ public:
   Gui* get_the_gui() { return the_gui; }
   int get_sequence_nr() { return sequence_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
+  int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
   int get_sequences_remaining() { return sequences_remaining; }
   int get_robots_per_game() { return robots_per_game; }
   double get_max_acceleration() { return max_acceleration; }
@@ -340,11 +341,12 @@ protected:
 
 struct stat_t
 {
-  stat_t(int s, int g, double p, double  t, double tp) :
-    sequence_nr(s), game_nr(g), points_this_game(p), time_survived(t), total_points(tp) {}
+  stat_t(int s, int g, int pos, double p, double  t, double tp) :
+    sequence_nr(s), game_nr(g), position(pos), points(p), time_survived(t), total_points(tp) {}
   int sequence_nr;
   int game_nr;
-  double points_this_game;
+  int position;
+  double points;
   double time_survived;
   double total_points;
 };
@@ -381,8 +383,12 @@ public:
   pid_t get_pid() { return pid; }
   GList* get_statistics() { return statistics; }
   int get_position_this_game() { return position_this_game; }
+  double get_total_points();
+  int get_last_position();
   void display_energy();
   void display_place();
+  void display_last();
+  void display_score();
   void set_gtk_widgets( GtkWidget * en, GtkWidget * pl, GtkWidget * la, GtkWidget * sc );
 
 private:

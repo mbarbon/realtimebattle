@@ -251,9 +251,20 @@ Arena::timeout_function()
       break;
       
     case GAME_IN_PROGRESS:
-      update();
-      if( robots_left <= 1 ) end_game();
+      {
+        update();
+        if( robots_left <= 1 ) 
+          {
+            for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
+              if( ((Robot*)gl->data)->get_position_this_game() == 0 )
+                {
+                  ((Robot*)gl->data)->die();
+                  ((Robot*)gl->data)->set_stats(1);
+                }
+            end_game();
+          }
       //   TODO:    if( total_time > next_check_time ) check_robots();
+      }
       break;
 
     case EXITING:
@@ -390,11 +401,12 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
+  state = GAME_IN_PROGRESS;
+  games_remaining_in_sequence--;
+
   the_gui->setup_arena_window( boundary );
   the_gui->setup_score_window();
 
-  state = GAME_IN_PROGRESS;
-  games_remaining_in_sequence--;
   g_timer_reset(timer);
   update_timer();
 }
@@ -406,6 +418,8 @@ Arena::end_game()
 
   the_gui->close_score_window();
   the_gui->close_arena_window();
+
+  broadcast(GAME_FINISHES);
 
   GList* gl;
   // clear the lists;

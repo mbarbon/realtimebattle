@@ -385,7 +385,8 @@ Gui::setup_score_window()
       // Prev Place widget
 
       widget_last = gtk_entry_new_with_max_length(2);
-      gtk_entry_set_text (GTK_ENTRY (widget_last), "");
+      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
+      robotp->display_last();
       gtk_entry_set_editable(GTK_ENTRY(widget_last),FALSE);
       gtk_widget_set_usize(widget_last, 24,25);
       gtk_table_attach_defaults (GTK_TABLE(last_table), widget_last, 0, 1, i + 1, i + 2);
@@ -394,9 +395,10 @@ Gui::setup_score_window()
       // Score widget
 
       widget_score = gtk_entry_new_with_max_length(4);
-      gtk_entry_set_text (GTK_ENTRY (widget_score), "");
+      robotp->set_gtk_widgets( widget_energy, widget_place, widget_last, widget_score );
+      robotp->display_score();
       gtk_entry_set_editable(GTK_ENTRY(widget_score),FALSE);
-      gtk_widget_set_usize(widget_score, 36,25);
+      gtk_widget_set_usize(widget_score, 72, 25);
       gtk_table_attach_defaults (GTK_TABLE(score_table), widget_score, 0, 1, i + 1, i + 2);
       gtk_widget_show (widget_score);
 

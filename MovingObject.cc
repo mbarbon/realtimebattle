@@ -142,20 +142,38 @@ Robot::die()
 void
 Robot::set_stats(int robots_killed_same_time)
 {
-  stat_t* sp;
-  position_this_game += robots_killed_same_time - 1;
+  int adjust = robots_killed_same_time - 1;
+  position_this_game -= adjust; 
   display_place();
-  double points_this_game = the_arena->get_robots_per_game() - position_this_game + position_this_game * 0.5;
+  double points_this_game = (double)(the_arena->get_robots_per_game() - position_this_game) - ((double)adjust) * 0.5 + 1.0;
+
   stat_t* statp = new stat_t
     (
      the_arena->get_sequence_nr(),
-     the_arena->get_games_per_sequence() - the_arena->get_sequences_remaining(),
-     points_this_game,
+     the_arena->get_games_per_sequence() - the_arena->get_games_remaining_in_sequence(),
+     position_this_game,
+     points_this_game,   
      the_arena->get_total_time(),
-     (sp = (stat_t*)g_list_last(statistics)->data) != NULL ? sp->total_points + points : points
+     get_total_points() + points_this_game
      );
 
   g_list_append(statistics, statp);
+}
+
+double
+Robot::get_total_points()
+{
+  stat_t* sp = (stat_t*)g_list_last(statistics)->data;
+  return( sp != NULL ? sp->total_points + points : points );
+}
+
+int
+Robot::get_last_position()
+{
+  return( the_arena->get_games_per_sequence() -
+          the_arena->get_games_remaining_in_sequence() != 1 
+          ? ((stat_t*)g_list_last(statistics)->data)->position
+          : 0 );
 }
 
 void
@@ -221,6 +239,7 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   mass = the_arena->get_robot_mass();
   energy = the_arena->get_start_energy();
   velocity = Vector2D(0.0, 0.0);
+  position_this_game = 0;
 }
 
 void
@@ -508,8 +527,34 @@ Robot::display_place()
   ss << position_this_game;
   ss >> str_place;
 
-  cerr << "display_place(): String: " << str_place << endl;
   gtk_entry_set_text (GTK_ENTRY (widget_place), str_place);
+}
+
+void
+Robot::display_last()
+{
+  strstream ss;
+  char str_last[25];
+
+  if(get_last_position() != 0)
+    {
+      ss << get_last_position();
+      ss >> str_last;
+
+      gtk_entry_set_text (GTK_ENTRY (widget_last), str_last);
+    }
+}
+
+void
+Robot::display_score()
+{
+  strstream ss;
+  char str_score[25];
+
+  ss << get_total_points();
+  ss >> str_score;
+
+  gtk_entry_set_text (GTK_ENTRY (widget_score), str_score);
 }
 
 void
