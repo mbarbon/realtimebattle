@@ -22,6 +22,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream.h>
 
+class String;
+
 template<class T>
 struct ListNode
 {
@@ -86,7 +88,6 @@ private:
   bool responsible_for_deletion;
 };
 
-#include "String.h"
 void Error(const bool fatal, const String& error_msg, const String& function_name);
 
 template <class T>
