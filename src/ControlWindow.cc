@@ -261,7 +261,9 @@ ControlWindow::step( GtkWidget* widget, gpointer data )
 void
 ControlWindow::end_game( GtkWidget* widget, gpointer data )
 {
-  the_arena.end_game();
+  if( the_arena.get_state() != NOT_STARTED &&
+      the_arena.get_state() != FINISHED )
+    the_arena.end_game();
 }
 
 void
@@ -296,7 +298,8 @@ ControlWindow::increase_debug_level( GtkWidget* widget,
 void
 ControlWindow::end_clicked( GtkWidget* widget, gpointer data )
 {
-  if(the_arena.get_state() != NOT_STARTED && the_arena.get_state() != FINISHED)
+  if( the_arena.get_state() != NOT_STARTED &&
+      the_arena.get_state() != FINISHED )
     the_gui.ask_user("This action will kill the current tournament.\nDo you want do that?",&(ControlWindow::end_tournament));
 }
 
