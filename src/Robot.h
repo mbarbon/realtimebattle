@@ -76,6 +76,7 @@ public:
   void die();
 
   String get_robot_name() { return robot_name; }
+  String get_robot_filename() { return robot_filename; }
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
   pid_t get_pid() { return pid; }
