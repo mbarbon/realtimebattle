@@ -3,6 +3,9 @@ CXXFLAGS += $(GTK_CFLAGS) -DROBOTDIR='"$(ROBOTDIR)"' -DARENADIR='"$(ARENADIR)"'
 bin_PROGRAMS = RealTimeBattle
 include_HEADERS = Messagetypes.h
 
+rtbheaderdir = $(RTB_DIR)
+rtbheader_DATA = Messagetypes.h
+
 if NO_GETOPT_LONG
 GETOPT_O = getopt.o
 else
