@@ -23,6 +23,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <sys/stat.h>
+#include <math.h>
 
 #include "ArenaReplay.h"
 #include "ArenaController.h"
@@ -188,7 +189,7 @@ ArenaReplay::parse_this_time_index()
   while( current_replay_time == next_replay_time )
     {
       strpos = log_file.tellg();
-      parse_log_line();
+      if( parse_log_line() == '?' ) return;
       if ( current_replay_time == 0.0 ) next_replay_time = 0.0; // A new game has started
     }
 
@@ -702,10 +703,99 @@ ArenaReplay::change_replay_time( const double time )
           total_time = time_position_in_log[index].time + 0.00001;
           update_timer(0.0);
           log_file.seekg( time_position_in_log[index].pos );
+          recreate_lists();
         }
     }  
 }
 
+// Recreates the object_list[] array to hold what is correct for the current
+// time, not the old time.
+void
+ArenaReplay::recreate_lists()
+{
+  // Kill och awaken robots that have died or began to live again.
+  {
+    ListIterator<Shape> li;
+    for( object_lists[ROBOT].first(li); li.ok(); li++ )
+      {
+        Robot* robotp = (Robot*) li();
+        int id = robotp->get_id();
+        object_pos_info_t* info;
+        if( NULL != (info = find_object_in_log( ROBOT,id ) ) )
+        {
+          if( info->end_time < current_replay_time && robotp->is_alive() )
+            {
+              robotp->die(); // TODO: Something more here?
+              robotp->change_energy( -robotp->get_energy() );
+            }
+          else if( info->end_time > current_replay_time && !(robotp->is_alive()) )
+            {
+              robotp->live(); // TODO: Something more here?
+            }
+        }
+        else
+          Error(false, "Robot in object_list is not in object_positions_in_log",
+                "ArenaReplay::recreate_lists");
+      }
+  }
+
+  // Kill all Shots, mines and cookies that are in the object_list
+  // Create new shots for the new time.
+  {
+    for( int type = SHOT; type <= MINE; (type == SHOT ? type+=2 : type++)  )
+      {
+        ListIterator<Shape> li;
+        for( object_lists[type].first(li); li.ok(); li++ )
+          switch( type )
+            {
+            case SHOT:
+              ((Shot*)li())->die();
+              object_lists[SHOT].remove(li);
+              break;
+            case COOKIE:
+              ((Cookie*)li())->die();
+              object_lists[COOKIE].remove(li);
+              break;
+            case MINE:
+              ((Mine*)li())->die();
+              object_lists[MINE].remove(li);
+              break;
+            }
+      }
+
+    ListIterator<object_pos_info_t> li;
+    for( object_positions_in_log.first(li); li.ok(); li++ )
+      {
+        object_pos_info_t* info = li();
+        if( current_replay_time > info->start_time &&
+            current_replay_time < info->end_time )
+          {
+            switch( info->obj )
+              {
+              case SHOT:
+                object_lists[SHOT].insert_last
+                  ( new Shot( info->pos + (current_replay_time - info->start_time)
+                              * info->vel, info->vel, 0, info->id ) );
+                break;
+              case COOKIE:
+                object_lists[COOKIE].insert_last
+                  ( new Cookie( info->pos, 0, info->id ) );
+                break;
+              case MINE:
+                object_lists[MINE].insert_last
+                  ( new Mine( info->pos, 0, info->id ) );
+                break;
+              case ROBOT:
+                break;
+              default:
+                Error(true,
+                      "Variable 'type' has a forbidden value. Should never happen",
+                      "ArenaReplay::recreate_lists");
+              }
+          }
+      }
+  }
+}
 
 // Searches the log_file for a line beginning with any of the 
 // letters in 'search_letters'.
@@ -1064,6 +1154,7 @@ ArenaReplay::get_time_positions_in_game()
         case 'H':
           last_time_info = time_pos_index - 1;
           log_file.seekg( old_pos );
+          log_file.clear();
           return;
           break;
           
@@ -1078,6 +1169,8 @@ ArenaReplay::get_time_positions_in_game()
 
   log_file.seekg( old_pos );
   log_file.clear();
+
+  last_time_info = time_pos_index - 1;
 }
 
 // Finds the index of time_position_in_log which has the largest time

@@ -77,6 +77,7 @@ private:
   void parse_this_time_index    ();
   void beginning_of_prev_line   ();
   void beginning_of_current_line();
+  void recreate_lists           ();
 
   void make_statistics_from_file();
   void get_time_positions_in_game();
