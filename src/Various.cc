@@ -34,15 +34,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern class Options the_opts;
 
 void
-Error(const bool fatal, const String& function_name, const String& error_msg)
+Error(const bool fatal, const String& error_msg, const String& function_name)
 {
   cerr << "RealTimeBattle: Error in " << function_name << ": " << error_msg << endl;
   perror("RealTimeBattle: errno message");
 
-  if( fatal )
-    gtk_main_quit();
-  else
-    return;
+  if( fatal == true )
+    {
+      gtk_main_quit();
+      exit(EXIT_FAILURE);
+    }
 }
 
 int
