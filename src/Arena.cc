@@ -25,6 +25,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <fstream>
 #include <typeinfo>
 #include <set>
+#include <algorithm>
+#include <vector>
 
 #include <math.h>
 #include <assert.h>
@@ -38,6 +40,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Shot.h"
 #include "Robot.h"
 #include "SubSquareIterators.h"
+#include "IntlDefs.h"
 
 void
 Arena::add_shot(Shot* s)
@@ -109,11 +112,10 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& vel,
 void
 Arena::load_arena_file( const string& filename, Gadget& hierarchy )
 {
-  enum load_file_mode_t { LAF_DEFINING_MODE, LAF_VARIABLE_MODE, LAF_SCRIPT_MODE,
-                          LAF_GEOMETRY_MODE, LAF_STRING_MODE };
+  enum load_file_mode_t { LAF_DEFINING_MODE, LAF_VARIABLE_MODE,
+                          LAF_SCRIPT_MODE, LAF_GEOMETRY_MODE };
 
   char buffer[400];
-  string tempstr;
   load_file_mode_t mode = LAF_DEFINING_MODE;
 
   string top_filename = filename;
@@ -132,15 +134,24 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
   while( !file_stack.empty() )
     {
       ifstream* current_file = file_stack.top();
-      if( current_file->fail() || current_file->eof() )
+      string str_buffer;
+      bool first_time = true;
+      while( ((count( str_buffer.begin(), str_buffer.end(), '"' ) % 2) != 0) ||
+             first_time )
         {
-          delete current_file;
-          file_stack.pop();
-          continue;
+          if( first_time )
+            first_time = false;
+          if( current_file->fail() || current_file->eof() )
+            {
+              delete current_file;
+              file_stack.pop();
+              continue;
+            }
+          current_file->get( buffer, 400, '\n' );
+          current_file->get();
+          str_buffer += buffer;
         }
-      current_file->get( buffer, 400, '\n' );
-      current_file->get();
-      vector<string> wordlist = split_string( buffer, wordlist );
+      vector<string> wordlist = special_split_string( buffer, wordlist );
       remove_comments( wordlist );
       if( wordlist.size() > 0 )
         {
@@ -266,6 +277,50 @@ Arena::sufficient_arena_version( vector<string>& wordlist ) const
 {
   // Note: Is it necessary to specify arena-version?
   return true;
+}
+
+// Splits the strings into whitespace separated words. Special strings (e.g. strings
+// separated by ") is taken as ONE word, this is translated if surrounded by _( )
+// TODO: Enable removal of \ and other c-formating info.
+vector<string>&
+Arena::special_split_string( const string& str, vector<string>& strlist ) const
+{
+  string::size_type pos = 0;
+  string::size_type beg_pos = 0;
+  while( (pos = min( str.find( '"', beg_pos ),
+                     str.find( "_(\"", beg_pos ) ) ) != string::npos )
+    {
+      bool translatable = false;
+      vector<string> tmp_list;
+      split_string( str.substr( beg_pos, pos - beg_pos ), tmp_list );
+      strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
+      if( str[pos] == '"' )
+        {
+          translatable = false;
+          beg_pos = pos + 1;
+        }
+      else
+        {
+          translatable = true;
+          beg_pos = pos + 3;
+        }
+      string::size_type end_pos = str.find( '"', beg_pos );
+      if( str.substr( end_pos, 2 ) == "\")" && translatable )
+        {
+          strlist.push_back( _( (str.substr( beg_pos, end_pos - beg_pos )).c_str() ) );
+          beg_pos = end_pos + 2;
+        }
+      else
+        {
+          strlist.push_back( str.substr( beg_pos, end_pos - beg_pos ) );
+          beg_pos = end_pos + 1;
+        }
+    }
+
+  vector<string> tmp_list;
+  split_string( str.substr( beg_pos, string::npos ), tmp_list );
+  strlist.insert( strlist.end(), tmp_list.begin(), tmp_list.end() );
+  return strlist;
 }
 
 void
