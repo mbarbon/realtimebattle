@@ -1,0 +1,75 @@
+Process :
+* First the Server open a socket to wait for friends
+* He execute a Root Client (see Connection types below) that should immedialty connect on him... (That is not a very good idea, but I didn't find any other way) 
+* The Chat Clients can open sockets and chat together (They decide what they want to play, the robots that are going to fight... The server establish a list of the robots with the chat client that submit them...
+* The Root decide to begin the game
+* The server send to each chat client the robots he have to launch (I think the server can't execute a distant program... can he?)
+* Each Client execute his robot clients(!!!)
+* The robot client(!!!) execute the robot program(!!!)
+* The robot client(!!!) try to connect to the server
+
+* If everyone is ready... lets play...
+  * The chat client can't send messages anymore (except "quit" : what should we do??? : kill every robots sent by this chat or just kill the chat???) (maybe they can keep on chating (i.e. my robots are better than yours))
+  * The root client can play with the speed of the game... 
+  * The robots are fighting...
+  * The server assum his responsabilities :
+    * Send the informations to the robots
+    * Send the arena description, robot motions and energie, stats to the chat
+
+* This is the end of the game :
+  * kill the robots 
+  * let the chat submit new ideas
+
+Maybe a little 'UML' diagram would be more explicit... I will work on it latter
+
+message_lentgh message_type   message
+    [  ]          [  ]        [ ... ]
+   2 char       2 char        n char
+
+Connection types :
+Root : the manager... decide everything
+Chat : can chat with other chaters. Can submit a robot name. Launch robots...
+Robot : The robot client
+
+Message types :
+@I : Message for initialisation
+@M : Message to print (i.e. a dialog between 2 chatters)
+@C : A Command to execute
+@S : Submit a robot (i.e. message from a chat to submit a robot)
+
+@s : A modification in statistics
+@r : A modification on robot position 
+@m : A message to display in the message window
+@a : Add a new objetc on the arena
+@A : The arena definition is coming (only the 'picture')
+
+@R : a robot command...
+
+... [Add everything that could be fine...] ...
+
+Initialisation :
+Only one message : "<lentgh>@I <protocol_version> <connection_type> <name>"
+courant protocol version : RTBNetV1
+connection type : see below
+This may be the only message using the @I message type
+
+Command form a Root connection (don't forget to start with @C):
+* quit : close the server (this will send the "@C Close" message to everybody)
+* start : start the game (from this point, chat connections can only observe the fight)
+* pause : ...
+* step : ...
+* ...
+* kick : my favorite game
+
+Command from every basic chater (even root) :
+* addarena : add an arena to the list of arena (only root can do that?)
+* delarena : delete an arena from the list     (          "           )
+* quit : quit the game (don't forget to delete every robot he could have launched...)
+
+Command from server to chat :
+* Close : we are about to delete you socket from our list...
+* Start : The game is starting... be prepare and connect your robots
+* Kill <robot_name> : you can kill him, he is useless 
+  
+
+
