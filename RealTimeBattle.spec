@@ -5,7 +5,7 @@ Release: #RELEASE#
 Copyright: GPL
 Group: X11/Games
 Source: RealTimeBattle.tar.gz
-URL: TODO: Get homepage
+URL: http://realtimebattle.netpedia.net
 
 %description
 
