@@ -435,7 +435,7 @@ Arena::print_to_logfile(const char first_letter ... )
       break;
 
     case 'T': // Time
-      LOG_FILE << va_arg(args, double);  // time value
+      LOG_FILE << va_arg(args, double);  // time elsaped
       break;
 
     case 'P': // Print a robot message
