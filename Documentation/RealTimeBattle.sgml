@@ -21,9 +21,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 <article>
 <titlepag>   
-<title>RealTimeBattle User Manual, version 0.9.6 rev 3
+<title>RealTimeBattle User Manual, version 0.9.7 rev 1
 <author>Erik Ouchterlony and Ragnar Ouchterlony, <htmlurl name="realtimebattle@telia.com" url="mailto:realtimebattle@telia.com"> 
-<date> 1 mars 1999
+<date> 7 mars 1999
 
 <!-- <abstract> -->
 
@@ -187,18 +187,22 @@ Options:
 <item> <tt> --option_file [file],     -o </tt> selects option-file (default: $HOME/.rtbrc)
 
 <item> <tt> --log_file [file],        -l </tt> make log file, if 'file' is '-'
-                                                the log is send to STDOUT
+                                                the log is sent to STDOUT
 <item> <tt> --tournament_file [file], -t </tt> specify a tournament file to
                                                 autostart a tournament
 <item> <tt> --statistics_file [file], -s </tt> file to print the statistics to
                                                 when autostarting
+<item> <tt> --message_file [file],    -m </tt> redirect messages to 'file'.
+                                                '-' as 'file' is equivalent to STDOUT.
+                                                If both log and messages are send
+                                                to STDOUT, '-m' will be ignored
 
 <item> <tt> --help,                   -h </tt> prints this information
 
 <item> <tt> --version,                -v </tt> prints the version number
 
 </itemize>
-The differences between the three modes are shown in the following
+The differences between the three competition modes are shown in the following
 table
 
 <#if output="info|txt" >
@@ -210,7 +214,6 @@ table
 | Pause in game                    |  Yes  |  Yes   |      No     |
 | Step through game                |  Yes  |   No   |      No     |
 | Robots may start child processes |  Yes  |   No   |      No     |
-| Robots may open files            |  Yes  |   No   |      No     |
 | Robot CPU time unlimited         |  Yes  |  Yes   |      No     |
 +----------------------------------+-------+--------+-------------+
 </code>
@@ -224,7 +227,6 @@ Debug command available          |  Yes  |  No    |     No      @
 Pause in game                    |  Yes  |  Yes   |     No      @
 Step through game                |  Yes  |  No    |     No      @
 Robots may start child processes |  Yes  |  No    |     No      @
-Robots may open files            |  Yes  |  No    |     No      @
 Robot CPU time unlimited         |  Yes  |  Yes   |     No      @ <hline>
 </tabular>
 </table>
@@ -353,9 +355,8 @@ especially useful when currying out a long series of tests or running a competit
 use this option you have two choices: Either you add the flag <tt>-g</tt> when lounging
 the program, or you disable the graphics at compile time (see the <tt>INSTALL</tt> file
 for more information). The latter alternative is useful as the executable gets
-smaller and therefore faster on low memory machines. Note that <tt>gtk+</tt> is still
-needed in both cases, since it is used to call the program at given times to update the
-arena. 
+smaller and therefore faster on low memory machines. It also enables you to run
+RealTimeBattle on machines which haven't got <tt>gtk+</tt> installed.
 
 When running without graphics you have to give a tournament file, otherwise nothing at
 all will happen. It is also a good idea to create a log file and/or a statistics file
@@ -646,12 +647,20 @@ messages, warning types, objects, game options and robot options.
 
 <sect1>Cheating<label id="Cheating">
 <p>
-Since the battle is progressing in real-time with real processes, there may be possible to make
-programs which are 'cheating' in one way or another. For example by examining other robots or even
-RealTimeBattle itself to get more information, by using up a lot of resources to drain the other
-robot and so on. The processes are therefore given a very restricted environment to run in; in 
-<ref id="Command line options" name="competition-mode"> they are neither allowed to spawn child
-processes or open files, and their CPU usage is limited.
+Since the battle is progressing in real-time with real processes, there may be possible
+to make programs which are 'cheating' in one way or another. For example by examining
+other robots or even RealTimeBattle itself to get more information, by using up a lot
+of resources to drain the other robot and so on. This is, of course, not the intended
+method to beat opponents, so we try to inhibit it as much as possible.
+
+In <ref id="Command line options" name="competition-mode"> robots are not allowed to
+spawn child processes and their CPU usage is limited. In this way one robot cannot use
+up all the CPU. 
+
+It is not possible to prevent all ways of cheating within RTB. It is
+e.g. permitted to read and write to files, but remember that organizers of
+competitions can forbid this if they wish. By setting permissions and ownerships of the
+robot executables and directories this can be done satisfactory.
 
 It may still be possible to find ways round these restrictions; if you detect such a way, please
 send a <ref name="bug report" id="BugReports">. By the way, it is up to the organizer of a
@@ -674,16 +683,6 @@ change it if you don't have very good reasons.
 <label id="YourColour">
 <tag>YourColour [colour (hex)]</tag> Current colour of the robot,
 change if you find it ugly.
-
-<label id="BinDataTo">
-<tag>BinData [number of bytes (int)] [binary data]</tag> If you request to 
-<ref id="LoadData" name="load data"> in binary form, this message will be send to you. The number of
-bytes is less than 500.
-
-<tag>AsciiData [data (string)]</tag> As above, but data in an ascii
-string. The string length is less than 500.
-
-<tag>LoadDataFinished</tag> Signals that all data has been transfered.
 
 <tag>GameOption [optionnr (int)] [value (double)]</tag> At the beginning of each game the robots
 will be sent a number of settings, which can be useful to the robot. For a complete list of these,
@@ -735,6 +734,7 @@ broadcasted to all living robots.
  When a robot hits (or is hit by) something it gets this message. In
 the file <ref id="Messagetypes.h" name="Messagetypes.h"> you can find a list of the object types.
 
+<label id="Warning">
 <tag>Warning [warning type (int)] [message (string)]</tag> A warning
 message can be sent when robot has to be notified on different problems which have
 occured. Currently five different warning messages can be sent, namely
@@ -763,10 +763,6 @@ server until the end of the game, the server doesn't read them.
 
 <tag>GameFinishes</tag> Current game is finished, get prepared for the
 next!
-
-<tag>SaveData</tag> The current sequence is finished. If you want to store some data, do it now!
-When finished saving you should send a <ref id="SaveDataFinished" name="SaveDataFinished">
-message. Thereafter you will get the message ...
 
 <label id="ExitRobot">
 <tag>ExitRobot</tag> Exit from the program immediately! Otherwise it
@@ -803,10 +799,6 @@ with argument 1, indicating that this is the first sequence, you should send bot
 colour.
 
 <tag>Colour [home colour (hex)] [away colour (hex)]</tag> See above.
-
-<label id="LoadData">
-<tag>LoadData [type (int)]</tag> Tell to load stored data. Type of
-data: 0 - binary, 1 - ascii.
 
 <label id="Rotate">
 <tag>Rotate [what to rotate (int)] [angular velocity (double)]</tag>
@@ -852,15 +844,15 @@ Value is bounded by <ref id="RobotMaxAcceleration" name="Robot max/min accelerat
 <ref id="Message window" name="message window"> if in
 <ref id="Command line options" name="debug-mode">.
 
-<tag>BinData [number of bytes (int)] [binary data]</tag> Send data to
-be stored. Be sure to send the correct number of bytes!
+<tag>DebugLine [angle1 (double)] [radius1 (double)] [angle2 (double)] [radius2 (double)]</tag> Draw a line direct to the arena. This is only allowed in
+the highest debug level(5), otherwise a 
+<ref id ="Warning" name="warning message"> is sent. The arguments are the start and end
+point of the line given in polar coordinates relative to the robot.
 
-<tag>AsciiData [data (string)]</tag> Send data to be store. The string
-is terminated by an endline character.
-
-<label id="SaveDataFinished">
-<tag>SaveDataFinished</tag> Tell the server that saving is finished.
-The robot will thereafter get an <ref id="ExitRobot" name="ExitRobot"> message.
+<tag>DebugCircle [center angle (double)] [center radius (double)] [circle radius
+(double)]</tag> Similar to DebugLine above, but draws a circle. 
+The first two arguments are the angle and radius of the central point of the circle
+relative to the robot. The third argument gives the radius of the circle.
 
 </descrip>
 
