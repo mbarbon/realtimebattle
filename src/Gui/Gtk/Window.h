@@ -25,20 +25,28 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 
 #include <gtk/gtkenums.h>
+#include <string>
 
 class Window
 {
 public:
-  Window                                ();
-  virtual ~Window                       ();
+  Window                              ();
+  virtual ~Window                     ();
 
-  virtual void create                   ( const int&       default_width  = -1,
-                                          const int&       default_height = -1,
-                                          const int&       default_x_pos  = -1,
-                                          const int&       default_y_pos  = -1 ) = 0;
-  virtual void destroy                  () = 0;
+  virtual void create                 ( const GtkWindowType  window_type,
+                                        const string&        gtk_name = "",
+                                        const int&           min_width = -1,
+                                        const int&           min_height = -1,
+                                        const int&           default_width  = -1,
+                                        const int&           default_height = -1,
+                                        const int&           default_x_pos  = -1,
+                                        const int&           default_y_pos  = -1 );
+  // Note Window::destroy must be called in every destroy() in the subclasses!
+  virtual void destroy                ();
 
-private:
+  bool is_window_shown                () const;
+
+protected:
   GtkWidget* window_p;
 };
 
