@@ -31,6 +31,7 @@ ArenaReplay::ArenaReplay()
 {
   reset_timer();
   state = NOT_STARTED;
+  next_check_time = 0.0;
 }
 
 ArenaReplay::~ArenaReplay()
@@ -42,9 +43,11 @@ ArenaReplay::timeout_function()
 {
   update_timer();
 
-  while( !log_file.eof() && total_time < next_check_time );
+  while( !log_file.eof() && total_time >= next_check_time )
     {
-      move_shots( next_check_time - last_replay_time );
+      if( next_check_time > last_replay_time )
+        move_shots( next_check_time - last_replay_time );
+
       last_replay_time = next_check_time;
       parse_log_line( log_file );
     }
@@ -114,7 +117,7 @@ ArenaReplay::parse_log_line( ifstream& file )
     case 'T': // Time
       {
         file >> next_check_time;
-        cout << next_check_time;
+        cout << next_check_time << "  " << total_time << endl;
       }
       break;
     case 'P': // Print a robot message
