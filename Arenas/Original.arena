@@ -1,4 +1,4 @@
-! Arenafile for RealTimeBattle v1.1.0-devel !
+! Arenafile version 2 !
 
 ; TODO: Have only done Cannon, Mine and Cookie. Finish up everything else.
 ; Note: This arena is intended to correspond to the v1.0 arenas
@@ -8,7 +8,7 @@
 
 Define Weapon Cannon
 
-   InfoString               _("The classical RealTimeBattle weapon: The cannon")
+   InfoString               _("The classical RealTimeBattle weapon: The cannon.")
 
    Function  Shoot          default
    Function  Mount          false
@@ -20,7 +20,7 @@ Define Weapon Cannon
 
    Define Shot Cannonball
 
-      InfoString            _("The ultimate ammunition for a cannon: The cannonball")
+      InfoString            _("The ultimate ammunition for a cannon: The cannonball.")
 
       Size                   0.1
       Speed                 10.0
@@ -52,7 +52,7 @@ EndDefine
 
 Define Device Mine
 
-   InfoString               _("Standard exploding mine")
+   InfoString               _("Standard exploding mine.")
 
    Size                      0.2
         
@@ -73,11 +73,11 @@ Define Device Mine
          SoundLevel         10.0
          Colour             #ff7400
 
-      EndDefine Explosion MineExplosion
+      EndDefine
         
       Do                    MineExplosion   ;Defualt-function (Explode) is triggered
 
-   EndDefine Action Explode
+   EndDefine
         
    ActionAtCollision        Explode
    ActionWhenHit            Explode
@@ -85,11 +85,11 @@ Define Device Mine
    Temperature              37.0   ;Note: in degrees (not kelvin), is this right?
    Colour                   #e02222
 
-EndDefine Device Mine
+EndDefine
 
 Define Device Cookie
 
-   InfoString               _("Standard cookie")
+   InfoString               _("Standard cookie.")
    Size                      0.2
 
    Define Action CookieEnergy
@@ -138,5 +138,9 @@ The goal is to kill all other robots.")
    Visibility               10.0
 
    Temperature              18.0   ;Note: in degrees (not kelvin), is this right?
+
+   Include                  "StdGeometries.include"
+
+   GeometryList             PlainSquare PlainCircle Circles Nippon
 
 EndDefine
