@@ -34,6 +34,7 @@ endif
 libRTB_a_SOURCES = \
 	Arena.cc Arena.h \
 	ArenaController.cc ArenaController.h \
+	Console.h Console.cc \
 	Event.h \
 	EventGT.h EventGT.cc \
 	EventRT.h EventRT.cc \
