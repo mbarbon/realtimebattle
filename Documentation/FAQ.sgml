@@ -22,6 +22,13 @@ Check that <tt>gtk-config</tt> is in the path! You may need to set the
 environmental variable <tt>GTK_CONFIG</tt> if, for example, the name of
 <tt>gtk-config</tt> is changed.
 
+<tag>My robot dosn't stop rotationg</tag>
+<p>
+The problem is probably that you have used degrees instead of radians. Multiply the angle with
+pi/180 to make it work correctly.
+
+
+
 <tag>My robot doesn't work as I expect</tag>
 <p>
 If your messages are not recognized at all, the problem may be that the STDOUT needs to be
