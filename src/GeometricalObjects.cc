@@ -237,7 +237,7 @@ InnerCircle::get_distance(const Vector2D& pos, const Vector2D& vel, const double
 bool
 InnerCircle::within_distance(const Vector2D& pos, const double size)
 {
-  return (lengthsqr(center-pos) > (size-radius)*(size-radius));
+  return (lengthsqr(center-pos) >= (size-radius)*(size-radius));
 }
 
 Vector2D
@@ -268,5 +268,140 @@ InnerCircle::draw_shape(bool erase)
                  *(the_gui.get_bg_gdk_colour_p()),
                  true );
 }
+
+
+#endif NO_GRAPHICS
+
+// ------- Arc -----------
+
+
+Arc::Arc()
+{
+  center = Vector2D(0.0, 0.0);
+  inner_radius = outer_radius = mid_radiussqr = 0.0;
+  start_angle = -M_PI; end_angle = M_PI;
+  last_drawn_center = Vector2D(-infinity,-infinity);
+  //  last_drawn_radius = 0.0;
+}
+
+Arc::Arc(const Vector2D& c, const double r1, const double r2,
+         const double a1, const double a2 )
+{
+  last_drawn_center = center = c;
+  inner_radius = r1;
+  outer_radius = r2;
+  mid_radiussqr = 0.25 * (r1 + r2) * (r1 + r2);
+  start_angle = a1;
+  end_angle = a2;
+}
+
+// Arc::Arc(const Vector2D& c, const double r, const double b_c, const double hardn)
+// {
+//   last_drawn_center = center = c;
+//   last_drawn_radius = radius = r;
+//   bounce_coeff = b_c;
+//   hardness_coeff = hardn;
+// }
+
+inline double
+Arc::get_distance(const Vector2D& pos, const Vector2D& vel, const double size)
+{
+  Vector2D d = center - pos;
+  double speedsqr = lengthsqr(vel);
+  if( speedsqr == 0.0 ) return infinity;
+
+  double c, r, angle, t;
+  double dt = dot(vel, d);
+
+  if( lengthsqr( d ) > mid_radiussqr )
+    {
+      // Outside circle
+  
+      r = size + outer_radius;
+      c = dt*dt + speedsqr * (r*r - lengthsqr(d));
+      if( c < 0.0 || dt <= 0.0) return infinity;
+      t = max( (dt - sqrt(c))/speedsqr, 0);
+
+      if( within_angle( vec2angle( vel * t - d ) ) )
+        return t;
+
+      // Did hit the outer circle, but not within the angles.
+      // Can still hit inner circle.
+    }
+
+  
+
+  // Test inner circle
+      
+  r = size - inner_radius;
+  
+  c = dt*dt + speedsqr*( r*r - lengthsqr(d) );
+  if( c < 0.0 ) return infinity;  // Can happen if object outside circle
+  
+  t =  max( (dt + sqrt(c))/speedsqr, 0 );
+  
+  if( !within_angle( vec2angle( vel * t - d  ) ) )
+    return infinity;
+
+
+  return t;
+}
+
+bool
+Arc::within_distance(const Vector2D& pos, const double size)
+{
+  Vector2D d = pos - center;
+  double l = lengthsqr( d );
+
+  return( l <= (size + outer_radius)*(size + outer_radius) &&
+          l >= (size - inner_radius)*(size - inner_radius) &&
+          within_angle( vec2angle( d ) ) );
+}
+
+
+// a, start_angle and end_angle should all be betwwen -pi and pi
+bool
+Arc::within_angle( const double a )
+{
+  if( start_angle <= end_angle )
+    return ( a >= start_angle && a <= end_angle );
+  else
+    return ( a <= start_angle && a >= end_angle );
+}
+
+Vector2D
+Arc::get_normal(const Vector2D& pos)
+{
+  Vector2D d = center - pos;
+
+  if( lengthsqr( d ) < mid_radiussqr )
+    return unit( d );
+  else
+    return unit( -d );
+}
+
+#ifndef NO_GRAPHICS
+
+void
+Arc::draw_shape(bool erase)
+{
+
+  if( erase )
+    the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
+                                           inner_radius, outer_radius,
+                                           start_angle, end_angle,
+                                           *(the_gui.get_bg_gdk_colour_p()),
+                                           *(the_gui.get_bg_gdk_colour_p()),
+                                           true );
+  last_drawn_center = center;
+
+  
+  the_gui.get_arenawindow_p()->draw_arc( center, 
+                                         inner_radius, outer_radius,
+                                         start_angle, end_angle,
+                                         gdk_colour, *(the_gui.get_bg_gdk_colour_p()),
+                                         true );
+}
+
 
 #endif

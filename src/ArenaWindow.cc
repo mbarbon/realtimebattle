@@ -307,6 +307,60 @@ ArenaWindow::draw_circle( const Vector2D& center, const double radius,
                         filled,
                         boundary2pixel_x( center[0]-radius ),
                         boundary2pixel_y( center[1]+radius ),
+                        (int)(r*2.0 + 0.5), (int)(r*2.0 + 0.5),
+                        0, GDK_360_DEGREES );
+        }
+      else
+        {
+          gdk_draw_point( drawing_area->window,
+                          colour_gc,
+                          boundary2pixel_x( center[0] ), 
+                          boundary2pixel_y( center[1] ) );
+        }
+      gdk_gc_destroy( colour_gc );
+    }
+}
+
+void
+ArenaWindow::draw_arc( const Vector2D& center, 
+                       const double radius1, const double radius2,
+                       const double angle1, const double angle2,
+                       GdkColor& colour, GdkColor& bgcolour,
+                       const bool filled )
+{
+  const double rad2GDK = ((double)GDK_360_DEGREES) / ( 2.0 * M_PI );
+
+  gint a1 = (gint)( ( angle1 < 0.0 ? angle1 + 2 * M_PI : angle1 ) * rad2GDK );
+
+  double angle_diff = angle2 - angle1;
+  gint a2 = (gint)( ( angle_diff < 0.0 ? angle_diff + 2 * M_PI : angle_diff ) * rad2GDK );
+
+  if( window_shown )
+    {
+      GdkGC * colour_gc;
+
+      colour_gc = gdk_gc_new( drawing_area->window );
+      gdk_gc_set_foreground( colour_gc, &colour );
+
+      double r = radius2 * drawing_area_scale;
+      if( r > 1.0 )
+        {
+          gdk_draw_arc( drawing_area->window,
+                        colour_gc,
+                        filled,
+                        boundary2pixel_x( center[0]-radius2 ),
+                        boundary2pixel_y( center[1]+radius2 ),
+                        (int)(r*2.0 + 0.5), (int)(r*2.0 + 0.5),
+                        a1, a2 );
+
+          r = radius1 * drawing_area_scale;
+          if( filled )
+            gdk_gc_set_foreground( colour_gc, &bgcolour );
+          gdk_draw_arc( drawing_area->window,
+                        colour_gc,
+                        filled,
+                        boundary2pixel_x( center[0]-radius1),
+                        boundary2pixel_y( center[1]+radius1),
                         (int)(r*2.0), (int)(r*2.0),
                         0, GDK_360_DEGREES );
         }
@@ -320,6 +374,7 @@ ArenaWindow::draw_circle( const Vector2D& center, const double radius,
       gdk_gc_destroy( colour_gc );
     }
 }
+
 
 void
 ArenaWindow::draw_rectangle( const Vector2D& start,
