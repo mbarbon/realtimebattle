@@ -378,9 +378,12 @@ make_gdk_color(const long col)
 double
 Arena::colour_dist(const long col1, const GdkColor& col2)
 {
-  return( abs((col1 & 0xff)*0x101 - col2.blue) +
-          abs(((col1 & 0xff00) >> 8)*0x101 - col2.green) +
-          abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red) );
+  return( abs((col1 & 0xff)*0x101 - col2.blue)*
+          log(1.0 + sqrt((col1 & 0xff)*0x101 + col2.blue))/log(2.0) +
+          abs(((col1 & 0xff00) >> 8)*0x101 - col2.green)*
+          log(1.0 + sqrt(((col1 & 0xff00) >> 8)*0x101 + col2.green))/log(2.0) +
+          abs(((col1 & 0xff0000) >> 16)*0x101 - col2.red)*
+          log(1.0 + sqrt(((col1 & 0xff0000) >> 16)*0x101 + col2.red))/log(2.0));
 }
 
 bool
@@ -404,7 +407,7 @@ Arena::find_free_color(const long home_colour, const long away_colour, const Rob
 {  
   long tmp_colour;
 
-  for(double min_dist = 50.0; min_dist > 0.5 ; min_dist *= 0.8)
+  for(double min_dist = 130000.0; min_dist > 0.5 ; min_dist *= 0.8)
     {
       if( is_colour_allowed(home_colour, min_dist, robotp) ) return home_colour;
       if( is_colour_allowed(away_colour, min_dist, robotp) ) return away_colour;
