@@ -5,8 +5,10 @@ ifndef DEBUG_MODE
 DEBUG_MODE=no
 endif
 
-# Add '-fhandle-exception' to CXXFLAGS if your compiler requires it.
-CXXFLAGS =
+# Substitute '-O' with '-fhandle-exceptions' in CXXFLAGS if your compiler requires it.
+# Add '-DUSE_STDARG_H' if the compiler complains about va_args or similar.
+# Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
+CXXFLAGS = -O
 
 
 ifndef RPM_OPT_FLAGS
@@ -19,7 +21,7 @@ else
 #final-options
 CPPFLAGS = $(gtkincludedirs)
 CFLAGS = -O
-CXXFLAGS += -O
+CXXFLAGS += 
 endif
 else
 CPPFLAGS = $(gtkincludedirs)

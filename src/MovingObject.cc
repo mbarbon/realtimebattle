@@ -23,6 +23,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <sys/resource.h>
 #include <sys/stat.h>
 
+#ifdef USE_STDARGS_H
+#include <stdarg.h>
+#endif
+
 #include "MovingObject.h"
 #include "Arena.h"
 #include "Extras.h"
@@ -162,12 +166,14 @@ Robot::start_process()
           
           // Forbid creation of child processes
           
+#ifndef NO_RLIMIT_NPROC
           if( getrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
             throw Error("Couldn't get proc limits for robot ", robot_filename, "Robot::Robot, child");
           
           res_limit.rlim_cur = 0;
           if( setrlimit( RLIMIT_NPROC, &res_limit ) == -1 )
             throw Error("Couldn't limit child processes for robot ", robot_filename, "Robot::Robot, child");
+#endif
         }
 
       // Execute process. Should not return!

@@ -20,6 +20,11 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
+
+#ifdef USE_STDARGS_H
+#include <stdarg.h>
+#endif
 
 #include "Arena.h"
 #include "MovingObject.h"
@@ -1123,7 +1128,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   for(int i=0; i< rem_games; i++)
     {
-      for(int i2=0; i<number_of_robots; i2++) robot_playing_this_match[i2] = false;
+      for(int i2=0; i2<number_of_robots; i2++) robot_playing_this_match[i2] = false;
 
       for(int j=0; j<robots_per_game; j++)
         {

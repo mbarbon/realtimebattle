@@ -31,6 +31,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "../VERSION"
 
+#ifndef WAIT_ANY
+#define WAIT_ANY (pid_t)-1
+#endif
+
 class Options the_opts;
 class Arena the_arena;
 class Gui the_gui;
