@@ -28,6 +28,8 @@ class ShotGadget : public Gadget
   
   //const static VariableDefinition variable_def[LAST_SHOTVAR]; 
   
+  ShotGadget* copy(ShotGadget&);
+
   enum ShotFcns
   {
     LAST_SHOTFCN
