@@ -116,8 +116,11 @@ Robot::Robot(const int r_id, const long int col, const String& name)
 
 Robot::~Robot()
 {
-  if( is_process_running() ) kill_process_forcefully();
-  delete_pipes();
+  if( the_arena_controller.is_realtime() )
+    {
+      if( is_process_running() ) kill_process_forcefully();
+      delete_pipes();
+    }
 } 
 
 void
