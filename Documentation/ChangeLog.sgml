@@ -11,6 +11,8 @@ The resource-file is now implemented. Please write your .rtbrc for your favourit
 
 Changing of Windowsizes has been implemented. Change your .rtbrc for new default sizes.
 
+Added some buttons to the options window.
+
 <item> <bf>0.9.4:</bf>
 <p>
 More bugfixes:
