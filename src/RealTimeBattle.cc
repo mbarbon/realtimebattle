@@ -29,6 +29,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Vector2D.h"
 #include "Gui.h"
 
+#include "../VERSION"
+
 class Options the_opts;
 class Arena the_arena;
 class Gui the_gui;
@@ -36,6 +38,7 @@ class Gui the_gui;
 void 
 print_help_message()
 {
+  cout << endl;
   cout << " Usage: RealTimeBattle [options] " << endl << endl;
   cout << " Options:  -d   debug mode" << endl;
   cout << "           -n   normal mode (default)" << endl;
@@ -108,14 +111,14 @@ main ( int argc, char* argv[] )
             the_arena.set_game_mode(Arena::COMPETITION_MODE);
           break;
         case 'v':
-          cout << "RealTimeBattle 0.9" << endl;
+          cout << "RealTimeBattle " << VERSION << endl;
           return EXIT_SUCCESS;
           break;
         case 'h':
           print_help_message();
           return EXIT_SUCCESS;
         default:
-          cerr << "Unknown option: -" << (char)option_char << "." << endl << endl;
+          //          cerr << "Unknown option: -" << (char)option_char << "." << endl << endl;
           print_help_message();
           return EXIT_FAILURE;
         }
