@@ -7,9 +7,6 @@
 #include "Vector2D.h"
 #include "Arena.h"
 
-
-#define ZOOMFACTOR 20
-
 enum zoom_t { NO_ZOOM, ZOOM_IN, ZOOM_OUT };
 enum stat_button_t
 {
