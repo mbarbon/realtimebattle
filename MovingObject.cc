@@ -959,11 +959,9 @@ Robot::get_messages()
           {
             double acc;
             *instreamp >> acc;
-            if( acc < the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) || 
-                acc > the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) )
-              send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
-            else
-              acceleration = acc;
+            acc = max( acc, the_opts.get_d(OPTION_ROBOT_MIN_ACCELERATION) );
+            acc = min( acc, the_opts.get_d(OPTION_ROBOT_MAX_ACCELERATION) );
+            acceleration = acc;
           }
           break;
         case BREAK:
@@ -971,10 +969,9 @@ Robot::get_messages()
           {
             double brk;
             *instreamp >> brk;
-            if( brk < 0.0 || brk > 1.0 )
-              send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
-            else
-              break_percent = brk;
+            brk = max( brk, 0.0);
+            brk = min( brk, 1.0);
+            break_percent = brk;
           } 
           break;
         case LOAD_DATA:
