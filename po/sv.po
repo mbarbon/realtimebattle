@@ -523,7 +523,7 @@ msgstr " Min "
 
 #: src/OptionsWindow.cc:137 src/OptionsWindow.cc:174 src/OptionsWindow.cc:199
 msgid " Def "
-msgstr " Def "
+msgstr " Std "
 
 #: src/OptionsWindow.cc:139 src/OptionsWindow.cc:176
 #: src/StartTournamentWindow.cc:329
@@ -536,7 +536,7 @@ msgstr " Använd nuvarande fönsterstorlekar och -positioner "
 
 #: src/OptionsWindow.cc:246
 msgid " Default "
-msgstr " Default "
+msgstr " Återställ "
 
 #: src/OptionsWindow.cc:248
 msgid " Load options "
@@ -548,7 +548,7 @@ msgstr " Spara inställningar "
 
 #: src/OptionsWindow.cc:252
 msgid " Save as default "
-msgstr " Spara som default "
+msgstr " Spara som standard "
 
 #: src/OptionsWindow.cc:254
 msgid " Apply "
@@ -591,7 +591,7 @@ msgstr "    --debug_level [0-5],         -D   sätt debug-nivå. Implicerar -d"
 
 #: src/RealTimeBattle.cc:95
 msgid "    --normal_mode,               -n   normal mode (default)"
-msgstr "    --normal_mode,               -n   normalt läge (default)"
+msgstr "    --normal_mode,               -n   normalt läge"
 
 #: src/RealTimeBattle.cc:96
 msgid "    --competition_mode,          -c   competition mode"
@@ -606,7 +606,7 @@ msgid ""
 "    --option_file [file],        -o   selects option-file (default: "
 "$HOME/.rtbrc)"
 msgstr ""
-"    --option_file [fil],         -o   välj inställningsfil (default: "
+"    --option_file [fil],         -o   välj inställningsfil (normalt: "
 "$HOME/.rtbrc)"
 
 #: src/RealTimeBattle.cc:101
