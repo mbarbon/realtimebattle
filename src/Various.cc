@@ -33,6 +33,18 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 extern class Options the_opts;
 
+void
+Error(const bool fatal, const String& function_name, const String& error_msg)
+{
+  cerr << "RealTimeBattle: Error in " << function_name << ": " << error_msg << endl;
+  perror("RealTimeBattle: errno message");
+
+  if( fatal )
+    gtk_main_quit();
+  else
+    return;
+}
+
 int
 factorial(const int n)
 {
@@ -93,7 +105,7 @@ make_gdk_colour(const long col)
   colour.green = ((col & 0x00ff00) >> 8  ) * 0x101;
   colour.blue =  (col & 0x0000ff) * 0x101;
   if( !gdk_color_alloc (cmap, &colour) )
-    throw Error("Couldn't allocate colour", "Arena::make_gdk_color");
+    Error(true, "Couldn't allocate colour", "Various:make_gdk_color");
 
   return colour;
 }

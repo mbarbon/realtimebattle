@@ -47,6 +47,8 @@ struct entry_t
   bool allow_sign;
 };
 
+void Error(const bool fatal, const String& function_name, const String& error_msg);
+
 int factorial(const int n);
 
 int binomial(const int n, const int k);
