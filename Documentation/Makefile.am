@@ -11,17 +11,22 @@ rtbinfo_DATA = RealTimeBattle.info
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
 
 
-
 install-data-local:
 	gzip -f $(rtbinfodir)/RealTimeBattle.info; \
-	if test "x$(INSTALL_INFO)" = "xyes"; then \
-	install-info --entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
-                --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
-	fi
+   if test "x$(INSTALL_INFO)" != "xno"; then \
+		$(INSTALL_INFO) \
+		--entry "* RealTimeBattle: (RealTimeBattle).             A robot programming game" \
+		--info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
+	fi || echo -e "\n\n** Info installation failed, please add the entry to dir by hand **\n\n"
 
 uninstall-local:
-	install-info --delete --info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
-	rm $(rtbinfodir)/RealTimeBattle.info.gz
+	if test "x$(INSTALL_INFO)" != "xno"; then \
+		$(INSTALL_INFO) --delete \
+		--info-dir $(rtbinfodir) $(rtbinfodir)/RealTimeBattle.info.gz; \
+	fi || echo -e "\n\n** Info uninstallation failed, please remove the entry from dir by hand **\n\n"; \
+	rm -f $(rtbinfodir)/RealTimeBattle.info.gz; \
+	rmdir -p $(DOCS_DIR)/Documentation || true
+
 
 docs: RTB.html RTB.dvi RTB.info RTB.txt note-files note-files.html
 
