@@ -189,8 +189,11 @@ if SGML2TXT
 	@if [ -f $< ]; then \
 		echo "sgml2txt --filter -D table=char -c latin $<"; \
 		sgml2txt --filter -D table=char -c latin $<; \
-		echo "mv $(subst .sgml,.txt,$<) $@"; \
-		mv $(subst .sgml,.txt,$<) $@; \
+		echo "$< : $@"; \
+		echo "mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@"; \
+		mv $(subst ../$(subst ../,,$@),$(subst ../,,$@).txt,$@) $@; \
+#		echo "mv $(subst .sgml,.txt,$<) $@"; \
+#		mv $(subst .sgml,.txt,$<) $@; \
 	elif [ ! -f $@ ]; then \
 		echo "Error: $@ is missing and cannot be generated"; \
 	fi
