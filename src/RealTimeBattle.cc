@@ -62,7 +62,7 @@ update_function(gpointer data)
   catch ( Error the_error )
 	 {
 		the_error.print_message();
-		exit( EXIT_FAILURE );
+      the_gui.quit_event();
 	 }
 
   return res;
