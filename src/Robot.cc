@@ -1283,6 +1283,12 @@ Robot::change_energy(const double energy_diff)
   if( energy <= 0.0 ) die();
 }
 
+void
+Robot::injury_from_collision(const double en, const double angle)
+{
+
+}
+
 //  #ifndef NO_GRAPHICS
 
 //  void

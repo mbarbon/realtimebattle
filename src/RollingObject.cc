@@ -120,23 +120,25 @@ RollingObject::update_velocity(const double timestep)
     timestep*acceleration;
 }
 
-/*
+
 // Assuming constant velocity between bounces.
 void
 RollingObject::move(const double timestep)
 {
+  /*
   move(timestep, 1, timestep / 50.0);
 
   if( is_alive() )
     realtime_arena.print_to_logfile('R', id, center[0], center[1],
                                     robot_angle.pos, cannon_angle.pos, 
                                     radar_angle.pos, energy);
-
+  */
 }
 
 void
 RollingObject::move(const double timestep, int iterstep, const double eps)
 {
+  /*
   object_type closest_shape;
   Shape* colliding_object;
   double time_to_collision = 
@@ -213,5 +215,6 @@ RollingObject::move(const double timestep, int iterstep, const double eps)
       if( iterstep > 65 ) Error(true, "Too many bounces, must be a bug!", "RollingObject::move");
       if( alive && time_remaining > 0.0 ) move( time_remaining, iterstep + 1, eps );
     }
+  */
 }
-*/
+
