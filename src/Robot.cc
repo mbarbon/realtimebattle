@@ -88,8 +88,8 @@ Robot::Robot(const String& filename)
   signal_to_send = 0;
   send_rotation_reached = 0;
   alive = false;
-  died_this_round = false;
-  total_points = 0.0;
+  dead_but_stats_not_set = false;
+  //  total_points = 0.0;
   
   has_competed = false;
 
@@ -115,7 +115,7 @@ Robot::Robot(const int r_id, const long int col, const String& name)
 
   process_running = false;
   alive = false;
-  total_points = 0.0;
+  //  total_points = 0.0;
   
   has_competed = false;
 
@@ -399,6 +399,7 @@ void
 Robot::live()
 {
   alive = true;
+  dead_but_stats_not_set = false;
 }
 
 void
@@ -407,7 +408,7 @@ Robot::die()
   if( alive )
     {
       alive = false;
-      died_this_round = true;
+      dead_but_stats_not_set = true;
 #ifndef NO_GRAPHICS
       if( !no_graphics )
         {
@@ -421,26 +422,25 @@ Robot::die()
 }
 
 void
-Robot::set_stats(const int robots_killed_same_time)
+
+Robot::set_stats(const int robots_killed_same_time, const bool timeout)
 {
-  died_this_round = false;
+  dead_but_stats_not_set = false;
 
   int adjust = robots_killed_same_time - 1;
-  position_this_game = the_arena.get_robots_left() - adjust;
-  add_points( 1.0 + ((double)adjust) * 0.5 );
+  if( timeout ) adjust *= 2;
+
+  position_this_game = the_arena.get_robots_left() + 1;
+
+  double points = the_arena.get_robots_per_game() - the_arena.get_robots_left() -
+    ((double)adjust) * 0.5;
 
   time_survived_in_sequence += the_arena.get_total_time();
-
-#ifndef NO_GRAPHICS
-  if( !no_graphics ) display_score();
-#endif
-
 
   send_message(DEAD);
   send_signal();
 
-  realtime_arena.print_to_logfile('D', (int)'R', id, points_this_game,
-                                  position_this_game);
+  realtime_arena.print_to_logfile('D', (int)'R', id, points, position_this_game);
 
 
   stat_t* statp = new stat_t
@@ -448,42 +448,48 @@ Robot::set_stats(const int robots_killed_same_time)
      the_arena.get_sequence_nr(),
      the_arena.get_game_nr(),
      position_this_game,
-     points_this_game,   
+     points,   
      the_arena.get_total_time(),
-     total_points
+     get_total_points() + points
      );
 
   statistics.insert_last( statp );
+
+#ifndef NO_GRAPHICS
+  if( !no_graphics ) display_score();
+#endif
 }
 
 // Version of set_stats used by ArenaReplay
 //
 void
 Robot::set_stats(const double pnts, const int pos, const double time_survived, 
-                 const bool display)
+                 const bool make_stats)
 {
   position_this_game = pos;
-  total_points = total_points - points_this_game + pnts;
-  points_this_game = pnts;
-
   time_survived_in_sequence += time_survived;
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics && display ) display_score();
-#endif
+  if( make_stats )
+    {
+      ListIterator<stat_t> li;
+      statistics.last(li);
+      double total_points = ( li.ok() ? li()->total_points : 0.0 );
 
-
-  stat_t* statp = new stat_t
-    (
-     the_arena.get_sequence_nr(),
-     the_arena.get_game_nr(),
-     position_this_game,
-     points_this_game,   
-     time_survived,
-     total_points
-     );
+      stat_t* statp = new stat_t
+        (
+         the_arena.get_sequence_nr(),
+         the_arena.get_game_nr(),
+         pos,
+         pnts,
+         time_survived,
+         total_points + pnts
+         );
   
-  statistics.insert_last( statp );
+      statistics.insert_last( statp );
+    }
+#ifndef NO_GRAPHICS
+  if( !no_graphics && !make_stats ) display_score();
+#endif
 }
 
 void
@@ -533,14 +539,40 @@ Robot::check_name_uniqueness()
       robot_name += ('(' + (String)robot_name_uniqueness_number + ')');
 }
 
-//  double
-//  Robot::get_total_points()
-//  {
-//    ListIterator<stat_t> li;
-//    statistics.last(li);
-//    stat_t* sp = li();
-//    return( sp != NULL ? sp->total_points + points : points );
-//  }
+double
+Robot::get_total_points()
+{
+  ListIterator<stat_t> li;
+  double total_pnts;
+
+  if( the_arena_controller.is_realtime() ) 
+    {
+      statistics.last(li);
+
+      total_pnts = ( li.ok() ? li()->total_points : 0.0 );
+
+      if( is_alive() )
+        total_pnts += the_arena.get_robots_per_game() - the_arena.get_robots_left();
+        
+
+    }
+  else     // Replaying
+    {
+      ListIterator<stat_t> li=get_current_game_stats();
+
+      if( is_alive() )
+        {          
+          total_pnts = li()->total_points - li()->points + 
+            the_arena.get_robots_per_game() - the_arena.get_robots_left();
+        }
+      else // if robot dead
+        total_pnts = li()->total_points;
+    }
+
+  return total_pnts;
+} 
+
+
 
 int
 Robot::get_last_position()
@@ -559,12 +591,7 @@ Robot::get_last_position()
     }      
   else
     {
-      if( !current_game_stats.ok() ||
-          current_game_stats()->sequence_nr != the_arena.get_sequence_nr() ||
-          current_game_stats()->game_nr != the_arena.get_game_nr() )
-        find_current_game_stats();
-
-      li = current_game_stats;
+      li = get_current_game_stats();
     }
      
   if( !li.ok() ) return 0;
@@ -574,21 +601,27 @@ Robot::get_last_position()
   return li()->position;
 }
 
-void
-Robot::find_current_game_stats()
+ListIterator<stat_t>
+Robot::get_current_game_stats()
 {
-  ListIterator<stat_t> li;
-  for( statistics.first(li); li.ok(); li++ )
+  if( !current_game_stats.ok() ||
+      current_game_stats()->sequence_nr != the_arena.get_sequence_nr() ||
+      current_game_stats()->game_nr != the_arena.get_game_nr() )
     {
-      if( li()->sequence_nr == the_arena.get_sequence_nr() &&
-          li()->game_nr == the_arena.get_game_nr() )
+      ListIterator<stat_t> li;
+      for( statistics.first(li); li.ok(); li++ )
         {
-          current_game_stats = li;
-          return;
-        }          
+          if( li()->sequence_nr == the_arena.get_sequence_nr() &&
+              li()->game_nr == the_arena.get_game_nr() )
+            {
+              current_game_stats = li;
+              return current_game_stats;
+            }          
+        }
+      Error(false, "Couldn't find stats", "Robot::find_current_game_stats");  
     }
-  
-  Error(false, "Couldn't find stats", "Robot::find_current_game_stats");  
+
+  return current_game_stats;
 }
 
 
@@ -747,7 +780,7 @@ Robot::set_values_before_game(const Vector2D& pos, const double angle)
   energy = the_opts.get_d(OPTION_ROBOT_START_ENERGY);
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
-  points_this_game = 0.0;
+  //  points_this_game = 0.0;
   brake_percent = 0.0;
   acceleration = 0.0;
 }
@@ -1578,6 +1611,8 @@ Robot::reset_last_displayed()
 void
 Robot::display_score()
 {
+  int p;
+
   if( last_displayed_energy != (int)energy )
     {
       last_displayed_energy = (int)energy;
@@ -1594,13 +1629,13 @@ Robot::display_score()
                          3, String(position_this_game).non_const_chars());
     }
 
-  if(get_last_position() != 0)
-    if( last_displayed_last_place != get_last_position() )
+  p = get_last_position();
+  if( p != 0 && p != last_displayed_last_place  )
       {
-        last_displayed_last_place = get_last_position();
+        last_displayed_last_place = p;
         gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                            row_in_score_clist,
-                           4, String(get_last_position()).non_const_chars());
+                           4, String(p).non_const_chars());
       }
 
   

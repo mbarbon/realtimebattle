@@ -61,9 +61,10 @@ public:
   void send_message(enum message_to_robot_type ...);
   void set_values_before_game(const Vector2D& pos, double angle);
   void set_values_at_process_start_up();
-  void set_stats(const int robots_killed_same_time);
+  void set_stats(const int robots_killed_same_time, const bool timeout=false);
   void set_stats(const double pnts, const int pos, const double time_survived,
-                 const bool display=true);
+                 const bool make_stats);
+  bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
   void start_process();
   bool is_process_running();
   void check_process();
@@ -81,18 +82,18 @@ public:
   List<stat_t>* get_statistics() { return &statistics; }
   ofstream* get_outstreamp() { return outstreamp; }  
   int get_position_this_game() { return position_this_game; }
-  double get_total_points() { return total_points; }
-  void add_points(double pts) { points_this_game += pts; total_points += pts; }
-  bool get_died_this_round() { return died_this_round; }
+  double get_total_points();
+  //  void add_points(double pts) { points_this_game += pts; total_points += pts; }
+  //  bool get_died_this_round() { return died_this_round; }
   int get_last_position();
 
-  void find_current_game_stats();
+  ListIterator<stat_t> get_current_game_stats();
   
 
   rotation_t get_robot_angle() { return robot_angle; }
 
   bool set_and_get_has_competed() 
-    { if( has_competed) return true; else { has_competed = true; return false; } }
+    { if( has_competed ) return true; else { has_competed = true; return false; } }
 
 #ifndef NO_GRAPHICS
 
@@ -154,11 +155,11 @@ private:
   class String robot_plain_filename;  // Filename without path
 
   //class String robot_dir;
-  double total_points;
-  double points_this_game;
+  //  double total_points;
+  //  double points_this_game;
   int position_this_game;
   double time_survived_in_sequence;
-  bool died_this_round;
+  bool dead_but_stats_not_set;
 
   double cpu_next_limit;
   double cpu_warning_limit;
