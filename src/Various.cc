@@ -20,11 +20,31 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
+#else
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
+#endif
+
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream.h>
 
+#include "Gui.h"
+#include "Arena.h"
 #include "Various.h"
 #include "String.h"
 #include "Error.h"
@@ -183,6 +203,31 @@ split_colonseparated_dirs(String& dirs, GList * gl)
     }
 }
 
+void
+search_directories( String directory, GList* dir_gl,
+                    const bool check_robots )
+{
+  DIR* dir;
+  if( NULL != ( dir = opendir(directory.chars()) ) )
+    {
+      struct dirent* entry;
+      while( NULL != ( entry = readdir( dir ) ) )
+        {
+          String full_file_name = directory + entry->d_name;
+          bool res = false;
+          if(check_robots)
+            res = check_if_filename_is_robot(full_file_name);
+          else
+            res = check_if_filename_is_arena(full_file_name);
+          if(res)
+            {
+              start_tournament_glist_info_t* info;
+              info = new start_tournament_glist_info_t(0,false,full_file_name,"");
+              g_list_append(dir_gl,info);
+            }
+        }
+    }
+}
 
 bool
 check_if_filename_is_robot( String& fname )
