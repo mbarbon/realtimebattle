@@ -54,7 +54,7 @@ public:
   void change_energy(const double energy_diff);
   void change_position( const double x, const double y, 
                         const double robot_a, const double cannon_a, 
-                        const double radar_a, const double energy );
+                        const double radar_a, const double en );
 
   void check_name_uniqueness();
   void get_messages();
