@@ -20,12 +20,13 @@
    !label Introduction
    !include Introduction.udo
 
-#!node History  !label History
-#!include History.udo
-
    !node Usage  
    !label Usage
    !include Usage.udo
+
+   !node Details  
+   !label Details
+#   !include Details.udo
 
    !node Robot construction
    !label RobotConstruction
@@ -39,9 +40,9 @@
    !label ArenaConstruction
    !include ArenaConstruction.udo
 
-#!node Concluding remarks
-#!label ConcludingRemarks
-#!include ConcludingRemarks.udo
+#!node History  
+#!label History
+#!include History.udo
 
 #!node FAQ
 #!label FAQ

@@ -25,11 +25,15 @@ directory.
 !subnode messagetypes.h
 !label messagetypes
 
+The file (!T)messagetypes.h(!t) is a good source of information on the messaging language. It is a c/c++
+include file, but you can easily rewrite it to use with other languages. There you can find listing
+of messages, warning types, objects, game options and robot options.
    
 !subnode Messages to robots 
 !label MessagesToRobots
    
 !begin_description
+   !label Initialize
    !item [Initialize [first? (int)!]]
          This is the very first message the robot will get. If the argument is one, it is the first sequence
          in the tournament and it should send (!link [name][Name]) and (!link [colour][Colour]) to the
@@ -112,6 +116,7 @@ directory.
          saving you should send a (!link [SaveDataFinished][SaveDataFinished]) message. Thereafter
          you will get the message !..
 
+   !label ExitRobot
    !item [ExitRobot]
          Exit from the program immediately! Otherwise it will be killed forcefully.
 
@@ -125,42 +130,69 @@ directory.
 
    !label RobotOption
    !item [RobotOption [option nr (int)!] [value (int)!]]
-         
+         Currently only one option is available, SEND_SIGNAL, which tells the server to send SIGUSR1
+         when there is a message waiting. Send this message (with argument 0=true) as soon as you
+         are  prepared to receive the signal. 
 
    !label Name
    !item [Name [name (string)!]]
+         When receiving the (!link [Initialize][Initialize]) message with argument 1, indicating
+         that this is the first sequence, you should send both your name and your colour.
 
    !label Colour
    !item [Colour [home colour (hex)!] [away colour (hex)!]]
+         See above.
 
    !label LoadData
    !item [LoadData [type (int)!]]
+         Tell to load stored data. Type of data: 0 - binary, 1 - ascii.
 
    !label Rotate
    !item [Rotate [what to rotate (int)!] [angular velocity (double)!]]
+         Set the angular velocity for the robot, its cannon and/or its radar. Set 'what to rotate'
+         to 1 for robot, 2 for cannon, 4 for radar or to a sum of these to rotate more objects at
+         the same time. The angular velocity is given is radians per second and is limited by 
+         (!link [Robot (cannon/radar) max rotate speed][RobotMaxRotateSpeed]). 
 
    !item [RotateTo [what to rotate (int)!] [angular velocity (double)!] [end angle (double)!]] 
+         As (!B)rotate(!b), but will rotate to a given angle. Not that radar and cannon angles are
+         relative to the robot angle.
 
    !item [RotateAmount [what to rotate (int)!] [angular velocity (double)!] [angle (double)!]] 
+         As (!B)rotate(!b), but will rotate relative the current angle.
 
    !item [Sweep [what to rotate (int)!] [angular velocity (double)!] [left angle (double)!] [right angle (double)!]] 
+         As (!B)rotate(!b), but sets the radar and/or the cannon (not available for the robot
+         itself) in a sweep mode.
 
    !item [Accelerate [value (double)!]]
+         Set the robot acceleration. Value is bounded by 
+         (!link [Robot max/min acceleration][RobotMaxAcceleration]). 
 
-   !item [Break [percentage (double)!]]
+   !item [Break [portion (double)!]]
+         Set the break. Full break (portion = 1.0) means that the friction in the robot direction is
+         equal to (!link [Slide friction][SlideFriction]).
 
    !item [Shoot [shot energy (double)!]]
+         Shoot with the given energy. (!link [The shot options][ShotOptions]) give more information.
 
+   !label Print
    !item [Print [message (string)!]]
+         Print message on the (!link [message window] [MessageWindow]).
 
    !item [Debug [message (string)!]]
+         Print message on the (!link [message window] [MessageWindow]) if in 
+         (!link [(!T)debug mode(!t)] [CommandLineOptions]).
 
    !item [BinData [number of bytes (int)!] [binary data!]]
+         Send data to be stored. Be sure to send the correct number of bytes!
 
    !item [AsciiData [data (string)!]]
+         Send data to be store. The string is terminated by an endline charcter.
 
    !label SaveDataFinished
    !item [SaveDataFinished]
-         
+         Tell the server that saving is finished. The robot will thereafter get an 
+         (!link [ExitRobot][ExitRobot]) message.
 !end_description
 

@@ -66,6 +66,22 @@ playing in all games.
 
 You have to select at least two robots and one arena to be able to start.
 
+!subnode Arena window
+!label ArenaWindow
+
+This is where the battle takes place. If you want to watch the game i more detailed, use the zoom
+buttons! 
+
+!subnode Score window
+!label ScoreWindow
+
+In this window the robots playing in the current sequence are listed. 
+
+!subnode Message window
+!label MessageWindow
+
+Here are messages sent by the robots using (!link [Print and Debug][Print]) displayed.
+
 
 !subnode Options window
 !label OptionsWindow

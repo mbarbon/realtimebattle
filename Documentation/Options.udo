@@ -13,8 +13,10 @@ program.
 
    !item [Air resistance:] As it sounds. Increases with speed.
 
+   !label RollFriction
    !item [Roll friction:] The friction in the direction of the robot if not breaking.
 
+   !label SlideFriction
    !item [Slide friction:] The friction orthogonal to the robot direction. Also the maximum friction
          if breaking.
 
@@ -22,6 +24,7 @@ program.
 
 !subnode Robot options
 !begin_description
+   !label RobotMaxAcceleration
    !item [Robot max acceleration:] Robots are not allowed to accelerate faster than this and !..
    !item [Robot min acceleration:] slower than this. 
    !label RobotRadius
@@ -39,10 +42,11 @@ program.
    !item [Robot start energy:] The amount of energy the robots will have at the beginning of each game.
    !item [Robot max energy:] By eating cookie, the robot can increase its energy; not more than this,
          though.
+   !label RobotMaxRotateSpeed
    !item [Robot max rotate speed:] How fast the robot itself may rotate. Unit: radians/s .
    !item [Robot cannon max rotate speed:] Maximum cannon rotate speed. Note that the cannon and the
          radar move relative to the robot, so the actual rotation speed may be higher.
-   !item [Robot max rotate speed:] Maximum radar rotate speed. See note above.
+   !item [Robot radar max rotate speed:] Maximum radar rotate speed. See note above.
 
    !label EnergyLevels
    !item [Robot energy levels:] The robot will only know its energy approximately. This will decide how
@@ -121,6 +125,7 @@ program.
 !label MiscellaneousOptions
 
 !begin_description
+   !label ArenaScale
    !item [Arena scale:] Overall scale of the arena. A value of 2 give double sidelength, i.e. four
          times bigger area.
    !item [Background colour:] Background colour and !..
