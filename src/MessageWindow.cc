@@ -167,7 +167,7 @@ MessageWindow::add_message( const String& name_of_messager,
 {
   if( window_shown )
     {
-      gtk_clist_freeze( GTK_CLIST( clist ) );
+      //      gtk_clist_freeze( GTK_CLIST( clist ) );
       if( viewed_robot != NULL &&
           viewed_robot->get_robot_name() != name_of_messager &&
           name_of_messager != "RealTimeBattle" )
@@ -177,7 +177,7 @@ MessageWindow::add_message( const String& name_of_messager,
                        message.non_const_chars() };
   
       int row = 0;
-      gtk_clist_insert( GTK_CLIST( clist ), row, lst );
+      row = gtk_clist_insert( GTK_CLIST( clist ), row, lst );
 
       GdkColor* fg_colour = NULL;
       if( name_of_messager == "RealTimeBattle" )
@@ -199,20 +199,22 @@ MessageWindow::add_message( const String& name_of_messager,
       gtk_clist_set_background( GTK_CLIST( clist ), row,
                                 the_gui.get_bg_gdk_colour_p() );
 #endif
-      gtk_clist_thaw( GTK_CLIST( clist ) );
+      //      gtk_clist_thaw( GTK_CLIST( clist ) );
     }
 }
 
 void
 MessageWindow::freeze_clist()
 {
-  gtk_clist_freeze( GTK_CLIST( clist ) );
+  if( window_shown )
+    gtk_clist_freeze( GTK_CLIST( clist ) );
 }
 
 void
 MessageWindow::thaw_clist()
 {
-  gtk_clist_thaw( GTK_CLIST( clist ) );
+  if( window_shown )
+    gtk_clist_thaw( GTK_CLIST( clist ) );
 }
 
 void
@@ -240,9 +242,9 @@ MessageWindow::hide_window( GtkWidget* widget, GdkEvent* event,
         {
           GtkWidget* menu_item = controlwindow_p->get_show_message_menu_item();
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
-          gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #else
-          gtk_toggle_button_set_state( GTK_TOGGLE_BUTTON( menu_item ), FALSE );
+          gtk_check_menu_item_set_state( GTK_CHECK_MENU_ITEM( menu_item ), FALSE );
 #endif
         }
     }
@@ -271,7 +273,8 @@ void
 MessageWindow::show_one_robot( GtkWidget* widget,
                                class MessageWindow* messagewindow_p )
 {
-  messagewindow_p->set_viewed_robot( the_gui.get_scorewindow_p()->get_selected_robot() );
+  messagewindow_p->set_viewed_robot
+    ( the_gui.get_scorewindow_p()->get_selected_robot() );
   messagewindow_p->set_window_title();
 }
 
