@@ -46,6 +46,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "String.h"
 #include "Various.h"
 #include "InformationDistributor.h"
+#include "EventRT.h"
+#include "EventHandler.h"
 
 extern EventHandler the_eventhandler;
 // ArenaController constructor
@@ -116,8 +118,11 @@ ArenaController::init( int argc, char** argv )
     (*li)->startup();
 
   if( tournament_filename != "" )
-    ; // Create a StartNewTournamentEvent
-
+    {
+     // Create a StartTournamentEvent
+      the_eventhandler.insert_RT_event
+        ( new StartTournamentEvent( 0.0, tournament_filename ) );
+    }
   else if( replay_filename != "" )
       ;    //  Create a StartReplayEvent
 
