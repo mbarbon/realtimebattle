@@ -782,7 +782,7 @@ Gui::setup_score_window()
 
   score_clist = gtk_clist_new_with_titles( 6, titles);
   gtk_clist_set_selection_mode (GTK_CLIST(score_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 0);
+  gtk_clist_set_column_width (GTK_CLIST(score_clist), 0, 5);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 1, 120);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 2, 44);
   gtk_clist_set_column_width (GTK_CLIST(score_clist), 3, 38);
@@ -937,19 +937,7 @@ Gui::setup_message_window()
 void
 Gui::set_arena_window_title()
 {
-  String title;
-  if(the_arena.get_arena_filenames()->next != NULL)
-    {
-      String name;
-      String* filename = (String*)(g_list_nth(the_arena.get_arena_filenames(),
-                                            the_arena.get_current_arena_nr())->data);
-      int pos;
-      if( (pos = filename->find('/',0,true)) != -1 )
-        name = get_segment(*filename, pos+1, -1);
-      title = "RealTimeBattle Arena  "  + name;
-    }
-  else
-    title = "RealTimeBattle Arena";
+  String title = "RealTimeBattle Arena  "  + the_arena.get_current_arena_filename();
   gtk_window_set_title (GTK_WINDOW (arena_window), title.chars());
 }
 
