@@ -41,7 +41,7 @@ RealTimeBattle_SOURCES = \
 	EventHandler.h EventHandler.cc \
 	Extras.cc Extras.h \
 	Function.h \
-	Gadget.h \
+	Gadget.h Gadget.cc \
 	GadgetSet.h GadgetSet.cc \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
