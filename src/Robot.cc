@@ -511,7 +511,7 @@ Robot::change_position( const double x, const double y,
 void
 Robot::check_name_uniqueness()
 {
-  Robot* robotp;
+  Robot* robotp = NULL;
   int first_avail = 0;
 
   robot_name = plain_robot_name;

@@ -903,7 +903,7 @@ void
 ArenaRealTime::start_sequence_follow_up()
 {
   // check if the process have started correctly
-  Robot* robotp;
+  Robot* robotp = NULL;
 
   ListIterator<Robot> li;
   for( all_robots_in_sequence.first(li); li.ok(); li++ )
@@ -1021,7 +1021,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
   number_of_robots = 0;
   robot_count = 0;
   Robot* robotp;
-  start_tournament_info_t* infop;
+  start_tournament_info_t* infop = NULL;
   String* stringp;
 
   ListIterator<start_tournament_info_t> li;
