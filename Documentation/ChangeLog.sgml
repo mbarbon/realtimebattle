@@ -11,11 +11,17 @@ Added support for internationalization. If it does not work for you configure wi
 command:
 %./configue --disable-nls
 
+Messages are now displayed much faster in the message-window.
+
+Various minor improvements to the gui.
+
 Fixed bug that caused rotate_and_fire_select.cc failed during compile on some
 slackware machines.
 
 Fixed bug that caused the arena window not to be hidden correctly when hiding it at
 the start of a tournament.
+
+Fixed bug with show and hide windows that caused program failures.
 
 Probably some other bugs too that I have forgot.
 
