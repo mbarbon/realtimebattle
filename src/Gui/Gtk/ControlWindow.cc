@@ -21,6 +21,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <list>
 #include <string>
+#include <algorithm>
 
 #include "ControlWindow.h"
 #include "IntlDefs.h"
@@ -121,7 +122,18 @@ ControlWindow::ControlWindow( const int default_width,
       MENU_SHOW_MESSAGES, "<CheckItem>" },
     { "/"  N_("Windows") "/" N_("Show score window"), "<control>s",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
-      MENU_SHOW_SCORE, "<CheckItem>" }
+      MENU_SHOW_SCORE, "<CheckItem>" },
+    { "/_" N_("Debug"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Debug") "/" N_("Step"), "t",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP, "" },
+    { "/" N_("Debug") "/" N_("End match"), "<control><shift>m",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_END_MATCH, "" },
+    { "/" N_("Debug") "/" N_("Kill marked robot"), "<control><shift>k",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback,
+      MENU_KILL_MARKED_ROBOT, "" },
+    { "/_" N_("Help"), NULL, NULL, 0, "<LastBranch>" },
+    { "/" N_("Help") "/" N_("About"), "<shift>a",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_ABOUT, "" }
   };
 
   const int nmenu_items = sizeof( menu_items ) / sizeof( menu_items[0] );
@@ -164,12 +176,12 @@ ControlWindow::ControlWindow( const int default_width,
     status_style = gtk_style_new();
   else
     status_style = gtk_style_copy(status_style);
+  // TODO: Make use of old font information or use an option for large fonts
   GdkFont* temp_font =
-    gdk_font_load( "-*-helvetica-bold-r-normal--17-*-*-*-*-*-*-*" );
+    gdk_font_load( "-*-helvetica-bold-r-normal--16-*-*-*-*-*-*-*" );
   if( temp_font )
     status_style->font = temp_font;
   status_style->fg[GTK_STATE_NORMAL] = make_gdk_colour( 0x1111ee );
-  
 
   GtkWidget* frame = gtk_frame_new("Game status");
   gtk_container_border_width( GTK_CONTAINER( frame ), 2 );
@@ -182,7 +194,20 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_container_add( GTK_CONTAINER( frame ), vbox2 );
   gtk_widget_show( vbox2 );
 
+  vector<int> widths;
+  vector<int> heights;
+  for( int i = NO_STATE; i <= EXITING; i++ )
+    {
+      string infotext = get_status_string( state_t(i) );
+      widths.push_back( gdk_string_width( status_style->font, infotext.c_str() ) );
+      heights.push_back( gdk_string_height( status_style->font, infotext.c_str() ) );
+    }
+
+  int max_label_width  = *(max_element( widths.begin() , widths.end()  ));
+  int max_label_height = *(max_element( heights.begin(), heights.end() ));
+
   status_label = gtk_label_new("");
+  gtk_widget_set_usize( status_label, max_label_width, max_label_height );
   gtk_widget_set_style( status_label, status_style );
   gtk_label_set_justify( GTK_LABEL( status_label ), GTK_JUSTIFY_CENTER );
   gtk_box_pack_start( GTK_BOX( vbox2 ), status_label, TRUE, TRUE, 0 );
@@ -501,8 +526,8 @@ ControlWindow::change_time_limitations()
 //      }
 }
 
-void
-ControlWindow::set_status( const state_t state )
+string
+ControlWindow::get_status_string( const state_t& state ) const
 {
   string infotext;
   switch( state )
@@ -537,8 +562,87 @@ ControlWindow::set_status( const state_t state )
     default:
       the_gui.error(true, "Unknown state", "ArenaBase::set_state");
     }
+  return infotext;
+}
 
-  gtk_label_set_text( GTK_LABEL( status_label ), infotext.c_str() );
+void
+ControlWindow::set_status( const state_t& state )
+{
+  gtk_label_set_text( GTK_LABEL( status_label ),
+                      get_status_string( state ).c_str() );
+}
+
+void
+ControlWindow::show_about()
+{
+  // The window
+
+  GtkWidget* about_window = gtk_window_new( GTK_WINDOW_DIALOG );
+  gtk_window_set_title( GTK_WINDOW( about_window ), "About RealTimeBattle" );
+  gtk_widget_set_name( about_window, "RTB About" );
+  gtk_window_set_policy( GTK_WINDOW( about_window ), FALSE, FALSE, FALSE );
+  gtk_window_position( GTK_WINDOW( about_window ), GTK_WIN_POS_CENTER );
+  gtk_container_border_width( GTK_CONTAINER( about_window ), 12 );
+  gtk_signal_connect( GTK_OBJECT( about_window ), "delete_event",
+                      (GtkSignalFunc) gtk_widget_destroy,
+                      (gpointer) NULL );
+
+  // Main box
+
+  GtkWidget* vbox = gtk_vbox_new( FALSE, 0 );
+  gtk_container_add( GTK_CONTAINER( about_window ), vbox );
+  gtk_widget_show( vbox );
+
+  string about_text[] =
+  {
+    (string)"sep",
+    (string)_("RealTimeBattle is a programming game, in which robots controlled by programs are fighting each other. The goal is to destroy the enemies, using the radar to examine the environment and the cannon to shoot."),
+    (string)"sep",
+    (string)_("Authors of RealTimeBattle is:\n\n"),
+    (string)"   Ragnar Ouchterlony\n" + "   Erik Ouchterlony\n",
+    (string)"   " + _("Contact: ") + " rtb@users.sourceforge.net",
+    (string)"sep",
+    (string)_("If you find a bug, please send it to us. This is best done by visiting the bugtracking system at:\n\n"),
+    (string)"   http://www.sourceforge.net/bugs/?group_id=561\n\n",
+    (string)_("If you, for some reason, can't use the bugtracking system, please send a bug report by email to the authors."),
+    (string)"sep",
+    (string)_("Remember to visit the home of RealTimeBattle at:") + "\n\n",
+    (string)"   http://realtimebattle.sourceforge.net\n" +
+    "   http://www.lysator.liu.se/realtimebattle",
+    (string)"sep"
+  };
+
+  const int ntexts = sizeof( about_text ) / sizeof( about_text[0] );
+
+  for( int i = 0; i < ntexts; i++ )
+    {
+      if( about_text[i] == "sep" )
+        {
+          GtkWidget* separator = gtk_hseparator_new();
+          gtk_box_pack_start( GTK_BOX( vbox ), separator, FALSE, FALSE, 6 );
+          gtk_widget_show( separator );
+        }
+      else
+        {
+          GtkWidget* hbox = gtk_hbox_new( FALSE, 0 );
+          gtk_box_pack_start( GTK_BOX( vbox ), hbox, TRUE, TRUE, 0 );
+          gtk_widget_show( hbox );
+          GtkWidget* label = gtk_label_new( about_text[i].c_str() );
+          gtk_label_set_line_wrap( GTK_LABEL( label ), TRUE );
+          gtk_label_set_justify( GTK_LABEL( label ), GTK_JUSTIFY_LEFT );
+          gtk_box_pack_start( GTK_BOX( hbox ), label, FALSE, FALSE, 0 );
+          gtk_widget_show( label );
+        }
+    }
+
+  GtkWidget* button_w = gtk_button_new_with_label( _("Ok") );
+  gtk_signal_connect_object( GTK_OBJECT( button_w ), "clicked",
+                             (GtkSignalFunc) gtk_widget_destroy,
+                             GTK_OBJECT( about_window ) );
+  gtk_box_pack_start( GTK_BOX( vbox ), button_w, TRUE, TRUE, 0 );
+  gtk_widget_show( button_w );
+
+  gtk_widget_show( about_window );
 }
 
 void
@@ -629,6 +733,15 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
                              NULL, the_gui.get_scorewindow_p() );
           }
       }
+      break;
+    case MENU_STEP:
+      break;
+    case MENU_END_MATCH:
+      break;
+    case MENU_KILL_MARKED_ROBOT:
+      break;
+    case MENU_ABOUT:
+      cw_p->show_about();
       break;
     }
 }

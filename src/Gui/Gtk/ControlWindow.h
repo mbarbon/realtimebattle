@@ -52,7 +52,8 @@ public:
                                      const int default_y_pos  = -1 );
   ~ControlWindow                   ();
 
-  void set_status                  ( const state_t state );
+  void set_status                  ( const state_t& state );
+  string get_status_string         ( const state_t& state ) const;
   void remove_replay_widgets       ();
   void clear_extra_widgets         ();
   void display_debug_widgets       ();
@@ -136,9 +137,11 @@ private:
   { 
     MENU_QUIT, MENU_NEW_TOURNAMENT, MENU_REPLAY_TOURNAMENT, MENU_PAUSE,
     MENU_END, MENU_OPTIONS, MENU_STATISTICS, MENU_SHOW_ARENA,
-    MENU_SHOW_MESSAGES, MENU_SHOW_SCORE
+    MENU_SHOW_MESSAGES, MENU_SHOW_SCORE, MENU_STEP, MENU_END_MATCH,
+    MENU_KILL_MARKED_ROBOT, MENU_ABOUT
   };
 
+  void show_about                  ();
   char* translate_menu_path        ( char* );
 
   GtkWidget* window_p;
