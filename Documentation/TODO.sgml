@@ -23,5 +23,12 @@ In the future it will be possible to compete with teams of robots, not only indi
 however, requires changes in (or at least addition to) the messaging language, so you will have to
 wait for version 2.0 for this feature.
 
+<tag>Networking</tag>
+<p>
+It should be possible to run robots on separate machines, at least on LANs
+and other networks without too much netlag. 
+
+This feature will come in version 2.0.
+
 </descrip>
 </notes>
