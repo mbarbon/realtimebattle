@@ -29,9 +29,13 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //#include <string.h>
 #include <stdlib.h>
 #include "Gui.h"
+
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
+
 #include "MessageWindow.h"
 #include "StartTournamentWindow.h"
-#include "Arena.h"
+
 #include "Shot.h"
 #include "Robot.h"
 #include "Extras.h"

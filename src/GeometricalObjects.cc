@@ -26,7 +26,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "GeometricalObjects.h"
 #include "Various.h"
 #include "Gui.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 
 extern const double infinity;
 

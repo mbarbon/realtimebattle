@@ -30,7 +30,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Robot.h"
 #include "Gui.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 //#include "MovingObject.h"
 //#include "Various.h"
 #include "Options.h"

@@ -21,7 +21,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ControlWindow.h"
 //#include "Gui.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 #include "Robot.h"
 #include "Options.h"
 #include "String.h"
@@ -103,7 +104,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Debug-mode buttons
 
-  if( the_arena.get_game_mode() == Arena::DEBUG_MODE )
+  if( the_arena.get_game_mode() == Arena_Base::DEBUG_MODE )
     {
       GtkWidget* vseparator = gtk_vseparator_new();
       gtk_box_pack_start( GTK_BOX (hbox), vseparator, FALSE, FALSE, 0 );

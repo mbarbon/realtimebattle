@@ -40,7 +40,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 #endif
 
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 #include "StartTournamentWindow.h"
 #include "String.h"
 #include "Various.h"
@@ -534,7 +535,7 @@ StartTournamentWindow::start( GtkWidget* widget,
   if( robot_number > 1 &&
       g_list_next( stw_p->get_selected_arena_tournament() ) != NULL )
     {
-      the_arena.start_tournament( stw_p->get_selected_robot_tournament(),
+      realtime_arena.start_tournament( stw_p->get_selected_robot_tournament(),
                                   stw_p->get_selected_arena_tournament(),
                                   value[1], value[0], value[2] );
       the_gui.close_starttournamentwindow();

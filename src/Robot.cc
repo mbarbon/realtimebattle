@@ -43,7 +43,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Robot.h"
 #include "String.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 #include "Various.h"
 #include "Options.h"
 #include "Wall.h"
@@ -188,7 +189,7 @@ Robot::start_process()
 
       // Deny file access
 
-      if( the_arena.get_game_mode() != Arena::DEBUG_MODE )
+      if( the_arena.get_game_mode() != Arena_Base::DEBUG_MODE )
         {
           struct rlimit res_limit;
           
@@ -404,10 +405,13 @@ Robot::set_stats(int robots_killed_same_time)
   if( !no_graphics ) display_score();
 #endif
 
-  send_message(DEAD);
-  send_signal();
+  if( the_arena_controller.is_realtime() )
+    {
+      send_message(DEAD);
+      send_signal();
 
-  the_arena.print_to_logfile('D', 'R', id, points_this_game);
+      realtime_arena.print_to_logfile('D', 'R', id, points_this_game);
+    }
 
   stat_t* statp = new stat_t
     (
@@ -656,7 +660,7 @@ Robot::set_values_at_process_start_up()
       send_message(INITIALIZE, 0);        // not first sequence !
       send_message(YOUR_NAME, robot_name.chars());
       int long col = rgb_colour;
-      int long newcol = the_arena.find_free_colour(col, col, this);
+      int long newcol = realtime_arena.find_free_colour(col, col, this);
       if( col != newcol ) set_colour( newcol );
       // TODO: probably free color!
       send_message(YOUR_COLOUR, newcol);
@@ -682,7 +686,7 @@ Robot::move(const double timestep)
   move(timestep, 1, timestep / 50.0);
 
   if( is_alive() )
-    the_arena.print_to_logfile('R', id, center[0], center[1],
+    realtime_arena.print_to_logfile('R', id, center[0], center[1],
                                cannon_angle.pos, radar_angle.pos, energy);
 
 }
@@ -899,7 +903,7 @@ Robot::get_messages()
               *instreamp >> hex >> home_colour >> away_colour >> dec;
               
               // TODO: check if colour is already allocated! 
-              set_colour( the_arena.find_free_colour(home_colour, away_colour, this) );
+              set_colour( realtime_arena.find_free_colour(home_colour, away_colour, this) );
             }
           break;
         case ROTATE:
@@ -1054,7 +1058,7 @@ Robot::get_messages()
         case PRINT:
           {
             instreamp->get(text, 80, '\n');
-            the_arena.print_to_logfile('P', id, text);
+            realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
             if( !no_graphics )
                 the_gui.get_messagewindow_p()->add_message( this, text );
@@ -1064,9 +1068,9 @@ Robot::get_messages()
         case DEBUG:
           {
             instreamp->get(text, 80, '\n');
-            the_arena.print_to_logfile('P', id, text);
+            realtime_arena.print_to_logfile('P', id, text);
 #ifndef NO_GRAPHICS
-            if( the_arena.get_game_mode() == Arena::DEBUG_MODE && !no_graphics)
+            if( realtime_arena.get_game_mode() == Arena_Base::DEBUG_MODE && !no_graphics)
               the_gui.get_messagewindow_p()->add_message( this, text );
 #endif
           }
@@ -1085,12 +1089,12 @@ Robot::get_messages()
               Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
               Vector2D shot_vel = velocity + dir * the_opts.get_d(OPTION_SHOT_SPEED);
 
-              if( the_arena.space_available( shot_center, shot_radius*1.00001 ) )
+              if( realtime_arena.space_available( shot_center, shot_radius*1.00001 ) )
                 {
                   Shot* shotp = new Shot( shot_center, shot_radius, shot_vel, en );
-                  g_list_append((the_arena.get_object_lists())[SHOT_T], shotp);
+                  g_list_append((realtime_arena.get_object_lists())[SHOT_T], shotp);
 
-                  the_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
+                  realtime_arena.print_to_logfile('S', shotp->get_id(), shot_center[0], shot_center[1], 
                                    shot_vel[0], shot_vel[1]);
                 }
               else  // No space for shot, direct hit!!
@@ -1098,7 +1102,7 @@ Robot::get_messages()
                   void* col_obj;
                   arenaobject_t cl_shape;
                   double dist;
-                  if( (dist = the_arena.get_shortest_distance( center, dir, shot_radius*1.00001, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
+                  if( (dist = realtime_arena.get_shortest_distance( center, dir, shot_radius*1.00001, cl_shape, col_obj, this)) > radius+1.5*shot_radius )
                     {
                       //cerr << "Shot has space available after all?" <<  endl;
                       cerr << "dist: " << dist << "      r+1.5sh_r: " << radius+1.5*shot_radius << endl;
@@ -1126,7 +1130,7 @@ Robot::get_messages()
                       {
                         Cookie* cookiep =(Cookie*)col_obj;
                         cookiep->die();
-                        g_list_remove((the_arena.get_object_lists())[COOKIE_T], cookiep);
+                        g_list_remove((realtime_arena.get_object_lists())[COOKIE_T], cookiep);
                         delete cookiep;
                       }
                       break;
@@ -1134,7 +1138,7 @@ Robot::get_messages()
                       {
                         Mine* minep =(Mine*)col_obj;
                         minep->die();
-                        g_list_remove((the_arena.get_object_lists())[MINE_T], minep);
+                        g_list_remove((realtime_arena.get_object_lists())[MINE_T], minep);
                         delete minep;
                       }
                       break;
@@ -1142,7 +1146,7 @@ Robot::get_messages()
                       Error(true, "Shot on unknown object", "Robot::get_messages");
                     }
                 }
-              change_energy(-en * the_arena.get_shooting_penalty() );
+              change_energy(-en * realtime_arena.get_shooting_penalty() );
             }
           break;
         case ACCELERATE:

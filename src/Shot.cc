@@ -23,7 +23,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Robot.h"
 #include "Shot.h"
-#include "Arena.h"
+#include "Arena_Controller.h"
+#include "Arena_RealTime.h"
 #include "Extras.h"
 #include "Various.h"
 #include "Options.h"
@@ -107,7 +108,8 @@ Shot::die()
      the_gui.draw_circle(last_drawn_center,last_drawn_radius,*(the_arena.get_background_colour_p()),true);
 #endif
 
-   the_arena.print_to_logfile('D', 'S', id);
+  if( the_arena_controller.is_realtime() )
+    realtime_arena.print_to_logfile('D', 'S', id);
 }
 
 void
@@ -133,8 +135,8 @@ shot_collision(Shot* shot1p, const Vector2D& shot2_vel, const double shot2_en)
     {
       shot1p->velocity = vel;
       shot1p->energy = en;
-      the_arena.print_to_logfile('D', 'S', shot1p->id);
-      the_arena.print_to_logfile('S', shot1p->id, shot1p->center[0], shot1p->center[1], 
-                                 shot1p->velocity[0], shot1p->velocity[1]);
+      realtime_arena.print_to_logfile('D', 'S', shot1p->id);
+      realtime_arena.print_to_logfile('S', shot1p->id, shot1p->center[0], shot1p->center[1], 
+                                      shot1p->velocity[0], shot1p->velocity[1]);
     }
 }
