@@ -6,6 +6,7 @@ config.h
 config.log
 config.cache
 config.status
+libtool
 stamp-h
 .deps
 TAGS
