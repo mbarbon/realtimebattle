@@ -482,7 +482,7 @@ Arena::delete_lists(bool kill_robots, bool del_seq_list, bool del_tourn_list)
         robotp = (Robot*)gl->data;
         gl=g_list_next(gl);
         if( kill_robots ) delete robotp;
-        g_list_remove(all_robots_in_tournament, (Robot*)gl->data);
+        g_list_remove(all_robots_in_tournament, robotp);
       }
 }
 void
