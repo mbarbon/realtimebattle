@@ -1,12 +1,12 @@
 ROBOTDIR = Robots
 
 #debug-options
-coptions = -g -Wall
-cxxoptions = -g -Wall
+#coptions = -g -Wall
+#cxxoptions = -g -Wall
 
 #normal-options
-#coptions = -Wall
-#cxxoptions = -Wall
+coptions = -Wall
+cxxoptions = -Wall
 
 #final-options
 #coptions = -O
@@ -29,8 +29,8 @@ robot.o: robot.cc robot.h Vector2D.h
 Vector2D.o: Vector2D.cc Vector2D.h
 	g++ $(cxxoptions) -c Vector2D.cc
 
-gui.o: gui.c gui.h
-	gcc $(coptions) -c gui.c $(gtkincludedirs)
+gui.o: gui.cc gui.h
+	g++ $(coptions) -c gui.cc $(gtkincludedirs)
 
 robotarena.o: robotarena.cc robot.h Vector2D.h
 	g++ $(cxxoptions) -c robotarena.cc $(gtkincludedirs)
