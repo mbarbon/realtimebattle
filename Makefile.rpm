@@ -4,10 +4,11 @@ export PAPER_SIZE = a4
 VERSION := $(shell cat VERSION | grep VERSION | cut -d '"' -f 2)
 RELEASE := $(shell cat VERSION | grep RELEASE | cut -d '"' -f 2)
 
-SOURCEDIR := $(shell rpm --showrc | grep sourcedir | cut -d ':' -f 2)
-SPECDIR   := $(shell rpm --showrc | grep specdir   | cut -d ':' -f 2)
-RPMDIR    := $(shell rpm --showrc | grep rpmdir    | cut -d ':' -f 2)
-SRCRPMDIR := $(shell rpm --showrc | grep srcrpmdir | cut -d ':' -f 2)
+SOURCEDIR := $(shell rpm --showrc | grep sourcedir     | cut -d ':' -f 2)
+SPECDIR   := $(shell rpm --showrc | grep specdir       | cut -d ':' -f 2)
+RPMDIR    := $(shell rpm --showrc | grep ^rpmdir       | cut -d ':' -f 2)
+SRCRPMDIR := $(shell rpm --showrc | grep srcrpmdir     | cut -d ':' -f 2)
+BUILDARCH := $(shell rpm --showrc | grep "^build arch" | cut -d ':' -f 2 | tail -c+2)
 
 SRCDIR=src
 ROBOTDIR=Robots
@@ -20,20 +21,21 @@ INFODIR=/usr/info
 INSTALLDIR=/usr/games/RealTimeBattle
 
 rpm-install:
+	mkdir /usr/games/RealTimeBattle; \
 	cp src/RealTimeBattle /usr/bin/RealTimeBattle; \
-	mkdir /usr/games/RealTimeBattle /usr/games/RealTimeBattle/Arenas /usr/games/RealTimeBattle/Robots; \
-	cp Arenas/*.arena   	/usr/games/RealTimeBattle/Arenas/; \
-	cp Robots/*.robot   	/usr/games/RealTimeBattle/Robots/; \
+	cp -R Arenas   	/usr/games/RealTimeBattle/; \
+	cp -R Robots   	/usr/games/RealTimeBattle/; \
 	cp src/Messagetypes.h   /usr/games/RealTimeBattle/; \
+	cp src/Messagetypes.h   /usr/include/; \
 	cp RealTimeBattle.xpm   /usr/games/RealTimeBattle/; \
-	gzip Documentation/RealTimeBattle.info; \
-	cp Documentation/RealTimeBattle.info.gz    /usr/info/; \
-	grep -e "RealTimeBattle" /usr/info/dir; \
-	if [ $? -eq 1 ]; then echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir; fi
+	gzip -c $(DOCSDIR)/RealTimeBattle.info > $(INFODIR)/RealTimeBattle.info.gz; \
+	grep -qe "RealTimeBattle" /usr/info/dir || \
+	echo -e "\n* RealTimeBattle: (RealTimeBattle).             A robot programming game\n" >> /usr/info/dir
 
-rpm: tar.gz
+
+rpm:
 	cp RealTimeBattle.tar.gz $(SOURCEDIR) && \
 	sed -e "s/#VERSION#/$(VERSION)/" -e "s/#RELEASE#/$(RELEASE)/" RealTimeBattle.spec > $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
 	rpm -ba $(SPECDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).spec && \
-	cp $(RPMDIR)/*/RealTimeBattle-$(VERSION)-$(RELEASE)*.rpm . && \
+	cp $(RPMDIR)/$(BUILDARCH)/RealTimeBattle-$(VERSION)-$(RELEASE).$(BUILDARCH).rpm . && \
 	cp $(SRCRPMDIR)/RealTimeBattle-$(VERSION)-$(RELEASE).src.rpm . 
