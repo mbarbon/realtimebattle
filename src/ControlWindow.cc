@@ -39,6 +39,7 @@ ControlWindow::ControlWindow( const int default_width,
 
   window_p = gtk_window_new( GTK_WINDOW_TOPLEVEL );
   gtk_widget_set_name( window_p, "RTB Control" );
+  gtk_window_set_policy( GTK_WINDOW( window_p ), FALSE, FALSE, FALSE );
 
   set_window_title( false );
 
