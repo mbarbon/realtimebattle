@@ -94,6 +94,7 @@ public:
 
 
   set_iterator find_by_name( const GadgetInfo& gi) const;
+  set_iterator find_by_name( const string& str) const;
   
   friend class Gadget;
 
