@@ -44,7 +44,7 @@ Cookie::Cookie(const Vector2D& c, const double e, const int c_id = -1)
   : Extras(c, the_opts.get_d(OPTION_COOKIE_RADIUS), e, 
            the_opts.get_l(OPTION_COOKIE_COLOUR))
 { 
-  if( id == -1 )
+  if( c_id == -1 )
     id = the_arena.increase_cookie_count();
   else
     id = c_id;
@@ -56,7 +56,7 @@ Mine::Mine(const Vector2D& c, const double e, const int m_id = -1)
   : Extras(c, the_opts.get_d(OPTION_MINE_RADIUS), e, 
            the_opts.get_l(OPTION_MINE_COLOUR))
 { 
-  if( id == -1 )
+  if( m_id == -1 )
     id = the_arena.increase_mine_count();
   else
     id = m_id;
