@@ -56,7 +56,6 @@ public:
                       String& message_fname, const String& option_fname );
 
   void print_to_logfile( const char first_letter ... );
-  void print_to_messagefile( const String& messager, const String& text );
   
   bool get_use_message_file() { return use_message_file; }
   Vector2D get_random_position();
@@ -102,9 +101,6 @@ private:
   
   ofstream LOG_FILE;
   bool use_log_file;
-
-  ofstream message_file;
-  bool use_message_file;
 
   int number_of_arenas;
   int current_arena_nr;

@@ -528,14 +528,6 @@ ArenaRealTime::print_to_logfile(const char first_letter ... )
   va_end(args);
 }
 
-void
-ArenaRealTime::print_to_messagefile( const String& messager,
-                                     const String& text )
-{
-  if( use_message_file )
-    message_file << messager << ": " << text << endl;
-}
-
 Vector2D
 ArenaRealTime::get_random_position()
 {
@@ -943,15 +935,7 @@ ArenaRealTime::start_game()
   else
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
-#ifndef NO_GRAPHICS
-  if( !no_graphics && !realtime_arena.get_use_message_file() )
-    the_gui.get_messagewindow_p()->add_message
-      ( "RealTimeBattle", (String)"Game " +
-        String( games_per_sequence - games_remaining_in_sequence + 1 )
-        + " of sequence " + String( sequence_nr ) + " begins on arena " +
-        current_arena_filename );
-#endif
-  print_to_messagefile
+  print_message
     ( "RealTimeBattle", (String)"Game " +
       String( games_per_sequence - games_remaining_in_sequence + 1 )
       + " of sequence " + String( sequence_nr ) + " begins on arena " +

@@ -63,6 +63,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef NO_GRAPHICS
 # include "ControlWindow.h"
+# include "MessageWindow.h"
 extern class ControlWindow* controlwindow_p;
 #endif NO_GRAPHICS
 
@@ -213,6 +214,17 @@ ArenaBase::save_statistics_to_file(String filename)
     }
 }
 
+void
+ArenaBase::print_message( const String& messager,
+                          const String& text )
+{
+  if( use_message_file )
+    message_file << messager << ": " << text << endl;
+#ifndef NO_GRAPHICS
+  else if( !no_graphics && the_gui.is_messagewindow_up() )
+    the_gui.get_messagewindow_p()->add_message( messager, text );
+#endif
+}
 
 void
 ArenaBase::parse_arena_line(ifstream& file, double& scale, int& succession)

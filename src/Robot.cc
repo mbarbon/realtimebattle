@@ -54,7 +54,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "ArenaWindow.h"
 
 #ifndef NO_GRAPHICS
-# include "MessageWindow.h"
 # include "ScoreWindow.h"
 #endif
 
@@ -1079,11 +1078,7 @@ Robot::get_messages()
           {
             instreamp->get(text, 80, '\n');
             realtime_arena.print_to_logfile('P', id, text);
-#ifndef NO_GRAPHICS
-            if( !no_graphics && !realtime_arena.get_use_message_file() )
-                the_gui.get_messagewindow_p()->add_message( robot_name, text );
-#endif
-            realtime_arena.print_to_messagefile( robot_name, text );
+            the_arena.print_message( robot_name, text );
           }
           break;
 
@@ -1091,13 +1086,8 @@ Robot::get_messages()
           {
             instreamp->get(text, 80, '\n');
             realtime_arena.print_to_logfile('P', id, text);
-#ifndef NO_GRAPHICS
-            if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE &&
-                !no_graphics && !realtime_arena.get_use_message_file() )
-              the_gui.get_messagewindow_p()->add_message( robot_name, text );
-#endif
             if( realtime_arena.get_game_mode() == ArenaBase::DEBUG_MODE )
-              realtime_arena.print_to_messagefile( robot_name, text );
+              the_arena.print_message( robot_name, text );
           }
           break;
 

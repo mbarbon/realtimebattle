@@ -119,6 +119,7 @@ public:
   int get_robots_per_game() { return robots_per_game; }
   int get_number_of_robots() { return number_of_robots; }
   
+  void print_message( const String& messager, const String& text );
 
   int get_robots_left() { return robots_left; }
   double get_total_time() { return (double)total_time; }
@@ -167,7 +168,6 @@ protected:
 
   int** robots_in_sequence;
 
-
   String statistics_file_name;
 
   bool auto_start_and_end;
@@ -203,6 +203,9 @@ protected:
 
   bool halt_next;
   bool pause_after_next_game;
+
+  ofstream message_file;
+  bool use_message_file;
 };
 
 
