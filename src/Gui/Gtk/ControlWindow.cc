@@ -131,6 +131,20 @@ ControlWindow::ControlWindow( const int default_width,
     { "/" N_("Debug") "/" N_("Kill marked robot"), "<control><shift>k",
       (GtkItemFactoryCallback) ControlWindow::menu_callback,
       MENU_KILL_MARKED_ROBOT, "" },
+    { "/_" N_("Replay"), NULL, NULL, 0, "<Branch>" },
+    { "/" N_("Replay") "/" N_("Step forward"), "s",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_FORWARD, "" },
+    { "/" N_("Replay") "/" N_("Step backward"), "<shift>s",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_STEP_BACKWARD, "" },
+    { "/" N_("Replay") "/sep2", NULL, NULL, 0, "<Separator>" },
+    { "/" N_("Replay") "/" N_("Next Match"), "m",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEXT_MATCH, "" },
+    { "/" N_("Replay") "/" N_("Previous Match"), "<shift>m",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PREV_MATCH, "" },
+    { "/" N_("Replay") "/" N_("Next Round"), "r",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_NEXT_ROUND, "" },
+    { "/" N_("Replay") "/" N_("Previous Round"), "<shift>r",
+      (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_PREV_ROUND, "" },
     { "/_" N_("Help"), NULL, NULL, 0, "<LastBranch>" },
     { "/" N_("Help") "/" N_("About"), "<shift>a",
       (GtkItemFactoryCallback) ControlWindow::menu_callback, MENU_ABOUT, "" }
@@ -177,10 +191,10 @@ ControlWindow::ControlWindow( const int default_width,
   else
     status_style = gtk_style_copy(status_style);
   // TODO: Make use of old font information or use an option for large fonts
-  GdkFont* temp_font =
-    gdk_font_load( "-*-helvetica-bold-r-normal--16-*-*-*-*-*-*-*" );
-  if( temp_font )
-    status_style->font = temp_font;
+//    GdkFont* temp_font =
+//      gdk_font_load( "-*-helvetica-bold-r-normal--16-*-*-*-*-*-*-*" );
+//    if( temp_font )
+//      status_style->font = temp_font;
   status_style->fg[GTK_STATE_NORMAL] = make_gdk_colour( 0x1111ee );
 
   GtkWidget* frame = gtk_frame_new("Game status");
@@ -190,7 +204,7 @@ ControlWindow::ControlWindow( const int default_width,
   gtk_widget_show( frame );
 
   GtkWidget* vbox2 = gtk_vbox_new( FALSE, 0 );
-  gtk_container_border_width( GTK_CONTAINER( vbox2 ), 5 );
+  gtk_container_border_width( GTK_CONTAINER( vbox2 ), 3 );
   gtk_container_add( GTK_CONTAINER( frame ), vbox2 );
   gtk_widget_show( vbox2 );
 
@@ -203,8 +217,8 @@ ControlWindow::ControlWindow( const int default_width,
       heights.push_back( gdk_string_height( status_style->font, infotext.c_str() ) );
     }
 
-  int max_label_width  = *(max_element( widths.begin() , widths.end()  ));
-  int max_label_height = *(max_element( heights.begin(), heights.end() ));
+  int max_label_width  = *(max_element( widths.begin() , widths.end()  )) + 2;
+  int max_label_height = *(max_element( heights.begin(), heights.end() )) + 2;
 
   status_label = gtk_label_new("");
   gtk_widget_set_usize( status_label, max_label_width, max_label_height );
@@ -739,6 +753,22 @@ ControlWindow::menu_callback( class ControlWindow* cw_p,
     case MENU_END_MATCH:
       break;
     case MENU_KILL_MARKED_ROBOT:
+      break;
+    case MENU_REWIND:
+      break;
+    case MENU_FFW:
+      break;
+    case MENU_STEP_FORWARD:
+      break;
+    case MENU_STEP_BACKWARD:
+      break;
+    case MENU_NEXT_MATCH:
+      break;
+    case MENU_PREV_MATCH:
+      break;
+    case MENU_NEXT_ROUND:
+      break;
+    case MENU_PREV_ROUND:
       break;
     case MENU_ABOUT:
       cw_p->show_about();
