@@ -58,12 +58,12 @@ ControlWindow::ControlWindow( const int default_width,
 
   // Main boxes
 
-  GtkWidget* hbox = gtk_hbox_new ( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( window_p ), hbox );
-  gtk_widget_show( hbox );
+  window_hbox = gtk_hbox_new ( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_p ), window_hbox );
+  gtk_widget_show( window_hbox );
 
   GtkWidget* vbox = gtk_vbox_new( FALSE, 10 );
-  gtk_container_add( GTK_CONTAINER( hbox ), vbox );
+  gtk_container_add( GTK_CONTAINER( window_hbox ), vbox );
   gtk_widget_show( vbox );
 
   // Buttons for all modes
@@ -107,68 +107,116 @@ ControlWindow::ControlWindow( const int default_width,
     }
 
   gtk_widget_show( window_p );
+  vseparator = NULL;
+  extra_vbox = NULL;
+  filesel = NULL;
 
-  // Debug-mode buttons
+  if( the_arena_controller.is_started() &&
+      !( the_arena_controller.is_realtime() ) )
+    display_replay_widgets();
+  else if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
+    display_debug_widgets();
+}
 
-  if( the_arena_controller.game_mode == ArenaBase::DEBUG_MODE )
+void
+ControlWindow::clear_extra_widgets()
+{
+  if( extra_vbox != NULL ) gtk_widget_destroy( extra_vbox );
+  if( vseparator != NULL ) gtk_widget_destroy( vseparator );
+
+  extra_vbox = NULL;
+  vseparator = NULL;
+}
+
+void
+ControlWindow::display_debug_widgets()
+{
+  clear_extra_widgets();
+  
+  vseparator = gtk_vseparator_new();
+  gtk_box_pack_start( GTK_BOX (window_hbox), vseparator, FALSE, FALSE, 0 );
+  gtk_widget_show( vseparator );
+
+  extra_vbox = gtk_vbox_new( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_hbox ), extra_vbox );
+  gtk_widget_show( extra_vbox );
+
+  struct button_t { String label; GtkSignalFunc func; int pack; };
+  struct button_t debug_buttons[] = {
+    { " Step ", 
+      (GtkSignalFunc) ControlWindow::step      , TRUE  },
+    { " End Game ", 
+      (GtkSignalFunc) ControlWindow::end_game  , TRUE  },
+    { " Kill Marked Robot ", 
+      (GtkSignalFunc) ControlWindow::kill_robot, TRUE  } };
+
+  GtkWidget* button_hbox = NULL;
+  for(int i = 0;i < 3; i++)
     {
-      GtkWidget* vseparator = gtk_vseparator_new();
-      gtk_box_pack_start( GTK_BOX (hbox), vseparator, FALSE, FALSE, 0 );
-      gtk_widget_show( vseparator );
-
-      vbox = gtk_vbox_new( FALSE, 10 );
-      gtk_container_add( GTK_CONTAINER( hbox ), vbox );
-      gtk_widget_show( vbox );
-
-      struct button_t debug_buttons[] = {
-        { " Step ", 
-          (GtkSignalFunc) ControlWindow::step      , TRUE  },
-        { " End Game ", 
-          (GtkSignalFunc) ControlWindow::end_game  , TRUE  },
-        { " Kill Marked Robot ", 
-          (GtkSignalFunc) ControlWindow::kill_robot, TRUE  } };
-
-      for(int i = 0;i < 3; i++)
+      if( i == 0 || i == 2 )
         {
-          if( i == 0 || i == 2 )
-            {
-              button_hbox = gtk_hbox_new( FALSE, 10 );
-              gtk_box_pack_start( GTK_BOX( vbox ), button_hbox,
-                                  FALSE, FALSE, 0);
-              gtk_widget_show( button_hbox );
-            }
-          GtkWidget* button = 
-            gtk_button_new_with_label( debug_buttons[i].label.chars() );
-          gtk_signal_connect( GTK_OBJECT( button ), "clicked",
-                              (GtkSignalFunc) debug_buttons[i].func,
-                              (gpointer) NULL );
-          gtk_box_pack_start( GTK_BOX( button_hbox ), button,
-                              TRUE, debug_buttons[i].pack , 0);
-          gtk_widget_show( button );
+          button_hbox = gtk_hbox_new( FALSE, 10 );
+          gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
+                              FALSE, FALSE, 0);
+          gtk_widget_show( button_hbox );
         }
-
-      button_hbox = gtk_hbox_new( FALSE, 10 );
-      gtk_box_pack_start( GTK_BOX( vbox ), button_hbox,
-                          FALSE, FALSE, 0);
-      gtk_widget_show( button_hbox );
-
-      GtkWidget* label = gtk_label_new( " Debug Level: " );
-      gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
-      gtk_widget_show( label );
-
-      GtkAdjustment* adj =
-        (GtkAdjustment*) gtk_adjustment_new( the_arena_controller.debug_level, 0,
-                                             max_debug_level, 1, 1, 0 );
-
-      debug_level = gtk_spin_button_new( adj, 0, 0 );
-      gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
-                          (GtkSignalFunc) change_debug_level,
-                          (gpointer) this );
-      gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
-      gtk_widget_show( debug_level );
+      GtkWidget* button = 
+        gtk_button_new_with_label( debug_buttons[i].label.chars() );
+      gtk_signal_connect( GTK_OBJECT( button ), "clicked",
+                          (GtkSignalFunc) debug_buttons[i].func,
+                          (gpointer) NULL );
+      gtk_box_pack_start( GTK_BOX( button_hbox ), button,
+                          TRUE, debug_buttons[i].pack , 0);
+      gtk_widget_show( button );
     }
 
-  filesel = NULL;
+  button_hbox = gtk_hbox_new( FALSE, 10 );
+  gtk_box_pack_start( GTK_BOX( extra_vbox ), button_hbox,
+                      FALSE, FALSE, 0);
+  gtk_widget_show( button_hbox );
+
+  GtkWidget* label = gtk_label_new( " Debug Level: " );
+  gtk_box_pack_start( GTK_BOX( button_hbox ), label, TRUE, FALSE, 0 );
+  gtk_widget_show( label );
+
+  GtkAdjustment* adj =
+    (GtkAdjustment*) gtk_adjustment_new( the_arena_controller.debug_level, 0,
+                                         max_debug_level, 1, 1, 0 );
+
+  debug_level = gtk_spin_button_new( adj, 0, 0 );
+  gtk_signal_connect( GTK_OBJECT( adj ), "value_changed",
+                      (GtkSignalFunc) change_debug_level,
+                      (gpointer) this );
+  gtk_box_pack_start( GTK_BOX( button_hbox ), debug_level, TRUE, FALSE, 0 );
+  gtk_widget_show( debug_level );
+}
+
+void
+ControlWindow::display_replay_widgets()
+{
+  clear_extra_widgets();
+
+  vseparator = gtk_vseparator_new();
+  gtk_box_pack_start( GTK_BOX (window_hbox), vseparator, FALSE, FALSE, 0 );
+  gtk_widget_show( vseparator );
+
+  extra_vbox = gtk_vbox_new( FALSE, 10 );
+  gtk_container_add( GTK_CONTAINER( window_hbox ), extra_vbox );
+  gtk_widget_show( extra_vbox );
+
+  GtkWidget* hbox = gtk_hbox_new( FALSE, 10 );
+  gtk_box_pack_start( GTK_BOX( extra_vbox ), hbox, FALSE, FALSE, 0 );
+  gtk_widget_show( hbox );
+
+  GtkObject* adjustment = gtk_adjustment_new (0.0, 0.0, 101.0, 0.1, 1.0, 1.0);
+
+  GtkWidget* scale = gtk_hscale_new( GTK_ADJUSTMENT( adjustment ) );
+  gtk_widget_set_usize( GTK_WIDGET( scale ), 150, 30 );
+  gtk_range_set_update_policy( GTK_RANGE( scale ), GTK_UPDATE_DELAYED );
+  gtk_scale_set_digits( GTK_SCALE( scale ), 1 );
+  gtk_scale_set_draw_value( GTK_SCALE( scale ), TRUE );
+  gtk_box_pack_start( GTK_BOX( hbox ), scale, TRUE, TRUE, 0 );
+  gtk_widget_show( scale );
 }
 
 ControlWindow::~ControlWindow()
@@ -315,11 +363,12 @@ ControlWindow::replay( GtkWidget* widget,
     ( GTK_FILE_SELECTION( cw_p->get_filesel() ) );
   the_arena_controller.start_replay_arena();
   destroy_filesel( cw_p->get_filesel(), cw_p );
+  cw_p->display_replay_widgets();
 }
 
 void
 ControlWindow::destroy_filesel( GtkWidget* widget,
-                                   class ControlWindow* cw_p )
+                                class ControlWindow* cw_p )
 {
   gtk_widget_destroy( cw_p->get_filesel() );
   cw_p->set_filesel( NULL );
@@ -344,7 +393,7 @@ void
 ControlWindow::end_tournament( int result )
 {
   if( the_arena_controller.is_started() && result == 1 )
-      the_arena.interrupt_tournament();
+    the_arena.interrupt_tournament();
 }
 
 void

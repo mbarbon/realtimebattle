@@ -48,8 +48,9 @@ public:
   ~ControlWindow                   ();
 
   void set_window_title            ( const String& text );
-  GtkWidget* get_window_p          () { return window_p; }
-  //  GtkWidget* get_debug_level_label () { return debug_level_label; }
+  void clear_extra_widgets         ();
+  void display_debug_widgets       ();
+  void display_replay_widgets      ();
 
   static void delete_event_occured ( GtkWidget* widget, GdkEvent* event,
                                      class ControlWindow* cw_p );
@@ -80,6 +81,7 @@ public:
   void open_replay_filesel         ();
 
   GtkWidget* get_filesel           () { return filesel; }
+  GtkWidget* get_window_p          () { return window_p; }
   void set_filesel                 ( GtkWidget* fs ) { filesel = fs; }
 
 private:
@@ -87,6 +89,10 @@ private:
   GtkWidget* window_p;
   GtkWidget* debug_level;
   GtkWidget* filesel;
+
+  GtkWidget* window_hbox;
+  GtkWidget* vseparator;
+  GtkWidget* extra_vbox;
 };
 
 #endif NO_GRAPHICS
