@@ -40,21 +40,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 extern class Gui* gui_p;
 
-#define line_p ((Line*)shape_p)
-#define circle_p ((Circle*)shape_p)
-#define icircle_p ((InnerCircle*)shape_p)
-#define arc_p ((Arc*)shape_p)
 // --------- DrawingShape -----------
 
-DrawingShape::DrawingShape( Shape* _shape_p )
+DrawingShape::DrawingShape( const int _id, const long int rgb_col )
 {
-  shape_p = _shape_p;
-  id = shape_p->get_id();
-  set_colour( shape_p->get_rgb_colour() );
+  id = _id;
+  set_colour( rgb_col );
 }
 
 void
-DrawingShape::set_colour(long int colour)
+DrawingShape::set_colour( long int colour )
 {
   if( colour != rgb_colour )
     {
@@ -65,84 +60,131 @@ DrawingShape::set_colour(long int colour)
 
 // --------- DrawingLine -----------
 
-DrawingLine::DrawingLine( Shape* s )
-  : DrawingShape(s)
+DrawingLine::DrawingLine( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
 {
-  last_drawn_start_point = ((Line*)s)->get_start_point();
-  last_drawn_direction = ((Line*)s)->get_direction();
-  last_drawn_length = ((Line*)s)->get_length();
-  last_drawn_thickness = ((Line*)s)->get_thickness();
+  start_point = Vector2D( 0.0, 0.0 );
+  direction   = Vector2D( 0.0, 0.0 );
+  length      = 0.0;
+  thickness   = 0.0;
 }
 
 void
 DrawingLine::draw_shape( bool erase )
 {
-  if( erase )
-    the_gui.get_arenawindow_p()->draw_line( last_drawn_start_point,
-                                            last_drawn_direction,
-                                            last_drawn_length,
-                                            last_drawn_thickness,
-                                            *(the_gui.get_bg_gdk_colour_p()) );
-  last_drawn_start_point = line_p->get_start_point();
-  last_drawn_direction = line_p->get_direction();
-  last_drawn_length = line_p->get_length();
-  last_drawn_thickness = line_p->get_thickness();
-  the_gui.get_arenawindow_p()->draw_line( line_p->get_start_point(),
-                                          line_p->get_direction(),
-                                          line_p->get_length(),
-                                          line_p->get_thickness(),
+  the_gui.get_arenawindow_p()->draw_line( start_point, direction,
+                                          length, thickness,
                                           gdk_colour );
 }
 
 // --------- DrawingCircle -----------
 
-DrawingCircle::DrawingCircle( Shape* s )
-  : DrawingShape(s)
+DrawingCircle::DrawingCircle( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
 {
-  last_drawn_center = ((Circle*)s)->get_center();
-  last_drawn_radius = ((Circle*)s)->get_radius();
+  center = last_drawn_center = Vector2D( 0.0, 0.0 );
+  radius = last_drawn_radius = 0.0;
 }
 
 void
-DrawingCircle::draw_shape(bool erase)
+DrawingCircle::draw_shape( bool erase )
 {
   if( erase )
     the_gui.get_arenawindow_p()->draw_circle( last_drawn_center,
                                               last_drawn_radius,
                                               *(the_gui.get_bg_gdk_colour_p()),
                                               true );
-  last_drawn_center = circle_p->get_center();
-  last_drawn_radius = circle_p->get_radius();
-  the_gui.get_arenawindow_p()->draw_circle( circle_p->get_center(),
-                                            circle_p->get_radius(),
+  last_drawn_center = center;
+  last_drawn_radius = radius;
+  the_gui.get_arenawindow_p()->draw_circle( center, radius,
                                             gdk_colour, true );
+}
 
+// --------- DrawingInnerCircle -----------
+
+DrawingInnerCircle::DrawingInnerCircle( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
+{
+  center = last_drawn_center = Vector2D( 0.0, 0.0 );
+  radius = last_drawn_radius = 0.0;
+}
+
+void
+DrawingInnerCircle::draw_shape( bool erase )
+{
+  if( erase )
+    the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
+                                           last_drawn_radius,
+                                           last_drawn_radius*1.5,
+                                           0.0, 2*M_PI,
+                                           *(the_gui.get_bg_gdk_colour_p()) );
+
+  last_drawn_center = center;
+  last_drawn_radius = radius;
+
+  the_gui.get_arenawindow_p()->draw_arc( center, radius, radius*1.5,
+                                         0.0, 2*M_PI, gdk_colour );
+}
+
+// --------- DrawingArc -----------
+
+DrawingArc::DrawingArc( const int _id, const long int rgb_col )
+  : DrawingShape( _id, rgb_col )
+{
+  center = last_drawn_center = Vector2D( 0.0, 0.0 );
+}
+void
+DrawingArc::draw_shape(bool erase)
+{
+  if( erase )
+    the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
+                                           inner_radius, outer_radius,
+                                           start_angle, end_angle,
+                                           *(the_gui.get_bg_gdk_colour_p()) );
+
+  last_drawn_center = center;
+
+  the_gui.get_arenawindow_p()->draw_arc( center, inner_radius, outer_radius,
+                                         start_angle, end_angle, gdk_colour );
+}
+
+
+// --------- DrawingRobot -----------
+
+DrawingRobot::DrawingRobot( const int _id, const long int rgb_col )
+  : DrawingCircle( _id, rgb_col )
+{
+  reset_last_displayed();
+
+  robot_angle  = 0.0;
+  cannon_angle = 0.0;
+  radar_angle  = 0.0;
+
+  energy             = 0;
+  position_this_game = 1;
+  last_place         = 1;
+  score              = 0;
+}
+
+void
+DrawingRobot::draw_shape( bool erase )
+{
+  DrawingCircle::draw_shape( erase );
   // Draw radar and cannon
 
-  if( typeid( *shape_p ) != typeid( Robot ))
-    return;
-
-  Robot* robot_p = (Robot*)shape_p;
-
   double scale = the_gui.get_arenawindow_p()->get_drawing_area_scale();
-
-  Vector2D center = robot_p->get_center();
-  double radius = robot_p->get_radius();
-  rotation_t robot_angle = robot_p->get_robot_angle();
-  rotation_t cannon_angle = robot_p->get_cannon_angle();
-  rotation_t radar_angle = robot_p->get_radar_angle();
 
   if( radius*scale < 2.5 ) return;
   // Draw Cannon
   the_gui.get_arenawindow_p()->
     draw_line( center,
-               angle2vec(cannon_angle.pos+robot_angle.pos),
+               angle2vec( cannon_angle + robot_angle ),
                radius - the_opts.get_d(OPTION_SHOT_RADIUS) - 1.0 / scale,
                the_opts.get_d(OPTION_SHOT_RADIUS),
                *(the_gui.get_fg_gdk_colour_p()) );
 
   // Draw radar lines
-  Vector2D radar_dir = angle2vec(radar_angle.pos+robot_angle.pos);
+  Vector2D radar_dir = angle2vec( radar_angle + robot_angle );
   the_gui.get_arenawindow_p()->
     draw_line( center - radius * 0.25 * radar_dir,
                rotate( radar_dir, M_PI / 4.0 ),
@@ -159,89 +201,10 @@ DrawingCircle::draw_shape(bool erase)
   // Draw robot angle line
   the_gui.get_arenawindow_p()->
     draw_line( center,
-               angle2vec(robot_angle.pos),
+               angle2vec( robot_angle ),
                radius * 0.9 - 2.0 / scale,
                *(the_gui.get_fg_gdk_colour_p()) );
 }
-
-// --------- DrawingInnerCircle -----------
-
-DrawingInnerCircle::DrawingInnerCircle( Shape* s )
-  : DrawingShape(s)
-{
-  last_drawn_center = ((InnerCircle*)s)->get_center();
-  last_drawn_radius = ((InnerCircle*)s)->get_radius();
-}
-
-void
-DrawingInnerCircle::draw_shape(bool erase)
-{
-  if( erase )
-    the_gui.get_arenawindow_p()->
-      draw_arc( last_drawn_center,
-                last_drawn_radius, last_drawn_radius*1.5,
-                0.0, 2*M_PI,
-                *(the_gui.get_bg_gdk_colour_p()) );
-
-  last_drawn_center = icircle_p->get_center();
-  last_drawn_radius = icircle_p->get_radius();
-
-    the_gui.get_arenawindow_p()->
-      draw_arc( icircle_p->get_center(), 
-                icircle_p->get_radius(), 
-                icircle_p->get_radius()*1.5,
-                0.0, 2*M_PI, gdk_colour );
-}
-
-// --------- DrawingInnerArc -----------
-DrawingArc::DrawingArc( Shape* s )
-  : DrawingShape(s)
-{
-  last_drawn_center = ((Arc*)s)->get_center();
-}
-void
-DrawingArc::draw_shape(bool erase)
-{
-
-  if( erase )
-    the_gui.get_arenawindow_p()->draw_arc( last_drawn_center,
-                                           arc_p->get_inner_radius(), 
-                                           arc_p->get_outer_radius(),
-                                           arc_p->get_start_angle(),
-                                           arc_p->get_end_angle(),
-                                           *(the_gui.get_bg_gdk_colour_p()) );
-  last_drawn_center = arc_p->get_center();
-
-  
-  the_gui.get_arenawindow_p()->draw_arc( arc_p->get_center(),
-                                         arc_p->get_inner_radius(), 
-                                         arc_p->get_outer_radius(),
-                                         arc_p->get_start_angle(),
-                                         arc_p->get_end_angle(),
-                                         gdk_colour );
-}
-
-
-// --------- DrawingRobot -----------
-
-DrawingRobot::DrawingRobot( Robot* r )
-{
-  robot_p = r;
-  reset_last_displayed();
-  id = robot_p->get_id();
-  set_colour( robot_p->get_rgb_colour() );
-}
-
-void
-DrawingRobot::set_colour(long int colour)
-{
-  if( colour != rgb_colour )
-    {
-      rgb_colour = colour;
-      gdk_colour = make_gdk_colour( colour );
-    }
-}
-
 
 void
 DrawingRobot::reset_last_displayed()
@@ -255,10 +218,6 @@ DrawingRobot::reset_last_displayed()
 void
 DrawingRobot::display_score()
 {
-  int p;
-
-  int energy = (int)(robot_p->get_energy());
-
   if( last_displayed_energy != energy )
     {
       last_displayed_energy = energy;
@@ -267,8 +226,6 @@ DrawingRobot::display_score()
                          row_in_score_clist, 2, energy_str);
       delete [] energy_str;
     }
-
-  int position_this_game = robot_p->get_position_this_game();
 
   if( last_displayed_place != position_this_game )
     {
@@ -286,28 +243,24 @@ DrawingRobot::display_score()
       delete [] str;
     }
 
-  p = robot_p->get_last_position();
-  if( p != 0 && p != last_displayed_last_place  )
+  if( last_place != 0 && last_place != last_displayed_last_place  )
     {
-      last_displayed_last_place = p;
-      char* str = int2chars( p );
+      last_displayed_last_place = last_place;
+      char* str = int2chars( last_place );
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist, 4, str);
       delete [] str;
     }
 
-  double pnts = robot_p->get_total_points();
-  if( last_displayed_score != (int)(10 * pnts) )
+  if( last_displayed_score != score )
     {
-      last_displayed_score = (int)(10 * pnts);
-      char* str = double2chars( pnts );
+      last_displayed_score = score;
+      char* str = double2chars( score );
       gtk_clist_set_text(GTK_CLIST(the_gui.get_scorewindow_p()->get_clist()),
                          row_in_score_clist, 5, str);
       delete [] str;
     }
 }
-
-//TODO: Fix a way to use gdk_colour from DrawingCircle
 
 void
 DrawingRobot::get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm )

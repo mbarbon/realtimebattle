@@ -31,57 +31,62 @@ class Robot;
 class DrawingShape
 {
 public:
-  DrawingShape( Shape* _shape_p );
-  virtual ~DrawingShape() {}
+  DrawingShape             ( const int _id, const long int rgb_col );
+  virtual ~DrawingShape    () {}
 
-  virtual void draw_shape(bool erase) = 0;
-  GdkColor& get_gdk_colour() { return gdk_colour; }
-  void set_colour(const long int colour);
+  virtual void draw_shape  ( bool erase ) = 0;
 
-  int get_id() const { return id; }
-
-  Shape* get_shape() { return shape_p; }
+  void set_colour          ( const long int colour );
+  GdkColor& get_gdk_colour () { return gdk_colour; }
+  int get_id               () const { return id; }
 
 protected:
   long int rgb_colour;
   GdkColor gdk_colour;
 
   int id;
-  Shape* shape_p;
+  bool moveable;
 };
 
 // ---------------------------------------------------------------------------
 // class DrawingLine
 // ---------------------------------------------------------------------------
+// Note that lines should always be at the same position!
+// ---------------------------------------------------------------------------
 
 class DrawingLine : public DrawingShape
 {
 public:
-  DrawingLine( Shape* s );
-  ~DrawingLine() {}
+  DrawingLine              ( const int _id, const long int rgb_col );
+  ~DrawingLine             () {}
 
-  void draw_shape(bool erase);
+  void draw_shape          ( bool erase );
 
 protected:
-  Vector2D last_drawn_start_point;
-  Vector2D last_drawn_direction;
-  double last_drawn_length;
-  double last_drawn_thickness;
+  Vector2D start_point;
+  Vector2D direction;
+  double length;
+  double thickness;
 };
 
 // ---------------------------------------------------------------------------
 // class DrawingCircle
 // ---------------------------------------------------------------------------
+// Note that the radius may change (ex. explosions)
+// ---------------------------------------------------------------------------
 
 class DrawingCircle : public DrawingShape
 {
 public:
-  DrawingCircle( Shape* s );
-  ~DrawingCircle() {}
+  DrawingCircle            ( const int _id, const long int rgb_col );
+  ~DrawingCircle           () {}
 
-  void draw_shape(bool erase);
+  void draw_shape          ( bool erase );
 
 protected:
+  Vector2D center;
+  double radius;
+
   Vector2D last_drawn_center;
   double last_drawn_radius;
 };
@@ -93,12 +98,15 @@ protected:
 class DrawingInnerCircle : public DrawingShape
 {
 public:
-  DrawingInnerCircle( Shape* s );
-  ~DrawingInnerCircle() {}
+  DrawingInnerCircle       ( const int _id, const long int rgb_col );
+  ~DrawingInnerCircle      () {}
 
-  void draw_shape(bool erase);
+  void draw_shape          ( bool erase );
 
 protected:
+  Vector2D center;
+  double radius;
+
   Vector2D last_drawn_center;
   double last_drawn_radius;
 };
@@ -112,12 +120,18 @@ protected:
 class DrawingArc : public DrawingShape
 {
 public:
-  DrawingArc( Shape* s );
-  ~DrawingArc() {}
+  DrawingArc               ( const int _id, const long int rgb_col );
+  ~DrawingArc              () {}
 
-  void draw_shape(bool erase);
+  void draw_shape          ( bool erase );
 
 protected:
+  Vector2D center;
+  double inner_radius;
+  double outer_radius;
+  double start_angle;
+  double end_angle;
+
   Vector2D last_drawn_center;
 };
 
@@ -126,42 +140,42 @@ protected:
 // class DrawingRobot
 // ---------------------------------------------------------------------------
 
-class DrawingRobot
+class DrawingRobot : public DrawingCircle
 {
 public:
-  DrawingRobot( Robot* );
-  ~DrawingRobot() {}
+  DrawingRobot                ( const int _id, const long int rgb_col );
+  ~DrawingRobot               () {}
 
-  GdkColor& get_gdk_colour() { return gdk_colour; }
-  void set_colour(const long int colour);
+  void draw_shape             ( bool erase );
 
-  int get_row_in_score_clist() { return row_in_score_clist; }
-  void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-  void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-  int get_id() const { return id; }
-  Robot* get_robot_p() const { return robot_p; }
+  int get_row_in_score_clist  () const { return row_in_score_clist; }
+  void get_score_pixmap       ( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
+  void get_stat_pixmap        ( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
 
-  void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
-  void reset_last_displayed();
-  void display_score();
+  void set_row_in_score_clist ( int row ) { row_in_score_clist = row; }
+  void reset_last_displayed   ();
+  void display_score          ();
 
 private:
-  Robot* robot_p;
-
-  long int rgb_colour;
-  GdkColor gdk_colour;
 
   int row_in_score_clist;
+
+  double robot_angle;
+  double cannon_angle;
+  double radar_angle;
+
+  int energy;
+  int position_this_game;
+  int last_place;
+  long int score;
 
   int last_displayed_energy;
   int last_displayed_place;
   int last_displayed_last_place;
-  long last_displayed_score;
+  long int last_displayed_score;
 
   pixmap_t score_pixmap;
   pixmap_t stat_pixmap;
-
-  int id;
 };
 
 #endif __DRAWINGOBJECTS__
