@@ -488,7 +488,7 @@ Arena::update()
   move_shots();
   update_robots();
   if( state == GAME_IN_PROGRESS )
-    the_gui.draw_objects();
+    the_gui.draw_objects(true);
 }
 
 void

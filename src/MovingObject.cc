@@ -86,6 +86,8 @@ Robot::start_process()
         throw Error("Couldn't change pd_flags for pipe_out in robot ", 
                     robot_filename, "Robot::Robot, child");
 
+      // Should the robots outputpipe be NON_BLOCKING ?
+
       if( (pd_flags = fcntl(pipe_in[1], F_GETFL, 0)) == -1 ) 
         throw Error("Couldn't get pd_flags for pipe_in in robot ", 
                     robot_filename, "Robot::Robot, child");
@@ -1086,6 +1088,8 @@ Robot::save_data(const bool binary, const bool append)
       int bytes;
       char c;
       *instreamp >> bytes;
+
+      // TODO: check if data is avalable (peek), wait otherwise (select)
       
       for(int i=0; i < bytes; i++)
         {
@@ -1099,6 +1103,8 @@ Robot::save_data(const bool binary, const bool append)
       
       instreamp->get(buf, 256 ,'\n');
       file << buf << endl;
+
+      // TODO: continue saving if next message is SAVE_DATA
     }
 }
 
