@@ -233,12 +233,12 @@ Robot::set_initial_values(const Vector2D& pos, const double angle)
   robot_angle = angle;
   cannon_angle = angle;
   radar_angle = angle;
-  radius = the_arena->get_robot_radius();
-  protection_coeff = the_arena->get_robot_protection();
-  hardness_coeff = the_arena->get_robot_hardness();
-  bounce_coeff = the_arena->get_robot_bounce_coeff();
-  mass = the_arena->get_robot_mass();
-  energy = the_arena->get_start_energy();
+  radius = opts.get_robot_radius();
+  protection_coeff = opts.get_robot_protection();
+  hardness_coeff = opts.get_robot_hardness();
+  bounce_coeff = opts.get_robot_bounce_coeff();
+  mass = opts.get_robot_mass();
+  energy = opts.get_start_energy();
   velocity = Vector2D(0.0, 0.0);
   position_this_game = 0;
 }
@@ -247,13 +247,13 @@ void
 Robot::change_velocity(const double timestep)
 {
   Vector2D dir = Vector2D(cos(robot_angle),sin(robot_angle));
-  double gt = the_arena->get_grav_const() * timestep;
-  double fric = the_arena->get_roll_friction() * (1.0 - break_percent) + 
-    the_arena->get_slide_friction() * break_percent;
-  velocity = -velocity* min(the_arena->get_air_resistance() * timestep, 0.5) +
+  double gt = opts.get_grav_const() * timestep;
+  double fric = opts.get_roll_friction() * (1.0 - break_percent) + 
+    opts.get_slide_friction() * break_percent;
+  velocity = -velocity* min(opts.get_air_resistance() * timestep, 0.5) +
     timestep*acceleration*dir + 
     dot(velocity, dir) * max(0.0, 1.0-gt*fric) * dir +
-    vedge(dir, velocity) * max(0.0, 1.0-gt*the_arena->get_slide_friction()) * rotate90(dir);
+    vedge(dir, velocity) * max(0.0, 1.0-gt*opts.get_slide_friction()) * rotate90(dir);
 }
 
 void
@@ -409,14 +409,14 @@ Robot::get_messages()
             double en;
             *instreamp >> en;
             Vector2D dir = Vector2D(cos(cannon_angle),sin(cannon_angle));
-            double shot_radius = the_arena->get_shot_radius();
+            double shot_radius = opts.get_shot_radius();
             Vector2D shot_center = center + (radius+1.5*shot_radius)*dir;
             if( the_arena->space_available( shot_center, shot_radius + 0.00001 ) )
               {
                 Shot* shotp = new Shot( shot_center, shot_radius,
-                                        velocity + dir * the_arena->get_shot_speed(),
+                                        velocity + dir * opts.get_shot_speed(),
                                         the_arena, en );
-                change_energy(-en * the_arena->get_shooting_penalty() );
+                change_energy(-en * opts.get_shooting_penalty() );
                 g_list_append((the_arena->get_object_lists())[SHOT], shotp);
               }
             else
@@ -429,7 +429,7 @@ Robot::get_messages()
           {
             double acc;
             *instreamp >> acc;
-            if( acc < the_arena->get_min_acceleration() || acc > the_arena->get_max_acceleration() )
+            if( acc < opts.get_min_acceleration() || acc > opts.get_max_acceleration() )
               send_message(WARNING, VARIABLE_OUT_OF_RANGE, msg_name);            
             else
               acceleration = acc;
@@ -548,21 +548,21 @@ Robot::draw_radar_and_cannon( Gui& the_gui )
   // Draw Cannon
   the_gui.draw_line( center,
                      Vector2D(cos(cannon_angle),sin(cannon_angle)),
-                     the_arena->get_robot_radius() - the_arena->get_shot_radius(),
-                     the_arena->get_shot_radius(),
+                     opts.get_robot_radius() - opts.get_shot_radius(),
+                     opts.get_shot_radius(),
                      *(the_arena->get_foreground_colour_p()) );
 
   // Draw radar lines
   Vector2D radar_dir( cos(radar_angle),sin(radar_angle) );
-  the_gui.draw_line( center - the_arena->get_robot_radius() * 0.25 * radar_dir,
+  the_gui.draw_line( center - opts.get_robot_radius() * 0.25 * radar_dir,
                      rotate( radar_dir, M_PI / 4.0 ),
-                     the_arena->get_robot_radius() / 1.5,
-                     the_arena->get_robot_radius() / 20.0,
+                     opts.get_robot_radius() / 1.5,
+                     opts.get_robot_radius() / 20.0,
                      *(the_arena->get_foreground_colour_p()) );
-  the_gui.draw_line( center - the_arena->get_robot_radius() * 0.25 * radar_dir,
+  the_gui.draw_line( center - opts.get_robot_radius() * 0.25 * radar_dir,
                      rotate( radar_dir, - (M_PI / 4.0) ),
-                     the_arena->get_robot_radius() / 1.5,
-                     the_arena->get_robot_radius() / 20.0,
+                     opts.get_robot_radius() / 1.5,
+                     opts.get_robot_radius() / 20.0,
                      *(the_arena->get_foreground_colour_p()) );
   
 }
