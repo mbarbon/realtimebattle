@@ -6,8 +6,9 @@ DEBUG_MODE=no
 endif
 
 # Substitute '-O' with '-fhandle-exceptions' in CXXFLAGS if your compiler requires it.
-# Add '-DUSE_STDARG_H' if the compiler complains about va_args or similar.
+# Add '-DUSE_STDARG_H' if the compiler complains about va_list, va_args or similar.
 # Add '-DNO_RLIMIT_NPROC' if the compiler complains about RLIMIT_NPROC.
+# Add '-DUSE_SYS_TIME_H' if the compiler complains about 'timeval'.
 CXXFLAGS = -O -DINSTALL_DIR='"$(INSTALLDIR)"'
 
 
