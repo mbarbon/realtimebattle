@@ -18,7 +18,7 @@ endif
 
 libRTBGui_Gtk_la_LIBADD = 
 libRTBGui_Gtk_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-module $(STDCXX_LIBS) $(GTK_LIBS) $(INTLLIBS) $(CCMALLOC_O)
+	-module -export-dynamic $(STDCXX_LIBS) $(GTK_LIBS) $(INTLLIBS) $(CCMALLOC_O)
 libRTBGui_Gtk_la_DEPENDENCIES = $(INTLOBJS)
 libRTBGui_Gtk_la_SOURCES = \
 	ArenaWindow.cc ArenaWindow.h \
