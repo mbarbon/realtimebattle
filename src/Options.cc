@@ -41,7 +41,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 //extern class ArenaRealTime the_arena;
 
-
+//Warning!!! NO COLONS IN LABELS
 
 Options::Options()
 {
@@ -296,7 +296,7 @@ Options::Options()
 
   all_long_options[OPTION_LOG_EVERY_NTH_UPDATE_INTERVAL] =
     option_info_t<long>(ENTRY_INT, PAGE_TIME, 1, 1, 1000, 5,
-                        false, false, "Logging frequency [Each n:th update interval]",
+                        false, false, "Logging frequency [Each nth update interval]",
                         _("Logging frequency [Each n:th update interval]") );
 
   all_long_options[OPTION_MAX_ROBOTS_ALLOWED] =
