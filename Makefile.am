@@ -45,6 +45,8 @@ website_download: docs bz2_dist
 
 website_all: html_clean website website_download
 
+realclean: clean
+	cd Documentation && $(MAKE) realclean
 
 rpm: dist
 	cp $(PACKAGE)-$(VERSION).tar.gz $(shell rpm --showrc | grep "^sourcedir" | sed "s/sourcedir[  ]*: *//") && \
