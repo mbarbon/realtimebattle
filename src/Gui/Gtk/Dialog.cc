@@ -23,12 +23,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Dialog.h"
 #include "IntlDefs.h"
 
-//
-// The value returned from Dialog is the order of button_labels,
-// beginning with 1.
-// If the delete_event is received, no value will be returned
-//
-
 Dialog::Dialog( const string& info, const list<string>& button_labels,
                 const DialogFunction func )
 {
@@ -84,4 +78,5 @@ Dialog::generate_result( GtkWidget* widget, result_t* result_p )
 {
   (*(result_p->function))(result_p->result);
   gtk_widget_destroy( result_p->widget );
+  delete result_p; // TODO: How to delete all other result_p:s?
 }

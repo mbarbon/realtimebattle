@@ -34,6 +34,14 @@ typedef union  _GdkEvent  GdkEvent;
 typedef int gint;
 typedef void (*DialogFunction)(int);
 
+// ---------------------------------------------------------------------------
+// class Dialog
+// ---------------------------------------------------------------------------
+// The value returned from Dialog is an integer corresponding
+// to the button hit, beginning with 1.
+// If the delete_event is received, no value will be returned.
+// ---------------------------------------------------------------------------
+
 class Dialog
 {
 public:
