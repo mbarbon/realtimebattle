@@ -22,6 +22,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <fstream.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <glib.h>
+#include "String.h"
 #include "Shape.h"
 //#include "Arena.h"
 
