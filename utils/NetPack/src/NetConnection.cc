@@ -44,11 +44,9 @@ NetConnection::~NetConnection()
 int
 NetConnection::close_socket()
 {
-  cout<<"Close it\n";
   if( connected )
     {
       int i = close( the_socket );
-      cout<<"Close "<<i<<endl;
       connected = false;
       the_socket = -1;
       return i;
@@ -173,16 +171,18 @@ NetConnection::write_data()
 	  while( !write_buffer.empty() ) //Can it block???
 	    {
 	      //The information to send
-	      string newstr = write_buffer.substr( 0, max_packet_length );
-        cout<<newstr.data()<<endl;
-	      if( (nput = write( the_socket, newstr.data(), newstr.length() )) == -1 )
+        int size = (max_packet_length < write_buffer.length()) ? max_packet_length : write_buffer.length();
+	      string newstr = write_buffer.substr( 0, size );
+
+	      if( (nput = write( the_socket, newstr.c_str(), newstr.length() )) == -1 )
 		{
+
 		  if( errno == EWOULDBLOCK || errno == EAGAIN )
 		    break;
 		  close_socket(); // Should I really do this here?
 		  return -1;
 		}
-    cout<<"sent\n";
+
 
 	      //The information we still have here (it isn't in the socket :-( )
 	      if( (int)write_buffer.length() < nput )

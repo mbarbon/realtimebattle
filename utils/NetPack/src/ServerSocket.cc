@@ -61,14 +61,15 @@ SocketServer::open_socket( int port_nb = 0 )
   if( ((++nb_try) % 10) == 0 )
     port_number += 100;
   if( nb_try == 50 ) quit() ;
+
   cout<<"Opening on port "<<port_number<<endl;
+
   //Set my host name
   char sn[256];
   gethostname(sn, 256);
   host_name = string(sn);
 
   //Open my socket
-
   if( (server_socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 )
     {
       cout<<( "Failed to open socket." )<<endl;
@@ -98,6 +99,7 @@ SocketServer::open_socket( int port_nb = 0 )
       port_number ++;
       continue;
     }
+    cout<<"Opened on socket "<< server_socket<<endl;
   break;
   }
 }
@@ -115,9 +117,10 @@ SocketServer::set_fd( )
   list_It_NetConn li;
   for( li = all_connections.begin(); li != all_connections.end(); li++ )
     if( (**li).connected )
+    {
       add_fd( (**li).the_socket );
+    }
 }
-
 
 void
 SocketServer::handle_stdin( char * buffer )
@@ -196,8 +199,6 @@ SocketServer::accept_connection()
 
   unsigned int fromlen = sizeof(fromend);
 
-  cout<<"Accepting a new connection\n";
-
   if( (new_socket = accept( server_socket,
                             (struct sockaddr*) &fromend, &fromlen )) < 0 )
     {
@@ -209,7 +210,8 @@ SocketServer::accept_connection()
   struct NetConnection* nc = new NetConnection;
   nc->id = next_id;
   next_id++;
-      cout<<"Connected to "<<new_socket<<endl;
+
+  cout<<"New connection on "<<new_socket<<endl;
   nc->the_socket = new_socket;
   nc->make_nonblocking();
   nc->connected = true;

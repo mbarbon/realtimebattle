@@ -30,11 +30,10 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 class ASmallServerPacketFactory : public PacketFactory{
 public:
-  Packet* MakePacket( string & s, NetConnection*) 
+  Packet* MakePacket( string & s, NetConnection* nc)
   {
     cout<<"I receive (server) "<<s<<endl;
-    if( s == "@CQuit" )
-      exit( 0 );
+    if( s == "@CQuit" ) nc->close_socket();
 
     return NULL;
   }
@@ -50,18 +49,14 @@ public:
   }
 };
 
-class RawSocketClientServer : public SocketClient, public SocketServer {
+class RawSocketClientServer : public SocketClient {
 public:
-  void check_socket() { SocketServer::check_socket(); };
+  void check_socket() { SocketClient::check_socket(); };
 
-  void say_hello_to_server() {
+  void say_hello_to_server(int port_number) {
     char buffer[16];
     sprintf( buffer, "%i", port_number);
     send_to_server( "local " + string(buffer) );
-  }
-  void set_packet_factories( PacketFactory* server_pf, PacketFactory* client_pf ) {
-    SocketServer::set_packet_factory( server_pf );
-    SocketClient::set_packet_factory( client_pf );
   }
 
 protected:
@@ -82,30 +77,24 @@ protected:
         send_to_server( (string)buffer );
       }
   }
-
-  void check_fd( ) {
-    SocketServer::check_fd();
-    SocketClient::check_fd();
-  }
-  void set_fd( ) {
-    SocketServer::set_fd();
-    SocketClient::set_fd();
-  }
-
 };
 
 int main()
 {
   RawSocketClientServer sc;
+  SocketServer the_server;
 
-  sc.open_socket();
+  the_server.open_socket( 4148 );
+
   sc.connect_to_server( "localhost", 4147 );
 
-  sc.set_packet_factories( new ASmallServerPacketFactory, new ASmallClientPacketFactory );
+  sc.set_packet_factory( new ASmallClientPacketFactory );
+  the_server.set_packet_factory( new ASmallServerPacketFactory );
+  sc.say_hello_to_server( the_server.port_num() );
 
-  sc.say_hello_to_server();
   while(1)
     {
       sc.check_socket();
+      the_server.check_socket();
     }
 }

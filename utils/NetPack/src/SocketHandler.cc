@@ -37,14 +37,14 @@ void
 SocketHandler::add_read( int i )
 {
   FD_SET( i , &readfs );
-  max_desc = (max_desc > i) ? max_desc : i ;
+  max_desc = ((max_desc > i) ? max_desc : i) ;
 }
 
 void
 SocketHandler::add_except( int i )
 {
   FD_SET( i, &exceptfs );
-  max_desc = (max_desc > i) ? max_desc : i ;
+  max_desc = ((max_desc > i) ? max_desc : i) ;
 }
 
 void
@@ -76,6 +76,7 @@ SocketHandler::check_socket() {
 	FD_ZERO( &readfs );
   FD_ZERO( &exceptfs );
 
+  max_desc = 0;
   add_read( 0 );
 
   set_fd();

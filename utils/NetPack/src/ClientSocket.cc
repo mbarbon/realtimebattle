@@ -43,6 +43,7 @@ SocketClient::~SocketClient()
 void 
 SocketClient::set_packet_factory( PacketFactory* pf )
 {
+  if(client_packet_factory) delete client_packet_factory;
   client_packet_factory = pf;
 }
 
@@ -94,9 +95,14 @@ SocketClient::connect_to_server( string hostname, int port_nb = 0 )
       cout<<"Connect failed\n";
       return NULL;
     }
-  
+
+  if(server_connection ) {
+    server_connection->close_socket();
+    delete server_connection;
+  }
+
   server_connection = new NetConnection;
-        cout<<"Connected to "<<the_socket<<endl;
+
   server_connection->the_socket = the_socket;
   server_connection->connected = true;
   server_connection->make_nonblocking();
@@ -118,7 +124,7 @@ SocketClient::check_fd( )
   {
     if( is_fd_except( server_connection->the_socket ) )
     {
-      cout<<"Close b\n";
+      cout<<"Exception, close it \n";
       server_connection->close_socket();
       return;
     }
@@ -142,7 +148,6 @@ SocketClient::check_fd( )
 
       if( read < 0 )
       {
-        cout<<"Close a\n";
         server_connection->close_socket();
         return;
       }
@@ -153,6 +158,5 @@ SocketClient::check_fd( )
 void
 SocketClient::send_to_server( string s )
 {
-  cout<<"send "<<s<<endl;
   server_connection->send_data( s );
 }

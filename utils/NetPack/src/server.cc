@@ -90,8 +90,8 @@ public:
         cout<<"Not enough remote clients\n";
       cout<<"Tell him to quit \n";
       nc->send_data( "@CQuit" );
+      //nc->send_data("Hello");
       cout<<"Message sent\n";
-      sleep( 1 );
       nc->close_socket();
       cout<<"Done\n";
     }

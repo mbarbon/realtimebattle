@@ -28,10 +28,64 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "SocketHandler.h"
 #include <unistd.h>
 
-class ASmallFactory : public PacketFactory{
- public:
-  Packet* MakePacket( string & s, NetConnection*) 
+class RawSocketClient : public SocketClient {
+public:
+  void handle_stdin(char * buffer)
   {
+    istrstream is(buffer);
+    string command;
+    is >> command;
+
+    if( command == "quit")   //The quit event (maybe a click for a chat)
+      {
+        cout<<"Ciao\n";
+        exit( 0 );
+      }
+    else
+      {
+        send_to_server( (string)buffer );
+      }
+  }
+};
+
+RawSocketClient sc;
+
+class ClientsLinkPacketFactory : public PacketFactory {
+ public:
+  Packet* MakePacket( string & s, NetConnection* nc)
+  {
+    if( s == "@CQuit" )
+      exit( 0 );
+    else if(s.substr(0, 10) == "TCRunRobot")
+      {
+        //TODO : put this code in src/Clients/Gui/Common
+        istrstream data( s.substr(10, s.length() - 1).c_str() );
+        char name[256], dir[256], unique_id[8], rand_id[8];
+        data >> name >> dir >> unique_id >> rand_id;
+        pid_t pid = fork();
+        if(pid  == 0 )
+        {
+        }
+      }
+    else
+      cout<<s<<endl;
+
+    return NULL;
+  };
+protected:
+  string Robot_Protocol, Robot_Channel;
+};
+
+
+class ClientServerLinkFactory : public PacketFactory{
+ public:
+  Packet* MakePacket( string & s, NetConnection* nc)
+  {
+    int next_port;
+    istrstream is ( s.c_str() );
+    is >> next_port;
+    sc.connect_to_server( "localhost", next_port );
+    sc.set_packet_factory( new ClientsLinkPacketFactory );
 
     if( s == "@CQuit" )
       exit( 0 );
@@ -55,32 +109,12 @@ protected:
   string Robot_Protocol, Robot_Channel;
 };
 
-class RawSocketClient : public SocketClient {
-public:
-  void handle_stdin(char * buffer)
-  {
-    istrstream is(buffer);
-    string command;
-    is >> command;
-    
-    if( command == "quit")   //The quit event (maybe a click for a chat)
-      { 
-        cout<<"Ciao\n";
-        exit( 0 );
-      }
-    else
-      {
-        my_connection->send_data( (string)buffer );
-      }
-  }
-};
 
 int main()
 {
-  RawSocketClient sc;
   sc.connect_to_server( "localhost", 4147 );
   sc.send_to_server( "remote" );
-  sc.set_packet_factory( new ASmallFactory );
+  sc.set_packet_factory( new ClientServerLinkFactory );
   while(1)
     {
       sc.check_socket();
