@@ -3,6 +3,12 @@
 
 #define GDK_VARV 23040
 
+void
+delete_event (GtkWidget *widget, GdkEvent *event, gpointer guip)
+{
+  ((Gui *)guip)->quit_event( widget, event );
+}
+
 Gui::Gui( int robot_number, char * robot_name_list[], int arena_width, int arena_height )
 {
   width = arena_width;
@@ -11,63 +17,13 @@ Gui::Gui( int robot_number, char * robot_name_list[], int arena_width, int arena
   setup_arena_window();
 }
 
-/*void draw_objects ( void )
+void
+Gui::draw_objects()
 {
-  GdkGC * bkg_gc, * blue_gc;
-
-  bkg_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( bkg_gc, &da_bkg_colour );
-
-  blue_gc = gdk_gc_new( drawing_area->window );
-  gdk_gc_set_foreground( blue_gc, &colour );
-
-  gdk_draw_rectangle (drawing_area->window,
-                      bkg_gc,
-                      TRUE,
-                      0, 0,
-                      drawing_area->allocation.width,
-                      drawing_area->allocation.height);
-  
-  gdk_draw_arc (drawing_area->window,
-                blue_gc,
-                TRUE,
-                150, 50,
-                50, 700,
-                0, 23037);
-
-  gdk_draw_arc (drawing_area->window,
-                blue_gc,
-                TRUE,
-                250, 50,
-                50, 700,
-                0, 23038);
-
-  // Ett varv = 360 * 64 = 23040
-
-  gdk_draw_arc (drawing_area->window,
-                blue_gc,
-                TRUE,
-                350, 50,
-                50, 700,
-                0, 23039);
-
-  gdk_draw_rectangle (drawing_area->window,
-                      blue_gc,
-                      FALSE,
-                      50, 50,
-                      50, 50);
-
-  gdk_draw_line (drawing_area->window,
-                 blue_gc,
-                 50, 150,
-                 100, 200);
-
-  gdk_gc_destroy( blue_gc );
-  gdk_gc_destroy( bkg_gc );
-}*/
+}
 
 void
-Gui::add_to_message_output (char * from_robot, char * output_text )
+Gui::print_to_message_output (char * from_robot, char * output_text, GdkColor colour )
 {
   GString * rname;
   rname = g_string_new(from_robot);
@@ -80,7 +36,71 @@ Gui::add_to_message_output (char * from_robot, char * output_text )
 }
 
 void
-Gui::delete_event (GtkWidget *widget, GdkEvent *event, gpointer data)
+Gui::draw_circle( int center, int radius, GdkColor colour, bool filled )
+{
+  GdkGC * bkg_gc, * colour_gc;
+
+  bkg_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( bkg_gc, &background_colour );
+
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &colour );
+
+  gdk_draw_arc (drawing_area->window,
+                colour_gc,
+                TRUE,
+                350, 50,
+                50, 700,
+                0, GDK_VARV);
+
+  gdk_gc_destroy( colour_gc );
+  gdk_gc_destroy( bkg_gc );
+}
+
+void
+Gui::draw_line( int x1, int y1, int x2, int y2, GdkColor colour )
+{
+  GdkGC * bkg_gc, * colour_gc;
+
+  bkg_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( bkg_gc, &background_colour );
+
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &colour );
+
+  gdk_draw_line (drawing_area->window,
+                 colour_gc,
+                 50, 150,
+                 100, 200);
+
+  gdk_gc_destroy( colour_gc );
+  gdk_gc_destroy( bkg_gc );
+}
+
+void
+Gui::draw_rectangle( int x1, int y1, int x2, int y2, GdkColor colour, bool filled )
+{
+  GdkGC * bkg_gc, * colour_gc;
+
+  bkg_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( bkg_gc, &background_colour );
+
+  colour_gc = gdk_gc_new( drawing_area->window );
+  gdk_gc_set_foreground( colour_gc, &colour );
+
+  gdk_draw_rectangle (drawing_area->window,
+                      colour_gc,
+                      TRUE,
+                      0, 0,
+                      drawing_area->allocation.width,
+                      drawing_area->allocation.height);
+
+  gdk_gc_destroy( colour_gc );
+  gdk_gc_destroy( bkg_gc );
+}
+
+void
+Gui::quit_event (GtkWidget *widget, GdkEvent *event)
 {
   gtk_main_quit ();
 }
@@ -105,7 +125,7 @@ Gui::setup_control_window( int robot_number, char * robot_name_list[] )
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Control Window");
   gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-                      GTK_SIGNAL_FUNC (Gui::delete_event), NULL);
+                      GTK_SIGNAL_FUNC (delete_event), this);
   gtk_container_border_width (GTK_CONTAINER (window), 12);
 
   vbox = gtk_vbox_new (FALSE, 10);
@@ -269,11 +289,11 @@ Gui::setup_control_window( int robot_number, char * robot_name_list[] )
   gtk_widget_show (vscrollbar);
 
   cmap = gdk_colormap_get_system();
-  colour.red = 0;
-  colour.green = 0;
-  colour.blue = 0xaaaa;
-  if (!gdk_color_alloc(cmap, &colour)) {
-    g_error("couldn't allocate colour");
+  blue_colour.red = 0;
+  blue_colour.green = 0;
+  blue_colour.blue = 0xaaaa;
+  if (!gdk_color_alloc(cmap, &blue_colour)) {
+    g_error("couldn't allocate blue_colour");
   }
 
   gtk_widget_realize (message_output);
@@ -288,7 +308,7 @@ Gui::setup_control_window( int robot_number, char * robot_name_list[] )
 
   button = gtk_button_new_with_label ("Quit");
   gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (Gui::delete_event), NULL);
+                      GTK_SIGNAL_FUNC (delete_event), this);
   gtk_table_attach_defaults (GTK_TABLE(bottomtable), button, 1, 3, 0, 1);
   gtk_widget_show (button);
   gtk_widget_show (bottomtable);
@@ -309,7 +329,7 @@ Gui::setup_arena_window( void )
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "RealTimeBattle Arena Window");
   gtk_signal_connect (GTK_OBJECT (window), "delete_event",
-                      GTK_SIGNAL_FUNC (Gui::delete_event), NULL);
+                      GTK_SIGNAL_FUNC (delete_event), this);
   gtk_container_border_width (GTK_CONTAINER (window), 12);  
 
   /* Scrolled Window */
@@ -333,10 +353,10 @@ Gui::setup_arena_window( void )
   /* Background Colour */
 
   colormap = gdk_window_get_colormap (drawing_area->window);
-  da_bkg_colour.red = 64255;
-  da_bkg_colour.green = 61695;
-  da_bkg_colour.blue = 59135;
-  gdk_color_alloc (colormap, &da_bkg_colour);
-  gdk_window_set_background (drawing_area->window, &da_bkg_colour);
+  background_colour.red = 64255;
+  background_colour.green = 61695;
+  background_colour.blue = 59135;
+  gdk_color_alloc (colormap, &background_colour);
+  gdk_window_set_background (drawing_area->window, &background_colour);
   gdk_window_clear (drawing_area->window);
 }
