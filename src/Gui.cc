@@ -163,9 +163,9 @@ Gui::split_semicolonseparated_dirs(String& dirs, GList * gl)
       lastpos = pos+1;
     }
 
-  current_dir = get_segment(dirs, lastpos, -1); 
   if(current_dir != "")
     {
+      current_dir = get_segment(dirs, lastpos, -1); 
       if(current_dir[current_dir.get_length() - 1] != '/')
         current_dir += '/';
 

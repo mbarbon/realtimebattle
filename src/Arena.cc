@@ -1123,7 +1123,7 @@ Arena::start_tournament(const GList* robotfilename_list, const GList* arenafilen
 
   for(int i=0; i< rem_games; i++)
     {
-      for(int i=0; i<number_of_robots; i++) robot_playing_this_match[i] = false;
+      for(int i2=0; i<number_of_robots; i2++) robot_playing_this_match[i2] = false;
 
       for(int j=0; j<robots_per_game; j++)
         {

@@ -22,16 +22,20 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <glib.h>
 #include <gdk/gdk.h>
-// #include <fstream.h>
-// #include <stdlib.h>
 #include "Vector2D.h"
-// #include "String.h"
 #include "Messagetypes.h"
 #include "Options.h"
 #include "Gui.h"
-//#include "Various.h"
 
-static const double infinity = 1.0e10;
+
+//This fixes a problem with glib, which can give warning messages about converting NULL 
+//from void* to GList* implicitly.
+#undef g_list_previous
+#undef g_list_next
+#define g_list_previous(list) ((list) ? (((GList *)list)->prev) : (GList*)NULL)
+#define g_list_next(list) ((list) ? (((GList *)list)->next) : (GList*)NULL)
+
+static const double infinity = 1.0e10;  //approximatly (-;
 
 extern class Options the_opts;
 extern class Arena the_arena;
