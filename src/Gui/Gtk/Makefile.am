@@ -1,4 +1,4 @@
-noinst_LIBRARIES = libGuiGtk.a
+lib_LTLIBRARIES = libGuiGtk.la
 
 INCLUDES = $(GTK_CFLAGS) -I$(top_srcdir)/intl -I$(top_srcdir)/src
 
@@ -17,9 +17,11 @@ CXXFLAGS += -pg
 CFLAGS += -pg
 endif
 
-libGuiGtk_a_LIBADD = $(GTK_LIBS) $(INTLLIBS)
-libGuiGtk_a_DEPENDENCIES = $(INTLOBJS)
-libGuiGtk_a_SOURCES = \
+libGuiGtk_la_LIBADD = 
+libGuiGtk_la_LDFLAGS = -version-info  $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+	$(GTK_LIBS) $(INTLLIBS)
+libGuiGtk_la_DEPENDENCIES = $(INTLOBJS)
+libGuiGtk_la_SOURCES = \
 	ArenaWindow.cc ArenaWindow.h \
 	ControlWindow.cc ControlWindow.h \
 	Dialog.cc Dialog.h \
