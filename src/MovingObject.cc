@@ -1071,10 +1071,10 @@ Robot::save_data(const bool binary, const bool append)
 {
   String filename;
 
-  if( robot_name_uniqueness_number == 0 )
-    filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
-  else
-    filename = the_gui.get_robotdir() + robot_name + ".robotdata";
+//    if( robot_name_uniqueness_number == 0 )
+//      filename = the_gui.get_robotdir() + plain_robot_name + ".robotdata";
+//    else
+//      filename = the_gui.get_robotdir() + robot_name + ".robotdata";
 
   int mode = _IO_OUTPUT;  
   if( append ) mode = _IO_APPEND;
@@ -1116,16 +1116,16 @@ Robot::load_data(const bool binary)
   ifstream file;
 
 
-  if( robot_name_uniqueness_number == 0 )
-    {
-      filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
-      file.open(filename.chars());
-    }
-  if( !file )
-    {
-      filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
-      file.open(filename.chars());
-    }
+//    if( robot_name_uniqueness_number == 0 )
+//      {
+//        filename = the_gui.get_robotdir() + "RobotSave/" + plain_robot_name + ".robotdata";
+//        file.open(filename.chars());
+//      }
+//    if( !file )
+//      {
+//        filename = the_gui.get_robotdir() + "RobotSave/" + robot_name + ".robotdata";
+//        file.open(filename.chars());
+//      }
 
   if (!file) 
     {

@@ -91,21 +91,10 @@ delete_event(GtkWidget *widget, gpointer data)
 Gui::Gui()
 {
   statistics_up = false;
-  if(NULL != getenv("RTB_ROBOTDIR"))
-      robotdir = getenv("RTB_ROBOTDIR");
-  else
-      robotdir = "Robots/";
 
-  if(robotdir[robotdir.get_length() - 1] == '/')
-    robotdir += '/';
-
-  if(NULL != getenv("RTB_ARENADIR"))
-      arenadir = getenv("RTB_ARENADIR");
-  else
-      arenadir = "Arenas/";
-
-  if(arenadir[arenadir.get_length() - 1] == '/')
-    arenadir += '/';
+  robotdirs = g_list_alloc();
+  arenadirs = g_list_alloc();
+  read_dirs_from_system();
 
   control_window_size = Vector2D(294,110);
   start_tournament_window_size = Vector2D(485,410);
@@ -115,6 +104,74 @@ Gui::Gui()
   statistics_window_size = Vector2D(499,428);
 
   da_scrolled_window_size = Vector2D(0.0,0.0);
+}
+
+Gui::~Gui()
+{
+  GList* gl;
+  for(gl=g_list_next(robotdirs);gl != NULL; )
+    {
+      String* str = (String*)gl->data;
+      delete str;
+      gl=g_list_next(gl);
+      g_list_remove(robotdirs,str);
+    }
+  g_list_free(robotdirs);
+  for(gl=g_list_next(arenadirs);gl != NULL; )
+    {
+      String* str = (String*)gl->data;
+      delete str;
+      gl=g_list_next(gl);
+      g_list_remove(arenadirs,str);
+    }
+  g_list_free(arenadirs);
+}
+
+// This function splits a string of semicolonseparated directories into a glist
+void
+Gui::split_semicolonseparated_dirs(String& dirs, GList * gl)
+{
+  String current_dir;
+  int pos, lastpos = 0;
+  while( (pos = dirs.find(';', lastpos)) != -1 )
+    {
+      current_dir = get_segment(dirs, lastpos, pos-1);
+      if(current_dir[current_dir.get_length() - 1] != '/')
+        current_dir += '/';
+
+      String * str = new String(current_dir);
+      g_list_append(gl,str);
+      lastpos = pos+1;
+    }
+
+  current_dir = get_segment(dirs, lastpos, -1); 
+  if(current_dir != "")
+    {
+      if(current_dir[current_dir.get_length() - 1] != '/')
+        current_dir += '/';
+
+      String * str = new String(current_dir);
+      g_list_append(gl,str);
+    }
+}
+
+void
+Gui::read_dirs_from_system()
+{
+  String dirs;
+  if(NULL != getenv("RTB_ROBOTDIR"))
+      dirs = getenv("RTB_ROBOTDIR");
+  else
+      dirs = "Robots/";
+
+  split_semicolonseparated_dirs(dirs,robotdirs);
+
+  if(NULL != getenv("RTB_ARENADIR"))
+      dirs = getenv("RTB_ARENADIR");
+  else
+      dirs = "Arenas/";
+
+  split_semicolonseparated_dirs(dirs,arenadirs);
 }
 
 void
@@ -615,8 +672,9 @@ Gui::set_arena_window_title()
       String name;
       String* filename = (String*)(g_list_nth(the_arena.get_arena_filenames(),
                                             the_arena.get_current_arena_nr())->data);
-      filename->find(name,'/',true);
-      name.erase(0,1);
+      int pos;
+      if( (pos = filename->find('/',0,true)) != -1 )
+        name = get_segment(*filename, pos+1, -1);
       title = "RealTimeBattle Arena  "  + name;
     }
   else

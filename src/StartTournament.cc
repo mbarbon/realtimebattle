@@ -291,11 +291,11 @@ Gui::start_tournament_add_all_selected( bool robots )
           start_tournament_glist_info_t * info_tourn_p;
           String full_filename;
           if(robots)
-            full_filename = robotdir + info_dir_p->filename;
+            full_filename = info_dir_p->directory + info_dir_p->filename;
           else
-            full_filename = arenadir + info_dir_p->filename;
+            full_filename = info_dir_p->directory + info_dir_p->filename;
 
-          info_tourn_p = new start_tournament_glist_info_t(row,false,full_filename.chars());
+          info_tourn_p = new start_tournament_glist_info_t(row,false,full_filename.chars(),info_dir_p->directory);
           g_list_append(gl_tourn, info_tourn_p);                        
         }
     }
@@ -497,31 +497,36 @@ Gui::setup_start_tournament_window()
   gtk_box_pack_start (GTK_BOX (hbox), robots_in_directory_clist, TRUE, TRUE, 0);
   gtk_widget_show( robots_in_directory_clist );
 
-  DIR * rdir;
-  if( NULL != (rdir = opendir(robotdir.chars())))
+  GList* gl;
+  for(gl=g_list_next(robotdirs);gl != NULL; gl=g_list_next(gl))
     {
-      struct dirent * entry;
-      while (NULL != ( entry = readdir( rdir ) ) )
+      String* current_dir = (String*)gl->data;
+      DIR * rdir;
+      if( NULL != (rdir = opendir(current_dir->chars())))
         {
-          String full_file_name = robotdir + entry->d_name;
-          struct stat filestat;
-          if( 0 == stat( full_file_name.chars(), &filestat ) )
-            if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
-              {     
-                char * list[] = { "" };
+          struct dirent * entry;
+          while (NULL != ( entry = readdir( rdir ) ) )
+            {
+              String full_file_name = *current_dir + entry->d_name;
+              struct stat filestat;
+              if( 0 == stat( full_file_name.chars(), &filestat ) )
+                if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
+                  {     
+                    char * list[] = { "" };
           
-                int row = gtk_clist_append(GTK_CLIST(robots_in_directory_clist), list);
-                gtk_clist_set_foreground(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_foreground_colour_p());
-                gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_background_colour_p());
+                    int row = gtk_clist_append(GTK_CLIST(robots_in_directory_clist), list);
+                    gtk_clist_set_foreground(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_foreground_colour_p());
+                    gtk_clist_set_background(GTK_CLIST(robots_in_directory_clist), row, the_arena.get_background_colour_p());
           
-                gtk_clist_set_text(GTK_CLIST(robots_in_directory_clist), row, 0, entry->d_name);
+                    gtk_clist_set_text(GTK_CLIST(robots_in_directory_clist), row, 0, entry->d_name);
 
-                start_tournament_glist_info_t * info;
-                info = new start_tournament_glist_info_t(row,false,entry->d_name);
-                g_list_append(selected_items_in_robot_directory, info);                  
-              }
+                    start_tournament_glist_info_t * info;
+                    info = new start_tournament_glist_info_t(row,false,entry->d_name,current_dir->chars());
+                    g_list_append(selected_items_in_robot_directory, info);                  
+                  }
+            }
+          closedir( rdir );
         }
-      closedir( rdir );
     }
 
   // Widgets for selecting arenas
@@ -598,33 +603,37 @@ Gui::setup_start_tournament_window()
   gtk_box_pack_start (GTK_BOX (hbox), arenas_in_directory_clist, TRUE, TRUE, 0);
   gtk_widget_show( arenas_in_directory_clist );
 
-  DIR * adir;
-  if( NULL != (adir = opendir(arenadir.chars())))
+  for(gl=g_list_next(arenadirs);gl != NULL; gl=g_list_next(gl))
     {
-      struct dirent * entry;
-      while (NULL != ( entry = readdir( adir ) ) )
+      String* current_dir = (String*)gl->data;
+      DIR* adir;
+      if( NULL != (adir = opendir(current_dir->chars())))
         {
-          String full_file_name = arenadir + entry->d_name;
-          struct stat filestat;
-          if( 0 == stat( full_file_name.chars(), &filestat ) && full_file_name.get_length() > 6 )
-            // Check if file is a regular file that is readable and ends with .arena
-            if( S_ISREG( filestat.st_mode) &&
-                (filestat.st_mode & S_IROTH)  &&
-                String(".arena") == get_segment(full_file_name, -6, -1) )
-              {     
-                char * list[] = { "" };
+          struct dirent * entry;
+          while (NULL != ( entry = readdir( adir ) ) )
+            {
+              String full_file_name = *current_dir + entry->d_name;
+              struct stat filestat;
+              if( 0 == stat( full_file_name.chars(), &filestat ) && full_file_name.get_length() > 6 )
+                // Check if file is a regular file that is readable and ends with .arena
+                if( S_ISREG( filestat.st_mode) &&
+                    (filestat.st_mode & S_IROTH)  &&
+                    String(".arena") == get_segment(full_file_name, -6, -1) )
+                  {     
+                    char * list[] = { "" };
           
-                int row = gtk_clist_append(GTK_CLIST(arenas_in_directory_clist), list);
-                gtk_clist_set_foreground(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_foreground_colour_p());
-                gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_background_colour_p());
+                    int row = gtk_clist_append(GTK_CLIST(arenas_in_directory_clist), list);
+                    gtk_clist_set_foreground(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_foreground_colour_p());
+                    gtk_clist_set_background(GTK_CLIST(arenas_in_directory_clist), row, the_arena.get_background_colour_p());
           
-                gtk_clist_set_text(GTK_CLIST(arenas_in_directory_clist), row, 0, entry->d_name);
-                start_tournament_glist_info_t * info;
-                info = new start_tournament_glist_info_t(row,false,entry->d_name);
-                g_list_append(selected_items_in_arena_directory, info);
-              }
+                    gtk_clist_set_text(GTK_CLIST(arenas_in_directory_clist), row, 0, entry->d_name);
+                    start_tournament_glist_info_t * info;
+                    info = new start_tournament_glist_info_t(row,false,entry->d_name,current_dir->chars());
+                    g_list_append(selected_items_in_arena_directory, info);
+                  }
+            }
+          closedir( adir );
         }
-      closedir( adir );
     }
 
   // Choose Number of games per sequence, Number of robots per sequence and Number of sequences

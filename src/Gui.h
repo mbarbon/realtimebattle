@@ -45,11 +45,12 @@ enum start_tournament_button_t
 
 struct start_tournament_glist_info_t
 {
-  start_tournament_glist_info_t(const int r, const bool s, const class String& fn) :
-    row(r), selected(s), filename(fn) {}
+  start_tournament_glist_info_t(const int r, const bool s, const class String& fn, const class String& dir) :
+    row(r), selected(s), filename(fn), directory(dir) {}
   int row;
   bool selected;
   String filename;
+  String directory;
 };
 
 void question_yes_callback(GtkWidget * widget, QuestionFunction function_name);
@@ -84,7 +85,7 @@ class Gui
 {
 public:
   Gui();
-  ~Gui() {}
+  ~Gui();
 
   void setup_control_window();
   void setup_score_window();
@@ -144,11 +145,14 @@ public:
   bool get_statistics_up() { return statistics_up; }
   bool get_start_tournament_up() { return start_tournament_up; }
   GtkWidget * get_score_clist() { return score_clist; }
-  String get_robotdir() { return robotdir; }
-  String get_arenadir() { return arenadir; }
+  GList * get_robotdirs() { return robotdirs; }
+  GList * get_arenadirs() { return arenadirs; }
   double get_zoom() { return zoom; }
 
 private:
+  void read_dirs_from_system();
+  void split_semicolonseparated_dirs(String& dirs, GList * gl);
+
   bool statistics_up;
   bool start_tournament_up;
 
@@ -193,8 +197,8 @@ private:
   GList * selected_items_in_arena_tournament;
   GList * selected_items_in_arena_directory;
 
-  String robotdir;
-  String arenadir;
+  GList * robotdirs;
+  GList * arenadirs;
 
   int zoomfactor;
   double zoom;
