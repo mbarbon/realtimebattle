@@ -933,7 +933,7 @@ ArenaReplay::make_statistics_from_file()
 void
 ArenaReplay::get_time_positions_in_game()
 {  
-  String letter_list = "TGHSMCD";
+  String letter_list = "TGHSMCDR";
   char letter;
   char buffer[400];
   int time_pos_index = 0;
@@ -1003,6 +1003,19 @@ ArenaReplay::get_time_positions_in_game()
           }
           break;
 
+        case 'R':
+          {
+            int robot_id;
+            double x, y, temp;
+            log_file >> robot_id >> x >> y >> temp >> temp >> temp >> temp;
+
+            if( NULL == ( find_object_in_log( ROBOT, robot_id ) ) )
+              object_positions_in_log.insert_last
+                ( new object_pos_info_t( ROBOT, robot_id, Vector2D( x,y ),
+                                         0, the_opts.get_d( OPTION_TIMEOUT ) ) );
+          }
+          break;
+
         case 'D':
           {
             char obj = '?';
@@ -1023,6 +1036,10 @@ ArenaReplay::get_time_positions_in_game()
                 object = COOKIE;
                 break;
 
+              case 'R':
+                object = ROBOT;
+                break;
+
               default:
                 break;
               }
@@ -1030,7 +1047,7 @@ ArenaReplay::get_time_positions_in_game()
             if( object != NOOBJECT )
               {
                 object_pos_info_t* obj_info;
-                if( NULL != ( obj_info = find_object( object, object_id ) ) )
+                if( NULL != ( obj_info = find_object_in_log( object, object_id ) ) )
                   {
                     obj_info->end_time = cur_time;
                   }
@@ -1090,8 +1107,9 @@ ArenaReplay::get_length_of_current_game()
   return the_opts.get_d( OPTION_TIMEOUT ) + 1.0;
 }
 
+// Returns NULL if the specified object is not found.
 ArenaReplay::object_pos_info_t*
-ArenaReplay::find_object( object_type obj, int id )
+ArenaReplay::find_object_in_log( object_type obj, int id )
 {
   ListIterator<object_pos_info_t> li;
   for( object_positions_in_log.first(li); li.ok(); li++ )
