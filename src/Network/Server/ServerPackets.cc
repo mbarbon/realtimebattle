@@ -53,16 +53,20 @@ int
 InitializationPacket::handle_packet(void* p_void)
 {
   NetConnection* nc = (NetConnection*) p_void;
+  //cout<<"In InitializationPacket : "<<data<<endl;
   if( data != "" )  //Have to find a way not to do that
     {
       vector<string> wordlist;
+      //cout<<data<<endl;
       wordlist = split_string( data, wordlist ); //This function is buggy
-      
+
       if(wordlist.size() == 3)
 	{
 	  if(wordlist[0] == "RTBNetV1")
 	    {
 	      nc->name = wordlist[2];
+	      //cout<<"--> " <<wordlist[1]<<endl;
+
 	      // This is the good protocol
 	      if( wordlist[1] == "Root" )
 		{
@@ -165,15 +169,10 @@ ServerMessagePacket::make_netstring() const
   datastring += "[" + exp + "]";
   datastring += message;
 
-  /*
-    add_uint8_to_netstring( protocol, t_str );
-    add_string_to_netstring( name, t_str );
-  */
-
   string n_str;
-  // add_uint8_to_netstring( PACKET_INIT, n_str );
+
   n_str = "@m";
-  add_uint16_to_netstring( datastring.length() + 3, n_str );
+
   n_str += datastring;
   
   return n_str; 
@@ -190,13 +189,6 @@ SubmitPacket::SubmitPacket( int T , const vector<string>& FN)
   type = T;
   file_name = FN;
 }
-
-SubmitPacket::SubmitPacket( int T , const vector<string>& FN)
-{
-  type = T;
-  file_name = FN;
-}
-
 
 SubmitPacket::SubmitPacket( int T, string& s1 )
 {
@@ -247,7 +239,7 @@ SubmitPacket::make_netstring() const
   string datastring;
   
 
-  for(int i = 0; i < file_name.size(); i++)
+  for(unsigned int i = 0; i < file_name.size(); i++)
     {
       datastring += "<" + file_name[i]  + ">";
     }
@@ -269,7 +261,7 @@ SubmitPacket::make_netstring() const
   else if (type == Del_Arena)
     n_str += "A";
 
-  add_uint16_to_netstring( datastring.length() + 3, n_str );
+  //add_uint16_to_netstring( datastring.length() + 3, n_str );
   n_str += datastring;
   
   return n_str; 
@@ -317,7 +309,7 @@ MetaServerInitializationPacket::make_netstring() const
   string n_str;
   // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "MI";
-  add_uint16_to_netstring( datastring.length(), n_str );
+  //add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;
@@ -345,7 +337,7 @@ MetaServerDataPacket::make_netstring() const
   string n_str;
   // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "MD";
-  add_uint16_to_netstring( datastring.length(), n_str );
+  //add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;
@@ -364,7 +356,7 @@ MetaServerAskInfoPacket::make_netstring() const
   string n_str;
   // add_uint8_to_netstring( PACKET_INIT, n_str );
   n_str = "MA";
-  add_uint16_to_netstring( datastring.length(), n_str );
+  //add_uint16_to_netstring( datastring.length(), n_str );
   n_str += datastring;
   
   return n_str;   

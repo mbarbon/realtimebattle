@@ -108,80 +108,89 @@ SocketServer::check_socket()
       }
 
   for( li = connected_clients.begin(); li != connected_clients.end(); li++ )
-    if( (**li).connected && FD_ISSET( (**li).the_socket, &readfs ) )
-      {
-	if( (**li).read_data() < 0 )
-	  {
-	    cout<<"I have to close it...\n";
-	    (**li).close_socket();
-	  }
-	else
-	  {
-	    Packet *P;
-	    while( P = make_packet((**li).read_buffer) )
-	      {
-		(**li).read_buffer = 
-		  P->get_string_from_netstring( (**li).read_buffer );
-		if(P->packet_type() == PACKET_INIT)  //Maybe I should put this code in InitializationPacket::handle()
-		  {
-		    //I must initialize this packet...
-		    ServerNetConnection* temp = NULL;
-		    client_t client = (client_t)P->handle_packet( *li );
-		    if( client == (client_t)ROOT_CLIENT_CONNECTION)
-		      {
-			if( !root_client )
-			  {
-			    temp = new Chat_Connection((**li), true);
-			    root_client = temp;
-			    chat_nb ++;
-			  }
-			else
-			  { //Close it if he try to become a root
+    {
+      if( (**li).connected && FD_ISSET( (**li).the_socket, &readfs ) )
+	{
+	  if( (**li).read_data() < 0 )
+	    {
+	      cout<<"I have to close it...\n";
+	      (**li).close_socket();
+	    }
+	  else
+	    {
+	      Packet *P;
+	      while( ! ((**li).read_buffers).empty() )
+		//while( P = make_packet((**li).read_buffer) )
+		{
+		  //Extract the string for the queue and make a packet with it
+		  string data = (**li).read_buffers.front();
+		  
+		  P = make_packet( data );
+		  (**li).read_buffers.pop();
+
+		  if( !P ) continue; //Jump to the next Packet
+
+		  P->get_string_from_netstring( data );
+
+		  if(P->packet_type() == PACKET_INIT)  //Maybe I should put this code in InitializationPacket::handle()
+		    {
+		      //I must initialize this packet...
+		      ServerNetConnection* temp = NULL;
+		      client_t client = (client_t)P->handle_packet( *li );
+		      if( client == (client_t)ROOT_CLIENT_CONNECTION)
+			{
+			  if( !root_client )
+			    {
+			      temp = new Chat_Connection((**li), true);
+			      root_client = temp;
+			      chat_nb ++;
+			    }
+			  else //Close it as he tried to become a root
 			    (**li).close_socket();
-			  }
-		      }
-		    else if( client == (client_t)CHAT_CLIENT_CONNECTION )
-		      {
-			temp = new Chat_Connection( **li );
-			chat_nb++;
-		      }
-		    else if( client == (client_t)ROBOT_CLIENT_CONNECTION )
-		      {
-			temp = new Robot_Connection( **li );
-			robot_nb++;
-		      }
-		    else
-		      cout<<"Connection not initialized\n";
-		    if(temp)
-		      {
-			(**li).connected = false;
-			cout<<"His name is "<<temp->name<<endl;
-			connected_clients.push_back( temp );
-			if( MetaServer )
-			  {
-			    MetaServer->send_data( MetaServerDataPacket( name, version, port_number, 
-									 chat_nb, 
-									 language ).make_netstring() );
-			  }
-		      }
-		  }
-		else if(P->packet_type() == PACKET_CHAT_MESSAGE)
-		  {
-		    ChatMessagePacket* CM = (ChatMessagePacket*) P;
-		    ServerMessagePacket * Temp;
+			}
+		      else if( client == (client_t)CHAT_CLIENT_CONNECTION )
+			{
+			  temp = new Chat_Connection( **li );
+			  chat_nb++;
+			}
+		      else if( client == (client_t)ROBOT_CLIENT_CONNECTION )
+			{
+			  temp = new Robot_Connection( **li );
+			  robot_nb++;
+			}
+		      else
+			cout<<"Connection not initialized\n";
+
+		      if(temp)
+			{
+			  (**li).connected = false;
+			  cout<<"His name is "<<temp->name<<endl;
+			  connected_clients.push_back( temp );
+			  if( MetaServer )
+			    {
+			      MetaServer->send_data( MetaServerDataPacket( name, version, port_number, 
+									   chat_nb, 
+									   language ).make_netstring() );
+			    }
+			}
+		    }
+		  else if(P->packet_type() == PACKET_CHAT_MESSAGE)
+		    {
+		      ChatMessagePacket* CM = (ChatMessagePacket*) P;
+		      ServerMessagePacket * Temp;
+		      P->handle_packet( *li );
+		      send_packet_by_name( CM->dest, Temp = new ServerMessagePacket((*li)->name, CM->message) );
+		      delete Temp;
+		    }
+		  else //In any other case, handle it...
 		    P->handle_packet( *li );
-		    send_packet_by_name( CM->dest, Temp = new ServerMessagePacket((*li)->name, CM->message) );
-		    delete Temp;
-		  }
-		else //In any other case, handle it...
-		  P->handle_packet( *li );
-
-		//Delete this old packet...
-		delete P;
-	      }
-	  }
-      }
-
+		  
+		  //Delete this old packet...
+		  delete P;
+		}
+	    }
+	}
+    }
   //go_through_read_buffers();
   remove_unconnected_sockets();
 }
@@ -301,7 +310,7 @@ SocketServer::go_through_read_buffers()
 {
   list<ServerNetConnection*>::iterator li;
   for( li = connected_clients.begin(); li != connected_clients.end(); li++ )
-    cout << (**li).read_buffer << endl; // Very temporary
+    ;//cout << (**li).read_buffer << endl; // Very temporary
 }
 
 

@@ -38,17 +38,20 @@ private:
   void send_packet_by_name(string, ServerMessagePacket* );
   void send_packet_by_type(client_t, Packet* );
 
-  int robot_nb;  //Number of robots and chats
-  int chat_nb;
-  list<ServerNetConnection*> connected_clients;
-  string name;
-  string language;
-  string version;
-  int port_number;
   int next_id;
 
   ServerNetConnection* root_client;
   NetConnection* MetaServer;
+
+  string name;
+  string language;
+  string version;
+
+  int robot_nb;  //Number of robots and chats
+  int chat_nb;
+  list<ServerNetConnection*> connected_clients;
+
+  int port_number;
   int server_socket;
 };
 
