@@ -1,8 +1,7 @@
-docsdir = $(DOCS_DIR)
-
+docsdir = $(DOCS_DIR)/Documentation
 docs_DATA = \
-        RealTimeBattle-1.html RealTimeBattle-2.html RealTimeBattle-3.html \
-        RealTimeBattle-4.html RealTimeBattle-5.html RealTimeBattle-6.html \
+   RealTimeBattle-1.html RealTimeBattle-2.html RealTimeBattle-3.html \
+   RealTimeBattle-4.html RealTimeBattle-5.html RealTimeBattle-6.html \
 	RealTimeBattle.html next.gif prev.gif toc.gif RealTimeBattle.dvi
 
 
@@ -10,6 +9,8 @@ rtbinfodir = $(infodir)
 rtbinfo_DATA = RealTimeBattle.info
 
 EXTRA_DIST = $(docs_DATA)  $(rtbinfo_DATA)
+
+
 
 install-data-local:
 	gzip $(rtbinfodir)/RealTimeBattle.info; \
