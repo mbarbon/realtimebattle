@@ -35,9 +35,12 @@ public:
 
   virtual void move(const double timestep) = 0;
 
+  double get_mass() { return mass; }
+
 protected:
   Vector2D velocity;
   
+  double mass;
 };
 
 #endif __MOVING_OBJECT__
