@@ -364,7 +364,7 @@ Arena::timeout_function()
     case GAME_IN_PROGRESS:
       {
         update();
-        if( robots_left <= 1 ) 
+        if( robots_left <= 1 || total_time > the_opts.get_timeout() ) 
           {
             for(GList* gl=g_list_next(all_robots_in_sequence); gl != NULL; gl=g_list_next(gl))
               if( ((Robot*)gl->data)->get_position_this_game() == 0 )
@@ -374,6 +374,7 @@ Arena::timeout_function()
                 }
             end_game();
           }
+
       //   TODO:    if( total_time > next_check_time ) check_robots();
 
         // Place mines and cookies

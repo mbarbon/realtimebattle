@@ -56,6 +56,7 @@ Options::Options()
   mine_colour = 0xff0000;
 
   max_timestep = 0.5;
+  timeout = 120.0;        // i.e. 2 minutes
 }
 
 

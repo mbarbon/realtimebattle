@@ -59,6 +59,7 @@ private:
   long mine_colour;
   
   double max_timestep;
+  double timeout;
 
 public:
   double get_grav_const() { return grav_const; }
@@ -109,6 +110,7 @@ public:
   long get_mine_colour() { return mine_colour; }
 
   double get_max_timestep() { return max_timestep; }
+  double get_timeout() { return timeout; }
 };
 #endif __OPTIONS__
 
