@@ -35,10 +35,14 @@ PAPER_SIZE = a4
 
 all: docs
 
-docs: RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt \
+docs: RealTimeBattle-1.html RealTimeBattle-2.html RealTimeBattle-3.html \
+		RealTimeBattle-4.html RealTimeBattle-5.html RealTimeBattle-6.html \
+		RealTimeBattle.html RealTimeBattle.dvi RealTimeBattle.info RealTimeBattle.txt \
 		note-files note-files-html
 
-html_docs: RealTimeBattle.html note-files-html
+html_docs: RealTimeBattle-1.html RealTimeBattle-2.html RealTimeBattle-3.html \
+			  RealTimeBattle-4.html RealTimeBattle-5.html RealTimeBattle-6.html \
+		     RealTimeBattle.html note-files-html
 
 note-files: $(NOTE_FILES)
 
