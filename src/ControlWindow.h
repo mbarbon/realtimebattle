@@ -55,7 +55,8 @@ public:
                                      class ControlWindow* controlwindow_p );
   static void end_clicked          ( GtkWidget* widget, gpointer data ); 
   static void end_tournament       ( bool really );
-  static void options_clicked      ( GtkWidget* widget, gpointer data );
+  static void options_clicked      ( GtkWidget* widget,
+                                     class ControlWindow* controlwindow_p );
   static void statistics_clicked   ( GtkWidget* widget, gpointer data );
   static void new_tournament       ( GtkWidget* widget,
                                      class ControlWindow* controlwindow_p );

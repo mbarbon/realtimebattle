@@ -73,8 +73,7 @@ ControlWindow::ControlWindow( const int default_width,
     { " End ",
       (GtkSignalFunc) ControlWindow::end_clicked       , TRUE  },
     { " Options ",
-      (GtkSignalFunc) options_window_requested         , TRUE  },
-    //      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
+      (GtkSignalFunc) ControlWindow::options_clicked   , TRUE  },
     { " Statistics ",
       (GtkSignalFunc) statistics_button_callback       , TRUE  },
     //      (GtkSignalFunc) ControlWindow::statistics_clicked, TRUE  },
@@ -317,4 +316,11 @@ ControlWindow::end_tournament( bool really )
 {
   if(really)
     the_arena.interrupt_tournament();
+}
+
+void
+ControlWindow::options_clicked( GtkWidget* widget,
+                                class ControlWindow* controlwindow_p )
+{
+  the_opts.open_optionswindow();
 }

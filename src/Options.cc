@@ -25,290 +25,287 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <stdlib.h>
 
-//#include "Gui.h"
-#include "Arena_RealTime.h"
 #include "Options.h"
+#include "Arena_RealTime.h"
+#include "Arena_Controller.h"
+#include "OptionsWindow.h"
 #include "Messagetypes.h"
 #include "Various.h"
-#include "Arena_Controller.h"
 
 //extern class Arena_RealTime the_arena;
-#ifndef NO_GRAPHICS
-extern class Gui the_gui;
-#endif
 
 Options::Options()
 {
-  filesel_widget = NULL;
-
   all_double_options[OPTION_GRAV_CONST] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 9.82, 0.2, 20.0, 12,
-                          false, true, "Gravitational Constant", NULL);
+                          false, true, "Gravitational Constant" );
 
   all_double_options[OPTION_AIR_RESISTANCE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.005, 0.0, 1.0, 12,
-                          false, true, "Air resistance", NULL);
+                          false, true, "Air resistance" );
 
   all_double_options[OPTION_ROLL_FRICTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.002, 0.0, 1.0, 12,
-                          false, true, "Roll friction", NULL);
+                          false, true, "Roll friction" );
 
   all_double_options[OPTION_SLIDE_FRICTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ENVIRONMENT, 0.1, 0.0, 5.0, 12,
-                          false, true, "Slide/brake friction", NULL);
+                          false, true, "Slide/brake friction" );
 
   all_double_options[OPTION_ROBOT_MAX_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0, 0.1, 10.0, 12,
-                          true, true, "Robot max acceleration", NULL);
+                          true, true, "Robot max acceleration" );
 
   all_double_options[OPTION_ROBOT_MIN_ACCELERATION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, -0.5, -10.0, 0.0, 12,
-                          true, true, "Robot min acceleration", NULL);
+                          true, true, "Robot min acceleration" );
     
   all_double_options[OPTION_ROBOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.1, 10.0, 12, 
-                          false, true, "Robot radius", NULL);
+                          false, true, "Robot radius" );
 
   all_double_options[OPTION_ROBOT_MASS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 1.0, 0.01, 100.0, 12,
-                          false, true, "Robot mass", NULL);
+                          false, true, "Robot mass" );
 
   all_double_options[OPTION_ROBOT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12,
-                          false, true, "Robot bounce coefficient", NULL);
+                          false, true, "Robot bounce coefficient" );
 
   all_double_options[OPTION_ROBOT_HARDNESS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12,
-                          false, true, "Robot hardness coefficient", NULL);
+                          false, true, "Robot hardness coefficient" );
 
   all_double_options[OPTION_ROBOT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.5, 0.0, 1.0, 12,
-                          false, true, "Robot protection coefficient", NULL);
+                          false, true, "Robot protection coefficient" );
 
   all_double_options[OPTION_ROBOT_FRONTSIZE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, M_PI/3.0, 0.0, M_PI*2.0, 12,
-                          false, true, "Robot frontsize [radians]", NULL);
+                          false, true, "Robot frontsize [radians]" );
 
   all_double_options[OPTION_ROBOT_FRONT_BOUNCE_COEFF] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.7, 0.0, 1.0, 12,
-                          false, true, "Robot front bounce coefficient", NULL);
+                          false, true, "Robot front bounce coefficient" );
 
   all_double_options[OPTION_ROBOT_FRONT_HARDNESS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.9, 0.0, 1.0, 12,
-                          false, true, "Robot front hardness coefficient", NULL);
+                          false, true, "Robot front hardness coefficient" );
 
   all_double_options[OPTION_ROBOT_FRONT_PROTECTION] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 0.9, 0.0, 1.0, 12,
-                          false, true, "Robot front protection coefficient", NULL);
+                          false, true, "Robot front protection coefficient" );
 
   all_double_options[OPTION_ROBOT_START_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 100.0, 0.01, 10000.0, 12,
-                          true, true, "Robot start energy", NULL);
+                          true, true, "Robot start energy" );
 
   all_double_options[OPTION_ROBOT_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 120.0, 0.01, 10000.0, 12,
-                          true, true, "Robot max energy", NULL);
+                          true, true, "Robot max energy" );
 
   all_double_options[OPTION_ROBOT_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 8.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot max rotate speed [rad/s]", NULL);
+                          true, true, "Robot max rotate speed [rad/s]" );
 
   all_double_options[OPTION_ROBOT_CANNON_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 4.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot cannon max rotate speed [rad/s]", NULL);
+                          true, true, "Robot cannon max rotate speed [rad/s]" );
 
   all_double_options[OPTION_ROBOT_RADAR_MAX_ROTATE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_ROBOT, 2.0*M_PI / 3.0, 2.0*M_PI / 50.0,
                           2.0*M_PI * 5.0, 12,
-                          true, true, "Robot radar max rotate speed [rad/s]", NULL);
+                          true, true, "Robot radar max rotate speed [rad/s]" );
 
   all_double_options[OPTION_CHECK_INTERVAL] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 1000000, 12,
-                          false, false, "Process check interval", NULL);
+                          false, false, "Process check interval" );
     
   all_long_options[OPTION_ROBOT_ENERGY_LEVELS] = 
     option_info_t<long>(ENTRY_INT, PAGE_ROBOT, 10, 1, 100, 4,
-                        true, true, "Robot energy levels", NULL);
+                        true, true, "Robot energy levels" );
 
   all_double_options[OPTION_SHOT_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.1, 0.01, 1.0, 12,
-                          false, true, "Shot radius", NULL);
+                          false, true, "Shot radius" );
 
   all_double_options[OPTION_SHOT_SPEED] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.1, 100.0, 12,
-                          true, true, "Shot speed", NULL);
+                          true, true, "Shot speed" );
 
   all_double_options[OPTION_SHOOTING_PENALTY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.075, 0.0, 1.0, 12,
-                          false, true, "Shooting penalty (times shot energy)", NULL);
+                          false, true, "Shooting penalty (times shot energy)" );
 
   all_double_options[OPTION_SHOT_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 0.5, 0.0, 100.0, 12,
-                          true, true, "Shot min energy", NULL);
+                          true, true, "Shot min energy" );
 
   all_double_options[OPTION_SHOT_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 30.0, 0.0, 100000000.0, 12,
-                          true, true, "Shot max energy", NULL);
+                          true, true, "Shot max energy" );
 
   all_double_options[OPTION_SHOT_ENERGY_INCREASE_SPEED] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_SHOT, 10.0, 0.0, 100000000.0, 12,
-                          true, true, "Shot energy increase speed [energy/s]", NULL);
+                          true, true, "Shot energy increase speed [energy/s]" );
 
   all_long_options[OPTION_BACKGROUND_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0xfaf0e6, 0x000000, 0xffffff, 6,
-                        false, false, "Background colour", NULL);
+                        false, false, "Background colour" );
 
   all_long_options[OPTION_FOREGROUND_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_MISC, 0x000000, 0x000000, 0xffffff, 6,
-                        false, false, "Foreground colour", NULL);
+                        false, false, "Foreground colour" );
 
   all_double_options[OPTION_COOKIE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
-                          false, true, "Cookie max energy", NULL);
+                          false, true, "Cookie max energy" );
 
   all_double_options[OPTION_COOKIE_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 10.0, 0.0, 100000000.0, 12,
-                          false, true, "Cookie min energy", NULL);
+                          false, true, "Cookie min energy" );
 
   all_double_options[OPTION_COOKIE_FREQUENCY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.03, 0.0, 100000000.0, 12,
-                          false, true, "Cookie frequency [cookies per second]", NULL);
+                          false, true, "Cookie frequency [cookies per second]" );
 
   all_double_options[OPTION_COOKIE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12,
-                          false, true, "Cookie radius", NULL);
+                          false, true, "Cookie radius" );
 
   all_long_options[OPTION_COOKIE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_EXTRAS, 0x35d715, 0x000000, 0xffffff, 6,
-                        false, false, "Cookie colour", NULL);
+                        false, false, "Cookie colour" );
 
   all_double_options[OPTION_MINE_MAX_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 25.0, 0.0, 100000000.0, 12,
-                          false, true, "Mine max energy", NULL);
+                          false, true, "Mine max energy" );
 
   all_double_options[OPTION_MINE_MIN_ENERGY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 15.0, 0.0, 100000000.0, 12,
-                          false, true, "Mine min energy", NULL);
+                          false, true, "Mine min energy" );
 
   all_double_options[OPTION_MINE_FREQUENCY] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.06, 0.0, 100000000.0, 12,
-                          false, true, "Mine frequency [mines per second]", NULL);
+                          false, true, "Mine frequency [mines per second]" );
 
   all_double_options[OPTION_MINE_RADIUS] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_EXTRAS, 0.3, 0.01, 1.0, 12,
-                          false, true, "Mine radius", NULL);
+                          false, true, "Mine radius" );
 
   all_long_options[OPTION_MINE_COLOUR] = 
     option_info_t<long>(ENTRY_HEX, PAGE_EXTRAS, 0xff0000, 0x000000, 0xffffff, 6,
-                        false, false, "Mine colour", NULL);
+                        false, false, "Mine colour" );
 
   all_double_options[OPTION_ARENA_SCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_MISC, 1.0, 0.001, 1000, 12,
-                          false, true, "Arena scale", NULL);
+                          false, true, "Arena scale" );
 
   all_double_options[OPTION_TIMEOUT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 120.0, 1.0, 100000000.0, 12,
-                          false, true, "Timeout [s]", NULL);
+                          false, true, "Timeout [s]" );
 
   all_double_options[OPTION_MAX_TIMESTEP] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.1, 0.001, 1.0, 12,
-                          false, false, "Max timestep", NULL);
+                          false, false, "Max timestep" );
 
   all_double_options[OPTION_TIMESCALE] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 1.0, 0.01, 100.0, 12,
-                          false, false, "Timescale", NULL);
+                          false, false, "Timescale" );
 
   all_double_options[OPTION_CPU_START_LIMIT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 5.0, 0.01, 100000000.0, 12,
-                          false, false, "Start CPU time [s]", NULL);
+                          false, false, "Start CPU time [s]" );
 
   all_double_options[OPTION_CPU_EXTRA] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 2.5, 0.01, 100000000.0, 12,
-                          false, false, "Extra CPU time [s]", NULL);
+                          false, false, "Extra CPU time [s]" );
 
   all_double_options[OPTION_CPU_PERIOD] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 60.0, 1.0, 100000000.0, 12,
-                          false, false, "Extra CPU period [s]", NULL);
+                          false, false, "Extra CPU period [s]" );
 
   all_double_options[OPTION_CPU_WARNING_PERCENT] = 
     option_info_t<double>(ENTRY_DOUBLE, PAGE_TIME, 0.9, 0.1, 1.0, 12,
-                          false, false, "CPU time warning percentage", NULL);
+                          false, false, "CPU time warning percentage" );
 
   all_string_options[OPTION_ROBOT_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
-                          false, false, "Robot search path", NULL);
+                          false, false, "Robot search path" );
 
   all_string_options[OPTION_ARENA_SEARCH_PATH] =
     option_info_t<String>(ENTRY_CHAR, PAGE_MISC, "", "", "", 1000,
-                          false, false, "Arena search path", NULL);
+                          false, false, "Arena search path" );
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 185, 10000, 6,
-                        false, false, "Initial Arena window width", NULL);
+                        false, false, "Initial Arena window width" );
 
   all_long_options[OPTION_ARENA_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 350, 120, 10000, 6,
-                        false, false, "Initial Arena window height", NULL);
+                        false, false, "Initial Arena window height" );
 
   all_long_options[OPTION_ARENA_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Arena window x position", NULL);
+                        false, false, "Initial Arena window x position" );
 
   all_long_options[OPTION_ARENA_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Arena window y position", NULL);
+                        false, false, "Initial Arena window y position" );
 
   all_long_options[OPTION_CONTROL_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Control window x position", NULL);
+                        false, false, "Initial Control window x position" );
 
   all_long_options[OPTION_CONTROL_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Control window y position", NULL);
+                        false, false, "Initial Control window y position" );
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 300, 10000, 6,
-                        false, false, "Initial Message window width", NULL);
+                        false, false, "Initial Message window width" );
 
   all_long_options[OPTION_MESSAGE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 210, 110, 10000, 6,
-                        false, false, "Initial Message window height", NULL);
+                        false, false, "Initial Message window height" );
 
   all_long_options[OPTION_MESSAGE_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Message window x position", NULL);
+                        false, false, "Initial Message window x position" );
 
   all_long_options[OPTION_MESSAGE_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Message window y position", NULL);
+                        false, false, "Initial Message window y position" );
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 394, 175, 10000, 6,
-                        false, false, "Initial Score window width", NULL);
+                        false, false, "Initial Score window width" );
 
   all_long_options[OPTION_SCORE_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 374, 80, 10000, 6,
-                        false, false, "Initial Score window height", NULL);
+                        false, false, "Initial Score window height" );
 
   all_long_options[OPTION_SCORE_WINDOW_POS_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Score window x position", NULL);
+                        false, false, "Initial Score window x position" );
 
   all_long_options[OPTION_SCORE_WINDOW_POS_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 0, 0, 10000, 6,
-                        false, false, "Initial Score window y position", NULL);
+                        false, false, "Initial Score window y position" );
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_X] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 499, 320, 10000, 6,
-                        false, false, "Initial Statistics window width", NULL);
+                        false, false, "Initial Statistics window width" );
 
   all_long_options[OPTION_STATISTICS_WINDOW_SIZE_Y] = 
     option_info_t<long>(ENTRY_INT, PAGE_SIZE_OF_WINDOWS, 428, 130, 10000, 6,
-                        false, false, "Initial Statistics window height", NULL);
+                        false, false, "Initial Statistics window height" );
 
-  options_window_up = false;
+#ifndef NO_GRAPHICS
+  optionswindow_p = NULL;
+#endif
 }
 
 void
@@ -362,57 +359,6 @@ Options::log_all_options()
                                   (all_string_options[i].label + ":").chars(),
                                   all_string_options[i].value.chars() );
 }
-
-#ifndef NO_GRAPHICS
-
-void
-Options::set_all_options_from_gui()
-{
-  if((the_arena.get_game_mode() == Arena_Base::COMPETITION_MODE &&
-      (the_arena.get_state() == NO_STATE ||
-       the_arena.get_state() == NOT_STARTED ||
-       the_arena.get_state() == FINISHED)) ||
-     (the_arena.get_game_mode() != Arena_Base::COMPETITION_MODE))
-    {
-      for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-        {
-          double entry_value = str2dbl(gtk_entry_get_text(GTK_ENTRY(all_double_options[i].entry)));
-          if( entry_value > all_double_options[i].max_value )
-            entry_value = all_double_options[i].max_value;
-          if( entry_value < all_double_options[i].min_value )
-            entry_value = all_double_options[i].min_value;
-
-          all_double_options[i].value = entry_value;
-        }
-
-      for(int i=0;i<LAST_LONG_OPTION;i++)
-        {
-          long entry_value = 0;
-          if( all_long_options[i].datatype == ENTRY_INT )
-            entry_value = str2long(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
-          if( all_long_options[i].datatype == ENTRY_HEX )
-            entry_value = str2hex(gtk_entry_get_text(GTK_ENTRY(all_long_options[i].entry)));
-
-          if( entry_value > all_long_options[i].max_value )
-            entry_value = all_long_options[i].max_value;
-          if( entry_value < all_long_options[i].min_value )
-            entry_value = all_long_options[i].min_value;
-
-          all_long_options[i].value = entry_value;
-        }
-
-      for(int i=0;i<LAST_STRING_OPTION;i++)
-        {
-          String entry_value(gtk_entry_get_text(GTK_ENTRY(all_string_options[i].entry)));
-
-          all_string_options[i].value = entry_value;
-        }
-
-      the_arena.set_colours();
-    }
-}
-
-#endif NO_GRAPHICS
 
 void
 Options::get_options_from_rtbrc()
@@ -525,8 +471,8 @@ Options::save_all_options_to_file(String filename, const bool as_default)
     }
 
 #ifndef NO_GRAPHICS
-  if( !no_graphics )
-    set_all_options_from_gui();
+  if( !no_graphics && is_optionswindow_up() )
+    optionswindow_p->set_all_options();
 #endif
 
   for(int i=0;i<LAST_DOUBLE_OPTION;i++)
@@ -546,435 +492,36 @@ Options::save_all_options_to_file(String filename, const bool as_default)
 
 #ifndef NO_GRAPHICS
 
-void
-Options::revert_all_options_to_default()
+bool
+Options::is_optionswindow_up()
 {
-  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-    all_double_options[i].value = all_double_options[i].default_value;
-  for(int i=0;i<LAST_LONG_OPTION;i++)
-    all_long_options[i].value = all_long_options[i].default_value;
-  for(int i=0;i<LAST_STRING_OPTION;i++)
-    all_string_options[i].value = all_string_options[i].default_value;
-  update_all_gtk_entries();
+  if( NULL == optionswindow_p )
+    return false;
+
+  return true;
 }
 
 void
-Options::update_all_gtk_entries()
-{
-  for(int i=0;i<LAST_DOUBLE_OPTION;i++)
-    gtk_entry_set_text( GTK_ENTRY( all_double_options[i].entry ), String(all_double_options[i].value).chars() );
-  for(int i=0;i<LAST_LONG_OPTION;i++)
-    {
-      if( all_long_options[i].datatype == ENTRY_INT )
-        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), String(all_long_options[i].value).chars() );
-      else if (all_long_options[i].datatype == ENTRY_HEX)
-        gtk_entry_set_text( GTK_ENTRY( all_long_options[i].entry ), hex2str(all_long_options[i].value).chars() );
-    }
-  for(int i=0;i<LAST_STRING_OPTION;i++)
-    gtk_entry_set_text( GTK_ENTRY( all_string_options[i].entry ), String(all_string_options[i].value).chars() );
-}
-
-void
-Options::setup_options_window()
-{
-  options_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (options_window), "RealTimeBattle Options");
-  gtk_widget_set_name (options_window, "RTB Options");
-  gtk_signal_connect (GTK_OBJECT (options_window), "delete_event",
-                      (GtkSignalFunc)gtk_widget_hide, GTK_OBJECT(options_window));
-  gtk_container_border_width (GTK_CONTAINER (options_window), 12);
-
-  GtkWidget * vbox = gtk_vbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (options_window), vbox);
-  gtk_widget_show (vbox);
-
-  GtkWidget * notebook = gtk_notebook_new();
-  gtk_notebook_set_tab_pos( GTK_NOTEBOOK( notebook ), GTK_POS_LEFT );
-  gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
-  gtk_widget_show( notebook );
-
-  char * page_titles[LAST_PAGE] = { "Environment", "Robot", "Shot", "Extras", "Time", "Window sizes", "Misc" };
-  for(int i=0; i < LAST_PAGE; i++)
-    {
-      int number_of_options = 0;
-      for( int opt=0;opt<LAST_DOUBLE_OPTION;opt++ )
-        if( all_double_options[opt].page == i )
-          number_of_options++;
-      for( int opt=0;opt<LAST_LONG_OPTION;opt++ )
-        if( all_long_options[opt].page == i )
-          number_of_options++;
-      for( int opt=0;opt<LAST_STRING_OPTION;opt++ )
-        if( all_string_options[opt].page == i )
-          number_of_options++;
-
-      GtkWidget * page_vbox = gtk_vbox_new (FALSE, 5);
-      gtk_container_border_width( GTK_CONTAINER( page_vbox ), 10 );
-      gtk_widget_show (page_vbox);
-
-      GtkWidget * page_hbox = gtk_hbox_new (FALSE, 5);
-      gtk_box_pack_start (GTK_BOX (page_vbox), page_hbox, FALSE, FALSE, 0);
-      gtk_widget_show (page_hbox);
-
-      GtkWidget * description_table = gtk_table_new( number_of_options, 1, TRUE );
-      GtkWidget * entry_table = gtk_table_new( number_of_options, 1, TRUE );
-      GtkWidget * button_table = gtk_table_new( number_of_options, 3, TRUE );
-      gtk_box_pack_start (GTK_BOX (page_hbox), description_table, TRUE, TRUE, 0);
-      gtk_box_pack_start (GTK_BOX (page_hbox), entry_table, TRUE, TRUE, 0);
-      gtk_box_pack_start (GTK_BOX (page_hbox), button_table, TRUE, TRUE, 0);
-
-      int row = -1;
-
-      for( int opt=0;opt<LAST_DOUBLE_OPTION;opt++ )
-        if( all_double_options[opt].page == i )
-          {
-            row++;
-
-            GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
-            gtk_table_attach_defaults( GTK_TABLE( description_table ), internal_hbox, 0, 1, row, row + 1 );
-            gtk_widget_show (internal_hbox);
-
-            GtkWidget * label = gtk_label_new(all_double_options[opt].label.chars());
-            gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
-            gtk_widget_show(label);
-
-            all_double_options[opt].entry = gtk_entry_new_with_max_length(all_double_options[opt].max_letters_in_entry);
-
-            bool sign = false;
-            if( all_double_options[opt].min_value < 0.0 )
-              sign = true;
-
-            gtk_entry_set_text( GTK_ENTRY( all_double_options[opt].entry ), String(all_double_options[opt].value).chars() );
-
-            entry_t * info = new entry_t( ENTRY_DOUBLE, sign );
-
-            gtk_signal_connect(GTK_OBJECT(all_double_options[opt].entry), "changed",
-                               GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_double_options[opt].entry, 108 ,22);
-            gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_double_options[opt].entry, 0, 1, row, row + 1 );
-            gtk_widget_show(all_double_options[opt].entry);
-
-            GtkWidget * button = gtk_button_new_with_label ("min");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (double_options_min_callback), (gpointer) &all_double_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 0, 1, row, row + 1 );
-            gtk_widget_show (button);
-
-            button = gtk_button_new_with_label ("def");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (double_options_def_callback), (gpointer) &all_double_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 1, 2, row, row + 1 );
-            gtk_widget_show (button);
-
-            button = gtk_button_new_with_label ("max");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (double_options_max_callback), (gpointer) &all_double_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 2, 3, row, row + 1 );
-            gtk_widget_show (button);
-          }
-
-      for( int opt=0;opt<LAST_LONG_OPTION;opt++ )
-        if( all_long_options[opt].page == i )
-          {
-            row++;
-
-            GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
-            gtk_table_attach_defaults( GTK_TABLE( description_table ), internal_hbox, 0, 1, row, row + 1 );
-            gtk_widget_show (internal_hbox);
-
-            GtkWidget * label = gtk_label_new(all_long_options[opt].label.chars());
-            gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
-            gtk_widget_show(label);
-
-            all_long_options[opt].entry = gtk_entry_new_with_max_length(all_long_options[opt].max_letters_in_entry);
-
-            bool sign = false;
-            if( all_long_options[opt].min_value < 0.0 )
-              sign = true;
-
-            if( all_long_options[opt].datatype == ENTRY_INT )
-              gtk_entry_set_text( GTK_ENTRY( all_long_options[opt].entry ), String(all_long_options[opt].value).chars() );
-            else if (all_long_options[opt].datatype == ENTRY_HEX)
-              gtk_entry_set_text( GTK_ENTRY( all_long_options[opt].entry ), hex2str(all_long_options[opt].value).chars() );
-
-            entry_t * info = new entry_t( all_long_options[opt].datatype, sign );
-
-            gtk_signal_connect(GTK_OBJECT(all_long_options[opt].entry), "changed",
-                               GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_long_options[opt].entry, 108,22);
-            gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_long_options[opt].entry, 0, 1, row, row + 1 );
-            gtk_widget_show(all_long_options[opt].entry);
-
-            GtkWidget * button = gtk_button_new_with_label ("min");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (long_options_min_callback), (gpointer) &all_long_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 0, 1, row, row + 1 );
-            gtk_widget_show (button);
-
-            button = gtk_button_new_with_label ("def");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (long_options_def_callback), (gpointer) &all_long_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 1, 2, row, row + 1 );
-            gtk_widget_show (button);
-
-            button = gtk_button_new_with_label ("max");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (long_options_max_callback), (gpointer) &all_long_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 2, 3, row, row + 1 );
-            gtk_widget_show (button);
-          }
-
-      for( int opt=0;opt<LAST_STRING_OPTION;opt++ )
-        if( all_string_options[opt].page == i )
-          {
-            row++;
-
-            GtkWidget * internal_hbox = gtk_hbox_new (FALSE, 5);
-            gtk_table_attach_defaults( GTK_TABLE( description_table ), internal_hbox, 0, 1, row, row + 1 );
-            gtk_widget_show (internal_hbox);
-
-            GtkWidget * label = gtk_label_new(all_string_options[opt].label.chars());
-            gtk_box_pack_start (GTK_BOX (internal_hbox), label, FALSE, TRUE, 0);
-            gtk_widget_show(label);
-
-            all_string_options[opt].entry = gtk_entry_new_with_max_length(all_string_options[opt].max_letters_in_entry);
-
-            gtk_entry_set_text( GTK_ENTRY( all_string_options[opt].entry ), String(all_string_options[opt].value).chars() );
-
-            entry_t * info = new entry_t( ENTRY_CHAR, false );
-
-            gtk_signal_connect(GTK_OBJECT(all_string_options[opt].entry), "changed",
-                               GTK_SIGNAL_FUNC(entry_handler), info);
-            gtk_widget_set_usize(all_string_options[opt].entry, 108 ,22);
-            gtk_table_attach_defaults( GTK_TABLE( entry_table ), all_string_options[opt].entry, 0, 1, row, row + 1 );
-            gtk_widget_show(all_string_options[opt].entry);
-
-            GtkWidget * button = gtk_button_new_with_label ("def");
-            gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                                GTK_SIGNAL_FUNC (string_options_def_callback), (gpointer) &all_string_options[opt] );
-            gtk_table_attach_defaults( GTK_TABLE( button_table ), button, 1, 2, row, row + 1 );
-            gtk_widget_show (button);
-          }
-
-      gtk_table_set_row_spacings( GTK_TABLE( description_table ) , 5 );
-      gtk_table_set_col_spacings( GTK_TABLE( description_table ) , 5 );
-      gtk_table_set_row_spacings( GTK_TABLE( entry_table ) , 5 );
-      gtk_table_set_col_spacings( GTK_TABLE( entry_table ) , 5 );
-      gtk_table_set_row_spacings( GTK_TABLE( button_table ) , 5 );
-      gtk_table_set_col_spacings( GTK_TABLE( button_table ) , 5 );
-      gtk_widget_show( description_table );
-      gtk_widget_show( entry_table );
-      gtk_widget_show( button_table );
-
-      GtkWidget * label = gtk_label_new( page_titles[i] );
-      gtk_notebook_append_page( GTK_NOTEBOOK( notebook ), page_vbox, label );
-    }
-
-  GtkWidget * hbox = gtk_hbox_new (FALSE, 5);
-  gtk_container_add (GTK_CONTAINER (vbox), hbox);
-  gtk_widget_show (hbox);
-
-  GtkWidget * button = gtk_button_new_with_label (" Default ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (default_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Load options ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (load_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Save options ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (save_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Save as default ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (save_def_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Apply ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (apply_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Ok ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (ok_options_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  button = gtk_button_new_with_label (" Cancel ");
-  gtk_signal_connect (GTK_OBJECT (button), "clicked",
-                      GTK_SIGNAL_FUNC (options_window_requested), (gpointer) NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, FALSE, 0);
-  gtk_widget_show (button);
-
-  gtk_widget_show(options_window);
-  options_window_up = true;
-}
-
-void
-Options::close_options_window()
-{
-  gtk_widget_destroy(options_window);
-  options_window_up = false;
-}
-
-void
-apply_options_requested(GtkWidget * widget, gpointer data)
-{
-  the_opts.set_all_options_from_gui();
-}
-
-void
-ok_options_requested(GtkWidget * widget, gpointer data)
-{
-  the_opts.set_all_options_from_gui();
-  the_opts.close_options_window();
-}
-
-void
-load_options_requested(GtkWidget * widget, gpointer data)
-{
-  if(the_opts.get_filesel_widget() == NULL)
-    {
-      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
-      gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
-                          (GtkSignalFunc) destroy_options_filesel, GTK_OBJECT(filesel));
-      gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
-                          "clicked", (GtkSignalFunc) load_filesel_ok_selected, filesel );
-      gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->cancel_button),
-                                 "clicked", (GtkSignalFunc) destroy_options_filesel,
-                                 GTK_OBJECT (filesel));
-      gtk_widget_show(filesel);
-      the_opts.set_filesel_widget(filesel);
-    }
-}
-
-void
-load_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
-{
-  the_opts.read_options_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)),false);
-  the_opts.update_all_gtk_entries();
-  destroy_options_filesel();
-}
-
-void
-save_options_requested(GtkWidget * widget, gpointer data)
-{
-  if(the_opts.get_filesel_widget() == NULL)
-    {
-      GtkWidget* filesel = gtk_file_selection_new( "Choose an options file" );
-      gtk_signal_connect (GTK_OBJECT (filesel), "destroy",
-                          (GtkSignalFunc) destroy_options_filesel, GTK_OBJECT(filesel));
-      gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->ok_button),
-                          "clicked", (GtkSignalFunc) save_filesel_ok_selected, filesel );
-      gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (filesel)->cancel_button),
-                                 "clicked", (GtkSignalFunc) destroy_options_filesel,
-                                 GTK_OBJECT (filesel));
-      gtk_widget_show(filesel);
-      the_opts.set_filesel_widget(filesel);
-    }
-}
-
-void
-save_filesel_ok_selected (GtkWidget * widget, GtkFileSelection * fs)
-{
-  the_opts.save_all_options_to_file(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)),false);
-  destroy_options_filesel();
-}
-
-void
-save_def_options_requested(GtkWidget * widget, gpointer data)
-{
-  the_opts.save_all_options_to_file("",true);
-}
-
-void
-destroy_options_filesel()
-{
-  gtk_widget_destroy(the_opts.get_filesel_widget());
-  the_opts.set_filesel_widget(NULL);
-}
-
-void
-default_options_requested(GtkWidget * widget, gpointer data)
-{
-  the_opts.revert_all_options_to_default();
-}
-
-void
-options_window_requested(GtkWidget * widget, gpointer data)
+Options::open_optionswindow()
 {
   if((the_arena.get_game_mode() == Arena_Base::COMPETITION_MODE &&
       (the_arena.get_state() == NO_STATE ||
        the_arena.get_state() == NOT_STARTED ||
        the_arena.get_state() == FINISHED)) ||
      (the_arena.get_game_mode() != Arena_Base::COMPETITION_MODE))
+    if( NULL == optionswindow_p )
+      optionswindow_p = 
+        new OptionsWindow( -1, -1, -1, -1 );
+}
+
+void
+Options::close_optionswindow()
+{
+  if( NULL != optionswindow_p )
     {
-      if(the_opts.get_options_window_up() == false)
-        the_opts.setup_options_window();
-      else
-        the_opts.close_options_window();
+      delete optionswindow_p;
+      optionswindow_p = NULL;
     }
 }
-
-void
-double_options_min_callback( GtkWidget * widget, option_info_t<double> * option )
-{
-  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->min_value).chars() );
-}
-
-void
-double_options_max_callback( GtkWidget * widget, option_info_t<double> * option )
-{
-  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->max_value).chars() );
-}
-
-void
-double_options_def_callback( GtkWidget * widget, option_info_t<double> * option )
-{
-  gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->default_value).chars() );
-}
-
-void
-long_options_min_callback( GtkWidget * widget, option_info_t<long> * option )
-{
-  if(option->datatype == ENTRY_INT)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->min_value).chars() );
-  else if(option->datatype == ENTRY_HEX)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->min_value).chars() );
-}
-
-void
-long_options_max_callback( GtkWidget * widget, option_info_t<long> * option )
-{
-  if(option->datatype == ENTRY_INT)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->max_value).chars() );
-  else if(option->datatype == ENTRY_HEX)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->max_value).chars() );
-}
-
-void
-long_options_def_callback( GtkWidget * widget, option_info_t<long> * option )
-{
-  if(option->datatype == ENTRY_INT)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), String(option->default_value).chars() );
-  else if(option->datatype == ENTRY_HEX)
-    gtk_entry_set_text( GTK_ENTRY( option->entry ), hex2str(option->default_value).chars() );
-}
-
-void
-string_options_def_callback( GtkWidget * widget, option_info_t<String> * option )
-{
-  gtk_entry_set_text( GTK_ENTRY( option->entry ), option->default_value.chars() );
-}
-
 
 #endif NO_GRAPHICS

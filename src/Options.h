@@ -20,13 +20,16 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef __OPTIONS__
 #define __OPTIONS__
 
-#include <gtk/gtk.h>
 
-//#include "Structs.h"
-//#include "String.h"
 #include "Various.h"
 
 class String;
+class OptionsWindow;
+
+#ifndef NO_GRAPHICS
+struct _GtkWidget;
+typedef struct _GtkWidget GtkWidget;
+#endif
 
 enum option_double_t
 {
@@ -147,18 +150,20 @@ template<class T>
 struct option_info_t
 {
   option_info_t() {}
-  option_info_t(const entry_datatype_t d, const pages_in_options_t p,const T v,
-                const T mn, const T mx, const int l, const bool bo, const bool lo,
-                const String& s, GtkWidget* e ) :
-    datatype(d), page(p), value(v), default_value(v), min_value(mn), max_value(mx), max_letters_in_entry(l), broadcast_option(bo), log_option(lo), label(s), entry(e) {}
+  option_info_t(const entry_datatype_t d, const pages_in_options_t p,
+                const T v, const T mn, const T mx, const int l,
+                const bool bo, const bool lo, const String& s ) :
+    datatype(d), page(p), value(v), default_value(v), min_value(mn),
+    max_value(mx), max_letters_in_entry(l), broadcast_option(bo),
+    log_option(lo), label(s) {}
 
-  option_info_t& operator=(const option_info_t& old) { 
-    datatype=old.datatype; page=old.page; value=old.value; 
-    default_value=old.default_value; min_value=old.min_value;
-    max_value=old.max_value; max_letters_in_entry=old.max_letters_in_entry;
-    broadcast_option=old.broadcast_option; log_option=old.log_option;
+  option_info_t& operator=(const option_info_t& n) { 
+    datatype=n.datatype; page=n.page; value=n.value; 
+    default_value=n.default_value; min_value=n.min_value;
+    max_value=n.max_value; max_letters_in_entry=n.max_letters_in_entry;
+    broadcast_option=n.broadcast_option; log_option=n.log_option;
     
-    label=old.label;entry=old.entry; return *this; }
+    label=n.label;entry=n.entry; return *this; }
 
 
   entry_datatype_t datatype;
@@ -171,30 +176,10 @@ struct option_info_t
   bool broadcast_option;
   bool log_option;
   String label;
-  GtkWidget * entry;
-};
-
 #ifndef NO_GRAPHICS
-void options_window_requested(GtkWidget* widget, gpointer data);
-void apply_options_requested(GtkWidget* widget, gpointer data);
-void ok_options_requested(GtkWidget* widget, gpointer data);
-void load_options_requested(GtkWidget* widget, gpointer data);
-void load_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
-void save_options_requested(GtkWidget* widget, gpointer data);
-void save_filesel_ok_selected (GtkWidget* widget, GtkFileSelection *fs);
-void save_def_options_requested(GtkWidget* widget, gpointer data);
-void destroy_options_filesel();
-void default_options_requested(GtkWidget* widget, gpointer data);
-
-void double_options_min_callback( GtkWidget * widget, option_info_t<double> * option );
-void double_options_max_callback( GtkWidget * widget, option_info_t<double> * option );
-void double_options_def_callback( GtkWidget * widget, option_info_t<double> * option );
-void long_options_min_callback( GtkWidget * widget, option_info_t<long> * option );
-void long_options_max_callback( GtkWidget * widget, option_info_t<long> * option );
-void long_options_def_callback( GtkWidget * widget, option_info_t<long> * option );
-void string_options_def_callback( GtkWidget * widget, option_info_t<String> * option );
-
+  GtkWidget * entry;
 #endif
+};
 
 class Options
 {
@@ -211,32 +196,34 @@ public:
   void broadcast_opts();
   void log_all_options();
 
-#ifndef NO_GRAPHICS
-  void set_all_options_from_gui();
-  void setup_options_window();
-  void close_options_window();
-  void update_all_gtk_entries();
-  void revert_all_options_to_default();
-#endif
-
   void save_all_options_to_file(String filename, const bool as_default);
   void get_options_from_rtbrc();
   void read_options_file(String file_string, const bool as_default);
 
-  bool get_options_window_up() { return options_window_up; }
-  GtkWidget* get_filesel_widget() { return filesel_widget; }
-  void set_filesel_widget(GtkWidget* filesel) { filesel_widget = filesel; }
+  option_info_t<double>* get_all_double_options()
+    { return all_double_options; }
+  option_info_t<long>* get_all_long_options()
+    { return all_long_options; }
+  option_info_t<String>* get_all_string_options()
+    { return all_string_options; }
+
+#ifndef NO_GRAPHICS
+  OptionsWindow* get_optionswindow_p           ()
+    { return optionswindow_p; }
+  bool is_optionswindow_up                     ();
+  void open_optionswindow                      ();
+  void close_optionswindow                     ();
+#endif
 
 private:
-
   option_info_t<double> all_double_options[LAST_DOUBLE_OPTION];
   option_info_t<long> all_long_options[LAST_LONG_OPTION];
 
   option_info_t<String> all_string_options[LAST_STRING_OPTION];
   //  option_info_t<bool> all_bool_options[LAST_BOOL_OPTION];
 
-  bool options_window_up;
-  GtkWidget* options_window;
-  GtkWidget* filesel_widget;
+#ifndef NO_GRAPHICS
+  OptionsWindow* optionswindow_p;
+#endif
 };
 #endif __OPTIONS__
