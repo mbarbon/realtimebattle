@@ -107,6 +107,7 @@ parse_command_line(int argc, char **argv)
   int version_flag=false, help_flag=false;
   int game_mode=Arena::NORMAL_MODE;
   int c;
+  String option_file("");
 
   static struct option long_options[] =
   {
@@ -144,7 +145,7 @@ parse_command_line(int argc, char **argv)
           switch (option_index)
             {
             case 5: 
-              // options_file = (String)optarg; ?
+              option_file = (String)optarg;
               break;
             default:
               cerr << "Bad error in parse_command_line, this shouldn't happen" << endl;
@@ -174,7 +175,7 @@ parse_command_line(int argc, char **argv)
           break;
 
         case 'o':
-          // options_file = (String)optarg; ?    
+          option_file = (String)optarg;
           break;
 
         default:
@@ -196,6 +197,11 @@ parse_command_line(int argc, char **argv)
     print_help_message();
 
   if( help_flag || version_flag ) exit( EXIT_SUCCESS );
+
+  if( option_file == "" )
+    the_opts.get_options_from_rtbrc();
+  else
+    the_opts.read_options_file(option_file,true);
 
   the_arena.set_game_mode((Arena::game_mode_t)game_mode);
 }
