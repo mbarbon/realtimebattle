@@ -14,6 +14,9 @@ RealTimeBattle.html: RealTimeBattle.sgml
 RealTimeBattle.dvi: RealTimeBattle.sgml
 	sgml2latex -p $(PAPER_SIZE) -o dvi RealTimeBattle.sgml
 
+RealTimeBattle.ps: RealTimeBattle.sgml
+	sgml2latex -p $(PAPER_SIZE) -o ps RealTimeBattle.sgml
+
 RealTimeBattle.info: RealTimeBattle.sgml
 	sgml2info RealTimeBattle.sgml
 
