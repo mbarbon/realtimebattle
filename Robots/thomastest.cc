@@ -201,7 +201,7 @@ check_messages(int sig)
                 robot_rotate = 2.0*slumprotate;
                 if (speed > 0.4)
                   cout << "Break 1" << endl;
-                cout << "Shoot 0.1" << endl;
+                cout << "Shoot 0.5" << endl;
                 cout << "Acceleration " << acceleration << endl;
                 cout << "Rotate 1 " << robot_rotate << endl;
                 
