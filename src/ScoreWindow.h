@@ -48,6 +48,7 @@ public:
 
   void set_window_title            ();
   void add_robots                  ();
+  void update_robots                  ();
   
   static void hide_window          ( GtkWidget* widget, GdkEvent* event,
                                      class ScoreWindow* scorewindow_p );
