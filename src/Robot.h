@@ -100,8 +100,8 @@ private:
   void move(const double timestep, int iterstep, const double eps);
   bool check_state_for_message(const message_from_robot_type msg_t, const enum state_t state1,
                                const enum state_t state2 = NO_STATE);
-  void save_data(const bool bin, const bool rewrite);
-  void load_data(const bool bin);
+  //  void save_data(const bool bin, const bool rewrite);
+  //  void load_data(const bool bin);
   
 
   bool alive;
