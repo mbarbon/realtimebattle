@@ -26,7 +26,7 @@ export libraries = -lgtk -lgdk -lglib -lXext -lX11 -lm
 objects = Vector2D.o gui.o RealTimeBattle.o Arena.o Error.o Shape.o MovingObject.o Extras.o Options.o Statistics.o StartTournament.o Various.o String.o
 stdincludes = Vector2D.h gui.h Various.h Options.h Arena.h messagetypes.h Error.h String.h Shape.h Extras.h MovingObject.h
 
-all: RealTimeBattle robots
+all: RealTimeBattle robots documentation
 
 RealTimeBattle: $(objects)
 	g++ $(CXXFLAGS) -o RealTimeBattle $(objects) $(gtkincludedirs) $(libdirs) $(libraries)
@@ -52,7 +52,7 @@ StartTournament.o: StartTournament.cc Vector2D.h gui.h Various.h Options.h Arena
 robots:
 	cd $(ROBOTDIR) && $(MAKE)
 
-Documentation:
+documentation:
 	cd $(DOCSDIR) && $(MAKE)
 
 
