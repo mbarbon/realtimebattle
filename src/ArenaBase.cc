@@ -73,11 +73,10 @@ ArenaBase::ArenaBase()
   game_mode = NORMAL_MODE;
 
   sequence_nr = 0;
-  sequences_remaining = 0;
+  sequences_in_tournament = 0;
+  game_nr = 0;
   games_per_sequence = 0;
-  games_remaining_in_sequence = 0;
-  sequences = 0;
-  
+
   halt_next = false;
   pause_after_next_game = false;
 
@@ -99,7 +98,7 @@ ArenaBase::~ArenaBase()
 
   delete_lists(true, true, true, true);
 
-  for(int i=0; i < sequences_remaining+sequence_nr; i++)
+  for(int i=0; i < sequences_in_tournament; i++)
     delete [] robots_in_sequence[i];
 
   if( robots_in_sequence != NULL )
@@ -111,11 +110,11 @@ ArenaBase::clear()
 {
   delete_lists(true, true, true, true);
 
-  for(int i=0; i < sequences_remaining+sequence_nr; i++)
+  for(int i=0; i < sequences_in_tournament; i++)
     delete [] robots_in_sequence[i];
 
   sequence_nr = 0;
-  sequences_remaining = 0;
+  sequences_in_tournament = 0;
   
   set_state( NOT_STARTED );
 }

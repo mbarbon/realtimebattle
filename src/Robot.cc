@@ -426,7 +426,7 @@ Robot::set_stats(int robots_killed_same_time)
   stat_t* statp = new stat_t
     (
      the_arena.get_sequence_nr(),
-     the_arena.get_games_per_sequence() - the_arena.get_games_remaining_in_sequence(),
+     the_arena.get_game_nr(),
      position_this_game,
      points_this_game,   
      the_arena.get_total_time(),
@@ -495,8 +495,7 @@ Robot::check_name_uniqueness()
 int
 Robot::get_last_position()
 {
-  if( the_arena.get_games_per_sequence() - 
-      the_arena.get_games_remaining_in_sequence() == 1 ) return 0; // first game
+  if( the_arena.get_game_nr() == 1 ) return 0; // first game
 
   ListIterator<stat_t> li;
   statistics.last(li);

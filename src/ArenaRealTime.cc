@@ -924,8 +924,7 @@ ArenaRealTime::start_game()
   
   String* filename = arena_filenames.get_nth(current_arena_nr);
 
-  print_to_logfile('G', sequence_nr, 
-                   games_per_sequence - games_remaining_in_sequence + 1);
+  print_to_logfile('G', sequence_nr, game_nr + 1);
 
   parse_arena_file(*filename);
 
@@ -936,8 +935,7 @@ ArenaRealTime::start_game()
     Error(true, "Incomplete arena file path" + *filename, "ArenaRealTime::start_game");
 
   print_message
-    ( "RealTimeBattle", (String)"Game " +
-      String( games_per_sequence - games_remaining_in_sequence + 1 )
+    ( "RealTimeBattle", (String)"Game " + String( game_nr + 1 )
       + " of sequence " + String( sequence_nr ) + " begins on arena " +
       current_arena_filename );
 
@@ -993,7 +991,7 @@ ArenaRealTime::start_game()
     ((Robot*)li2())->send_signal();
 
   set_state( GAME_IN_PROGRESS );
-  games_remaining_in_sequence--;
+  game_nr++;
 
 #ifndef NO_GRAPHICS
   if( !no_graphics )
@@ -1032,7 +1030,7 @@ ArenaRealTime::end_game()
 
   delete_lists(false, false, false, false);
   
-  if(games_remaining_in_sequence == 0) 
+  if(game_nr == games_per_sequence) 
     end_sequence();
   else
     start_game();
@@ -1042,7 +1040,7 @@ ArenaRealTime::end_game()
 void
 ArenaRealTime::start_sequence()
 {
-  games_remaining_in_sequence = games_per_sequence;
+  game_nr = 0;
   current_arena_nr = 0;
 
   // Make list of robots in this sequence
@@ -1067,7 +1065,6 @@ ArenaRealTime::start_sequence()
 
   set_state( STARTING_ROBOTS );
   sequence_nr++;
-  sequences_remaining--;
   reset_timer();
   next_check_time = total_time + 1.0;
 }
@@ -1126,7 +1123,7 @@ ArenaRealTime::end_sequence_follow_up()
       all_robots_in_sequence.remove(li);
     }
 
-  if(sequences_remaining == 0) 
+  if( sequence_nr == sequences_in_tournament ) 
     end_tournament();
   else
     start_sequence();
@@ -1186,7 +1183,7 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 
   robots_per_game = robots_p_game;
   games_per_sequence = games_p_sequence;
-  sequences_remaining = n_o_sequences;
+  sequences_in_tournament = n_o_sequences;
 
   // make list of robots to compete in the sequences
   int games_per_round = binomial(number_of_robots, robots_per_game);
@@ -1272,8 +1269,8 @@ start_tournament(const List<start_tournament_info_t>& robotfilename_list,
 
   // start first sequence
 
-  print_to_logfile('H', games_per_sequence, robots_per_game, sequences_remaining, 
-                   number_of_robots);//, option_file_name.chars());
+  print_to_logfile('H', games_per_sequence, robots_per_game, 
+                   sequences_in_tournament, number_of_robots);
 
   the_opts.log_all_options();
 

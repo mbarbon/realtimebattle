@@ -112,10 +112,10 @@ public:
   List<Robot>* get_all_robots_in_sequence() { return &all_robots_in_sequence; }
   List<Robot>* get_all_robots_in_tournament() { return &all_robots_in_tournament; }
   String get_current_arena_filename() { return current_arena_filename; }
-  int get_sequence_nr() { return sequence_nr; }
+  int get_game_nr() { return game_nr; }
   int get_games_per_sequence() { return games_per_sequence; }
-  int get_games_remaining_in_sequence() { return games_remaining_in_sequence; }
-  int get_sequences_remaining() { return sequences_remaining; }
+  int get_sequence_nr() { return sequence_nr; }
+  int get_sequences_in_tournament() { return sequences_in_tournament; }
   int get_robots_per_game() { return robots_per_game; }
   int get_number_of_robots() { return number_of_robots; }
   
@@ -185,11 +185,10 @@ protected:
   
   double next_check_time;
 
-  int sequence_nr;
-  int games_remaining_in_sequence;
+  int game_nr;
   int games_per_sequence;
-  int sequences_remaining;
-  int sequences; // Warning, this variable is not used in ArenaRealtime
+  int sequence_nr;
+  int sequences_in_tournament;
 
   int number_of_robots;
   int robots_left;

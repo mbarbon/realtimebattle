@@ -78,9 +78,11 @@ ArenaReplay::timeout_function()
 
     case BEFORE_GAME_START:
       parse_this_interval();
+#ifndef NO_GRAPHICS
       the_gui.get_arenawindow_p()->drawing_area_scale_changed();      
       the_gui.get_arenawindow_p()->draw_everything();      
       the_gui.get_scorewindow_p()->add_robots();
+#endif NO_GRAPHICS
       set_state( GAME_IN_PROGRESS );
       break;
 
@@ -103,7 +105,9 @@ ArenaReplay::parse_this_interval()
         {
           move_shots_no_check( next_check_time - last_replay_time );
           // check if robots have died and set thier points
+#ifndef NO_GRAPHICS
           the_gui.get_arenawindow_p()->draw_moving_objects( true );
+#endif NO_GRAPHICS
         }
 
       last_replay_time = next_check_time;
@@ -301,10 +305,7 @@ ArenaReplay::parse_log_line()
         reset_timer();
         next_check_time = 0.0;
         int seq, game;
-        log_file >> seq >> game;
-        sequence_nr = seq;
-        sequences_remaining = sequences - seq;
-        games_remaining_in_sequence = games_per_sequence - game;
+        log_file >> sequence_nr >> game_nr;
         arena_scale = the_opts.get_d(OPTION_ARENA_SCALE);
         arena_succession = 1;
         set_state( BEFORE_GAME_START );
@@ -312,12 +313,8 @@ ArenaReplay::parse_log_line()
       break;
     case 'H': // Header
       {
-        int gps, rps, seq, robots;
-        log_file >> gps >> rps >> seq >> robots;
-        games_per_sequence = gps;
-        robots_per_game = rps;
-        sequences = seq;
-        number_of_robots = robots;
+        log_file >> games_per_sequence >> robots_per_game 
+                 >> sequences_in_tournament >> number_of_robots;
       }
       break;
     case 'L': // List of robot properties

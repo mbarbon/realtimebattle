@@ -128,16 +128,13 @@ ScoreWindow::set_window_title()
 {
   String title = (String)
     "Score  " + 
-    " Seq: " +
-    the_arena.get_sequence_nr() + 
-    " (" + 
-    String( the_arena.get_sequence_nr() + the_arena.get_sequences_remaining() ) +
-    ")  Game: " +
-    String( the_arena.get_games_per_sequence() -
-            the_arena.get_games_remaining_in_sequence() ) +
+    " Seq: " + String( the_arena.get_sequence_nr() ) + 
+    " (" + String( the_arena.get_sequences_in_tournament() ) +
+
+    ")  Game: " + String( the_arena.get_game_nr() ) +
     " (" + String( the_arena.get_games_per_sequence() ) +
-    ")  Time: " + 
-    String( (int)the_arena.get_total_time() );
+
+    ")  Time: " + String( (int)the_arena.get_total_time() );
 
   gtk_window_set_title( GTK_WINDOW( window_p ), title.chars() );
 }

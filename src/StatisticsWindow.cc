@@ -395,9 +395,7 @@ StatisticsWindow::change_table_type( GtkWidget* widget,
         case STAT_TYPE_GAME:
           change_sorting_in_clist( GTK_CLIST( clist ), 3, info_p->sw_p );
           number = ( the_arena.get_sequence_nr() - 1 ) *
-            the_arena.get_games_per_sequence() +
-            the_arena.get_games_per_sequence() -
-            the_arena.get_games_remaining_in_sequence();
+            the_arena.get_games_per_sequence() + the_arena.get_game_nr();
           break;
         case STAT_TYPE_ROBOT:
           change_sorting_in_clist( GTK_CLIST( clist ), 0, info_p->sw_p );
@@ -419,8 +417,7 @@ StatisticsWindow::change_stats_viewed( GtkWidget* widget,
   stat_types sw_type = info_p->sw_p->get_type();
   int number = info_p->sw_p->get_looking_at_nr();
 
-  int game = the_arena.get_games_per_sequence() -
-    the_arena.get_games_remaining_in_sequence();
+  int game = the_arena.get_game_nr();
   int max_nr = -1;
 
   switch( sw_type )
