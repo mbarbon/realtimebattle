@@ -24,15 +24,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <config.h>
 #endif
 
-//  #ifndef NO_GRAPHICS
-//  # include <gdk/gdk.h>
-//  #endif
 
 #include <fstream.h>
 #include <list>
-//#include <sys/types.h>
-//#include <unistd.h>
-
 
 #include "Messagetypes.h"
 
@@ -40,7 +34,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "RollingObject.h"
 #include "List.h"
 #include "Process.h"
-//#include "Vector2D.h"
 
 class Vector2D;
 
@@ -52,8 +45,6 @@ public:
   Robot(const int r_id, const long int col, const string& name);
   ~Robot();
 
-  //arenaobject_t get_arenaobject_t() { return ROBOT; }
-  
   //  void move(const double timestep);  
   void update_velocity(const double timestep);  
   void update_radar_and_cannon(const double timestep);  
@@ -72,10 +63,6 @@ public:
   void set_energy( const double en ) { energy = en; }
   void set_angles( const double robot_a, const double cannon_a, const double radar_a );
 
-  //  void change_position( const double x, const double y, 
-  //                        const double robot_a, const double cannon_a, 
-  //                        const double radar_a, const double en );
-
   void check_name_uniqueness();
   void get_messages();
   void send_message(enum message_to_robot_type ...);
@@ -87,28 +74,19 @@ public:
   bool is_dead_but_stats_not_set() { return dead_but_stats_not_set; }
 
   Process* get_process() { return process; }
-//    void start_process();
-//    bool is_process_running();
-//    void check_process();
-//    void send_signal();
-//    void end_process();
-//    void delete_pipes();
-//    void kill_process_forcefully();
 
   void live();
   void die();
 
   string get_robot_name() { return robot_name; }
-  //  string get_robot_filename() { return robot_filename; }
+
   bool is_alive() { return alive; }
   double get_energy() { return energy; }
-//    pid_t get_pid() { return pid; }
+
   list<stat_t>* get_statistics() { return &statistics; }
-  //  ofstream* get_outstreamp() { return outstreamp; }  
+
   int get_position_this_game() { return position_this_game; }
   double get_total_points();
-  //  void add_points(double pts) { points_this_game += pts; total_points += pts; }
-  //  bool get_died_this_round() { return died_this_round; }
   int get_last_position();
 
   bool is_colour_given() { return colour_given; }
@@ -126,39 +104,17 @@ public:
   bool set_and_get_has_competed() 
     { if( has_competed ) return true; else { has_competed = true; return false; } }
 
-//  #ifndef NO_GRAPHICS
-
-//    int get_row_in_score_clist() { return row_in_score_clist; }
-//    void get_score_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-//    void get_stat_pixmap( GdkWindow* win, GdkPixmap*& pixm, GdkBitmap*& bitm );
-
-//    void set_row_in_score_clist( int row ) { row_in_score_clist = row; }
-//    void reset_last_displayed();
-//    void display_score();
-//    void draw_radar_and_cannon();
-
-//  #endif
-
 private:
   message_from_robot_type name2msg_from_robot_type(char*);
   //  void move(const double timestep, int iterstep, const double eps);
   bool check_state_for_message(const message_from_robot_type msg_t, 
                                const enum state_t state1,
                                const enum state_t state2 = NO_STATE);
-  //  void save_data(const bool bin, const bool rewrite);
-  //  void load_data(const bool bin);
-  
-//    bool get_default_non_blocking_state();
-//    void set_non_blocking_state(const bool use_non_blocking);
 
   class Process* process;
 
   bool alive;
-//  bool process_running;
-//  bool has_saved;
 
-//    bool send_usr_signal;
-//    int signal_to_send;
   int  send_rotation_reached;
 
   bool has_competed;
@@ -171,57 +127,24 @@ private:
   rotation_t cannon_angle;
   rotation_t radar_angle;
 
-  //  double acceleration;
   double shot_energy;
-
-//    Vector2D last_drawn_robot_center;
-//    double last_drawn_radar_angle;
-//    double last_drawn_cannon_angle;
 
   list<stat_t> statistics;
 
   int robot_name_uniqueness_number;
+
   string plain_robot_name;      // Name given by robot
   string robot_name;            // plain_robot_name + uniqueness number
-
-//    string robot_filename;        // Filename with path  
-//    string robot_plain_filename;  // Filename without path
 
   bool colour_given;
   bool name_given;
   
-
-  //string robot_dir;
-  //  double total_points;
-  //  double points_this_game;
   int position_this_game;
   double time_survived_in_sequence;
   bool dead_but_stats_not_set;
 
-//    double cpu_next_limit;
-//    double cpu_warning_limit;
-//    double cpu_timeout;
-
-//    ifstream* instreamp;
-//    ofstream* outstreamp;
-//    int pipes[2];
-//    pid_t pid;    
 
   list<stat_t>::const_iterator current_game_stats;
-
-//    bool use_non_blocking;
-
-//    int row_in_score_clist;
-
-//    int last_displayed_energy;
-//    int last_displayed_place;
-//    int last_displayed_last_place;
-//    long last_displayed_score;
-
-//  #ifndef NO_GRAPHICS
-//    pixmap_t score_pixmap;
-//    pixmap_t stat_pixmap;
-//  #endif
 };
 
 #endif __ROBOT__
