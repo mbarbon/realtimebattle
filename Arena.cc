@@ -11,8 +11,8 @@ Arena::Arena()
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
   robot_radius = 0.5;
-  shot_radius = 0.05;
-  shot_speed = 1.0;
+  shot_radius = 0.2;
+  shot_speed = 4.0;
   max_acceleration = 2.0;
   min_acceleration = -0.5;
   start_energy = 100.0;
@@ -99,7 +99,6 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
   closest_shape = NOOBJECT;
   GList* gl;
 
-  //  for(int i in {ROBOT, WALL, MINE, COOKIE} )
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl = g_list_next(gl))
     {
       d = ((Robot*)gl->data)->get_distance(pos, dir, size);
@@ -130,12 +129,24 @@ Arena::get_shortest_distance(const Vector2D& pos, const Vector2D& dir, const dou
           dist = d;
         }
     }
+  
   for(gl = g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
     {
       d = ((Cookie*)gl->data)->get_distance(pos, dir, size);
       if( d < dist)
         {
           closest_shape = COOKIE;
+          colliding_object = gl->data;
+          dist = d;
+        }
+    }
+
+  for(gl = g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    {
+      d = ((Shot*)gl->data)->get_distance(pos, dir, size);
+      if( d < dist)
+        {
+          closest_shape = SHOT;
           colliding_object = gl->data;
           dist = d;
         }
@@ -161,6 +172,8 @@ Arena::space_available(const Vector2D& pos, const double margin)
   for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; gl = g_list_next(gl))
     if( ((Cookie*)gl->data)->within_distance(pos, margin) ) return false;
 
+  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; gl = g_list_next(gl))
+    if( ((Shot*)gl->data)->within_distance(pos, margin) ) return false;
 
   return true;
 }
@@ -186,7 +199,14 @@ Arena::timeout_function()
       break;
       
     case STARTING_ROBOTS:
-      if( total_time > next_check_time ) start_sequence_follow_up();
+      {
+        GList* gl;
+        
+        for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
+          ((Robot*)gl->data)->get_messages();
+
+        if( total_time > next_check_time ) start_sequence_follow_up();
+      }
       break;
       
     case SHUTTING_DOWN_ROBOTS:
@@ -195,8 +215,8 @@ Arena::timeout_function()
       
     case GAME_IN_PROGRESS:
       update();
-      //if( robots_left <= 1 ) end_game();
-      //      if( total_time > next_check_time ) check_robots();
+      if( robots_left <= 1 ) end_game();
+      //   TODO:    if( total_time > next_check_time ) check_robots();
       break;
 
     case EXITING:
@@ -314,6 +334,7 @@ Arena::start_game()
       ((Robot*)gl->data)->live();
     }
 
+  the_gui->setup_control_window( this );
   the_gui->setup_arena_window( boundary );
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
@@ -333,11 +354,44 @@ Arena::end_game()
     }
 
   // clear the lists;
+
+  for(gl=g_list_next(object_lists[ROBOT]); gl != NULL; )
+    {
+      gl=g_list_next(gl);
+      g_list_remove(gl, (Robot*)gl->data);
+    }
+  for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
+    {
+      delete (Mine*)(gl->data);
+      gl=g_list_next(gl);
+      g_list_remove(gl, (Mine*)gl->data);
+    }
+  for(gl=g_list_next(object_lists[COOKIE]); gl != NULL; )
+    {
+      delete (Cookie*)(gl->data);
+      gl=g_list_next(gl);
+      g_list_remove(gl, (Cookie*)gl->data);
+    }
+  for(gl=g_list_next(object_lists[WALL]); gl != NULL; )
+    {
+      delete (Shape*)(WallCircle*)(gl->data);
+      gl=g_list_next(gl);
+      g_list_remove(gl, (Shape*)(WallCircle*)gl->data);
+    }
+  for(gl=g_list_next(object_lists[EXPLOSION]); gl != NULL; )
+    {
+      delete (Explosion*)(gl->data);
+      gl=g_list_next(gl);
+      g_list_remove(gl, (Explosion*)gl->data);
+    }
   
   //for(int i= ROBOT; i < EXPLOSION; i++)
   //  g_list_free(object_lists[i]);
  
-  if(games_remaining_in_sequence == 0) end_sequence();
+  if(games_remaining_in_sequence == 0) 
+    end_sequence();
+  else
+    start_game();
 }
 
 
@@ -433,8 +487,6 @@ void
 Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, int robots_p_game, int games_p_sequence)
 {
   // Create robot classes and to into the list all_robots_in_tournament
-
-  the_gui->setup_control_window(robotfilename_list);
 
   Robot* robotp;
 
