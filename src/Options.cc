@@ -610,7 +610,7 @@ Options::is_optionswindow_up()
 //    if( NULL == optionswindow_p )
 //      return false;
 
-//    return true;
+    return false;
 }
 
 void
