@@ -43,10 +43,10 @@ RealTimeBattle_SOURCES = \
 	Function.h \
 	Gadget.h \
 	GadgetSet.h GadgetSet.cc \
-	InfoClasses.h \
-	InformationDistributor.cc InformationDistributor.h \
 	GeometricalObjects.cc GeometricalObjects.h \
 	GuiInterface.cc GuiInterface.h \
+	InfoClasses.h \
+	InformationDistributor.cc InformationDistributor.h \
 	IntlDefs.h \
 	List.cc List.h \
 	Messagetypes.h \
@@ -54,14 +54,15 @@ RealTimeBattle_SOURCES = \
 	Option.cc Option.h \
 	OptionHandler.cc OptionHandler.h \
 	Process.cc Process.h \
+	RealTimeBattle.cc \
 	Robot.cc Robot.h \
 	RollingObject.cc RollingObject.h \
-	RealTimeBattle.cc \
 	Shape.cc Shape.h \
 	Shot.cc Shot.h \
 	String.cc String.h \
 	Structs.h \
 	Timer.cc Timer.h \
+	Tournament.h \
 	Variable.cc Variable.h \
 	Various.cc Various.h \
 	Vector2D.cc Vector2D.h \
