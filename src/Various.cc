@@ -143,12 +143,11 @@ reorder_pointer_array(void** array, int size)
 }
 
 void
-read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs)
+read_robotdirs_from_system(list<string>& robotdirs)
 {
   string dirs;
 
   robotdirs.clear();
-  arenadirs.clear();
 
   dirs = the_opts.get_s(OPTION_ROBOT_SEARCH_PATH);
   split_colonseparated_dirs(dirs, robotdirs);
@@ -156,6 +155,14 @@ read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs)
 #ifdef ROBOTDIR
   robotdirs.push_back( string(ROBOTDIR "/") );
 #endif
+}
+
+void
+read_arenadirs_from_system(list<string>& arenadirs)
+{
+  string dirs;
+
+  arenadirs.clear();
 
   dirs = the_opts.get_s(OPTION_ARENA_SEARCH_PATH);
   split_colonseparated_dirs(dirs, arenadirs);
@@ -163,6 +170,13 @@ read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs)
 #ifdef ARENADIR
   arenadirs.push_back( string(ARENADIR "/") );
 #endif
+}
+
+void
+read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs)
+{
+  read_robotdirs_from_system( robotdirs );
+  read_arenadirs_from_system( arenadirs );
 }
 
 // This function splits a string of colonseparated directories into a glist
@@ -193,7 +207,7 @@ split_colonseparated_dirs(string& dirs, list<string>& str_list)
 }
 
 bool
-check_if_filename_is_robot( string& fname )
+check_if_filename_is_robot( const string& fname )
 {
   struct stat filestat;
   if( 0 == stat( fname.c_str(), &filestat ) )
@@ -204,7 +218,7 @@ check_if_filename_is_robot( string& fname )
 }
 
 bool
-check_if_filename_is_arena( string& fname )
+check_if_filename_is_arena( const string& fname )
 {
   struct stat filestat;
   if( 0 == stat( fname.c_str(), &filestat ) && fname.length() > 6 )
@@ -212,6 +226,19 @@ check_if_filename_is_arena( string& fname )
     if( S_ISREG( filestat.st_mode) &&
         (filestat.st_mode & S_IROTH)  &&
         string(".arena") == fname.substr( fname.length() - 6, string::npos ) )
+      return true;
+
+  return false;
+}
+
+bool
+check_if_filename_is_regular_file( const string& fname )
+{
+  struct stat filestat;
+  if( 0 == stat( fname.c_str(), &filestat ) && fname.length() > 6 )
+    // Check if file is a regular file that is readable and ends with .arena
+    if( S_ISREG( filestat.st_mode) &&
+        (filestat.st_mode & S_IROTH) )
       return true;
 
   return false;

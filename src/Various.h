@@ -43,11 +43,14 @@ int binomial(const int n, const int k);
 
 void reorder_pointer_array(void** array, int size);
 
+void read_robotdirs_from_system(list<string>& robotdirs);
+void read_arenadirs_from_system(list<string>& arenadirs);
 void read_dirs_from_system(list<string>& robotdirs, list<string>& arenadirs);
 void split_colonseparated_dirs(string& dirs, list<string>& arenadirs);
 
-bool check_if_filename_is_robot( string& fname );
-bool check_if_filename_is_arena( string& fname );
+bool check_if_filename_is_robot( const string& fname );
+bool check_if_filename_is_arena( const string& fname );
+bool check_if_filename_is_regular_file( const string& fname );
 void check_for_robots_and_arenas( string& word, 
                                   list<start_tournament_info_t>& tour_list,
                                   list<string>& dir_list, 
