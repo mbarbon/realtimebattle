@@ -978,14 +978,14 @@ Robot::get_messages()
         case PRINT:
           {
             instreamp->get(text, 80, '\n');
-            the_gui.print_to_message_output(robot_name, text, colour);
+            the_gui.print_to_message_output(robot_name, text);
           }
           break;
         case DEBUG:
           {
             instreamp->get(text, 80, '\n');
             if( the_arena.get_game_mode() == Arena::DEBUG_MODE )
-              the_gui.print_to_message_output(robot_name, text, colour);
+              the_gui.print_to_message_output(robot_name, text);
           }
           break;
         case SHOOT:
