@@ -23,7 +23,53 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <string>
 #include <set>
 
-#include "Messagetypes.h"
+enum gadget_t
+{
+  GAD_NONE = -1,
+
+  GAD_WEAPON,
+  GAD_SHOT,
+  GAD_EXPLOSION,
+  GAD_DEFENSE,
+  GAD_ENGINE,
+  GAD_SENSOR,
+  GAD_COMMUNICATION,
+  GAD_WALL,
+  GAD_BALL,
+  GAD_EQUIPMENT,
+  GAD_ENVIRONMENT,
+  GAD_GEOMETRY,
+  GAD_ROBOTBODY,
+  GAD_SCORING,
+
+  GAD_VARIABLE,
+  GAD_FUNCTION,
+  GAD_SCRIPT,
+
+  LAST_GADGET
+};
+
+static const char gadget_types[][LAST_GADGET] =
+{
+  "Weapon",
+  "Shot",
+  "Explosion",
+  "Defense",
+  "Engine",
+  "Sensor",
+  "Communication",
+  "Wall",
+  "Ball",
+  "Equipment",
+  "Environment",
+  "Geometry",
+  "RobotBody",
+  "Scoring",
+
+  "Variable",
+  "Function",
+  "Script"
+};
 
 class Gadget;
 

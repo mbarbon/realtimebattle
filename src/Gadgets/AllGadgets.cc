@@ -22,12 +22,15 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "AllGadgets.h"
 #include "String.h"
 
-typedef Gadget* (*NewGadgetFunction)( const char*, Gadget* const );
+map< string, NewGadgetFunction > AllGadgets::new_gadget_functions;
 
-map< string, NewGadgetFunction > new_gadget_functions;
+AllGadgets::AllGadgets()
+{
+  init_new_gadget_functions();
+}
 
 void
-init_new_gadget_functions()
+AllGadgets::init_new_gadget_functions()
 {
   new_gadget_functions.clear();
 
@@ -74,9 +77,6 @@ AllGadgets::create_gadget_by_stringtype( const string&     type,
                                          const char*       name,
                                          Gadget* const     p )
 {
-  if( new_gadget_functions.empty() )
-    init_new_gadget_functions();
-    
   map< string, NewGadgetFunction >::const_iterator 
     ci = new_gadget_functions.find( lowercase( type ) );
   if( ci != new_gadget_functions.end() )
