@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-10-01 13:10+0200\n"
+"POT-Creation-Date: 2000-10-01 14:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Mc_Tr <mc_tr@email.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -884,92 +884,92 @@ msgstr "El torneo no se ha podido iniciar."
 msgid "Error in"
 msgstr "Error en"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:293
+#: Robots/rotate_and_fire/rotate_and_fire.cc:290
 msgid "Brakes locked: Robot found and at distance"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:350
+#: Robots/rotate_and_fire/rotate_and_fire.cc:347
 msgid "Acceleration"
 msgstr "Acelaración"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:351
+#: Robots/rotate_and_fire/rotate_and_fire.cc:348
 msgid "Brake"
 msgstr "Freno"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:354
+#: Robots/rotate_and_fire/rotate_and_fire.cc:351
 msgid "Modular angle, Angle"
 msgstr "Angulo modular, Angulo"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:372
+#: Robots/rotate_and_fire/rotate_and_fire.cc:369
 msgid "Cookie found at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:376
-#: Robots/rotate_and_fire/rotate_and_fire.cc:400
+#: Robots/rotate_and_fire/rotate_and_fire.cc:373
+#: Robots/rotate_and_fire/rotate_and_fire.cc:397
 msgid "I am at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:378
-#: Robots/rotate_and_fire/rotate_and_fire.cc:402
+#: Robots/rotate_and_fire/rotate_and_fire.cc:375
+#: Robots/rotate_and_fire/rotate_and_fire.cc:399
 msgid "at angle"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:396
+#: Robots/rotate_and_fire/rotate_and_fire.cc:393
 msgid "Mine found at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:506
+#: Robots/rotate_and_fire/rotate_and_fire.cc:503
 msgid "New rotation"
 msgstr "Nueva rotación"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:507
+#: Robots/rotate_and_fire/rotate_and_fire.cc:504
 msgid "New acceleration"
 msgstr "Nueva acelaración"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:510
+#: Robots/rotate_and_fire/rotate_and_fire.cc:507
 msgid "Hit too many times! Flee!"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:524
+#: Robots/rotate_and_fire/rotate_and_fire.cc:521
 msgid "Cookie eaten!"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:531
+#: Robots/rotate_and_fire/rotate_and_fire.cc:528
 msgid "Oh no! A mine"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:544
+#: Robots/rotate_and_fire/rotate_and_fire.cc:541
 msgid "Unknown message: "
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:547
+#: Robots/rotate_and_fire/rotate_and_fire.cc:544
 msgid "Process time low: "
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:550
+#: Robots/rotate_and_fire/rotate_and_fire.cc:547
 msgid "Message sent in illegal state: "
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:553
+#: Robots/rotate_and_fire/rotate_and_fire.cc:550
 msgid "Unknown option: "
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:556
+#: Robots/rotate_and_fire/rotate_and_fire.cc:553
 msgid "Obsolete Keyword: "
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:580
+#: Robots/rotate_and_fire/rotate_and_fire.cc:577
 msgid "Shutting down and leaving"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:594
+#: Robots/rotate_and_fire/rotate_and_fire.cc:591
 msgid "New"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:679
+#: Robots/rotate_and_fire/rotate_and_fire.cc:676
 msgid "Unknown Object seen!"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:754
+#: Robots/rotate_and_fire/rotate_and_fire.cc:751
 msgid "Collided with Unknown Object!"
 msgstr ""

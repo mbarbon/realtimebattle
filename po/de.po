@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RealTimeBattle 0.9.11\n"
-"POT-Creation-Date: 2000-10-01 13:10+0200\n"
+"POT-Creation-Date: 2000-10-01 14:34+0200\n"
 "PO-Revision-Date: 1999-10-10 18:08+0200\n"
 "Last-Translator: Uwe Hermann <uh1763@bingo-ev.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -884,92 +884,92 @@ msgstr "Turnier konnte nicht gestartet werden."
 msgid "Error in"
 msgstr "Fehler in"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:293
+#: Robots/rotate_and_fire/rotate_and_fire.cc:290
 msgid "Brakes locked: Robot found and at distance"
 msgstr "Bremsen blockiert: Roboter auf Distanz entdeckt"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:350
+#: Robots/rotate_and_fire/rotate_and_fire.cc:347
 msgid "Acceleration"
 msgstr "Beschleunigung"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:351
+#: Robots/rotate_and_fire/rotate_and_fire.cc:348
 msgid "Brake"
 msgstr "Bremse"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:354
+#: Robots/rotate_and_fire/rotate_and_fire.cc:351
 msgid "Modular angle, Angle"
 msgstr "Modularer Winkel, Winkel"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:372
+#: Robots/rotate_and_fire/rotate_and_fire.cc:369
 msgid "Cookie found at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:376
-#: Robots/rotate_and_fire/rotate_and_fire.cc:400
+#: Robots/rotate_and_fire/rotate_and_fire.cc:373
+#: Robots/rotate_and_fire/rotate_and_fire.cc:397
 msgid "I am at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:378
-#: Robots/rotate_and_fire/rotate_and_fire.cc:402
+#: Robots/rotate_and_fire/rotate_and_fire.cc:375
+#: Robots/rotate_and_fire/rotate_and_fire.cc:399
 msgid "at angle"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:396
+#: Robots/rotate_and_fire/rotate_and_fire.cc:393
 msgid "Mine found at"
 msgstr ""
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:506
+#: Robots/rotate_and_fire/rotate_and_fire.cc:503
 msgid "New rotation"
 msgstr "Neue Rotation"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:507
+#: Robots/rotate_and_fire/rotate_and_fire.cc:504
 msgid "New acceleration"
 msgstr "Neue Beschleunigung"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:510
+#: Robots/rotate_and_fire/rotate_and_fire.cc:507
 msgid "Hit too many times! Flee!"
 msgstr "Zu oft getroffen! Ich fliehe!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:524
+#: Robots/rotate_and_fire/rotate_and_fire.cc:521
 msgid "Cookie eaten!"
 msgstr "Keks gegessen!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:531
+#: Robots/rotate_and_fire/rotate_and_fire.cc:528
 msgid "Oh no! A mine"
 msgstr "Oh nein! Eine Mine"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:544
+#: Robots/rotate_and_fire/rotate_and_fire.cc:541
 msgid "Unknown message: "
 msgstr "Unbekannte Nachricht: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:547
+#: Robots/rotate_and_fire/rotate_and_fire.cc:544
 msgid "Process time low: "
 msgstr "Geringe Prozess-Zeit: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:550
+#: Robots/rotate_and_fire/rotate_and_fire.cc:547
 msgid "Message sent in illegal state: "
 msgstr "Nachricht in ungültigem Zustand gesendet: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:553
+#: Robots/rotate_and_fire/rotate_and_fire.cc:550
 msgid "Unknown option: "
 msgstr "Unbekannte Option: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:556
+#: Robots/rotate_and_fire/rotate_and_fire.cc:553
 msgid "Obsolete Keyword: "
 msgstr "Veraltetes Schlüsselwort: "
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:580
+#: Robots/rotate_and_fire/rotate_and_fire.cc:577
 msgid "Shutting down and leaving"
 msgstr "Ausschalten und verlassen"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:594
+#: Robots/rotate_and_fire/rotate_and_fire.cc:591
 msgid "New"
 msgstr "Neu"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:679
+#: Robots/rotate_and_fire/rotate_and_fire.cc:676
 msgid "Unknown Object seen!"
 msgstr "Unbekanntes Objekt gesehen!"
 
-#: Robots/rotate_and_fire/rotate_and_fire.cc:754
+#: Robots/rotate_and_fire/rotate_and_fire.cc:751
 msgid "Collided with Unknown Object!"
 msgstr "Kollision mit unbekanntem Objekt!"
