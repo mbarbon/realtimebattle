@@ -3,3 +3,4 @@ Makefile.in
 libGuiGtk.a
 .deps
 TAGS
+*.lo
