@@ -69,7 +69,6 @@ Error(const bool fatal, const string& error_msg, const string& function_name)
     }
 }
 
-// TODO: Make sure all threads have been returned
 void
 Quit(const bool success)
 {
@@ -82,6 +81,8 @@ Quit(const bool success)
 //        delete controlwindow_p;
 //    }
 //  #endif NO_GRAPHICS
+
+  the_arena_controller.exit_all_guis(); // Necessary to join all threads!
 
   if( !success )
     exit(EXIT_FAILURE);  
