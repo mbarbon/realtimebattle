@@ -79,7 +79,8 @@ public:
   int get_last_position();
   rotation_t get_robot_angle() { return robot_angle; }
 
-  bool set_and_get_have_competed() { if( have_competed) return true; else { have_competed = true; return false; } }
+  bool set_and_get_has_competed() 
+    { if( has_competed) return true; else { has_competed = true; return false; } }
 
 #ifndef NO_GRAPHICS
 
@@ -105,13 +106,13 @@ private:
 
   bool alive;
   bool process_running;
-  bool have_saved;
+  bool has_saved;
 
   bool send_usr_signal;
   int signal_to_send;
   int  send_rotation_reached;
 
-  bool have_competed;
+  bool has_competed;
 
   double energy; 
   double extra_air_resistance;
