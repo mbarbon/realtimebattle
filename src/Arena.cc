@@ -91,7 +91,14 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                 case GAD_SENSOR: 
                   break;
                 case GAD_COMMUNICATION:
-                  break;
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    CommunicationGadget* gadget =
+                      new CommunicationGadget( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = (Gadget*)gadget;
+                    break;
+                  }
                 case GAD_WALL: 
                   break;
                 case GAD_DEVICE: 
@@ -103,7 +110,14 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                 case GAD_ENVIRONMENT: 
                   break;
                 case GAD_ROBOTBODY: 
-                  break;
+                  {
+                    // TODO: Remember to delete this somewehere!!!!!!!!!
+                    RobotBodyGadget* gadget =
+                      new RobotBodyGadget( wordlist[2].c_str(), current_gadget );
+                    current_gadget->get_my_gadgets().add( gadget->get_info() );
+                    current_gadget = (Gadget*)gadget;
+                    break;
+                  }
                 case GAD_SCORING: 
                   break;
                 case GAD_ACTION:
@@ -126,6 +140,10 @@ Arena::load_arena_file( const string& filename, Gadget& hierarchy )
                     current_gadget = (Gadget*)gadget;
                     break;
                   }
+                default:
+                  Error( true, "Non existing gadget. Should not happen.",
+                         "Arena::load_arena_file" );
+                  break;
                 }
             }
           else if( equal_strings_nocase( wordlist[0], "EndDefine" ) )

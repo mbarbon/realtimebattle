@@ -12,9 +12,11 @@ INCLUDES = -I$(top_srcdir)/intl -I$(top_srcdir)/src \
 
 libRTB_Gadgets_a_SOURCES = \
 	AllGadgets.h \
+	CommunicationGadget.cc CommunicationGadget.h \
 	Function.h \
-	Gadget.h Gadget.cc \
-	GadgetSet.h GadgetSet.cc \
+	Gadget.cc Gadget.h \
+	GadgetSet.cc GadgetSet.h \
+	RobotBodyGadget.cc RobotBodyGadget.h \
 	ShotGadget.cc ShotGadget.h \
 	Variable.cc Variable.h \
 	WeaponGadget.h WeaponGadget.cc

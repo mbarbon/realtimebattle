@@ -27,6 +27,8 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "Function.h"
 #include "Variable.h"
 
+#include "CommunicationGadget.h"
+#include "RobotBodyGadget.h"
 #include "ShotGadget.h"
 #include "WeaponGadget.h"
 
