@@ -303,7 +303,7 @@ main(int argc, char * argv[])
   sigprocmask(SIG_UNBLOCK, &usr1set, NULL);
   
 
-  cout << "RobotOption " << SIGNAL << " " << SIGUSR1 << endl;
+  cout << "RobotOption " << (int)SIGNAL << " " << (int)SIGUSR1 << endl;
 
   for(;;sleep(1))
     {
