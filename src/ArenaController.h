@@ -26,6 +26,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 class String;
+class GuiInterface;
 
 class ArenaController
 {
@@ -49,10 +50,10 @@ private:
   
   void print_help_message();
 
-  pthread_t gui_thread;
-
   bool started;
   bool realtime;
+
+  GuiInterface* gi;
 
   ArenaBase* my_arena;
 

@@ -28,6 +28,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 #include <stdlib.h>
 
+#include <pthread.h>
 
 #include "ArenaController.h"
 #include "ArenaRealTime.h"
@@ -41,23 +42,6 @@ extern class Options the_opts;
 extern bool no_graphics;
 
 // TODO: These should probably be moved to a better place.
-
-// PreMain function
-void*
-GIMain_pre( void* arg )
-{
-  int res = GIMain( (ArenaController*) arg );
-  GIExit( res );
-  return NULL;
-}
-
-// TODO: GIExit should maybe do something more
-void
-GIExit( int returncode )
-{
-  int* returncode_p = new int(returncode);
-  pthread_exit(returncode_p);
-}
 
 
 // ArenaController constructor
@@ -92,7 +76,8 @@ ArenaController::rtb_main( int argc, char** argv )
     start_replay_arena();
 
   GIInit( argc, argv );
-  pthread_create(&gui_thread, NULL, GIMain_pre, (void*)&the_arena_controller);
+
+  gi = new GuiInterface;
 }
 
 void
