@@ -26,8 +26,6 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <list>
 
-#include "TournamentAgreementPackets.h"
-
 struct _GtkWidget;
 typedef struct _GtkWidget GtkWidget;
 union _GdkEvent;
@@ -79,8 +77,6 @@ public:
                                          const int default_x_pos  = -1,
                                          const int default_y_pos  = -1);
   ~StartTournamentWindow               ();
-
-  int handle_packet                    (TournamentCommitChangePacket*);
 
   GtkWidget* get_window_p              () { return window_p; }
 

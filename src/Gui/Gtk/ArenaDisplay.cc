@@ -144,8 +144,8 @@ ArenaDisplay::recreate_non_changeable_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  //  int actual_width  = width * zoom_level;
-  //int actual_height = height * zoom_level;
+  int actual_width  = width * zoom_level;
+  int actual_height = height * zoom_level;
 
   // Create a new pixmap
   non_changeable_display = gdk_pixmap_new( drawing_area->window,
@@ -173,8 +173,8 @@ ArenaDisplay::recreate_semi_changeable_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  //int actual_width  = width * zoom_level;
-  //int actual_height = height * zoom_level;
+  int actual_width  = width * zoom_level;
+  int actual_height = height * zoom_level;
 
   // Create a new pixmap
   semi_changeable_display = gdk_pixmap_new( drawing_area->window,
@@ -205,8 +205,8 @@ ArenaDisplay::recreate_current_display()
 
   int width  = drawing_area->allocation.width;
   int height = drawing_area->allocation.height;
-  //int actual_width  = width * zoom_level;
-  //int actual_height = height * zoom_level;
+  int actual_width  = width * zoom_level;
+  int actual_height = height * zoom_level;
 
   // Create a new pixmap
   current_display = gdk_pixmap_new( drawing_area->window,
