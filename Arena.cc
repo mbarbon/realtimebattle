@@ -11,11 +11,11 @@ Arena::Arena()
   all_robots_in_tournament = g_list_alloc();
   arena_filenames = g_list_alloc();
   robot_radius = 0.5;
-  shot_radius = 0.2;
-  shot_speed = 4.0;
+  shot_radius = 0.1;
+  shot_speed = 10.0;
   max_acceleration = 2.0;
   min_acceleration = -0.5;
-  start_energy = 0.1;
+  start_energy = 100.0;
   air_resistance = 0.005;
   roll_friction = 0.002;
   slide_friction = 0.098;
@@ -214,7 +214,14 @@ Arena::timeout_function()
       break;
       
     case SHUTTING_DOWN_ROBOTS:
-      if( total_time > next_check_time ) end_sequence_follow_up();
+      {     
+        GList* gl;
+        
+        for(gl = g_list_next(all_robots_in_sequence); gl != NULL; gl = g_list_next(gl) )
+          ((Robot*)gl->data)->get_messages();
+        
+        if( total_time > next_check_time ) end_sequence_follow_up();
+      }
       break;
       
     case GAME_IN_PROGRESS:
@@ -224,6 +231,7 @@ Arena::timeout_function()
       break;
 
     case EXITING:
+      //  TODO:  exit properly
       return false;
     }
 
@@ -297,7 +305,7 @@ Arena::update_robots()
   
   for(gl = g_list_next(object_lists[ROBOT]); gl != NULL; gl=g_list_next(gl))
     {
-      kill(((Robot*)gl->data)->get_pid(), SIGUSR1);
+      ((Robot*)gl->data)->send_signal();
     }
   robots_left -= killed_robots;
 }
@@ -351,7 +359,7 @@ Arena::start_game()
 
   the_gui->setup_arena_window( boundary );
   the_gui->setup_score_window( this );
-  the_gui->setup_message_window();
+
   state = GAME_IN_PROGRESS;
   games_remaining_in_sequence--;
   g_timer_reset(timer);
@@ -364,7 +372,6 @@ Arena::end_game()
   // Close Score, Message and Control Windows
 
   the_gui->close_score_window();
-  the_gui->close_message_window();
   the_gui->close_arena_window();
 
   GList* gl;
@@ -375,6 +382,13 @@ Arena::end_game()
       robotp = (Robot*)gl->data;
       gl=g_list_next(gl);
       g_list_remove(object_lists[ROBOT], robotp);
+    }
+  Shot* shotp;
+  for(gl=g_list_next(object_lists[SHOT]); gl != NULL; )
+    {
+      shotp = (Shot*)gl->data;
+      gl=g_list_next(gl);
+      g_list_remove(object_lists[SHOT], shotp);
     }
   Mine* minep;
   for(gl=g_list_next(object_lists[MINE]); gl != NULL; )
@@ -476,7 +490,7 @@ Arena::end_sequence()
 
   for(; gl != NULL; gl = g_list_next(gl))
     {
-      ((Robot*)gl->data)->send_message(EXIT_ROBOT);
+      ((Robot*)gl->data)->end_process();
     }
 
   // wait a second before checking
@@ -493,10 +507,12 @@ Arena::end_sequence_follow_up()
   GList* gl = g_list_next(all_robots_in_sequence);
   Robot* robotp;
 
-  for(; gl != NULL; gl = g_list_next(gl))
+  for(; gl != NULL; )
     {
       robotp = (Robot*)gl->data;
+      gl = g_list_next(gl);
       if( robotp->is_process_running() ) robotp->kill_process_forcefully();
+      g_list_remove(all_robots_in_sequence, robotp);
     }
 
   if(sequences_remaining == 0) 
@@ -511,6 +527,7 @@ Arena::start_tournament(char** robotfilename_list, char** arenafilename_list, in
   // Create robot classes and to into the list all_robots_in_tournament
 
   the_gui->setup_control_window();
+  the_gui->setup_message_window();
 
   Robot* robotp;
 
@@ -545,4 +562,7 @@ Arena::end_tournament()
     }
   //g_list_free(all_robots_in_tournament);
   state = FINISHED;
+
+  the_gui->close_message_window();
+  the_gui->close_control_window();
 }
