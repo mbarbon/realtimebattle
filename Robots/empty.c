@@ -6,8 +6,9 @@
 
 int main(int argc, char * argv[])
 {
-  printf("Name Empty\n");
-  printf("Colour aaffaa 112299\n");
+  write(STDOUT_FILENO, "RobotOption 0 0\n", 16); 
+  write(STDOUT_FILENO, "Name Empty\n", 11);
+  write(STDOUT_FILENO, "Colour aaffaa ee2299\n", 21);
 
   sleep(500);
 
