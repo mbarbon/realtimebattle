@@ -20,6 +20,7 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <math.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream.h>
@@ -182,6 +183,31 @@ split_colonseparated_dirs(String& dirs, GList * gl)
     }
 }
 
+
+bool
+check_if_filename_is_robot( String& fname )
+{
+  struct stat filestat;
+  if( 0 == stat( fname.chars(), &filestat ) )
+    if( S_ISREG( filestat.st_mode) && (filestat.st_mode & S_IXOTH) ) // Check if file is a regular file that can be executed
+      return true;
+
+  return false;
+}
+
+bool
+check_if_filename_is_arena( String& fname )
+{
+  struct stat filestat;
+  if( 0 == stat( fname.chars(), &filestat ) && fname.get_length() > 6 )
+    // Check if file is a regular file that is readable and ends with .arena
+    if( S_ISREG( filestat.st_mode) &&
+        (filestat.st_mode & S_IROTH)  &&
+        String(".arena") == get_segment(fname, -6, -1) )
+      return true;
+
+  return false;
+}
 
 #ifndef NO_GRAPHICS
 

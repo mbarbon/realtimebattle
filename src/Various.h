@@ -63,6 +63,9 @@ void read_dirs_from_system(GList*& robotdirs, GList*& arenadirs);
 void clean_dir_glists(GList*& robotdirs, GList*& arenadirs);
 void split_colonseparated_dirs(String& dirs, GList * gl);
 
+bool check_if_filename_is_robot( String& fname );
+bool check_if_filename_is_arena( String& fname );
+
 #if GTK_MAJOR_VERSION == 1 && GTK_MINOR_VERSION >= 1
 gint int_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
 gint float_compare(GtkCList *clist, gconstpointer row1, gconstpointer row2);
