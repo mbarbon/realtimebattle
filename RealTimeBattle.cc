@@ -64,6 +64,8 @@ sig_handler (int signum)
 int 
 main ( int argc, char* argv[] )
 {
+  gtk_init (&argc, &argv);
+
   int option_char;
   while ((option_char = getopt (argc, argv, "dnc")) != -1)
     {
@@ -93,7 +95,6 @@ main ( int argc, char* argv[] )
   
   gint timeout_tag;
 
-  gtk_init (&argc, &argv);
   the_arena.set_colours();
 
   srand(time(0));
