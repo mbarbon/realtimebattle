@@ -52,7 +52,7 @@
 #define MSG_OOB           0x1     /* process out-of-band data */
 #define MSG_DONTROUTE     0x4     /* bypass routing, use direct */
 #define MSG_DONTWAIT      0x40    /* don't block */
-#define MSG_NOSIGNAL      0x2000  /* don't raise SIGPIPE */
+#define MSG_NOSIGNAL      0x2000  /* don't raise SIGALRM */
 
 int client_connections=0;
 int total_connections=0;
@@ -176,7 +176,7 @@ int server_init(char* myname, int lport, int uport, void (*handler)(int), int db
                 newfd=accept(fd,&theiraddr,(socklen_t*) &theirsize);
                 if (fork()==0)
                 {
-                        signal(SIGPIPE,goaway);
+                        signal(SIGALRM,goaway);
                         kill(0,SIGUSR1);
                         if (dbug)
                                 fprintf(stderr,"Connection from host: %s on port %d is # %d\n",inet_ntoa(theiraddr.sin_addr),myport,client_connections);
@@ -184,7 +184,7 @@ int server_init(char* myname, int lport, int uport, void (*handler)(int), int db
                         close(fd);
                         shutdown(fd,2);
                         if (dbug)
-                                fprintf(stderr,"Connection closed, remote host %s port %d.\n",inet_ntoa(theiraddr.sin_addr),myport);
+                                fprintf(stderr,"Connection # %d closed, remote host %s port %d.\n", client_connections, inet_ntoa(theiraddr.sin_addr),myport);
                         kill(0,SIGUSR2);
                         exit(0);
                 }
@@ -221,7 +221,7 @@ int connectto(char* chost, int myport, int dbug)
                 perror("connect");
                 return(-1);
         }
-        signal(SIGPIPE,goaway);
+        signal(SIGALRM,goaway);
         signal(SIGUSR2,SIG_IGN);
         if (dbug) printf("Connected to host: %s\n",inet_ntoa(myaddr.sin_addr));
         return(fd);

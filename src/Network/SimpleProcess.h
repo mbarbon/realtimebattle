@@ -59,7 +59,7 @@ public:
   string filename;
   string plain_filename;  // Filename without path
 
-  const string rtb_tmp_dir("/tmp");
+  const string rtb_tmp_dir("/tmp/rtb");
 
   bool process_running;
 

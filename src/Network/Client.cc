@@ -73,6 +73,8 @@ main ( int argc, char* argv[] )
   if( socket_fd == -1 )
     exit(EXIT_FAILURE);
 
+  signal(SIGPIPE,  SIG_IGN);
+
   ifstream in_socket (socket_fd);
   ofstream out_socket(socket_fd);
 
@@ -120,33 +122,54 @@ main ( int argc, char* argv[] )
           in_socket.clear();
           in_socket.get(buffer, 80, '\n');
 
-          cout << buffer;      
+          //          cout << buffer << flush; 
           *robot_process.opipe_streamp << buffer << endl;      
-          cout << "!" << flush;   
+
+//            if( robot_process.opipe_streamp->fail() )
+//              {
+//                cerr << "Writing to opipe failed!" << endl;
+//                sleep(3);
+//              }
+
+
+          //          cout << "!" << flush;   
         }
 
       if( FD_ISSET( robot_process.in_pipe, &pipe_and_socket) )
         {      
           *robot_process.ipipe_streamp >> ws;
           robot_process.ipipe_streamp->clear();
-          robot_process.ipipe_streamp->get(buffer, 80, '\n');
-
-          if( robot_process.ipipe_streamp->fail() )
+          robot_process.ipipe_streamp->peek();
+          if( !robot_process.ipipe_streamp->eof() )
             {
-              cerr << "Reading ipipe failed!" << endl;
-              sleep(3);
+              robot_process.ipipe_streamp->get(buffer, 80, '\n');
+              
+              if( robot_process.ipipe_streamp->fail() )
+                {
+                  cerr << "Reading ipipe failed!" << endl;
+                  sleep(3);
+                }
+
+              //              cout << buffer << flush;      
+              out_socket << buffer << endl;
+              //              cout << "%" << flush;  
+
+              if( out_socket.fail() )
+                {
+                  cerr << "Writing to out_socket failed!" << endl;
+                  sleep(3);
+                }
+
+
+//                *robot_process.ipipe_streamp >> ws;
+//                robot_process.ipipe_streamp->clear();
+//                robot_process.ipipe_streamp->peek();
             }
 
-          cout << buffer;      
-          out_socket << buffer << endl;
-          cout << "%" << flush;   
+          //          robot_process.ipipe_streamp->clear();
         }
-      
-      cout << "." << flush;      
-      
-      //      out_socket << "Message_from_client_" << robotname << endl;
-      //      sleep(1);
 
+      //      cout << "." << flush;      
     }
 }
 

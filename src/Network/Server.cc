@@ -48,6 +48,7 @@ string robotname;
 string ififo_name;
 string ofifo_name;
 
+volatile bool finish;
 
 void server(int fd);
 void exit_cleanly(int fd);
@@ -65,7 +66,7 @@ int
 main ( int argc, char* argv[] )
 {
   const int port = 19074;
-  const int uport = 19073;
+  const int uport = 19074;
   const int dbug = 1;
   
   char hostname[80];
@@ -98,10 +99,10 @@ void
 server(int socket_fd)
 {  
 
-  signal(SIGPIPE, exit_cleanly);
+  signal(SIGALRM, exit_cleanly);
   signal(SIGTERM, exit_cleanly);
   signal(SIGINT,  exit_cleanly);
-  signal(SIGPIPE, exit_cleanly);
+  //  signal(SIGPIPE, exit_cleanly);
 
 
   ifstream in_socket (socket_fd);
@@ -128,7 +129,8 @@ server(int socket_fd)
       perror( NULL );
       ififo_name = "";  // don't remove the fifos when cleaning up
       ofifo_name = "";
-      exit_cleanly( SIGPIPE );
+      exit_cleanly( SIGALRM );
+      return;
     }
 
   if(  mkfifo( ofifo_name.c_str(), S_IWUSR | S_IRUSR ) != 0 )
@@ -136,7 +138,8 @@ server(int socket_fd)
       cerr << "Server: couldn't create " << ofifo_name << ": ";
       perror( NULL );
       ofifo_name = "";
-      exit_cleanly( SIGPIPE );
+      exit_cleanly( SIGALRM );
+      return;
     }
 
 
@@ -149,7 +152,7 @@ server(int socket_fd)
     {
       cerr << "Server: couldn't open " << ififo_name << ": ";
       perror( NULL );
-      exit_cleanly( SIGPIPE );
+      exit_cleanly( SIGALRM );
     }
 
   int ofifo_fd = open( ofifo_name.c_str(), O_WRONLY );
@@ -158,8 +161,8 @@ server(int socket_fd)
     {
       cerr << "Server: couldn't open " << ofifo_name << ": ";
       perror( NULL );
-      exit_cleanly( SIGPIPE );
-
+      exit_cleanly( SIGALRM );
+      return;
     }
 
 
@@ -173,7 +176,9 @@ server(int socket_fd)
 
   struct timeval time_to_wait;
 
-  while( true )
+  finish = false;
+
+  while( !finish )
     {
       time_to_wait.tv_sec = 0;
       time_to_wait.tv_usec = 300000;
@@ -191,9 +196,15 @@ server(int socket_fd)
           in_socket.clear();
           in_socket.get(buffer, 80, '\n');
 
-          cout << buffer;      
+          if( in_socket.fail() )
+            {
+              cerr << "Reading in_socket failed!" << endl;
+              exit_cleanly( SIGALRM );
+            }
+
+          //          cout << buffer;      
           ofifo_stream << buffer << endl;      
-          cout << "!" << flush;   
+          //          cout << "!" << flush;   
         }
 
       if( FD_ISSET( ififo_fd, &fifo_and_socket) )
@@ -208,16 +219,21 @@ server(int socket_fd)
               sleep(3);
             }
 
-          cout << buffer;      
+          //          cout << buffer;      
           out_socket << buffer << endl;
-          cout << "%" << flush;   
+          
+          if( out_socket.fail() )
+            {
+              cerr << "Writing to out_socket failed!" << endl;
+              exit_cleanly( SIGALRM );
+            }
+
+
+          //          cout << "%" << flush;   
         }
       
-      cout << "." << flush;      
+      //      cout << "." << flush;      
       
-      //      out_socket << "Message_from_server_" << robotname << endl;
-      //      sleep(1);
-
     }
 
 }
@@ -234,15 +250,15 @@ exit_cleanly(int signum)
   if( signum == SIGINT || signum == SIGTERM )
     sig_to_send = SIGTERM;
 
-  cerr << "Recieved signal " << signum 
-       << ", sending children " 
-       <<  ( sig_to_send == SIGUSR2 ? "SIGUSR2" : "SIGTERM" )
-       << " before exiting.\n" << endl;
+//    cerr << "Recieved signal " << signum 
+//         << ", sending children " 
+//         <<  ( sig_to_send == SIGUSR2 ? "SIGUSR2" : "SIGTERM" )
+//         << " before exiting.\n" << endl;
 
   kill(0, sig_to_send);
 
 
-  cout << "Server " << robotname << ": Cleaning up";
+  //  cerr << "Server " << robotname << ": Cleaning up";
 
 
   
@@ -262,7 +278,7 @@ exit_cleanly(int signum)
       perror( NULL );
     }
   
-  cout << " and leaving" << endl;
+  //  cerr << " and leaving" << endl;
 
-  exit(EXIT_SUCCESS);
+  finish = true;
 }
