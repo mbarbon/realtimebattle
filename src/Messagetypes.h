@@ -23,16 +23,17 @@ Boston, MA  02111-1307, USA.
 
 enum gadget_t
 {
-  GAD_WEAPON, GAD_SHOT, GAD_EXPLOSION, GAD_DEFENSE, GAD_ENGINE, GAD_SENSOR,
-  GAD_COMMUNICATION, GAD_WALL, GAD_DEVICE, GAD_BALL, GAD_EQUIPMENT,
-  GAD_ENVIRONMENT, GAD_ROBOTBODY, GAD_SCORING, GAD_ACTION, GAD_VARIABLE, LAST_GADGET
+  GAD_WEAPON, GAD_SHOT, GAD_EXPLOSION, GAD_DEFENSE, GAD_ENGINE,
+  GAD_SENSOR, GAD_COMMUNICATION, GAD_WALL, GAD_DEVICE, GAD_BALL, GAD_EQUIPMENT,
+  GAD_ENVIRONMENT, GAD_ROBOTBODY, GAD_SCORING, GAD_ACTION, GAD_VARIABLE,
+  GAD_FUNCTION, LAST_GADGET
 };
 
 static const char gadget_types[][LAST_GADGET] =
 {
-  "Weapon", "Shot", "Explosion", "Defense", "Engine", "Sensor", "Communication",
-  "Wall", "Device", "Ball", "Equipment", "Environment", "RobotBody", "Action",
-  "Variable", "Gadget"
+  "Weapon", "Shot", "Explosion", "Defense", "Engine", "Sensor",
+  "Communication", "Wall", "Device", "Ball", "Equipment", "Environment", "RobotBody",
+  "Action", "Variable", "Function"
 };
 
 enum message_to_robot_type 
