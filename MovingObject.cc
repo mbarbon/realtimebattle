@@ -4,7 +4,7 @@
 #include <strstream.h>
 #include "Arena.h"
 
-Robot::Robot(char* filename)
+Robot::Robot(char* filename, Arena* ap)
 {
   velocity = Vector2D(0.0, 0.0);
   robot_filename = *g_string_new(filename);
@@ -12,11 +12,16 @@ Robot::Robot(char* filename)
   robot_dir= *g_string_new(getenv("RTB_ROBOTDIR"));
   extra_air_resistance = 0.0;
   process_running = false;
+  the_arena = ap;
+  instreamp = NULL;
+  outstreamp = NULL;
 }
 
 Robot::~Robot()
 {
   if( is_process_running() ) kill_process_forcefully();
+  if( instreamp != NULL ) delete instreamp;
+  if( outstreamp != NULL ) delete outstreamp;
 } 
 
 void
@@ -53,6 +58,9 @@ Robot::start_process()
       if( fcntl(pipe_out[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for robot ", 
                     robot_filename.str, "Robot::Robot, child");
+      
+      // Restrict different resources
+      // E.g. priority, file_access, 
 
       // Execute process. Should not return!
       execl(robot_filename.str, robot_filename.str, NULL);
@@ -76,6 +84,9 @@ Robot::start_process()
       if( fcntl(pipe_in[0], F_SETFL, pd_flags) == -1 ) 
         throw Error("Couldn't change pd_flags for pipe_in in robot ", 
                     robot_filename.str, "Robot::Robot, parent");
+
+      outstreamp = new ofstream(pipe_out[1]);
+      instreamp = new ifstream(pipe_in[0]);
 
       send_message(INITIALIZE);
     }
@@ -140,7 +151,7 @@ Robot::send_message(const message_to_robot_type msg_type ...)
 {
   va_list args;
   va_start(args, msg_type);
-  outstream << message_to_robot[msg_type].msg << " ";
+  *outstreamp << message_to_robot[msg_type].msg << " ";
   for(int i=0; i<message_to_robot[msg_type].number_of_args; i++)
     {
       switch(message_to_robot[msg_type].arg_type[i])
@@ -149,19 +160,19 @@ Robot::send_message(const message_to_robot_type msg_type ...)
           throw Error("Couldn't send message, no arg_type", "Robot::send_message");
           break;
         case INT:
-          outstream << va_arg(args, int) << " ";
+          *outstreamp << va_arg(args, int) << " ";
           break;
         case DOUBLE:
-          outstream << va_arg(args, double) << " ";
+          *outstreamp << va_arg(args, double) << " ";
           break;
         case STRING:
-          outstream << va_arg(args, char*) << " ";
+          *outstreamp << va_arg(args, char*) << " ";
           break;
         default:
           throw Error("Couldn't send message, unknown arg_type", "Robot::send_message");
         }
     }
-  outstream << endl;
+  *outstreamp << endl;
 }
 
 void
@@ -172,7 +183,7 @@ Robot::get_messages()
   char* msg_name;
   message_from_robot_type msg_t;
 
-  instream.getline(buffer, 80, '\n');
+  instreamp->getline(buffer, 80, '\n');
   while( buffer[0] != '\0' )
     {
       ss << buffer;
@@ -190,7 +201,7 @@ Robot::get_messages()
           throw Error("Message_type not implemented, ", msg_name, "Arena::Arena");
         }
           
-      instream.getline(buffer, 80, '\n');
+      instreamp->getline(buffer, 80, '\n');
     }
 }
 
@@ -209,13 +220,4 @@ void
 Robot::change_energy(const double energy_diff)
 {
   energy += energy_diff;
-}
-
-void
-Robot::set_colour( int red, int green, int blue )
-{
-  colour.red = red;
-  colour.green = green;
-  colour.blue = blue;
-  //  gdk_color_alloc (colormap, &colour);
 }
